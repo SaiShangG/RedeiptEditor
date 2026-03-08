@@ -36,6 +36,9 @@ Children:
         - Name: Sequence
           Type: StoreColumn
           DataType: Int16
+        - Name: Operations
+          Type: StoreColumn
+          DataType: String
     - Name: Operations
       Id: g=15c01aa793314efc9480d55357da0072
       Type: SQLiteStoreTable
@@ -62,6 +65,9 @@ Children:
           Type: StoreColumn
           DataType: String
           Value: "0"
+        - Name: Phases
+          Type: StoreColumn
+          DataType: String
     - Name: Phases
       Id: g=c054a1a8544f0c988ab391db1daacc4f
       Type: SQLiteStoreTable
@@ -92,68 +98,6 @@ Children:
           Type: StoreColumn
           DataType: Int16
         - Name: Temperature
-          Type: StoreColumn
-          DataType: Int16
-    - Name: ReceiptOperationMap
-      Id: g=91490dbffcad03f27bc0d119c760c512
-      Type: SQLiteStoreTable
-      Children:
-      - Class: Reference
-        Target: ns=8;i=12
-        Direction: Forward
-      - Class: Reference
-        Target: ns=8;i=15
-        Direction: Forward
-      - Class: Reference
-        Target: ns=8;i=21
-        Direction: Forward
-      - Class: Reference
-        Target: ns=8;i=20
-        Direction: Forward
-      - Name: Columns
-        Type: BaseObjectType
-        Children:
-        - Name: ReceiptOperationMapID
-          Type: StoreColumn
-          DataType: Int16
-        - Name: ReceiptID
-          Type: StoreColumn
-          DataType: Int16
-        - Name: OperationID
-          Type: StoreColumn
-          DataType: Int16
-        - Name: Sequence
-          Type: StoreColumn
-          DataType: Int16
-    - Name: OperationPhaseMap
-      Id: g=d4d1b09e4d8a8d7e254fc7607d842e1c
-      Type: SQLiteStoreTable
-      Children:
-      - Class: Reference
-        Target: ns=8;i=12
-        Direction: Forward
-      - Class: Reference
-        Target: ns=8;i=15
-        Direction: Forward
-      - Class: Reference
-        Target: ns=8;i=21
-        Direction: Forward
-      - Class: Reference
-        Target: ns=8;i=20
-        Direction: Forward
-      - Name: Columns
-        Type: BaseObjectType
-        Children:
-        - Name: OperationPhaseMapID
-          Type: StoreColumn
-          DataType: Int16
-        - Name: OperationID
-          Type: StoreColumn
-          DataType: Int16
-        - Name: PhaseID
-          Type: StoreColumn
-          DataType: Int16
-        - Name: Sequence
           Type: StoreColumn
           DataType: Int16
   - Class: Reference

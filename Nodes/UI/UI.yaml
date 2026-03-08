@@ -190,11 +190,11 @@ Children:
               - Name: R_O_MapDB
                 Type: BaseDataVariableType
                 DataType: NodeId
-                Value: "/Objects/RedeiptEditor/DataStores/ReceiptDB/Tables/ReceiptOperationMap"
+                Value: {"IdType":2,"Id":"91490dbffcad03f27bc0d119c760c512","Namespace":7}
               - Name: O_P_MapDB
                 Type: BaseDataVariableType
                 DataType: NodeId
-                Value: "/Objects/RedeiptEditor/DataStores/ReceiptDB/Tables/OperationPhaseMap"
+                Value: {"IdType":2,"Id":"d4d1b09e4d8a8d7e254fc7607d842e1c","Namespace":7}
               - Class: Reference
                 Target: g=947e15f8d8f4470b2a7ff63fdddbd607
                 Direction: Forward
