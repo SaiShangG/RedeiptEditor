@@ -1,0 +1,226 @@
+Name: DataStores
+Type: DataStoresCategoryFolder
+Children:
+- Name: ReceiptDB
+  Type: SQLiteStore
+  Children:
+  - Name: Tables
+    Type: BaseObjectType
+    Children:
+    - Name: Receipts
+      Id: g=c7f5fb0121d06aff8d4a6cd7ba69d2fd
+      Type: SQLiteStoreTable
+      Children:
+      - Class: Reference
+        Target: ns=8;i=12
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=15
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=21
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=20
+        Direction: Forward
+      - Name: Columns
+        Type: BaseObjectType
+        Children:
+        - Name: ReceiptID
+          Type: StoreColumn
+          DataType: Int16
+        - Name: Name
+          Type: StoreColumn
+          DataType: String
+          Value: "0"
+        - Name: Sequence
+          Type: StoreColumn
+          DataType: Int16
+    - Name: Operations
+      Id: g=15c01aa793314efc9480d55357da0072
+      Type: SQLiteStoreTable
+      Children:
+      - Class: Reference
+        Target: ns=8;i=12
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=15
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=21
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=20
+        Direction: Forward
+      - Name: Columns
+        Type: BaseObjectType
+        Children:
+        - Name: OperationID
+          Type: StoreColumn
+          DataType: Int16
+        - Name: Name
+          Type: StoreColumn
+          DataType: String
+          Value: "0"
+    - Name: Phases
+      Id: g=c054a1a8544f0c988ab391db1daacc4f
+      Type: SQLiteStoreTable
+      Children:
+      - Class: Reference
+        Target: ns=8;i=12
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=15
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=21
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=20
+        Direction: Forward
+      - Name: Columns
+        Type: BaseObjectType
+        Children:
+        - Name: PhaseID
+          Type: StoreColumn
+          DataType: Int16
+        - Name: Name
+          Type: StoreColumn
+          DataType: String
+          Value: "0"
+        - Name: Pressure
+          Type: StoreColumn
+          DataType: Int16
+        - Name: Temperature
+          Type: StoreColumn
+          DataType: Int16
+    - Name: ReceiptOperationMap
+      Id: g=91490dbffcad03f27bc0d119c760c512
+      Type: SQLiteStoreTable
+      Children:
+      - Class: Reference
+        Target: ns=8;i=12
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=15
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=21
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=20
+        Direction: Forward
+      - Name: Columns
+        Type: BaseObjectType
+        Children:
+        - Name: ReceiptOperationMapID
+          Type: StoreColumn
+          DataType: Int16
+        - Name: ReceiptID
+          Type: StoreColumn
+          DataType: Int16
+        - Name: OperationID
+          Type: StoreColumn
+          DataType: Int16
+        - Name: Sequence
+          Type: StoreColumn
+          DataType: Int16
+    - Name: OperationPhaseMap
+      Id: g=d4d1b09e4d8a8d7e254fc7607d842e1c
+      Type: SQLiteStoreTable
+      Children:
+      - Class: Reference
+        Target: ns=8;i=12
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=15
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=21
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=20
+        Direction: Forward
+      - Name: Columns
+        Type: BaseObjectType
+        Children:
+        - Name: OperationPhaseMapID
+          Type: StoreColumn
+          DataType: Int16
+        - Name: OperationID
+          Type: StoreColumn
+          DataType: Int16
+        - Name: PhaseID
+          Type: StoreColumn
+          DataType: Int16
+        - Name: Sequence
+          Type: StoreColumn
+          DataType: Int16
+  - Class: Reference
+    Target: ns=9;i=30
+    Direction: Forward
+  - Class: Reference
+    Target: ns=9;i=33
+    Direction: Forward
+  - Name: MaxColumnNameLength
+    Type: BaseDataVariableType
+    DataType: UInt32
+    AccessLevel: Read
+  - Name: MaxColumnCount
+    Type: BaseDataVariableType
+    DataType: UInt32
+    AccessLevel: Read
+  - Name: DataTypeCompatibilityMap
+    Type: BaseDataVariableType
+    DataType: NodeId
+    AccessLevel: Read
+    ValueRank: OneOrMoreDimensions
+    ArrayDimensions: [0,0]
+  - Name: Status
+    Type: PropertyType
+    DataType: StoreStatus
+    AccessLevel: Read
+    Value: 2
+  - Class: Reference
+    Target: ns=8;i=22
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=67
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=6
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=8
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=25
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=38
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=41
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=44
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=53
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=55
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=57
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=59
+    Direction: Forward
+  - Name: InMemory
+    Type: BaseDataVariableType
+    DataType: Boolean
+  - Name: Filename
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "ReceiptEditorDB"

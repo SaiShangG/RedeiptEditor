@@ -1,0 +1,14 @@
+Name: Model
+Type: ModelCategoryFolder
+Children:
+- Name: AddReceiptOperationPhase
+  Type: BaseObjectType
+  Children:
+  - Name: name
+    Type: BaseDataVariableType
+    DataType: String
+  - Name: Description
+    Type: BaseDataVariableType
+    DataType: String
+- Name: SelectedTreeData
+  Type: BaseObjectType
