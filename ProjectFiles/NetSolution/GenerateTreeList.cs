@@ -9,7 +9,6 @@ using FTOptix.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using FTOptix.RecipeX;
 
 #endregion
 
@@ -26,6 +25,14 @@ public class GenerateTreeList : BaseNetLogic
     /// <summary>当前选中的配方 ReceiptID（Receipt 按钮点击时通过 SetSelectedReceiptId 记录）</summary>
     public int SelectedReceiptId => _selectedReceiptId;
     private int _selectedReceiptId;
+
+    /// <summary>当前选中的工序 OperationID（Operation 按钮点击时通过 SetSelectedOperation 记录，同时会设置 SelectedReceiptId 为其所属配方）</summary>
+    public int SelectedOperationId => _selectedOperationId;
+    private int _selectedOperationId;
+
+    /// <summary>当前选中的阶段 PhaseID（Phase 按钮点击时通过 SetSelectedPhase 记录）</summary>
+    public int SelectedPhaseId => _selectedPhaseId;
+    private int _selectedPhaseId;
 
     public override void Start()
     {
@@ -45,16 +52,86 @@ public class GenerateTreeList : BaseNetLogic
     public void SetSelectedReceiptId(int receiptId)
     {
         _selectedReceiptId = receiptId;
+        _selectedOperationId = 0;
+        _selectedPhaseId = 0;
         var v = LogicObject.GetVariable("SelectedID");
         if (v != null) v.Value = receiptId;
         ApplyReceiptHighlight();
+        ApplyOperationHighlight();
+        ApplyPhaseHighlight();
+        SyncSelectedItemToModel();
         if (EnableLog) Log.Info(LogCategory, $"SelectedID = {receiptId}");
+    }
+
+    /// <summary>Operation 按钮点击时调用，记录所属 Receipt 与当前 Operation，并刷新高亮。</summary>
+    [ExportMethod]
+    public void SetSelectedOperation(int receiptId, int operationId)
+    {
+        _selectedReceiptId = receiptId;
+        _selectedOperationId = operationId;
+        _selectedPhaseId = 0;
+        var v = LogicObject.GetVariable("SelectedID");
+        if (v != null) v.Value = receiptId;
+        ApplyReceiptHighlight();
+        ApplyOperationHighlight();
+        ApplyPhaseHighlight();
+        SyncSelectedItemToModel();
+        if (EnableLog) Log.Info(LogCategory, $"Selected Receipt={receiptId}, Operation={operationId}");
+    }
+
+    /// <summary>Phase 按钮点击时调用，记录所属 Receipt/Operation 与当前 Phase，并刷新高亮。</summary>
+    [ExportMethod]
+    public void SetSelectedPhase(int receiptId, int operationId, int phaseId)
+    {
+        _selectedReceiptId = receiptId;
+        _selectedOperationId = operationId;
+        _selectedPhaseId = phaseId;
+        var v = LogicObject.GetVariable("SelectedID");
+        if (v != null) v.Value = receiptId;
+        ApplyReceiptHighlight();
+        ApplyOperationHighlight();
+        ApplyPhaseHighlight();
+        SyncSelectedItemToModel();
+        if (EnableLog) Log.Info(LogCategory, $"Selected Receipt={receiptId}, Operation={operationId}, Phase={phaseId}");
+    }
+
+    private void SyncSelectedItemToModel()
+    {
+        var selectedTreeData = ResolveSelectedTreeData();
+        if (selectedTreeData == null) return;
+        string itemType = "", receiptName = "", receiptCreatedDate = "", receiptCreatedBy = "", receiptCurrentStatus = "", selectedOpName = "", selectedPhaseName = "";
+        if (RecipeDatabaseManager.Instance == null || !RecipeDatabaseManager.Instance.GetSelectedItemModelData(
+            out itemType, out receiptName, out receiptCreatedDate, out receiptCreatedBy,
+            out receiptCurrentStatus, out selectedOpName, out selectedPhaseName))
+            return;
+        SetModelVar(selectedTreeData, "CurrentSelecteditemType", itemType);
+        SetModelVar(selectedTreeData, "ReceiptName", receiptName ?? "");
+        SetModelVar(selectedTreeData, "ReceiptCreatedDate", receiptCreatedDate ?? "");
+        SetModelVar(selectedTreeData, "ReceiptCreatedBy", receiptCreatedBy ?? "");
+        SetModelVar(selectedTreeData, "ReceiptCurrentStatus", receiptCurrentStatus ?? "");
+        SetModelVar(selectedTreeData, "SelectedOperationName", selectedOpName ?? "");
+        SetModelVar(selectedTreeData, "SelectedPhaseName", selectedPhaseName ?? "");
+    }
+
+    private IUANode ResolveSelectedTreeData()
+    {
+        IUANode model = LogicObject.Owner?.Get("Model");
+        if (model == null) return null;
+        var treeListData = model.Get("TreeListData");
+        if (treeListData == null) return null;
+        return treeListData.Get("SelectedTreeData");
+    }
+
+    private static void SetModelVar(IUANode node, string name, string value)
+    {
+        if (node == null || string.IsNullOrEmpty(name)) return;
+        var v = node.GetVariable(name);
+        if (v != null) v.Value = value;
     }
 
     [ExportMethod]
     public void Generate()
     {
-        // 1. 定位 TreeContainer：支持 Owner 直接子节点 或 ScrollView1/TreeContainer 层级 
         var treeContainer = LogicObject.Owner.Get<Container>("TreeContainer")
             ?? LogicObject.Owner.Get("ScrollView1")?.Get<Container>("TreeContainer");
         if (treeContainer == null)
@@ -63,7 +140,22 @@ public class GenerateTreeList : BaseNetLogic
             return;
         }
 
-        // 2. 清理旧数据，防止每次点击重复生成
+        bool wasVisible = treeContainer.Visible;
+        try
+        {
+            treeContainer.Visible = false;
+            GenerateCore(treeContainer);
+        }
+        finally
+        {
+            treeContainer.Visible = wasVisible;
+        }
+    }
+
+    /// <summary>内部：在 TreeContainer 已隐藏时执行清空与重建，避免闪烁。</summary>
+    private void GenerateCore(Container treeContainer)
+    {
+        // 1. 清理旧数据，防止每次点击重复生成
         foreach (var child in treeContainer.Children.OfType<ColumnLayout>().ToList())
         {
             child.Delete();
@@ -149,6 +241,8 @@ public class GenerateTreeList : BaseNetLogic
                     string oName = opRow.Name;
                     var oItem = InformationModel.MakeObject(oName + "_Item", opTypeId) as Container;
                     SetItemButtonText(oItem, oName);
+                    SetOperationItemIdAndClick(oItem, receiptId, oId);
+                    SetOperationButtonHighlight(oItem, oId);
                     listContainer.Add(oItem);
                     itemCount++;
 
@@ -165,6 +259,8 @@ public class GenerateTreeList : BaseNetLogic
                             if (!phaseById.TryGetValue(pId, out string pName)) pName = "Unknown";
                             var pItem = InformationModel.MakeObject(pName + "_Item", phaseTypeId) as Container;
                             SetItemButtonText(pItem, pName);
+                            SetPhaseItemIdAndClick(pItem, receiptId, oId, pId);
+                            SetPhaseButtonHighlight(pItem, pId);
                             listContainer.Add(pItem);
                             itemCount++;
                         }
@@ -243,22 +339,24 @@ public class GenerateTreeList : BaseNetLogic
         }
     }
 
-    /// <summary>Generate 时：若为当前选中配方则设置按钮背景为高亮色。</summary>
+    /// <summary>Generate 时：仅当选中的是 Receipt（未选 Operation/Phase）且为当前配方时才高亮。</summary>
     private void SetReceiptButtonHighlight(Container listItem, int receiptId)
     {
-        if (listItem == null || receiptId != _selectedReceiptId) return;
+        if (listItem == null) return;
+        bool highlightReceipt = (_selectedOperationId == 0 && _selectedPhaseId == 0 && receiptId == _selectedReceiptId);
         var itemContainer = listItem.Get<Container>("ItemContainer");
         var button = itemContainer?.Get<Button>("ItemButton");
         if (button != null)
-            button.BackgroundColor = HighlightColor;
+            button.BackgroundColor = highlightReceipt ? HighlightColor : NormalColor;
     }
 
-    /// <summary>遍历 TreeContainer 内所有配方项，按当前 SelectedID 刷新按钮高亮（点击时调用）。</summary>
+    /// <summary>遍历 TreeContainer 内所有配方项。选中 Operation/Phase 时不高亮 Receipt；仅选中 Receipt 时高亮该 Receipt。</summary>
     private void ApplyReceiptHighlight()
     {
         var treeContainer = LogicObject.Owner.Get<Container>("TreeContainer")
             ?? LogicObject.Owner.Get("ScrollView1")?.Get<Container>("TreeContainer");
         if (treeContainer == null) return;
+        bool highlightReceipt = (_selectedOperationId == 0 && _selectedPhaseId == 0);
         foreach (var col in treeContainer.Children.OfType<ColumnLayout>())
         {
             if (col.Children.Count == 0) continue;
@@ -269,10 +367,144 @@ public class GenerateTreeList : BaseNetLogic
             var itemContainer = rItem.Get<Container>("ItemContainer");
             var button = itemContainer?.Get<Button>("ItemButton");
             if (button != null)
-                button.BackgroundColor = (rid == _selectedReceiptId) ? HighlightColor : NormalColor;
+                button.BackgroundColor = (highlightReceipt && rid == _selectedReceiptId) ? HighlightColor : NormalColor;
         }
     }
 
+    /// <summary>设置 Phase 项的 ReceiptID/OperationID/PhaseID 变量，并订阅点击以调用 SetSelectedPhase。</summary>
+    private void SetPhaseItemIdAndClick(Container listItem, int receiptId, int operationId, int phaseId)
+    {
+        if (listItem == null) return;
+        var rv = listItem.GetVariable("ReceiptID");
+        if (rv != null) rv.Value = receiptId;
+        var ov = listItem.GetVariable("OperationID");
+        if (ov != null) ov.Value = operationId;
+        var pv = listItem.GetVariable("PhaseID");
+        if (pv != null) pv.Value = phaseId;
+        var itemContainer = listItem.Get<Container>("ItemContainer");
+        var button = itemContainer?.Get<Button>("ItemButton");
+        if (button != null)
+        {
+            button.UAEvent -= (s, a) => SetSelectedPhase(receiptId, operationId, phaseId);
+            button.UAEvent += (s, a) => SetSelectedPhase(receiptId, operationId, phaseId);
+        }
+    }
+
+    /// <summary>Generate 时设置 Phase 项按钮颜色：选中项为 HighlightColor，否则为 TransparentColor。</summary>
+    private void SetPhaseButtonHighlight(Container listItem, int phaseId)
+    {
+        if (listItem == null) return;
+        var itemContainer = listItem.Get<Container>("ItemContainer");
+        var button = itemContainer?.Get<Button>("ItemButton");
+        if (button != null)
+            button.BackgroundColor = (phaseId == _selectedPhaseId) ? HighlightColor : TransparentColor;
+    }
+
+    /// <summary>设置 Operation 项的 ReceiptID/OperationID 变量，并订阅点击以调用 SetSelectedOperation。</summary>
+    private void SetOperationItemIdAndClick(Container listItem, int receiptId, int operationId)
+    {
+        if (listItem == null) return;
+        var rv = listItem.GetVariable("ReceiptID");
+        if (rv != null) rv.Value = receiptId;
+        var ov = listItem.GetVariable("OperationID");
+        if (ov != null) ov.Value = operationId;
+        var itemContainer = listItem.Get<Container>("ItemContainer");
+        var button = itemContainer?.Get<Button>("ItemButton");
+        if (button != null)
+        {
+            button.UAEvent -= (sender, args) => SetSelectedOperation(receiptId, operationId);
+            button.UAEvent += (sender, args) => SetSelectedOperation(receiptId, operationId);
+        }
+    }
+
+    /// <summary>Generate 时设置 Operation 项按钮颜色：仅当未选 Phase 且为选中 Operation 时高亮。</summary>
+    private void SetOperationButtonHighlight(Container listItem, int operationId)
+    {
+        if (listItem == null) return;
+        var itemContainer = listItem.Get<Container>("ItemContainer");
+        var button = itemContainer?.Get<Button>("ItemButton");
+        if (button != null)
+            button.BackgroundColor = (_selectedPhaseId == 0 && operationId == _selectedOperationId) ? HighlightColor : TransparentColor;
+    }
+
+    /// <summary>遍历树中所有 Operation 项：先全部恢复默认，再仅当未选 Phase 时将当前选中的 Operation 高亮。</summary>
+    private void ApplyOperationHighlight()
+    {
+        var treeContainer = LogicObject.Owner.Get<Container>("TreeContainer")
+            ?? LogicObject.Owner.Get("ScrollView1")?.Get<Container>("TreeContainer");
+        if (treeContainer == null) return;
+        foreach (var col in treeContainer.Children.OfType<ColumnLayout>())
+        {
+            for (int i = 1; i < col.Children.Count; i++)
+            {
+                var opNode = col.Children[i] as Container;
+                var opVar = opNode?.GetVariable("OperationID");
+                if (opVar == null) continue;
+                var pVar = opNode?.GetVariable("PhaseID");
+                if (pVar != null) continue;
+                if (!int.TryParse(opVar.Value, out int oid)) continue;
+                var itemContainer = opNode?.Get<Container>("ItemContainer");
+                var button = itemContainer?.Get<Button>("ItemButton");
+                if (button != null) button.BackgroundColor = TransparentColor;
+            }
+        }
+        if (_selectedPhaseId != 0 || _selectedOperationId == 0) return;
+        foreach (var col in treeContainer.Children.OfType<ColumnLayout>())
+        {
+            for (int i = 1; i < col.Children.Count; i++)
+            {
+                var opNode = col.Children[i] as Container;
+                var opVar = opNode?.GetVariable("OperationID");
+                if (opVar == null) continue;
+                var pVar = opNode?.GetVariable("PhaseID");
+                if (pVar != null) continue;
+                if (!int.TryParse(opVar.Value, out int oid)) continue;
+                if (oid != _selectedOperationId) continue;
+                var itemContainer = opNode?.Get<Container>("ItemContainer");
+                var button = itemContainer?.Get<Button>("ItemButton");
+                if (button != null) button.BackgroundColor = HighlightColor;
+                return;
+            }
+        }
+    }
+
+    /// <summary>遍历树中所有 Phase 项：先全部恢复默认，再仅将当前选中的 Phase 高亮。</summary>
+    private void ApplyPhaseHighlight()
+    {
+        var treeContainer = LogicObject.Owner.Get<Container>("TreeContainer")
+            ?? LogicObject.Owner.Get("ScrollView1")?.Get<Container>("TreeContainer");
+        if (treeContainer == null) return;
+        foreach (var col in treeContainer.Children.OfType<ColumnLayout>())
+        {
+            for (int i = 1; i < col.Children.Count; i++)
+            {
+                var node = col.Children[i] as Container;
+                var pVar = node?.GetVariable("PhaseID");
+                if (pVar == null) continue;
+                if (!int.TryParse(pVar.Value, out int pid)) continue;
+                var itemContainer = node?.Get<Container>("ItemContainer");
+                var button = itemContainer?.Get<Button>("ItemButton");
+                if (button != null) button.BackgroundColor = TransparentColor;
+            }
+        }
+        if (_selectedPhaseId == 0) return;
+        foreach (var col in treeContainer.Children.OfType<ColumnLayout>())
+        {
+            for (int i = 1; i < col.Children.Count; i++)
+            {
+                var node = col.Children[i] as Container;
+                var pVar = node?.GetVariable("PhaseID");
+                if (pVar == null) continue;
+                if (!int.TryParse(pVar.Value, out int pid)) continue;
+                if (pid != _selectedPhaseId) continue;
+                var itemContainer = node?.Get<Container>("ItemContainer");
+                var button = itemContainer?.Get<Button>("ItemButton");
+                if (button != null) button.BackgroundColor = HighlightColor;
+                return;
+            }
+        }
+    }
+    private static readonly Color TransparentColor = new Color(0, 0xe4, 0xe4, 0xe4); // #e4e4e400 (A=0透明, R=G=B=228 灰)
     private static readonly Color HighlightColor = new Color(255, 255, 220, 150);
     private static readonly Color NormalColor = new Color(0x99, 0xde, 0xee, 0xff); // #deeeff99 (A,R,G,B)
 

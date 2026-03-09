@@ -39,3 +39,64 @@ Children:
     Type: BaseDataVariableType
     DataType: NodeId
     Value: "/Objects/RedeiptEditor/DataStores/ReceiptDB/Tables/Phases"
+  - Class: Method
+    Name: DeleteSelectedOperation
+  - Class: Method
+    Name: MoveDownOperation
+  - Class: Method
+    Name: MoveUpOperation
+  - Class: Method
+    Name: SaveAsOperation
+  - Class: Method
+    Name: SaveOperation
+    Children:
+    - Name: ns=0;InputArguments
+      Type: BaseVariableType
+      DataType: Argument
+      ReferenceType: HasProperty
+      ValueRank: OneDimension
+      ArrayDimensions: [0]
+      Value: [{"TypeId":{"Id":296},"Body":{"Name":"nameNodeId","DataType":{"Id":17},"ValueRank":-1,"ArrayDimensions":[],"Description":{"NamespaceIndex":-1,"LocaleId":"","Text":""}}},{"TypeId":{"Id":296},"Body":{"Name":"phasesNodeId","DataType":{"Id":17},"ValueRank":-1,"ArrayDimensions":[],"Description":{"NamespaceIndex":-1,"LocaleId":"","Text":""}}}]
+  - Class: Method
+    Name: DeleteSelectedPhase
+  - Class: Method
+    Name: MoveDownPhase
+  - Class: Method
+    Name: MoveUpPhase
+  - Class: Method
+    Name: SaveAsPhase
+  - Class: Method
+    Name: SavePhase
+    Children:
+    - Name: ns=0;InputArguments
+      Type: BaseVariableType
+      DataType: Argument
+      ReferenceType: HasProperty
+      ValueRank: OneDimension
+      ArrayDimensions: [0]
+      Value: [{"TypeId":{"Id":296},"Body":{"Name":"nameNodeId","DataType":{"Id":17},"ValueRank":-1,"ArrayDimensions":[],"Description":{"NamespaceIndex":-1,"LocaleId":"","Text":""}}}]
+  - Class: Method
+    Name: DoDown
+  - Class: Method
+    Name: DoRemove
+  - Class: Method
+    Name: DoSaveAs
+  - Class: Method
+    Name: DoUp
+- Name: RecipeDatabaseTreeLoader
+  Type: NetLogic
+  Children:
+  - Class: Method
+    Name: LoadAllToTree
+  - Name: ReceiptDB
+    Type: BaseDataVariableType
+    DataType: NodeId
+    Value: "/Objects/RedeiptEditor/DataStores/ReceiptDB/Tables/Receipts"
+  - Name: OperationDB
+    Type: BaseDataVariableType
+    DataType: NodeId
+    Value: "/Objects/RedeiptEditor/DataStores/ReceiptDB/Tables/Operations"
+  - Name: PhaseDB
+    Type: BaseDataVariableType
+    DataType: NodeId
+    Value: "/Objects/RedeiptEditor/DataStores/ReceiptDB/Tables/Phases"

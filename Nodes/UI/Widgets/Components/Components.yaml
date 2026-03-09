@@ -171,6 +171,9 @@ Children:
     Type: BaseVariableType
     DataType: VerticalAlignment
     ModellingRule: Optional
+  - Name: PhaseID
+    Type: BaseDataVariableType
+    DataType: Int32
 - Name: OperationListItem
   Id: g=a083d97e7bee88abe2bef119c515ea3f
   Supertype: Panel
@@ -336,7 +339,7 @@ Children:
     Type: BaseVariableType
     DataType: VerticalAlignment
     ModellingRule: Optional
-  - Name: ReceiptID
+  - Name: OperationID
     Type: BaseDataVariableType
     DataType: Int32
 - Name: ReceiptListItem

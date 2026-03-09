@@ -18,6 +18,8 @@ public class RecipeDatabaseManager : BaseNetLogic
     private const string LogCategory = "RecipeDatabaseManager";
     private const bool EnableLog = true;  // 设为 false 关闭本类所有日志
 
+    public static RecipeDatabaseManager Instance { get; private set; }
+
     private Store _store;
     private Table _receiptTable;
     private string _receiptTableName;
@@ -29,12 +31,14 @@ public class RecipeDatabaseManager : BaseNetLogic
     #region 生命周期
     public override void Start()
     {
+        Instance = this;
         if (EnableLog) Log.Info(LogCategory, "RecipeDatabaseManager 已启动");
         OpenReceiptTable();
     }
 
     public override void Stop()
     {
+        Instance = null;
         _store = null;
         _receiptTable = null;
         _receiptTableName = null;
@@ -318,6 +322,362 @@ public class RecipeDatabaseManager : BaseNetLogic
     }
     #endregion
 
+    #region Operation：Up / Down / Save / SaveAs / Remove
+    /// <summary>上移当前选中的 Operation（在同一 Receipt 的 Operations 列表中与前一序交换）。</summary>
+    [ExportMethod]
+    public void MoveUpOperation()
+    {
+        if (!SwapOperationOrderInReceipt(up: true))
+            if (EnableLog) Log.Warning(LogCategory, "上移 Operation 失败或未选中/已在顶部");
+    }
+
+    /// <summary>下移当前选中的 Operation。</summary>
+    [ExportMethod]
+    public void MoveDownOperation()
+    {
+        if (!SwapOperationOrderInReceipt(up: false))
+            if (EnableLog) Log.Warning(LogCategory, "下移 Operation 失败或未选中/已在底部");
+    }
+
+    private bool SwapOperationOrderInReceipt(bool up)
+    {
+        int receiptId = GenerateTreeList.Instance?.SelectedReceiptId ?? 0;
+        int opId = GenerateTreeList.Instance?.SelectedOperationId ?? 0;
+        if (receiptId <= 0 || opId <= 0 || _store == null || string.IsNullOrEmpty(_receiptTableName)) return false;
+        if (!GetReceiptRow(receiptId, out _, out _, out string operationsCsv, out _)) return false;
+        var list = ParseIdList(operationsCsv);
+        int idx = list.IndexOf(opId);
+        if (idx < 0) return false;
+        int swapIdx = up ? idx - 1 : idx + 1;
+        if (swapIdx < 0 || swapIdx >= list.Count) return false;
+        list[idx] = list[swapIdx];
+        list[swapIdx] = opId;
+        string newCsv = string.Join(",", list);
+        try
+        {
+            _store.Query($"UPDATE {_receiptTableName} SET Operations = '{EscapeSql(newCsv)}' WHERE ReceiptID = {receiptId}", out _, out _);
+            RefreshTreeList();
+            if (EnableLog) Log.Info(LogCategory, $"Operation {(up ? "上" : "下")}移成功: ReceiptID={receiptId}, OperationID={opId}");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Error(LogCategory, $"SwapOperationOrder 失败: {ex.Message}");
+            return false;
+        }
+    }
+
+    /// <summary>保存当前选中的 Operation：用 nameNodeId、phasesNodeId 读取名称与 Phases，更新 Operation 表。</summary>
+    [ExportMethod]
+    public void SaveOperation(NodeId nameNodeId, NodeId phasesNodeId)
+    {
+        if (_store == null || string.IsNullOrEmpty(_opTableName)) { if (EnableLog) Log.Error(LogCategory, "表未就绪"); return; }
+        int opId = GenerateTreeList.Instance?.SelectedOperationId ?? 0;
+        if (opId <= 0) { if (EnableLog) Log.Warning(LogCategory, "未选中 Operation"); return; }
+        string name = GetStringFromNode(nameNodeId);
+        string phases = GetStringFromNode(phasesNodeId);
+        try
+        {
+            if (!string.IsNullOrEmpty(name))
+                _store.Query($"UPDATE {_opTableName} SET Name = '{EscapeSql(name)}' WHERE OperationID = {opId}", out _, out _);
+            if (phases != null)
+                _store.Query($"UPDATE {_opTableName} SET Phases = '{EscapeSql(phases)}' WHERE OperationID = {opId}", out _, out _);
+            RefreshTreeList();
+            if (EnableLog) Log.Info(LogCategory, $"Operation 已保存: OperationID={opId}");
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Error(LogCategory, $"SaveOperation 失败: {ex.Message}");
+        }
+    }
+
+    /// <summary>另存为当前选中的 Operation：新建版本并加入当前 Receipt 的 Operations 列表。</summary>
+    [ExportMethod]
+    public void SaveAsOperation()
+    {
+        if (_store == null || _opTable == null || string.IsNullOrEmpty(_opTableName)) return;
+        int receiptId = GenerateTreeList.Instance?.SelectedReceiptId ?? 0;
+        int opId = GenerateTreeList.Instance?.SelectedOperationId ?? 0;
+        if (receiptId <= 0 || opId <= 0) { if (EnableLog) Log.Warning(LogCategory, "未选中 Receipt 或 Operation"); return; }
+        if (!GetReceiptRow(receiptId, out _, out _, out string operationsCsv, out _)) return;
+        if (!GetOperationRow(opId, out string opName, out string phasesCsv)) return;
+        ParseVersionSuffix(opName, out string opBase, out int _);
+        string newOpName = opBase + "_" + GetNextVersionForBase(_store, _opTableName, opBase).ToString("D3");
+        var phaseIdList = ParseIdList(phasesCsv);
+        var newPhaseIds = new System.Collections.Generic.List<int>();
+        foreach (int pId in phaseIdList)
+        {
+            string pName;
+            var colNames = new System.Collections.Generic.List<string>();
+            var colValues = new System.Collections.Generic.List<object>();
+            if (!GetPhaseRow(pId, out pName, colNames, colValues)) continue;
+            ParseVersionSuffix(pName, out string pBase, out int __);
+            string newPName = pBase + "_" + GetNextVersionForBase(_store, _phaseTableName, pBase).ToString("D3");
+            int newPId = GetNextId(_store, _phaseTableName, "PhaseID");
+            if (!InsertPhase(newPId, newPName, colNames, colValues)) continue;
+            newPhaseIds.Add(newPId);
+        }
+        string newPhasesCsv = string.Join(",", newPhaseIds);
+        int newOpId = GetNextId(_store, _opTableName, "OperationID");
+        if (!InsertOperation(newOpId, newOpName, newPhasesCsv)) return;
+        var opList = ParseIdList(operationsCsv);
+        int insertIdx = opList.IndexOf(opId) + 1;
+        if (insertIdx <= 0) insertIdx = opList.Count;
+        opList.Insert(insertIdx, newOpId);
+        string newOpsCsv = string.Join(",", opList);
+        try
+        {
+            _store.Query($"UPDATE {_receiptTableName} SET Operations = '{EscapeSql(newOpsCsv)}' WHERE ReceiptID = {receiptId}", out _, out _);
+            RefreshTreeList();
+            if (EnableLog) Log.Info(LogCategory, $"SaveAs Operation: '{opName}' -> '{newOpName}', OperationID={newOpId}");
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Error(LogCategory, $"SaveAsOperation 更新配方列表失败: {ex.Message}");
+        }
+    }
+
+    /// <summary>删除当前选中的 Operation：从所属 Receipt 的 Operations 中移除，并删除 Operation 表行。</summary>
+    [ExportMethod]
+    public void DeleteSelectedOperation()
+    {
+        if (_store == null || string.IsNullOrEmpty(_receiptTableName)) { if (EnableLog) Log.Error(LogCategory, "表未就绪"); return; }
+        int receiptId = GenerateTreeList.Instance?.SelectedReceiptId ?? 0;
+        int opId = GenerateTreeList.Instance?.SelectedOperationId ?? 0;
+        if (receiptId <= 0 || opId <= 0) { if (EnableLog) Log.Warning(LogCategory, "未选中 Receipt 或 Operation"); return; }
+        if (!GetReceiptRow(receiptId, out _, out _, out string operationsCsv, out _)) return;
+        var list = ParseIdList(operationsCsv);
+        if (!list.Remove(opId)) return;
+        string newCsv = string.Join(",", list);
+        try
+        {
+            _store.Query($"UPDATE {_receiptTableName} SET Operations = '{EscapeSql(newCsv)}' WHERE ReceiptID = {receiptId}", out _, out _);
+            _store.Query($"DELETE FROM {_opTableName} WHERE OperationID = {opId}", out _, out _);
+            RefreshTreeList();
+            if (EnableLog) Log.Info(LogCategory, $"已删除 Operation: OperationID={opId}");
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Error(LogCategory, $"DeleteSelectedOperation 失败: {ex.Message}");
+        }
+    }
+    #endregion
+
+    #region Phase：Up / Down / Save / SaveAs / Remove
+    /// <summary>上移当前选中的 Phase（在同一 Operation 的 Phases 列表中与前一序交换）。</summary>
+    [ExportMethod]
+    public void MoveUpPhase()
+    {
+        if (!SwapPhaseOrderInOperation(up: true))
+            if (EnableLog) Log.Warning(LogCategory, "上移 Phase 失败或未选中/已在顶部");
+    }
+
+    /// <summary>下移当前选中的 Phase。</summary>
+    [ExportMethod]
+    public void MoveDownPhase()
+    {
+        if (!SwapPhaseOrderInOperation(up: false))
+            if (EnableLog) Log.Warning(LogCategory, "下移 Phase 失败或未选中/已在底部");
+    }
+
+    private bool SwapPhaseOrderInOperation(bool up)
+    {
+        int opId = GenerateTreeList.Instance?.SelectedOperationId ?? 0;
+        int phaseId = GenerateTreeList.Instance?.SelectedPhaseId ?? 0;
+        if (opId <= 0 || phaseId <= 0 || _store == null || string.IsNullOrEmpty(_opTableName)) return false;
+        if (!GetOperationRow(opId, out _, out string phasesCsv)) return false;
+        var list = ParseIdList(phasesCsv);
+        int idx = list.IndexOf(phaseId);
+        if (idx < 0) return false;
+        int swapIdx = up ? idx - 1 : idx + 1;
+        if (swapIdx < 0 || swapIdx >= list.Count) return false;
+        list[idx] = list[swapIdx];
+        list[swapIdx] = phaseId;
+        string newCsv = string.Join(",", list);
+        try
+        {
+            _store.Query($"UPDATE {_opTableName} SET Phases = '{EscapeSql(newCsv)}' WHERE OperationID = {opId}", out _, out _);
+            RefreshTreeList();
+            if (EnableLog) Log.Info(LogCategory, $"Phase {(up ? "上" : "下")}移成功: OperationID={opId}, PhaseID={phaseId}");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Error(LogCategory, $"SwapPhaseOrder 失败: {ex.Message}");
+            return false;
+        }
+    }
+
+    /// <summary>保存当前选中的 Phase：用 nameNodeId 更新 Phase 表 Name 列。</summary>
+    [ExportMethod]
+    public void SavePhase(NodeId nameNodeId)
+    {
+        if (_store == null || string.IsNullOrEmpty(_phaseTableName)) { if (EnableLog) Log.Error(LogCategory, "表未就绪"); return; }
+        int phaseId = GenerateTreeList.Instance?.SelectedPhaseId ?? 0;
+        if (phaseId <= 0) { if (EnableLog) Log.Warning(LogCategory, "未选中 Phase"); return; }
+        string name = GetStringFromNode(nameNodeId);
+        try
+        {
+            if (!string.IsNullOrEmpty(name))
+                _store.Query($"UPDATE {_phaseTableName} SET Name = '{EscapeSql(name)}' WHERE PhaseID = {phaseId}", out _, out _);
+            RefreshTreeList();
+            if (EnableLog) Log.Info(LogCategory, $"Phase 已保存: PhaseID={phaseId}");
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Error(LogCategory, $"SavePhase 失败: {ex.Message}");
+        }
+    }
+
+    /// <summary>另存为当前选中的 Phase：新建版本并加入当前 Operation 的 Phases 列表。</summary>
+    [ExportMethod]
+    public void SaveAsPhase()
+    {
+        if (_store == null || _phaseTable == null || string.IsNullOrEmpty(_opTableName)) return;
+        int opId = GenerateTreeList.Instance?.SelectedOperationId ?? 0;
+        int phaseId = GenerateTreeList.Instance?.SelectedPhaseId ?? 0;
+        if (opId <= 0 || phaseId <= 0) { if (EnableLog) Log.Warning(LogCategory, "未选中 Operation 或 Phase"); return; }
+        if (!GetOperationRow(opId, out _, out string phasesCsv)) return;
+        string pName;
+        var colNames = new System.Collections.Generic.List<string>();
+        var colValues = new System.Collections.Generic.List<object>();
+        if (!GetPhaseRow(phaseId, out pName, colNames, colValues)) return;
+        ParseVersionSuffix(pName, out string pBase, out int _);
+        string newPName = pBase + "_" + GetNextVersionForBase(_store, _phaseTableName, pBase).ToString("D3");
+        int newPId = GetNextId(_store, _phaseTableName, "PhaseID");
+        if (!InsertPhase(newPId, newPName, colNames, colValues)) return;
+        var list = ParseIdList(phasesCsv);
+        int insertIdx = list.IndexOf(phaseId) + 1;
+        if (insertIdx <= 0) insertIdx = list.Count;
+        list.Insert(insertIdx, newPId);
+        string newCsv = string.Join(",", list);
+        try
+        {
+            _store.Query($"UPDATE {_opTableName} SET Phases = '{EscapeSql(newCsv)}' WHERE OperationID = {opId}", out _, out _);
+            RefreshTreeList();
+            if (EnableLog) Log.Info(LogCategory, $"SaveAs Phase: '{pName}' -> '{newPName}', PhaseID={newPId}");
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Error(LogCategory, $"SaveAsPhase 更新工序列表失败: {ex.Message}");
+        }
+    }
+
+    /// <summary>删除当前选中的 Phase：从所属 Operation 的 Phases 中移除，并删除 Phase 表行。</summary>
+    [ExportMethod]
+    public void DeleteSelectedPhase()
+    {
+        if (_store == null || string.IsNullOrEmpty(_opTableName)) { if (EnableLog) Log.Error(LogCategory, "表未就绪"); return; }
+        int opId = GenerateTreeList.Instance?.SelectedOperationId ?? 0;
+        int phaseId = GenerateTreeList.Instance?.SelectedPhaseId ?? 0;
+        if (opId <= 0 || phaseId <= 0) { if (EnableLog) Log.Warning(LogCategory, "未选中 Operation 或 Phase"); return; }
+        if (!GetOperationRow(opId, out _, out string phasesCsv)) return;
+        var list = ParseIdList(phasesCsv);
+        if (!list.Remove(phaseId)) return;
+        string newCsv = string.Join(",", list);
+        try
+        {
+            _store.Query($"UPDATE {_opTableName} SET Phases = '{EscapeSql(newCsv)}' WHERE OperationID = {opId}", out _, out _);
+            _store.Query($"DELETE FROM {_phaseTableName} WHERE PhaseID = {phaseId}", out _, out _);
+            RefreshTreeList();
+            if (EnableLog) Log.Info(LogCategory, $"已删除 Phase: PhaseID={phaseId}");
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Error(LogCategory, $"DeleteSelectedPhase 失败: {ex.Message}");
+        }
+    }
+    #endregion
+
+    #region 统一操作：一组按钮绑定此 5 个方法，根据当前选中 Receipt/Operation/Phase 自动分发
+    /// <summary>统一上移。选中 Phase→上移 Phase；选中 Operation→上移 Operation；选中 Receipt→上移 Receipt。</summary>
+    [ExportMethod]
+    public void DoUp()
+    {
+        if (GenerateTreeList.Instance == null) return;
+        if (GenerateTreeList.Instance.SelectedPhaseId != 0) MoveUpPhase();
+        else if (GenerateTreeList.Instance.SelectedOperationId != 0) MoveUpOperation();
+        else if (GenerateTreeList.Instance.SelectedReceiptId != 0) MoveUpReceipt();
+    }
+
+    /// <summary>统一下移。</summary>
+    [ExportMethod]
+    public void DoDown()
+    {
+        if (GenerateTreeList.Instance == null) return;
+        if (GenerateTreeList.Instance.SelectedPhaseId != 0) MoveDownPhase();
+        else if (GenerateTreeList.Instance.SelectedOperationId != 0) MoveDownOperation();
+        else if (GenerateTreeList.Instance.SelectedReceiptId != 0) MoveDownReceipt();
+    }
+
+    /// <summary>统一保存。Phase 只传 nameNodeId；Operation 可传 nameNodeId + phasesNodeId。Receipt 无 Save。</summary>
+    [ExportMethod]
+    public void DoSave(NodeId nameNodeId)
+    {
+        DoSave(nameNodeId, NodeId.Empty);
+    }
+
+    [ExportMethod]
+    public void DoSave(NodeId nameNodeId, NodeId phasesNodeId)
+    {
+        if (GenerateTreeList.Instance == null) return;
+        if (GenerateTreeList.Instance.SelectedPhaseId != 0) SavePhase(nameNodeId);
+        else if (GenerateTreeList.Instance.SelectedOperationId != 0) SaveOperation(nameNodeId, phasesNodeId ?? NodeId.Empty);
+    }
+
+    /// <summary>统一另存为。</summary>
+    [ExportMethod]
+    public void DoSaveAs()
+    {
+        if (GenerateTreeList.Instance == null) return;
+        if (GenerateTreeList.Instance.SelectedPhaseId != 0) SaveAsPhase();
+        else if (GenerateTreeList.Instance.SelectedOperationId != 0) SaveAsOperation();
+        else if (GenerateTreeList.Instance.SelectedReceiptId != 0) SaveAsReceipt();
+    }
+
+    /// <summary>统一删除。</summary>
+    [ExportMethod]
+    public void DoRemove()
+    {
+        if (GenerateTreeList.Instance == null) return;
+        if (GenerateTreeList.Instance.SelectedPhaseId != 0) DeleteSelectedPhase();
+        else if (GenerateTreeList.Instance.SelectedOperationId != 0) DeleteSelectedOperation();
+        else if (GenerateTreeList.Instance.SelectedReceiptId != 0) DeleteSelectedReceipt();
+    }
+    #endregion
+
+    #region 为 GenerateTreeList 提供选中项显示数据
+    /// <summary>根据当前 Treelist 选中项，从数据库取回要写入 Model 的显示数据。</summary>
+    public bool GetSelectedItemModelData(out string itemType, out string receiptName, out string receiptCreatedDate, out string receiptCreatedBy, out string receiptCurrentStatus, out string selectedOpName, out string selectedPhaseName)
+    {
+        itemType = "Receipt";
+        receiptName = "";
+        receiptCreatedDate = "";
+        receiptCreatedBy = "";
+        receiptCurrentStatus = "";
+        selectedOpName = "";
+        selectedPhaseName = "";
+        if (GenerateTreeList.Instance == null) return false;
+        int rId = GenerateTreeList.Instance.SelectedReceiptId;
+        int oId = GenerateTreeList.Instance.SelectedOperationId;
+        int pId = GenerateTreeList.Instance.SelectedPhaseId;
+        if (rId > 0 && GetReceiptRow(rId, out receiptName, out _, out _, out string description))
+            receiptCurrentStatus = description ?? "";
+        if (pId > 0)
+        {
+            itemType = "Phase";
+            GetPhaseRow(pId, out selectedPhaseName, null, null);
+            if (oId > 0) GetOperationRow(oId, out selectedOpName, out _);
+        }
+        else if (oId > 0)
+        {
+            itemType = "Operation";
+            GetOperationRow(oId, out selectedOpName, out _);
+        }
+        return true;
+    }
+    #endregion
+
     #region 辅助
     private static string GetStringFromNode(NodeId nodeId)
     {
@@ -505,7 +865,6 @@ public class RecipeDatabaseManager : BaseNetLogic
             return false;
         }
     }
-
     private static System.Collections.Generic.List<int> ParseIdList(string csv)
     {
         var list = new System.Collections.Generic.List<int>();

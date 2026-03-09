@@ -1,0 +1,57 @@
+Name: TreeListData
+Type: FolderType
+Children:
+- Name: SelectedTreeData
+  Id: g=8b7ebdebf65ccf2fcb57c1e7b0b2eb4d
+  Type: BaseObjectType
+  Children:
+  - Name: CurrentSelectedItemType
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Receipt"
+  - Name: ReceiptName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "0"
+  - Name: ReceiptCreatedDate
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "0"
+  - Name: ReceiptCreatedBy
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "0"
+  - Name: ReceiptCurrentStatus
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "0"
+  - Name: SelectedOperationName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "0"
+  - Name: SelectedPhaseName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "0"
+- Name: InteractionTexts
+  Type: BaseObjectType
+  Children:
+  - Name: ReceiptUP
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Receipt UP"
+  - Name: OperationUp
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Operation Up"
+- Name: AddReceiptOperationPhase
+  Type: BaseObjectType
+  Children:
+  - Name: Name
+    Id: g=bf7e95a90d7cdf5fc1e918f60252c54a
+    Type: BaseDataVariableType
+    DataType: String
+  - Name: Description
+    Id: g=b38e64892d0da6afd7c57d62971bfb71
+    Type: BaseDataVariableType
+    DataType: String
