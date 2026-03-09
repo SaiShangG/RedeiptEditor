@@ -1,9 +1,8 @@
-#region Using directives
+ï»¿#region Using directives
 
 using UAManagedCore;
 using FTOptix.UI;
 using FTOptix.HMIProject;
-using FTOptix.Store;
 using FTOptix.NetLogic;
 using FTOptix.Core;
 using System;
@@ -17,20 +16,20 @@ public class GenerateTreeList : BaseNetLogic
     #region LOG
     private const string LogCategory = "GenerateTreeList";
     private static bool EnableLog => _enableLog;
-    private static bool _enableLog = true;  // ¿ÉÔÚ Logic ÏÂÌí¼Ó±äÁ¿ EnableLog(bool) ¸²¸Ç
+    private static bool _enableLog = true;  // å¯åœ¨ Logic ä¸‹æ·»åŠ å˜é‡ EnableLog(bool) è¦†ç›–
     #endregion
 
     public static GenerateTreeList Instance { get; private set; }
 
-    /// <summary>µ±Ç°Ñ¡ÖĞµÄÅä·½ ReceiptID£¨Receipt °´Å¥µã»÷Ê±Í¨¹ı SetSelectedReceiptId ¼ÇÂ¼£©</summary>
+    /// <summary>å½“å‰é€‰ä¸­çš„é…æ–¹ ReceiptIDï¼ˆReceipt æŒ‰é’®ç‚¹å‡»æ—¶é€šè¿‡ SetSelectedReceiptId è®°å½•ï¼‰</summary>
     public int SelectedReceiptId => _selectedReceiptId;
     private int _selectedReceiptId;
 
-    /// <summary>µ±Ç°Ñ¡ÖĞµÄ¹¤Ğò OperationID£¨Operation °´Å¥µã»÷Ê±Í¨¹ı SetSelectedOperation ¼ÇÂ¼£¬Í¬Ê±»áÉèÖÃ SelectedReceiptId ÎªÆäËùÊôÅä·½£©</summary>
+    /// <summary>å½“å‰é€‰ä¸­çš„å·¥åº OperationIDï¼ˆOperation æŒ‰é’®ç‚¹å‡»æ—¶é€šè¿‡ SetSelectedOperation è®°å½•ï¼ŒåŒæ—¶ä¼šè®¾ç½® SelectedReceiptId ä¸ºå…¶æ‰€å±é…æ–¹ï¼‰</summary>
     public int SelectedOperationId => _selectedOperationId;
     private int _selectedOperationId;
 
-    /// <summary>µ±Ç°Ñ¡ÖĞµÄ½×¶Î PhaseID£¨Phase °´Å¥µã»÷Ê±Í¨¹ı SetSelectedPhase ¼ÇÂ¼£©</summary>
+    /// <summary>å½“å‰é€‰ä¸­çš„é˜¶æ®µ PhaseIDï¼ˆPhase æŒ‰é’®ç‚¹å‡»æ—¶é€šè¿‡ SetSelectedPhase è®°å½•ï¼‰</summary>
     public int SelectedPhaseId => _selectedPhaseId;
     private int _selectedPhaseId;
 
@@ -47,7 +46,7 @@ public class GenerateTreeList : BaseNetLogic
         if (EnableLog) Log.Info(LogCategory, "Stop");
     }
 
-    /// <summary>Receipt °´Å¥µã»÷Ê±µ÷ÓÃ£¬´«Èë×Ô¼ºµÄ ReceiptID£¬¼ÇÂ¼Îª SelectedID£¬²¢Ë¢ĞÂ¸ßÁÁ¡£</summary>
+    /// <summary>Receipt æŒ‰é’®ç‚¹å‡»æ—¶è°ƒç”¨ï¼Œä¼ å…¥è‡ªå·±çš„ ReceiptIDï¼Œè®°å½•ä¸º SelectedIDï¼Œå¹¶åˆ·æ–°é«˜äº®ã€‚</summary>
     [ExportMethod]
     public void SetSelectedReceiptId(int receiptId)
     {
@@ -63,7 +62,7 @@ public class GenerateTreeList : BaseNetLogic
         if (EnableLog) Log.Info(LogCategory, $"SelectedID = {receiptId}");
     }
 
-    /// <summary>Operation °´Å¥µã»÷Ê±µ÷ÓÃ£¬¼ÇÂ¼ËùÊô Receipt Óëµ±Ç° Operation£¬²¢Ë¢ĞÂ¸ßÁÁ¡£</summary>
+    /// <summary>Operation æŒ‰é’®ç‚¹å‡»æ—¶è°ƒç”¨ï¼Œè®°å½•æ‰€å± Receipt ä¸å½“å‰ Operationï¼Œå¹¶åˆ·æ–°é«˜äº®ã€‚</summary>
     [ExportMethod]
     public void SetSelectedOperation(int receiptId, int operationId)
     {
@@ -79,7 +78,7 @@ public class GenerateTreeList : BaseNetLogic
         if (EnableLog) Log.Info(LogCategory, $"Selected Receipt={receiptId}, Operation={operationId}");
     }
 
-    /// <summary>Phase °´Å¥µã»÷Ê±µ÷ÓÃ£¬¼ÇÂ¼ËùÊô Receipt/Operation Óëµ±Ç° Phase£¬²¢Ë¢ĞÂ¸ßÁÁ¡£</summary>
+    /// <summary>Phase æŒ‰é’®ç‚¹å‡»æ—¶è°ƒç”¨ï¼Œè®°å½•æ‰€å± Receipt/Operation ä¸å½“å‰ Phaseï¼Œå¹¶åˆ·æ–°é«˜äº®ã€‚</summary>
     [ExportMethod]
     public void SetSelectedPhase(int receiptId, int operationId, int phaseId)
     {
@@ -104,22 +103,21 @@ public class GenerateTreeList : BaseNetLogic
             out itemType, out receiptName, out receiptCreatedDate, out receiptCreatedBy,
             out receiptCurrentStatus, out selectedOpName, out selectedPhaseName))
             return;
-        SetModelVar(selectedTreeData, "CurrentSelecteditemType", itemType);
-        SetModelVar(selectedTreeData, "ReceiptName", receiptName ?? "");
-        SetModelVar(selectedTreeData, "ReceiptCreatedDate", receiptCreatedDate ?? "");
-        SetModelVar(selectedTreeData, "ReceiptCreatedBy", receiptCreatedBy ?? "");
-        SetModelVar(selectedTreeData, "ReceiptCurrentStatus", receiptCurrentStatus ?? "");
+        SetModelVar(selectedTreeData, "CurrentSelectedItemType", itemType);
+        SetModelVar(selectedTreeData, "SelectedReceiptName", receiptName ?? "");
+        SetModelVar(selectedTreeData, "SelectedReceiptCreatedDate", receiptCreatedDate ?? "");
+        SetModelVar(selectedTreeData, "SelectedReceiptCreatedBy", receiptCreatedBy ?? "");
+        SetModelVar(selectedTreeData, "SelectedReceiptCurrentStatus", receiptCurrentStatus ?? "");
         SetModelVar(selectedTreeData, "SelectedOperationName", selectedOpName ?? "");
         SetModelVar(selectedTreeData, "SelectedPhaseName", selectedPhaseName ?? "");
     }
 
+    /// <summary>Model æ˜¯ NodeId å˜é‡ï¼Œç›´æ¥æŒ‡å‘ SelectedTreeData å¯¹è±¡ï¼Œè§£æåå³å¯ä½¿ç”¨ã€‚</summary>
     private IUANode ResolveSelectedTreeData()
     {
-        IUANode model = LogicObject.Owner?.Get("Model");
-        if (model == null) return null;
-        var treeListData = model.Get("TreeListData");
-        if (treeListData == null) return null;
-        return treeListData.Get("SelectedTreeData");
+        var modelVar = LogicObject.Owner?.GetVariable("Model");
+        if (modelVar == null) return null;
+        return InformationModel.Get(modelVar.Value);
     }
 
     private static void SetModelVar(IUANode node, string name, string value)
@@ -136,7 +134,7 @@ public class GenerateTreeList : BaseNetLogic
             ?? LogicObject.Owner.Get("ScrollView1")?.Get<Container>("TreeContainer");
         if (treeContainer == null)
         {
-            if (EnableLog) Log.Error(LogCategory, "Î´ÕÒµ½ TreeContainer ½Úµã£¡");
+            if (EnableLog) Log.Error(LogCategory, "æœªæ‰¾åˆ° TreeContainer èŠ‚ç‚¹ï¼");
             return;
         }
 
@@ -152,67 +150,34 @@ public class GenerateTreeList : BaseNetLogic
         }
     }
 
-    /// <summary>ÄÚ²¿£ºÔÚ TreeContainer ÒÑÒş²ØÊ±Ö´ĞĞÇå¿ÕÓëÖØ½¨£¬±ÜÃâÉÁË¸¡£</summary>
+    /// <summary>å†…éƒ¨ï¼šåœ¨ TreeContainer å·²éšè—æ—¶æ‰§è¡Œæ¸…ç©ºä¸é‡å»ºï¼Œé¿å…é—ªçƒã€‚</summary>
     private void GenerateCore(Container treeContainer)
     {
-        // 1. ÇåÀí¾ÉÊı¾İ£¬·ÀÖ¹Ã¿´Îµã»÷ÖØ¸´Éú³É
         foreach (var child in treeContainer.Children.OfType<ColumnLayout>().ToList())
-        {
             child.Delete();
-        }
 
-        // 3. ¶ÁÈ¡ÈıÕÅ±í°ó¶¨µÄ NodeId ²¢»ñÈ¡±íÃû£¨ÎŞ map ±í£©
-        var receiptVar = LogicObject.GetVariable("ReceiptDB");
-        var opVar = LogicObject.GetVariable("OperationDB");
-        var phaseVar = LogicObject.GetVariable("PhaseDB");
-        if (receiptVar == null || opVar == null || phaseVar == null)
+        var loader = RecipeDatabaseTreeLoader.Instance;
+        if (loader == null)
         {
-            if (EnableLog) Log.Error(LogCategory, "ReceiptDB/OperationDB/PhaseDB ±äÁ¿Î´ÅäÖÃ£¬Çë¼ì²éÊôĞÔÃæ°å£¡");
-            return;
-        }
-        var receiptNode = InformationModel.Get(receiptVar.Value);
-        var opNode = InformationModel.Get(opVar.Value);
-        var phaseNode = InformationModel.Get(phaseVar.Value);
-        if (receiptNode == null || opNode == null || phaseNode == null)
-        {
-            if (EnableLog) Log.Error(LogCategory, "ÓĞÊı¾İ¿â±í NodeId Î´°ó¶¨»òÖ¸ÏòÎŞĞ§½Úµã£¬Çë¼ì²éÊôĞÔÃæ°å£¡");
+            if (EnableLog) Log.Error(LogCategory, "RecipeDatabaseTreeLoader æœªå°±ç»ªï¼Œè·³è¿‡ç”Ÿæˆ");
             return;
         }
 
-        string rTable = receiptNode.BrowseName;
-        string oTable = opNode.BrowseName;
-        string pTable = phaseNode.BrowseName;
-
-        // Í¨¹ı Receipt ±í½ÚµãÏòÉÏ»ØËİ»ñÈ¡ Store ÊµÀı
-        var store = GetStoreFromNode(receiptNode);
-        if (store == null) return;
-
-        // 4. ²éÕÒ×Ô¶¨Òå UI ×é¼şµÄÀàĞÍ NodeId (ObjectType)
         NodeId receiptTypeId = FindCustomTypeNodeId(Project.Current, "ReceiptListItem");
         NodeId opTypeId = FindCustomTypeNodeId(Project.Current, "OperationListItem");
         NodeId phaseTypeId = FindCustomTypeNodeId(Project.Current, "PhaseListItem");
-
         if (receiptTypeId == NodeId.Empty || opTypeId == NodeId.Empty || phaseTypeId == NodeId.Empty)
         {
-            if (EnableLog) Log.Error(LogCategory, "Î´ÔÚÏîÄ¿ÖĞÕÒµ½ ReceiptListItem, OperationListItem »ò PhaseListItem ÀàĞÍ£¬Çë¼ì²éÃû³ÆÊÇ·ñÍêÈ«Ò»ÖÂ£¡");
+            if (EnableLog) Log.Error(LogCategory, "æœªåœ¨é¡¹ç›®ä¸­æ‰¾åˆ° ReceiptListItem, OperationListItem æˆ– PhaseListItem ç±»å‹ï¼Œè¯·æ£€æŸ¥åç§°æ˜¯å¦å®Œå…¨ä¸€è‡´ï¼");
             return;
         }
 
-        // 5. µÚÒ»²ã£º²éÑ¯ Receipts ±í£¨º¬ Operations ÁĞ£©
-        string rSql = $"SELECT ReceiptID, Name, Sequence, Operations FROM {rTable} ORDER BY Sequence";
-        store.Query(rSql, out _, out object[,] rResult);
+        var tree = loader.Tree;
 
-        if (rResult == null) return;
-
-        int rowCount = rResult.GetLength(0);
-
-        #region Ö÷Á÷³Ì£ºÈı²ã¼¶ UI Éú³É
-        for (int i = 0; i < rowCount; i++)
+        #region ä¸»æµç¨‹ï¼šä¸‰å±‚çº§ UI ç”Ÿæˆ
+        for (int i = 0; i < tree.Count; i++)
         {
-            string rName = rResult[i, 1]?.ToString() ?? "Unknown";
-            string operationsCsv = rResult[i, 3]?.ToString();
-            var opIdList = ParseIdList(operationsCsv);
-
+            var rNode = tree[i];
             int itemCount = 1;
             string containerName = (i == 0) ? "ListContainer" : $"ListContainer{i}";
             var listContainer = InformationModel.MakeObject<ColumnLayout>(containerName);
@@ -220,51 +185,32 @@ public class GenerateTreeList : BaseNetLogic
             listContainer.LeftMargin = 0;
             listContainer.TopMargin = 0;
 
-            int receiptId = Convert.ToInt32(rResult[i, 0]);
-            var rItem = InformationModel.MakeObject(rName + "_Item", receiptTypeId) as Container;
-            SetItemButtonText(rItem, rName);
-            SetReceiptItemIdAndClick(rItem, receiptId);
-            SetReceiptButtonHighlight(rItem, receiptId);
+            var rItem = InformationModel.MakeObject(rNode.Name + "_Item", receiptTypeId) as Container;
+            string rDisplayName = (loader.IsDirtyReceipt(rNode.ReceiptID) ? "*" : "") + rNode.Name;
+            SetItemButtonText(rItem, rDisplayName);
+            SetReceiptItemIdAndClick(rItem, rNode.ReceiptID);
+            SetReceiptButtonHighlight(rItem, rNode.ReceiptID);
             listContainer.Add(rItem);
 
-            // µÚ¶ş²ã£º°´ Receipts.Operations ¶ººÅ·Ö¸ô ID ²éÑ¯ Operations ±í
-            if (opIdList.Count > 0)
+            foreach (var opNode in rNode.Operations)
             {
-                string inClause = string.Join(",", opIdList);
-                string oSql = $"SELECT OperationID, Name, Phases FROM {oTable} WHERE OperationID IN ({inClause})";
-                store.Query(oSql, out _, out object[,] oResult);
-                var opById = BuildOpDict(oResult);
+                var oItem = InformationModel.MakeObject(opNode.Name + "_Item", opTypeId) as Container;
+                string oDisplayName = (loader.IsDirtyOperation(opNode.OperationID) ? "*" : "") + opNode.Name;
+                SetItemButtonText(oItem, oDisplayName);
+                SetOperationItemIdAndClick(oItem, rNode.ReceiptID, opNode.OperationID);
+                SetOperationButtonHighlight(oItem, opNode.OperationID);
+                listContainer.Add(oItem);
+                itemCount++;
 
-                foreach (int oId in opIdList)
+                foreach (var phNode in opNode.Phases)
                 {
-                    if (!opById.TryGetValue(oId, out var opRow)) continue;
-                    string oName = opRow.Name;
-                    var oItem = InformationModel.MakeObject(oName + "_Item", opTypeId) as Container;
-                    SetItemButtonText(oItem, oName);
-                    SetOperationItemIdAndClick(oItem, receiptId, oId);
-                    SetOperationButtonHighlight(oItem, oId);
-                    listContainer.Add(oItem);
+                    var pItem = InformationModel.MakeObject(phNode.Name + "_Item", phaseTypeId) as Container;
+                    string pDisplayName = (loader.IsDirtyPhase(phNode.PhaseID) ? "*" : "") + phNode.Name;
+                    SetItemButtonText(pItem, pDisplayName);
+                    SetPhaseItemIdAndClick(pItem, rNode.ReceiptID, opNode.OperationID, phNode.PhaseID);
+                    SetPhaseButtonHighlight(pItem, phNode.PhaseID);
+                    listContainer.Add(pItem);
                     itemCount++;
-
-                    // µÚÈı²ã£º°´ Operations.Phases ¶ººÅ·Ö¸ô ID ²éÑ¯ Phases ±í
-                    var phaseIdList = ParseIdList(opRow.Phases);
-                    if (phaseIdList.Count > 0)
-                    {
-                        string pInClause = string.Join(",", phaseIdList);
-                        string pSql = $"SELECT PhaseID, Name FROM {pTable} WHERE PhaseID IN ({pInClause})";
-                        store.Query(pSql, out _, out object[,] pResult);
-                        var phaseById = BuildPhaseDict(pResult);
-                        foreach (int pId in phaseIdList)
-                        {
-                            if (!phaseById.TryGetValue(pId, out string pName)) pName = "Unknown";
-                            var pItem = InformationModel.MakeObject(pName + "_Item", phaseTypeId) as Container;
-                            SetItemButtonText(pItem, pName);
-                            SetPhaseItemIdAndClick(pItem, receiptId, oId, pId);
-                            SetPhaseButtonHighlight(pItem, pId);
-                            listContainer.Add(pItem);
-                            itemCount++;
-                        }
-                    }
                 }
             }
             listContainer.Height = itemCount * 40;
@@ -272,50 +218,10 @@ public class GenerateTreeList : BaseNetLogic
         }
         #endregion
 
-        if (EnableLog) Log.Info(LogCategory, $"³É¹¦¶ÁÈ¡ {rowCount} ÌõÅä·½£¬Ê÷ĞÎÁĞ±íÉú³ÉÍê±Ï¡£");
+        if (EnableLog) Log.Info(LogCategory, $"æˆåŠŸè¯»å– {tree.Count} æ¡é…æ–¹ï¼Œæ ‘å½¢åˆ—è¡¨ç”Ÿæˆå®Œæ¯•ã€‚");
     }
 
-    #region ½âÎöÓë²éÑ¯
-    private static List<int> ParseIdList(string csv)
-    {
-        var list = new List<int>();
-        if (string.IsNullOrWhiteSpace(csv)) return list;
-        foreach (string s in csv.Split(','))
-        {
-            if (int.TryParse(s?.Trim(), out int id)) list.Add(id);
-        }
-        return list;
-    }
-
-    private static Dictionary<int, (string Name, string Phases)> BuildOpDict(object[,] oResult)
-    {
-        var d = new Dictionary<int, (string, string)>();
-        if (oResult == null) return d;
-        for (int r = 0; r < oResult.GetLength(0); r++)
-        {
-            int id = Convert.ToInt32(oResult[r, 0]);
-            string name = oResult[r, 1]?.ToString() ?? "";
-            string phases = oResult[r, 2]?.ToString() ?? "";
-            d[id] = (name, phases);
-        }
-        return d;
-    }
-
-    private static Dictionary<int, string> BuildPhaseDict(object[,] pResult)
-    {
-        var d = new Dictionary<int, string>();
-        if (pResult == null) return d;
-        for (int r = 0; r < pResult.GetLength(0); r++)
-        {
-            int id = Convert.ToInt32(pResult[r, 0]);
-            string name = pResult[r, 1]?.ToString() ?? "";
-            d[id] = name;
-        }
-        return d;
-    }
-    #endregion
-
-    #region ¸¨Öú·½·¨
+    #region è¾…åŠ©æ–¹æ³•
     private void SetItemButtonText(Container listItem, string textValue)
     {
         if (listItem == null) return;
@@ -324,7 +230,7 @@ public class GenerateTreeList : BaseNetLogic
         if (button != null) button.Text = textValue;
     }
 
-    /// <summary>ÉèÖÃ Receipt ÏîµÄ ReceiptID ±äÁ¿£¬²¢¶©ÔÄ°´Å¥µã»÷ÒÔµ÷ÓÃ SetSelectedReceiptId¡£</summary>
+    /// <summary>è®¾ç½® Receipt é¡¹çš„ ReceiptID å˜é‡ï¼Œå¹¶è®¢é˜…æŒ‰é’®ç‚¹å‡»ä»¥è°ƒç”¨ SetSelectedReceiptIdã€‚</summary>
     private void SetReceiptItemIdAndClick(Container listItem, int receiptId)
     {
         if (listItem == null) return;
@@ -339,7 +245,7 @@ public class GenerateTreeList : BaseNetLogic
         }
     }
 
-    /// <summary>Generate Ê±£º½öµ±Ñ¡ÖĞµÄÊÇ Receipt£¨Î´Ñ¡ Operation/Phase£©ÇÒÎªµ±Ç°Åä·½Ê±²Å¸ßÁÁ¡£</summary>
+    /// <summary>Generate æ—¶ï¼šä»…å½“é€‰ä¸­çš„æ˜¯ Receiptï¼ˆæœªé€‰ Operation/Phaseï¼‰ä¸”ä¸ºå½“å‰é…æ–¹æ—¶æ‰é«˜äº®ã€‚</summary>
     private void SetReceiptButtonHighlight(Container listItem, int receiptId)
     {
         if (listItem == null) return;
@@ -350,7 +256,7 @@ public class GenerateTreeList : BaseNetLogic
             button.BackgroundColor = highlightReceipt ? HighlightColor : NormalColor;
     }
 
-    /// <summary>±éÀú TreeContainer ÄÚËùÓĞÅä·½Ïî¡£Ñ¡ÖĞ Operation/Phase Ê±²»¸ßÁÁ Receipt£»½öÑ¡ÖĞ Receipt Ê±¸ßÁÁ¸Ã Receipt¡£</summary>
+    /// <summary>éå† TreeContainer å†…æ‰€æœ‰é…æ–¹é¡¹ã€‚é€‰ä¸­ Operation/Phase æ—¶ä¸é«˜äº® Receiptï¼›ä»…é€‰ä¸­ Receipt æ—¶é«˜äº®è¯¥ Receiptã€‚</summary>
     private void ApplyReceiptHighlight()
     {
         var treeContainer = LogicObject.Owner.Get<Container>("TreeContainer")
@@ -371,7 +277,7 @@ public class GenerateTreeList : BaseNetLogic
         }
     }
 
-    /// <summary>ÉèÖÃ Phase ÏîµÄ ReceiptID/OperationID/PhaseID ±äÁ¿£¬²¢¶©ÔÄµã»÷ÒÔµ÷ÓÃ SetSelectedPhase¡£</summary>
+    /// <summary>è®¾ç½® Phase é¡¹çš„ ReceiptID/OperationID/PhaseID å˜é‡ï¼Œå¹¶è®¢é˜…ç‚¹å‡»ä»¥è°ƒç”¨ SetSelectedPhaseã€‚</summary>
     private void SetPhaseItemIdAndClick(Container listItem, int receiptId, int operationId, int phaseId)
     {
         if (listItem == null) return;
@@ -390,7 +296,7 @@ public class GenerateTreeList : BaseNetLogic
         }
     }
 
-    /// <summary>Generate Ê±ÉèÖÃ Phase Ïî°´Å¥ÑÕÉ«£ºÑ¡ÖĞÏîÎª HighlightColor£¬·ñÔòÎª TransparentColor¡£</summary>
+    /// <summary>Generate æ—¶è®¾ç½® Phase é¡¹æŒ‰é’®é¢œè‰²ï¼šé€‰ä¸­é¡¹ä¸º HighlightColorï¼Œå¦åˆ™ä¸º TransparentColorã€‚</summary>
     private void SetPhaseButtonHighlight(Container listItem, int phaseId)
     {
         if (listItem == null) return;
@@ -400,7 +306,7 @@ public class GenerateTreeList : BaseNetLogic
             button.BackgroundColor = (phaseId == _selectedPhaseId) ? HighlightColor : TransparentColor;
     }
 
-    /// <summary>ÉèÖÃ Operation ÏîµÄ ReceiptID/OperationID ±äÁ¿£¬²¢¶©ÔÄµã»÷ÒÔµ÷ÓÃ SetSelectedOperation¡£</summary>
+    /// <summary>è®¾ç½® Operation é¡¹çš„ ReceiptID/OperationID å˜é‡ï¼Œå¹¶è®¢é˜…ç‚¹å‡»ä»¥è°ƒç”¨ SetSelectedOperationã€‚</summary>
     private void SetOperationItemIdAndClick(Container listItem, int receiptId, int operationId)
     {
         if (listItem == null) return;
@@ -417,7 +323,7 @@ public class GenerateTreeList : BaseNetLogic
         }
     }
 
-    /// <summary>Generate Ê±ÉèÖÃ Operation Ïî°´Å¥ÑÕÉ«£º½öµ±Î´Ñ¡ Phase ÇÒÎªÑ¡ÖĞ Operation Ê±¸ßÁÁ¡£</summary>
+    /// <summary>Generate æ—¶è®¾ç½® Operation é¡¹æŒ‰é’®é¢œè‰²ï¼šä»…å½“æœªé€‰ Phase ä¸”ä¸ºé€‰ä¸­ Operation æ—¶é«˜äº®ã€‚</summary>
     private void SetOperationButtonHighlight(Container listItem, int operationId)
     {
         if (listItem == null) return;
@@ -427,7 +333,7 @@ public class GenerateTreeList : BaseNetLogic
             button.BackgroundColor = (_selectedPhaseId == 0 && operationId == _selectedOperationId) ? HighlightColor : TransparentColor;
     }
 
-    /// <summary>±éÀúÊ÷ÖĞËùÓĞ Operation Ïî£ºÏÈÈ«²¿»Ö¸´Ä¬ÈÏ£¬ÔÙ½öµ±Î´Ñ¡ Phase Ê±½«µ±Ç°Ñ¡ÖĞµÄ Operation ¸ßÁÁ¡£</summary>
+    /// <summary>éå†æ ‘ä¸­æ‰€æœ‰ Operation é¡¹ï¼šå…ˆå…¨éƒ¨æ¢å¤é»˜è®¤ï¼Œå†ä»…å½“æœªé€‰ Phase æ—¶å°†å½“å‰é€‰ä¸­çš„ Operation é«˜äº®ã€‚</summary>
     private void ApplyOperationHighlight()
     {
         var treeContainer = LogicObject.Owner.Get<Container>("TreeContainer")
@@ -468,7 +374,7 @@ public class GenerateTreeList : BaseNetLogic
         }
     }
 
-    /// <summary>±éÀúÊ÷ÖĞËùÓĞ Phase Ïî£ºÏÈÈ«²¿»Ö¸´Ä¬ÈÏ£¬ÔÙ½ö½«µ±Ç°Ñ¡ÖĞµÄ Phase ¸ßÁÁ¡£</summary>
+    /// <summary>éå†æ ‘ä¸­æ‰€æœ‰ Phase é¡¹ï¼šå…ˆå…¨éƒ¨æ¢å¤é»˜è®¤ï¼Œå†ä»…å°†å½“å‰é€‰ä¸­çš„ Phase é«˜äº®ã€‚</summary>
     private void ApplyPhaseHighlight()
     {
         var treeContainer = LogicObject.Owner.Get<Container>("TreeContainer")
@@ -504,21 +410,9 @@ public class GenerateTreeList : BaseNetLogic
             }
         }
     }
-    private static readonly Color TransparentColor = new Color(0, 0xe4, 0xe4, 0xe4); // #e4e4e400 (A=0Í¸Ã÷, R=G=B=228 »Ò)
+    private static readonly Color TransparentColor = new Color(0, 0xe4, 0xe4, 0xe4);
     private static readonly Color HighlightColor = new Color(255, 255, 220, 150);
-    private static readonly Color NormalColor = new Color(0x99, 0xde, 0xee, 0xff); // #deeeff99 (A,R,G,B)
-
-    private Store GetStoreFromNode(IUANode node)
-    {
-        var current = node;
-        while (current != null)
-        {
-            if (current is Store store) return store;
-            current = current.Owner;
-        }
-        if (EnableLog) Log.Error(LogCategory, "ÎŞ·¨´Ó°ó¶¨µÄ±í½ÚµãÏòÉÏÕÒµ½ Store Êı¾İ¿â£¡");
-        return null;
-    }
+    private static readonly Color NormalColor = new Color(0x99, 0xde, 0xee, 0xff);
 
     private NodeId FindCustomTypeNodeId(IUANode root, string typeName)
     {

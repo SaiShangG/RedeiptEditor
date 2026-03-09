@@ -15,14 +15,6 @@ Children:
       ValueRank: OneDimension
       ArrayDimensions: [0]
       Value: [{"TypeId":{"Id":296},"Body":{"Name":"nameNodeId","DataType":{"Id":17},"ValueRank":-1,"ArrayDimensions":[],"Description":{"NamespaceIndex":-1,"LocaleId":"","Text":""}}},{"TypeId":{"Id":296},"Body":{"Name":"descriptNodeId","DataType":{"Id":17},"ValueRank":-1,"ArrayDimensions":[],"Description":{"NamespaceIndex":-1,"LocaleId":"","Text":""}}}]
-  - Name: ReceiptDB
-    Type: BaseDataVariableType
-    DataType: NodeId
-    Value: "/Objects/RedeiptEditor/DataStores/ReceiptDB/Tables/Receipts"
-  - Name: TreeListLogicNodeId
-    Type: BaseDataVariableType
-    DataType: NodeId
-    Value: "/Objects/RedeiptEditor/UI/Widgets/TreeList"
   - Class: Method
     Name: MoveDownReceipt
   - Class: Method
@@ -31,14 +23,6 @@ Children:
     Name: SaveAsReceipt
   - Class: Method
     Name: DeleteSelectedReceipt
-  - Name: OperationDB
-    Type: BaseDataVariableType
-    DataType: NodeId
-    Value: "/Objects/RedeiptEditor/DataStores/ReceiptDB/Tables/Operations"
-  - Name: PhaseDB
-    Type: BaseDataVariableType
-    DataType: NodeId
-    Value: "/Objects/RedeiptEditor/DataStores/ReceiptDB/Tables/Phases"
   - Class: Method
     Name: DeleteSelectedOperation
   - Class: Method
@@ -83,7 +67,11 @@ Children:
     Name: DoSaveAs
   - Class: Method
     Name: DoUp
+  - Name: autosave
+    Type: BaseDataVariableType
+    DataType: Boolean
 - Name: RecipeDatabaseTreeLoader
+  Id: g=799a4a0e1f6f3fd96f8a799ba95a9599
   Type: NetLogic
   Children:
   - Class: Method
@@ -100,3 +88,5 @@ Children:
     Type: BaseDataVariableType
     DataType: NodeId
     Value: "/Objects/RedeiptEditor/DataStores/ReceiptDB/Tables/Phases"
+  - Class: Method
+    Name: Save

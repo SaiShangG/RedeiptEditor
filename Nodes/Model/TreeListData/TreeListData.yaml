@@ -9,19 +9,19 @@ Children:
     Type: BaseDataVariableType
     DataType: String
     Value: "Receipt"
-  - Name: ReceiptName
+  - Name: SelectedReceiptName
     Type: BaseDataVariableType
     DataType: String
     Value: "0"
-  - Name: ReceiptCreatedDate
+  - Name: SelectedReceiptCreatedDate
     Type: BaseDataVariableType
     DataType: String
     Value: "0"
-  - Name: ReceiptCreatedBy
+  - Name: SelectedReceiptCreatedBy
     Type: BaseDataVariableType
     DataType: String
     Value: "0"
-  - Name: ReceiptCurrentStatus
+  - Name: SelectedReceiptCurrentStatus
     Type: BaseDataVariableType
     DataType: String
     Value: "0"
