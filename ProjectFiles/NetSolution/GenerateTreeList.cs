@@ -5,21 +5,61 @@ using FTOptix.UI;
 using FTOptix.HMIProject;
 using FTOptix.Store;
 using FTOptix.NetLogic;
+using FTOptix.Core;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using FTOptix.RecipeX;
 
 #endregion
 
 public class GenerateTreeList : BaseNetLogic
 {
+    #region LOG
+    private const string LogCategory = "GenerateTreeList";
+    private static bool EnableLog => _enableLog;
+    private static bool _enableLog = true;  // 可在 Logic 下添加变量 EnableLog(bool) 覆盖
+    #endregion
+
+    public static GenerateTreeList Instance { get; private set; }
+
+    /// <summary>当前选中的配方 ReceiptID（Receipt 按钮点击时通过 SetSelectedReceiptId 记录）</summary>
+    public int SelectedReceiptId => _selectedReceiptId;
+    private int _selectedReceiptId;
+
+    public override void Start()
+    {
+        try { var v = LogicObject.GetVariable("EnableLog"); if (v != null) _enableLog = (bool)v.Value; } catch { }
+        if (Instance == null) Instance = this;
+        if (EnableLog) Log.Info(LogCategory, "Start");
+        Generate();
+    }
+    public override void Stop()
+    {
+        Instance = null;
+        if (EnableLog) Log.Info(LogCategory, "Stop");
+    }
+
+    /// <summary>Receipt 按钮点击时调用，传入自己的 ReceiptID，记录为 SelectedID，并刷新高亮。</summary>
+    [ExportMethod]
+    public void SetSelectedReceiptId(int receiptId)
+    {
+        _selectedReceiptId = receiptId;
+        var v = LogicObject.GetVariable("SelectedID");
+        if (v != null) v.Value = receiptId;
+        ApplyReceiptHighlight();
+        if (EnableLog) Log.Info(LogCategory, $"SelectedID = {receiptId}");
+    }
+
     [ExportMethod]
     public void Generate()
     {
-        // 1. 定位父级 UI 容器 TreeContainer
-        var treeContainer = LogicObject.Owner.Get<Container>("TreeContainer");
+        // 1. 定位 TreeContainer：支持 Owner 直接子节点 或 ScrollView1/TreeContainer 层级 
+        var treeContainer = LogicObject.Owner.Get<Container>("TreeContainer")
+            ?? LogicObject.Owner.Get("ScrollView1")?.Get<Container>("TreeContainer");
         if (treeContainer == null)
         {
-            Log.Error("GenerateTreeList", "未找到 TreeContainer 节点！");
+            if (EnableLog) Log.Error(LogCategory, "未找到 TreeContainer 节点！");
             return;
         }
 
@@ -29,24 +69,27 @@ public class GenerateTreeList : BaseNetLogic
             child.Delete();
         }
 
-        // 3. 读取所有数据库表绑定的 NodeId 并获取表名
-        var receiptNode = InformationModel.Get(LogicObject.GetVariable("ReceiptDB").Value);
-        var opNode = InformationModel.Get(LogicObject.GetVariable("OperationDB").Value);
-        var phaseNode = InformationModel.Get(LogicObject.GetVariable("PhaseDB").Value);
-        var roMapNode = InformationModel.Get(LogicObject.GetVariable("R_O_MapDB").Value);
-        var opMapNode = InformationModel.Get(LogicObject.GetVariable("O_P_MapDB").Value);
-
-        if (receiptNode == null || opNode == null || phaseNode == null || roMapNode == null || opMapNode == null)
+        // 3. 读取三张表绑定的 NodeId 并获取表名（无 map 表）
+        var receiptVar = LogicObject.GetVariable("ReceiptDB");
+        var opVar = LogicObject.GetVariable("OperationDB");
+        var phaseVar = LogicObject.GetVariable("PhaseDB");
+        if (receiptVar == null || opVar == null || phaseVar == null)
         {
-            Log.Error("GenerateTreeList", "有数据库表 NodeId 未绑定，请检查属性面板！");
+            if (EnableLog) Log.Error(LogCategory, "ReceiptDB/OperationDB/PhaseDB 变量未配置，请检查属性面板！");
+            return;
+        }
+        var receiptNode = InformationModel.Get(receiptVar.Value);
+        var opNode = InformationModel.Get(opVar.Value);
+        var phaseNode = InformationModel.Get(phaseVar.Value);
+        if (receiptNode == null || opNode == null || phaseNode == null)
+        {
+            if (EnableLog) Log.Error(LogCategory, "有数据库表 NodeId 未绑定或指向无效节点，请检查属性面板！");
             return;
         }
 
         string rTable = receiptNode.BrowseName;
         string oTable = opNode.BrowseName;
         string pTable = phaseNode.BrowseName;
-        string roMapTable = roMapNode.BrowseName;
-        string opMapTable = opMapNode.BrowseName;
 
         // 通过 Receipt 表节点向上回溯获取 Store 实例
         var store = GetStoreFromNode(receiptNode);
@@ -59,110 +102,180 @@ public class GenerateTreeList : BaseNetLogic
 
         if (receiptTypeId == NodeId.Empty || opTypeId == NodeId.Empty || phaseTypeId == NodeId.Empty)
         {
-            Log.Error("GenerateTreeList", "未在项目中找到 ReceiptListItem, OperationListItem 或 PhaseListItem 类型，请检查名称是否完全一致！");
+            if (EnableLog) Log.Error(LogCategory, "未在项目中找到 ReceiptListItem, OperationListItem 或 PhaseListItem 类型，请检查名称是否完全一致！");
             return;
         }
 
-        // 5. 第一层：查询 Receipts 表
-        string rSql = $"SELECT ReceiptID, Name FROM {rTable} ORDER BY Sequence";
+        // 5. 第一层：查询 Receipts 表（含 Operations 列）
+        string rSql = $"SELECT ReceiptID, Name, Sequence, Operations FROM {rTable} ORDER BY Sequence";
         store.Query(rSql, out _, out object[,] rResult);
 
         if (rResult == null) return;
 
         int rowCount = rResult.GetLength(0);
 
-        // 6. 开始循环生成三层级 UI
+        #region 主流程：三层级 UI 生成
         for (int i = 0; i < rowCount; i++)
         {
-            int rId = Convert.ToInt32(rResult[i, 0]);
             string rName = rResult[i, 1]?.ToString() ?? "Unknown";
+            string operationsCsv = rResult[i, 3]?.ToString();
+            var opIdList = ParseIdList(operationsCsv);
 
-            // 统计当前配方下所有的 item 个数（Receipt 本身算 1 个）
             int itemCount = 1;
-
             string containerName = (i == 0) ? "ListContainer" : $"ListContainer{i}";
             var listContainer = InformationModel.MakeObject<ColumnLayout>(containerName);
             listContainer.HorizontalAlignment = HorizontalAlignment.Stretch;
             listContainer.LeftMargin = 0;
             listContainer.TopMargin = 0;
 
-            // --- 实例化 ReceiptListItem ---
+            int receiptId = Convert.ToInt32(rResult[i, 0]);
             var rItem = InformationModel.MakeObject(rName + "_Item", receiptTypeId) as Container;
-            // 赋值文本给里面的 Button1
             SetItemButtonText(rItem, rName);
+            SetReceiptItemIdAndClick(rItem, receiptId);
+            SetReceiptButtonHighlight(rItem, receiptId);
             listContainer.Add(rItem);
 
-            // --- 第二层：联合查询当前 Receipt 下的 Operations ---
-            string oSql = $"SELECT {oTable}.OperationID, {oTable}.Name FROM {oTable} INNER JOIN {roMapTable} ON {oTable}.OperationID = {roMapTable}.OperationID WHERE {roMapTable}.ReceiptID = {rId} ORDER BY {roMapTable}.Sequence";
-
-            store.Query(oSql, out _, out object[,] oResult);
-
-            if (oResult != null)
+            // 第二层：按 Receipts.Operations 逗号分隔 ID 查询 Operations 表
+            if (opIdList.Count > 0)
             {
-                for (int j = 0; j < oResult.GetLength(0); j++)
-                {
-                    int oId = Convert.ToInt32(oResult[j, 0]);
-                    string oName = oResult[j, 1]?.ToString() ?? "Unknown";
+                string inClause = string.Join(",", opIdList);
+                string oSql = $"SELECT OperationID, Name, Phases FROM {oTable} WHERE OperationID IN ({inClause})";
+                store.Query(oSql, out _, out object[,] oResult);
+                var opById = BuildOpDict(oResult);
 
-                    // 实例化 OperationListItem
+                foreach (int oId in opIdList)
+                {
+                    if (!opById.TryGetValue(oId, out var opRow)) continue;
+                    string oName = opRow.Name;
                     var oItem = InformationModel.MakeObject(oName + "_Item", opTypeId) as Container;
-                    // 赋值文本给里面的 Button1
                     SetItemButtonText(oItem, oName);
                     listContainer.Add(oItem);
-                    itemCount++; // 增加总数
+                    itemCount++;
 
-                    // --- 第三层：联合查询当前 Operation 下的 Phases ---
-                    string pSql = $"SELECT {pTable}.PhaseID, {pTable}.Name FROM {pTable} INNER JOIN {opMapTable} ON {pTable}.PhaseID = {opMapTable}.PhaseID WHERE {opMapTable}.OperationID = {oId} ORDER BY {opMapTable}.Sequence";
-
-                    store.Query(pSql, out _, out object[,] pResult);
-
-                    if (pResult != null)
+                    // 第三层：按 Operations.Phases 逗号分隔 ID 查询 Phases 表
+                    var phaseIdList = ParseIdList(opRow.Phases);
+                    if (phaseIdList.Count > 0)
                     {
-                        for (int k = 0; k < pResult.GetLength(0); k++)
+                        string pInClause = string.Join(",", phaseIdList);
+                        string pSql = $"SELECT PhaseID, Name FROM {pTable} WHERE PhaseID IN ({pInClause})";
+                        store.Query(pSql, out _, out object[,] pResult);
+                        var phaseById = BuildPhaseDict(pResult);
+                        foreach (int pId in phaseIdList)
                         {
-                            string pName = pResult[k, 1]?.ToString() ?? "Unknown";
-
-                            // 实例化 PhaseListItem
+                            if (!phaseById.TryGetValue(pId, out string pName)) pName = "Unknown";
                             var pItem = InformationModel.MakeObject(pName + "_Item", phaseTypeId) as Container;
-                            // 赋值文本给里面的 Button1
                             SetItemButtonText(pItem, pName);
                             listContainer.Add(pItem);
-                            itemCount++; // 增加总数
+                            itemCount++;
                         }
                     }
                 }
             }
-            // 7. 动态设置 ListContainer 的高度 (Receipt 本身 + 所有 Op + 所有 Phase 的总数 * 40)
             listContainer.Height = itemCount * 40;
-
-            // 将组合好的配方块添加到全局树容器
             treeContainer.Add(listContainer);
         }
+        #endregion
 
-        Log.Info("GenerateTreeList", $"成功读取 {rowCount} 条配方，树形列表生成完毕。");
+        if (EnableLog) Log.Info(LogCategory, $"成功读取 {rowCount} 条配方，树形列表生成完毕。");
     }
 
-    // ================= 辅助方法 ================= //
+    #region 解析与查询
+    private static List<int> ParseIdList(string csv)
+    {
+        var list = new List<int>();
+        if (string.IsNullOrWhiteSpace(csv)) return list;
+        foreach (string s in csv.Split(','))
+        {
+            if (int.TryParse(s?.Trim(), out int id)) list.Add(id);
+        }
+        return list;
+    }
 
-    // 辅助方法 1：设置自定义组件内部 Button1 的文本
+    private static Dictionary<int, (string Name, string Phases)> BuildOpDict(object[,] oResult)
+    {
+        var d = new Dictionary<int, (string, string)>();
+        if (oResult == null) return d;
+        for (int r = 0; r < oResult.GetLength(0); r++)
+        {
+            int id = Convert.ToInt32(oResult[r, 0]);
+            string name = oResult[r, 1]?.ToString() ?? "";
+            string phases = oResult[r, 2]?.ToString() ?? "";
+            d[id] = (name, phases);
+        }
+        return d;
+    }
+
+    private static Dictionary<int, string> BuildPhaseDict(object[,] pResult)
+    {
+        var d = new Dictionary<int, string>();
+        if (pResult == null) return d;
+        for (int r = 0; r < pResult.GetLength(0); r++)
+        {
+            int id = Convert.ToInt32(pResult[r, 0]);
+            string name = pResult[r, 1]?.ToString() ?? "";
+            d[id] = name;
+        }
+        return d;
+    }
+    #endregion
+
+    #region 辅助方法
     private void SetItemButtonText(Container listItem, string textValue)
     {
         if (listItem == null) return;
-
-        // 根据截图结构，先找到里层的 ItemContainer
         var itemContainer = listItem.Get<Container>("ItemContainer");
-        if (itemContainer != null)
+        var button = itemContainer?.Get<Button>("ItemButton");
+        if (button != null) button.Text = textValue;
+    }
+
+    /// <summary>设置 Receipt 项的 ReceiptID 变量，并订阅按钮点击以调用 SetSelectedReceiptId。</summary>
+    private void SetReceiptItemIdAndClick(Container listItem, int receiptId)
+    {
+        if (listItem == null) return;
+        var v = listItem.GetVariable("ReceiptID");
+        if (v != null) v.Value = receiptId;
+        var itemContainer = listItem.Get<Container>("ItemContainer");
+        var button = itemContainer?.Get<Button>("ItemButton");
+        if (button != null)
         {
-            // 再从 ItemContainer 里面找到 Button1
-            var button = itemContainer.Get<Button>("Button1");
-            if (button != null)
-            {
-                button.Text = textValue;
-            }
+            button.UAEvent -= (sender, args) => SetSelectedReceiptId(receiptId);
+            button.UAEvent += (sender, args) => SetSelectedReceiptId(receiptId);
         }
     }
 
-    // 辅助方法 2：通过 Table 节点递归向上寻找 Store 根节点
+    /// <summary>Generate 时：若为当前选中配方则设置按钮背景为高亮色。</summary>
+    private void SetReceiptButtonHighlight(Container listItem, int receiptId)
+    {
+        if (listItem == null || receiptId != _selectedReceiptId) return;
+        var itemContainer = listItem.Get<Container>("ItemContainer");
+        var button = itemContainer?.Get<Button>("ItemButton");
+        if (button != null)
+            button.BackgroundColor = HighlightColor;
+    }
+
+    /// <summary>遍历 TreeContainer 内所有配方项，按当前 SelectedID 刷新按钮高亮（点击时调用）。</summary>
+    private void ApplyReceiptHighlight()
+    {
+        var treeContainer = LogicObject.Owner.Get<Container>("TreeContainer")
+            ?? LogicObject.Owner.Get("ScrollView1")?.Get<Container>("TreeContainer");
+        if (treeContainer == null) return;
+        foreach (var col in treeContainer.Children.OfType<ColumnLayout>())
+        {
+            if (col.Children.Count == 0) continue;
+            var rItem = col.Children[0] as Container;
+            var receiptVar = rItem?.GetVariable("ReceiptID");
+            if (receiptVar == null) continue;
+            if (!int.TryParse(receiptVar.Value, out int rid)) continue;
+            var itemContainer = rItem.Get<Container>("ItemContainer");
+            var button = itemContainer?.Get<Button>("ItemButton");
+            if (button != null)
+                button.BackgroundColor = (rid == _selectedReceiptId) ? HighlightColor : NormalColor;
+        }
+    }
+
+    private static readonly Color HighlightColor = new Color(255, 255, 220, 150);
+    private static readonly Color NormalColor = new Color(0x99, 0xde, 0xee, 0xff); // #deeeff99 (A,R,G,B)
+
     private Store GetStoreFromNode(IUANode node)
     {
         var current = node;
@@ -171,18 +284,13 @@ public class GenerateTreeList : BaseNetLogic
             if (current is Store store) return store;
             current = current.Owner;
         }
-        Log.Error("GenerateTreeList", "无法从绑定的表节点向上找到 Store 数据库！");
+        if (EnableLog) Log.Error(LogCategory, "无法从绑定的表节点向上找到 Store 数据库！");
         return null;
     }
 
-    // 辅助方法 3：全局递归搜索，找到自定义 UI 组件的基础类型 (ObjectType) NodeId
     private NodeId FindCustomTypeNodeId(IUANode root, string typeName)
     {
-        if (root.BrowseName == typeName && root.NodeClass == NodeClass.ObjectType)
-        {
-            return root.NodeId;
-        }
-
+        if (root.BrowseName == typeName && root.NodeClass == NodeClass.ObjectType) return root.NodeId;
         foreach (var child in root.Children)
         {
             var result = FindCustomTypeNodeId(child, typeName);
@@ -190,4 +298,5 @@ public class GenerateTreeList : BaseNetLogic
         }
         return NodeId.Empty;
     }
+    #endregion
 }

@@ -96,7 +96,7 @@ Children:
       Type: BaseVariableType
       DataType: Size
       ModellingRule: Optional
-    - Name: Button1
+    - Name: ItemButton
       Type: Button
       Children:
       - Name: Text
@@ -266,7 +266,7 @@ Children:
       Type: BaseVariableType
       DataType: Size
       ModellingRule: Optional
-    - Name: Button1
+    - Name: ItemButton
       Type: Button
       Children:
       - Name: Text
@@ -336,6 +336,9 @@ Children:
     Type: BaseVariableType
     DataType: VerticalAlignment
     ModellingRule: Optional
+  - Name: ReceiptID
+    Type: BaseDataVariableType
+    DataType: Int32
 - Name: ReceiptListItem
   Id: g=e905a33a095c26a303c6bd1ae3bff6c7
   Supertype: Panel
@@ -395,7 +398,7 @@ Children:
       Type: BaseVariableType
       DataType: Size
       ModellingRule: Optional
-    - Name: Button1
+    - Name: ItemButton
       Type: Button
       Children:
       - Name: Text
@@ -447,6 +450,9 @@ Children:
         DataType: ButtonImagePosition
         ModellingRule: Optional
         Value: 9
+  - Name: ReceiptID
+    Type: BaseDataVariableType
+    DataType: Int32
 - Name: ButtonWithIcon
   Id: g=ee1e500337d20cf5349ab124c1104568
   Supertype: Panel

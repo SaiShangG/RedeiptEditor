@@ -1,268 +1,667 @@
-#region Using directives
+ï»¿#region Using directives
 using System;
-using System.Text;
-using System.Text.RegularExpressions;
 using UAManagedCore;
+using OpcUa = UAManagedCore.OpcUa;
+using FTOptix.UI;
 using FTOptix.HMIProject;
 using FTOptix.NetLogic;
+using FTOptix.NativeUI;
+using FTOptix.Retentivity;
+using FTOptix.CoreBase;
+using FTOptix.Core;
+using FTOptix.SQLiteStore;
 using FTOptix.Store;
 #endregion
 
 public class RecipeDatabaseManager : BaseNetLogic
 {
-    private Store _dbStore;
+    private const string LogCategory = "RecipeDatabaseManager";
+    private const bool EnableLog = true;  // è®¾ä¸º false å…³é—­æœ¬ç±»æ‰€æœ‰æ—¥å¿—
 
-    #region ÉúÃüÖÜÆÚ (Life Cycle)
+    private Store _store;
+    private Table _receiptTable;
+    private string _receiptTableName;
+    private Table _opTable;
+    private string _opTableName;
+    private Table _phaseTable;
+    private string _phaseTableName;
 
+    #region ç”Ÿå‘½å‘¨æœŸ
     public override void Start()
     {
-        // 1. Ö±½Ó»ñÈ¡ Optix ÄÚÖÃµÄ Store (ReceiptDB)
-        // ×¢Òâ£ºÇëÈ·±£ÏîÄ¿Ä¿Â¼Ê÷ÖĞ´æÔÚ DataStores ÎÄ¼ş¼Ğ£¬ÇÒÀïÃæÓĞÃûÎª ReceiptDB µÄ Store ¶ÔÏó
-        _dbStore = Project.Current.Get<Store>("DataStores/ReceiptDB");
-
-        if (_dbStore == null)
-        {
-            Log.Error("RuntimeNetLogic2", "Î´ÕÒµ½ DataStores/ReceiptDB Êı¾İ¿â£¡Çë¼ì²éÂ·¾¶¡£");
-        }
-        else
-        {
-            Log.Info("RuntimeNetLogic2", "³É¹¦Á¬½ÓÄÚÖÃÊı¾İ¿â ReceiptDB¡£");
-        }
+        if (EnableLog) Log.Info(LogCategory, "RecipeDatabaseManager å·²å¯åŠ¨");
+        OpenReceiptTable();
     }
 
     public override void Stop()
     {
-        // Optix ×Ô¶¯¹ÜÀíÄÚÖÃ Store µÄÉúÃüÖÜÆÚ£¬ÎŞĞèÊÖ¶¯ Close »òÊÍ·ÅÁ¬½Ó
+        _store = null;
+        _receiptTable = null;
+        _receiptTableName = null;
+        _opTable = null;
+        _opTableName = null;
+        _phaseTable = null;
+        _phaseTableName = null;
+        if (EnableLog) Log.Info(LogCategory, "RecipeDatabaseManager å·²åœæ­¢");
     }
 
+    /// <summary>è§£æ ReceiptDB/OperationDB/PhaseDBï¼Œæ‰“å¼€ Store ä¸è¡¨å¹¶ç¼“å­˜ã€‚</summary>
+    private void OpenReceiptTable()
+    {
+        _store = null;
+        _receiptTable = null;
+        _receiptTableName = null;
+        _opTable = null;
+        _opTableName = null;
+        _phaseTable = null;
+        _phaseTableName = null;
+
+        if (!ResolveTable("ReceiptDB", out _store, out _receiptTable, out _receiptTableName)) return;
+        if (!ResolveTable("OperationDB", out _, out _opTable, out _opTableName)) return;
+        if (!ResolveTable("PhaseDB", out _, out _phaseTable, out _phaseTableName)) return;
+    }
+
+    private bool ResolveTable(string varName, out Store store, out Table table, out string tableName)
+    {
+        store = null;
+        table = null;
+        tableName = null;
+        var v = LogicObject.GetVariable(varName);
+        if (v == null) { if (EnableLog) Log.Error(LogCategory, $"æœªé…ç½® {varName} å˜é‡"); return false; }
+        var node = InformationModel.Get(v.Value);
+        if (node == null) { if (EnableLog) Log.Error(LogCategory, $"{varName} æŒ‡å‘çš„èŠ‚ç‚¹æ— æ•ˆ"); return false; }
+        store = GetStoreFromNode(node);
+        if (store == null) return false;
+        tableName = node.BrowseName;
+        table = node as Table ?? GetTableFromStoreByNodeId(store, node.NodeId);
+        if (table == null && EnableLog) Log.Error(LogCategory, $"æ— æ³•è·å–è¡¨: {tableName}");
+        return true;
+    }
     #endregion
 
-    #region ÄÚ²¿¸¨Öú·½·¨ (Internal Helpers)
-
-    private void ExecuteSql(string sql)
-    {
-        if (_dbStore == null) return;
-        _dbStore.Query(sql, out string[] header, out object[,] resultSet);
-    }
-
-    private object[,] QuerySql(string sql)
-    {
-        if (_dbStore == null) return null;
-        _dbStore.Query(sql, out string[] header, out object[,] resultSet);
-        return resultSet;
-    }
-
-    // ´¦Àí SQL ×Ö·û´®ÖµµÄÒıºÅÎÊÌâ£¬·ÀÖ¹Óï·¨´íÎóºÍ¼òµ¥µÄ×¢Èë
-    private string FormatSqlValue(string value)
-    {
-        if (string.IsNullOrEmpty(value) || value.ToUpper() == "NULL") return "NULL";
-        if (double.TryParse(value, out _)) return value; // Êı×Ö²»¼ÓÒıºÅ
-        return $"'{value.Replace("'", "''")}'"; // ×Ö·û´®¼Óµ¥ÒıºÅ
-    }
-
-    #endregion
-
-    #region Í¨ÓÃÔöÉ¾¸Ä²é (Generic CRUD)
-
-    /// <summary>
-    /// [Create] ´¿´úÂëÊµÏÖÖ÷¼ü×Ô¶¯¼Ó 1
-    /// Ê¾Àı: CreateRecord("Phases", "PhaseID", "Name,Pressure,Temperature", "Heating_001,10.5,80")
-    /// ·µ»ØÖµ: ¸Õ¸Õ¼ÆËã²¢²åÈëµÄĞÂ ID
-    /// </summary>
+    #region æš´éœ²æ–¹æ³•
+    /// <summary>æ–°å¢é…æ–¹ï¼šä» nameNodeIdã€descriptNodeId è¯»å–åç§°ä¸æè¿°ï¼Œæ’å…¥ Receipt è¡¨å¹¶åˆ·æ–°æ ‘åˆ—è¡¨ã€‚åç§°æœ«å°¾æ— ç‰ˆæœ¬å·æ—¶è‡ªåŠ¨è¡¥ _000ã€‚</summary>
     [ExportMethod]
-    public int CreateRecord(string tableName, string idColName, string columnsCSV, string valuesCSV)
+    public void AddNewReceipt(NodeId nameNodeId, NodeId descriptNodeId)
     {
-        // 1. ´¿´úÂë¼ÆËãÏÂÒ»¸ö ID (MAX + 1)
-        string getMaxSql = $"SELECT MAX({idColName}) FROM {tableName}";
-        var maxResult = QuerySql(getMaxSql);
-
-        int newId = 1; // Èç¹û±íÊÇ¿ÕµÄ£¬Ä¬ÈÏ´Ó 1 ¿ªÊ¼
-        if (maxResult != null && maxResult.GetLength(0) > 0 && maxResult[0, 0] != DBNull.Value)
+        string name = GetStringFromNode(nameNodeId);
+        string descript = GetStringFromNode(descriptNodeId);
+        if (string.IsNullOrWhiteSpace(name))
         {
-            newId = Convert.ToInt32(maxResult[0, 0]) + 1;
+            if (EnableLog) Log.Warning(LogCategory, "åç§°ä¸ºç©ºï¼Œæœªæ‰§è¡Œæ’å…¥");
+            return;
         }
 
-        // 2. ½âÎö´«ÈëµÄÁĞºÍÖµ
-        string[] columns = columnsCSV.Split(',');
-        string[] values = valuesCSV.Split(',');
-
-        if (columns.Length != values.Length)
+        if (_receiptTable == null || _store == null)
         {
-            Log.Error("RuntimeNetLogic2", $"²åÈë {tableName} Ê§°Ü£ºÁĞÊı({columns.Length})ÓëÖµÊı({values.Length})²»Æ¥Åä£¡");
-            return -1;
+            if (EnableLog) Log.Error(LogCategory, "Receipt è¡¨æœªå°±ç»ªï¼Œè¯·æ£€æŸ¥ ReceiptDB é…ç½®");
+            return;
         }
 
-        // È¥³ı¿Õ¸ñ²¢¸ñÊ½»¯
-        for (int i = 0; i < columns.Length; i++) columns[i] = columns[i].Trim();
-        string[] formattedValues = new string[values.Length];
-        for (int i = 0; i < values.Length; i++) formattedValues[i] = FormatSqlValue(values[i].Trim());
+        name = EnsureNameWithVersion(name);
+        if (EnableLog) Log.Info(LogCategory, $"AddNewReceipt: Name='{name}', Descript='{descript ?? ""}'");
 
-        // 3. ½«ÎÒÃÇ¼ÆËãºÃµÄĞÂ ID Æ´½Óµ½ SQL Óï¾äµÄ×îÇ°Ãæ
-        string finalCols = $"{idColName}, " + string.Join(", ", columns);
-        string finalVals = $"{newId}, " + string.Join(", ", formattedValues);
+        int nextReceiptId = GetNextReceiptID(_store, _receiptTableName);
+        int nextSeq = GetNextSequence(_store, _receiptTableName);
+        if (EnableLog) Log.Info(LogCategory, $"è¡¨={_receiptTableName}, ReceiptID={nextReceiptId}, Sequence={nextSeq}");
 
-        string sql = $"INSERT INTO {tableName} ({finalCols}) VALUES ({finalVals})";
+        if (!TryInsertReceipt(nextReceiptId, name, nextSeq, descript))
+            return;
 
-        // 4. Ö´ĞĞ²åÈë
-        ExecuteSql(sql);
-        Log.Info("RuntimeNetLogic2", $"³É¹¦Ïò {tableName} ²åÈëĞÂ¼ÇÂ¼£¬´¿´úÂë·ÖÅäµÄ ID Îª: {newId}");
-
-        return newId;
+        RefreshTreeList();
+        if (EnableLog) Log.Info(LogCategory, "æ ‘åˆ—è¡¨å·²åˆ·æ–°");
     }
 
-    /// <summary>
-    /// [Mapping] ÎªÊ÷×´Í¼½¨Á¢Ó³Éä¹ØÏµ (°üº¬Ó³Éä±í×ÔÉíµÄ ID ×Ô¶¯¼Ó 1)
-    /// </summary>
+    /// <summary>å¦å­˜ä¸ºï¼šå°†å½“å‰é€‰ä¸­çš„ Receipt å¦å­˜ä¸ºæ–°é…æ–¹ï¼ˆç‰ˆæœ¬å·+1ï¼‰ï¼›å…¶ä¸‹ Operationã€Phase åŒæ ·æŒ‰ç‰ˆæœ¬å·æ–°å»ºå¹¶å…³è”ã€‚</summary>
     [ExportMethod]
-    public void InsertMapRelation(string mapTableName, string mapIdColName, string parentCol, string parentId, string childCol, string childId)
+    public void SaveAsReceipt()
     {
-        // 1. ¼ÆËãÓ³Éä±í×ÔÉíµÄÏÂÒ»¸öÖ÷¼ü ID (±ÈÈç ReceiptOperationMapID)
-        string getMaxMapIdSql = $"SELECT MAX({mapIdColName}) FROM {mapTableName}";
-        var idResult = QuerySql(getMaxMapIdSql);
-        int newMapId = 1;
-        if (idResult != null && idResult.GetLength(0) > 0 && idResult[0, 0] != DBNull.Value)
+        if (_receiptTable == null || _store == null)
         {
-            newMapId = Convert.ToInt32(idResult[0, 0]) + 1;
+            if (EnableLog) Log.Error(LogCategory, "Receipt è¡¨æœªå°±ç»ª");
+            return;
+        }
+        int selectedId = GenerateTreeList.Instance?.SelectedReceiptId ?? 0;
+        if (selectedId <= 0)
+        {
+            if (EnableLog) Log.Warning(LogCategory, "æœªé€‰ä¸­ä»»ä½•é…æ–¹ï¼Œæ— æ³•å¦å­˜ä¸º");
+            return;
         }
 
-        // 2. ¼ÆËãÊ÷×´½ÚµãÅÅĞòµÄ Sequence
-        string getMaxSeqSql = $"SELECT MAX(Sequence) FROM {mapTableName} WHERE {parentCol} = {parentId}";
-        var seqResult = QuerySql(getMaxSeqSql);
-        int nextSeq = 1;
-        if (seqResult != null && seqResult.GetLength(0) > 0 && seqResult[0, 0] != DBNull.Value)
+        string name, operationsCsv, descript;
+        int seq;
+        if (!GetReceiptRow(selectedId, out name, out seq, out operationsCsv, out descript))
         {
-            nextSeq = Convert.ToInt32(seqResult[0, 0]) + 1;
+            if (EnableLog) Log.Error(LogCategory, $"æœªæ‰¾åˆ° ReceiptID={selectedId}");
+            return;
         }
 
-        // 3. ½«¼ÆËãºÃµÄÖ÷¼ü ID ºÍÅÅĞò Sequence Ò»Æğ²åÈë
-        string sql = $"INSERT INTO {mapTableName} ({mapIdColName}, {parentCol}, {childCol}, Sequence) VALUES ({newMapId}, {parentId}, {childId}, {nextSeq})";
-        ExecuteSql(sql);
+        ParseVersionSuffix(name, out string baseName, out int _);
+        string newName = baseName + "_" + GetNextVersionForBase(baseName).ToString("D3");
+
+        string newOperationsCsv = operationsCsv;
+        if (_opTable != null && _phaseTable != null)
+            newOperationsCsv = SaveAsCopyOperationsAndPhases(ParseIdList(operationsCsv));
+
+        int nextReceiptId = GetNextReceiptID(_store, _receiptTableName);
+        int nextSeq = GetNextSequence(_store, _receiptTableName);
+        if (!TryInsertReceipt(nextReceiptId, newName, nextSeq, descript, newOperationsCsv))
+            return;
+
+        RefreshTreeList();
+        if (EnableLog) Log.Info(LogCategory, $"SaveAs å®Œæˆ: '{name}' -> '{newName}', ReceiptID={nextReceiptId}");
     }
 
-
-    /// <summary>
-    /// [Update] Í¨ÓÃµ¥×Ö¶Î¸üĞÂ
-    /// Ê¾Àı: UpdateRecord("Phases", "PhaseID", "1", "Temperature", "90")
-    /// </summary>
-    [ExportMethod]
-    public void UpdateRecord(string tableName, string idColName, string idValue, string updateColName, string newValue)
+    /// <summary>éå† Operation åˆ—è¡¨ï¼Œæ¯ä¸ª Operation åŠå…¶ Phases å‡æŒ‰ç‰ˆæœ¬å·æ–°å»ºï¼Œè¿”å›æ–° OperationID é€—å·ä¸²ã€‚</summary>
+    private string SaveAsCopyOperationsAndPhases(System.Collections.Generic.List<int> opIdList)
     {
-        string formattedValue = FormatSqlValue(newValue);
-        string sql = $"UPDATE {tableName} SET {updateColName} = {formattedValue} WHERE {idColName} = {idValue}";
-        ExecuteSql(sql);
-    }
-
-    /// <summary>
-    /// [Delete] Í¨ÓÃÉ¾³ı£¬°üº¬¼¶ÁªÇåÀíÂß¼­
-    /// Ê¾Àı: DeleteRecord("Operations", "OperationID", "2")
-    /// </summary>
-    [ExportMethod]
-    public void DeleteRecord(string tableName, string idColName, string idValue)
-    {
-        // 1. É¾³ı»ù´¡±íÊı¾İ
-        ExecuteSql($"DELETE FROM {tableName} WHERE {idColName} = {idValue}");
-
-        // 2. ¼¶ÁªÇåÀíÓ³Éä±íÖĞµÄÀ¬»øÊı¾İ (Cascade Delete)
-        if (tableName == "Receipts")
+        if (opIdList == null || opIdList.Count == 0) return "";
+        var newOpIds = new System.Collections.Generic.List<int>();
+        foreach (int opId in opIdList)
         {
-            ExecuteSql($"DELETE FROM ReceiptOperationMap WHERE ReceiptID = {idValue}");
-        }
-        else if (tableName == "Operations")
-        {
-            ExecuteSql($"DELETE FROM ReceiptOperationMap WHERE OperationID = {idValue}");
-            ExecuteSql($"DELETE FROM OperationPhaseMap WHERE OperationID = {idValue}");
-        }
-        else if (tableName == "Phases")
-        {
-            ExecuteSql($"DELETE FROM OperationPhaseMap WHERE PhaseID = {idValue}");
-        }
-        Log.Info("RuntimeNetLogic2", $"ÒÑÉ¾³ı {tableName} ÖĞ ID={idValue} µÄ¼ÇÂ¼¼°¹ØÁªÓ³Éä¡£");
-    }
+            string opName, phasesCsv;
+            if (!GetOperationRow(opId, out opName, out phasesCsv)) continue;
+            ParseVersionSuffix(opName, out string opBase, out int _);
+            string newOpName = opBase + "_" + GetNextVersionForBase(_store, _opTableName, opBase).ToString("D3");
 
-    /// <summary>
-    /// [Read] Í¨ÓÃ²éÑ¯£º½«ÕûÕÅ±íµÄÄÚÈİ×ªÎª×Ö·û´®£¬²¢Ö±½ÓĞ´ÈëÖ¸¶¨µÄ UI ±äÁ¿ÖĞ
-    /// ÍêÃÀÌæ´úÔ­´úÂëÖĞ QueryReceiptsToVariable µÈ 5 ¸ö¸ß¶ÈÖØ¸´µÄ·½·¨
-    /// </summary>
-    [ExportMethod]
-    public void QueryTableToVariable(string tableName, string orderByColumn, NodeId resultVariableNodeId)
-    {
-        string sql = $"SELECT * FROM {tableName}";
-        if (!string.IsNullOrEmpty(orderByColumn))
-        {
-            sql += $" ORDER BY {orderByColumn}";
-        }
-
-        _dbStore.Query(sql, out string[] header, out object[,] resultSet);
-
-        StringBuilder sb = new StringBuilder();
-
-        // Æ´½Ó±íÍ·
-        if (header != null)
-        {
-            sb.AppendLine(string.Join("\t", header));
-        }
-
-        // Æ´½ÓÊı¾İÄÚÈİ
-        if (resultSet != null)
-        {
-            int rowCount = resultSet.GetLength(0);
-            int colCount = resultSet.GetLength(1);
-
-            for (int r = 0; r < rowCount; r++)
+            var phaseIdList = ParseIdList(phasesCsv);
+            var newPhaseIds = new System.Collections.Generic.List<int>();
+            foreach (int pId in phaseIdList)
             {
-                for (int c = 0; c < colCount; c++)
+                string pName;
+                var colNames = new System.Collections.Generic.List<string>();
+                var colValues = new System.Collections.Generic.List<object>();
+                if (!GetPhaseRow(pId, out pName, colNames, colValues)) continue;
+                ParseVersionSuffix(pName, out string pBase, out int __);
+                string newPName = pBase + "_" + GetNextVersionForBase(_store, _phaseTableName, pBase).ToString("D3");
+                int newPId = GetNextId(_store, _phaseTableName, "PhaseID");
+                if (!InsertPhase(newPId, newPName, colNames, colValues)) continue;
+                newPhaseIds.Add(newPId);
+            }
+            string newPhasesCsv = string.Join(",", newPhaseIds);
+            int newOpId = GetNextId(_store, _opTableName, "OperationID");
+            if (!InsertOperation(newOpId, newOpName, newPhasesCsv)) continue;
+            newOpIds.Add(newOpId);
+        }
+        return string.Join(",", newOpIds);
+    }
+
+    /// <summary>åˆ é™¤å½“å‰é€‰ä¸­çš„ Receiptã€‚</summary>
+    [ExportMethod]
+    public void DeleteSelectedReceipt()
+    {
+        if (_store == null || string.IsNullOrEmpty(_receiptTableName))
+        {
+            if (EnableLog) Log.Error(LogCategory, "Receipt è¡¨æœªå°±ç»ª");
+            return;
+        }
+        int selectedId = GenerateTreeList.Instance?.SelectedReceiptId ?? -1;
+        if (selectedId < 0)
+        {
+            if (EnableLog) Log.Warning(LogCategory, "æœªé€‰ä¸­ä»»ä½•é…æ–¹ï¼Œæ— æ³•åˆ é™¤");
+            return;
+        }
+        try
+        {
+            _store.Query($"DELETE FROM {_receiptTableName} WHERE ReceiptID = {selectedId}", out _, out _);
+            RefreshTreeList();
+            if (EnableLog) Log.Info(LogCategory, $"å·²åˆ é™¤ ReceiptID={selectedId}");
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Error(LogCategory, $"åˆ é™¤å¤±è´¥: {ex.Message}");
+        }
+    }
+
+    private bool TryInsertReceipt(int receiptId, string name, int nextSeq, string descript, string operations = null)
+    {
+        string ops = operations ?? "";
+        try
+        {
+            _receiptTable.Insert(
+                new[] { "ReceiptID", "Name", "Sequence", "Operations", "Description" },
+                new object[,] { { receiptId, name, nextSeq, ops, descript ?? "" } });
+            if (EnableLog) Log.Info(LogCategory, $"é…æ–¹å·²æ’å…¥: ReceiptID={receiptId}, Name='{name}'");
+            return true;
+        }
+        catch (Exception)
+        {
+            try
+            {
+                _receiptTable.Insert(
+                    new[] { "ReceiptID", "Name", "Sequence", "Operations", "Description" },
+                    new object[,] { { receiptId, name, nextSeq, ops, descript ?? "" } });
+                if (EnableLog) Log.Info(LogCategory, $"é…æ–¹å·²æ’å…¥(æ—  Description): ReceiptID={receiptId}, Name='{name}'");
+                return true;
+            }
+            catch (Exception)
+            {
+                try
                 {
-                    sb.Append(resultSet[r, c]?.ToString() ?? "");
-                    sb.Append(c < colCount - 1 ? "\t" : "\n");
+                    _receiptTable.Insert(
+                        new[] { "Name", "Sequence", "Operations", "Description" },
+                        new object[,] { { name, nextSeq, ops, descript ?? "" } });
+                    if (EnableLog) Log.Info(LogCategory, $"é…æ–¹å·²æ’å…¥(æ—  ReceiptID åˆ—): Name='{name}'");
+                    return true;
+                }
+                catch (Exception ex2)
+                {
+                    if (EnableLog) Log.Error(LogCategory, $"æ’å…¥å¤±è´¥: {ex2.Message}");
+                    return false;
                 }
             }
         }
+    }
 
-        // Ğ´Èë Optix ±äÁ¿½Úµã
-        var variable = InformationModel.Get<IUAVariable>(resultVariableNodeId);
-        if (variable != null)
+    /// <summary>ä¸Šç§»é…æ–¹ï¼šä¸ Sequence æ›´å°çš„é‚£æ¡äº¤æ¢ Sequenceã€‚</summary>
+    /// <param name="receiptId">è¦ä¸Šç§»çš„é…æ–¹ ReceiptID</param>
+    [ExportMethod]
+    public void MoveUpReceipt()
+    {
+        if (!SwapSequenceWithNeighbor(GenerateTreeList.Instance.SelectedReceiptId, up: true))
+            if (EnableLog) Log.Warning(LogCategory, $"ä¸Šç§»å¤±è´¥æˆ–å·²åœ¨é¡¶éƒ¨: ReceiptID={GenerateTreeList.Instance.SelectedReceiptId}");
+    }
+
+    /// <summary>ä¸‹ç§»é…æ–¹ï¼šä¸ Sequence æ›´å¤§çš„é‚£æ¡äº¤æ¢ Sequenceã€‚</summary>
+    /// <param name="receiptId">è¦ä¸‹ç§»çš„é…æ–¹ ReceiptID</param>
+    [ExportMethod]
+    public void MoveDownReceipt()
+    {
+        if (!SwapSequenceWithNeighbor(GenerateTreeList.Instance.SelectedReceiptId, up: false))
+            if (EnableLog) Log.Warning(LogCategory, $"ä¸‹ç§»å¤±è´¥æˆ–å·²åœ¨åº•éƒ¨: ReceiptID={GenerateTreeList.Instance.SelectedReceiptId}");
+    }
+
+    private bool SwapSequenceWithNeighbor(int receiptId, bool up)
+    {
+        if (_store == null || string.IsNullOrEmpty(_receiptTableName)) return false;
+        try
         {
-            variable.Value = sb.ToString();
+            _store.Query($"SELECT ReceiptID, Sequence FROM {_receiptTableName} ORDER BY Sequence", out _, out object[,] rows);
+            if (rows == null || rows.GetLength(0) < 2) return false;
+
+            int rowCount = rows.GetLength(0);
+            int colReceiptId = 0, colSeq = 1;
+            int idx = -1;
+            for (int i = 0; i < rowCount; i++)
+            {
+                var cell = rows[i, colReceiptId];
+                if (cell != null && cell != DBNull.Value && int.TryParse(cell.ToString(), out int id) && id == receiptId)
+                { idx = i; break; }
+            }
+            if (idx < 0) return false;
+
+            int swapIdx = up ? idx - 1 : idx + 1;
+            if (swapIdx < 0 || swapIdx >= rowCount) return false;
+
+            int seqA = GetInt(rows[idx, colSeq]);
+            int seqB = GetInt(rows[swapIdx, colSeq]);
+            int otherId = (int)Convert.ChangeType(rows[swapIdx, colReceiptId], typeof(int));
+
+            _store.Query($"UPDATE {_receiptTableName} SET Sequence = {seqB} WHERE ReceiptID = {receiptId}", out _, out _);
+            _store.Query($"UPDATE {_receiptTableName} SET Sequence = {seqA} WHERE ReceiptID = {otherId}", out _, out _);
+
+            RefreshTreeList();
+            if (EnableLog) Log.Info(LogCategory, $"{(up ? "ä¸Š" : "ä¸‹")}ç§»æˆåŠŸ: ReceiptID={receiptId}");
+            return true;
         }
-        else
+        catch (Exception ex)
         {
-            Log.Error("RuntimeNetLogic2", "Ö¸¶¨µÄ½á¹û±äÁ¿ NodeId ÎŞĞ§£¡");
+            if (EnableLog) Log.Error(LogCategory, $"äº¤æ¢ Sequence å¤±è´¥: {ex.Message}");
+            return false;
         }
     }
 
+    private static int GetInt(object cell)
+    {
+        if (cell == null || cell == DBNull.Value) return 0;
+        return int.TryParse(cell.ToString(), out int v) ? v : 0;
+    }
     #endregion
 
-    #region ¹ØÏµÓ³Éä×¨ÓÃ·½·¨ (Map Mapping)
-
-    /// <summary>
-    /// [Mapping] ÎªÊ÷×´Í¼½¨Á¢Ó³Éä¹ØÏµ (²åÈë Map ±í)
-    /// </summary>
-    [ExportMethod]
-    public void InsertMapRelation(string mapTableName, string parentCol, string parentId, string childCol, string childId)
+    #region è¾…åŠ©
+    private static string GetStringFromNode(NodeId nodeId)
     {
-        // »ñÈ¡µ±Ç°¸¸½ÚµãÏÂ×î´óµÄ Sequence
-        string getMaxSql = $"SELECT MAX(Sequence) FROM {mapTableName} WHERE {parentCol} = {parentId}";
-        var result = QuerySql(getMaxSql);
-
-        int nextSeq = 1;
-        if (result != null && result.GetLength(0) > 0 && result[0, 0] != DBNull.Value)
+        if (nodeId == null || nodeId == NodeId.Empty) return "";
+        var node = InformationModel.Get(nodeId);
+        if (node is IUAVariable v)
         {
-            nextSeq = Convert.ToInt32(result[0, 0]) + 1;
+            var raw = v.Value;
+            return CleanVariableDisplayString(raw);
         }
-
-        string sql = $"INSERT INTO {mapTableName} ({parentCol}, {childCol}, Sequence) VALUES ({parentId}, {childId}, {nextSeq})";
-        ExecuteSql(sql);
+        return "";
     }
 
-    /// <summary>
-    /// [Mapping] ´ÓÊ÷×´Í¼ÖĞÒÆ³ıÓ³Éä¹ØÏµ (Remove from Map)
-    /// </summary>
-    [ExportMethod]
-    public void DeleteMapRelation(string mapTableName, string parentCol, string parentId, string childCol, string childId)
+    /// <summary>å»æ‰å˜é‡ ToString å¯èƒ½å¸¦ä¸Šçš„ç±»å‹åç¼€ï¼Œå¦‚ " (String)"</summary>
+    private static string CleanVariableDisplayString(string s)
     {
-        string sql = $"DELETE FROM {mapTableName} WHERE {parentCol} = {parentId} AND {childCol} = {childId}";
-        ExecuteSql(sql);
+        if (string.IsNullOrEmpty(s)) return s;
+        s = s.Trim();
+        int idx = s.IndexOf(" (", StringComparison.Ordinal);
+        if (idx > 0) s = s.Substring(0, idx).Trim();
+        return s;
     }
 
+    private static string EscapeSql(string s)
+    {
+        if (string.IsNullOrEmpty(s)) return "";
+        return s.Replace("'", "''");
+    }
+
+    private static int GetNextSequence(Store store, string tableName)
+    {
+        try
+        {
+            store.Query($"SELECT Sequence FROM {tableName}", out _, out object[,] r);
+            if (r == null || r.GetLength(0) == 0) return 1;
+            int max = 0;
+            for (int i = 0; i < r.GetLength(0); i++)
+            {
+                var cell = r[i, 0];
+                if (cell != null && cell != DBNull.Value && int.TryParse(cell.ToString(), out int val) && val > max)
+                    max = val;
+            }
+            return max + 1;
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Error(LogCategory, $"è·å–ä¸‹ä¸€ Sequence å¤±è´¥: {tableName}, {ex.Message}");
+        }
+        return 1;
+    }
+
+    private static int GetNextReceiptID(Store store, string tableName)
+    {
+        try
+        {
+            store.Query($"SELECT ReceiptID FROM {tableName}", out _, out object[,] r);
+            if (r == null || r.GetLength(0) == 0) return 1;
+            int max = 0;
+            for (int i = 0; i < r.GetLength(0); i++)
+            {
+                var cell = r[i, 0];
+                if (cell != null && cell != DBNull.Value && int.TryParse(cell.ToString(), out int val) && val > max)
+                    max = val;
+            }
+            return max + 1;
+        }
+        catch (Exception)
+        {
+            return 1;
+        }
+    }
+
+    private static Store GetStoreFromNode(IUANode node)
+    {
+        var current = node;
+        while (current != null)
+        {
+            if (current is Store store) return store;
+            current = current.Owner;
+        }
+        if (EnableLog) Log.Error(LogCategory, "æ— æ³•ä» Receipt è¡¨èŠ‚ç‚¹å‘ä¸Šæ‰¾åˆ° Store");
+        return null;
+    }
+
+    /// <summary>ä» Store å­èŠ‚ç‚¹ä¸­æŒ‰ NodeId æŸ¥æ‰¾ Tableï¼ˆInformationModel.Get å¯èƒ½è¿”å›åŒ…è£…èŠ‚ç‚¹æ— æ³•ç›´æ¥ as Tableï¼‰</summary>
+    private static Table GetTableFromStoreByNodeId(Store store, NodeId tableNodeId)
+    {
+        foreach (var child in store.Children)
+        {
+            if (child.NodeId == tableNodeId && child is Table t) return t;
+        }
+        return null;
+    }
+
+    private void RefreshTreeList()
+    {
+        if (GenerateTreeList.Instance == null)
+        {
+            if (EnableLog) Log.Warning(LogCategory, "GenerateTreeList å•ä¾‹æœªå°±ç»ªï¼Œè·³è¿‡åˆ·æ–°");
+            return;
+        }
+        GenerateTreeList.Instance.Generate();
+    }
+    #endregion
+
+    #region ç‰ˆæœ¬å·ä¸å¦å­˜ä¸º
+    /// <summary>è§£æåç§°æœ«å°¾ _æ•°å­—ï¼šå¦‚ Receipt_000 -> baseName=Receipt, version=0ï¼›æ— åˆ™ baseName=name, version=-1</summary>
+    private static void ParseVersionSuffix(string name, out string baseName, out int version)
+    {
+        baseName = name ?? "";
+        version = -1;
+        if (string.IsNullOrEmpty(baseName)) return;
+        int lastUnderscore = baseName.LastIndexOf('_');
+        if (lastUnderscore < 0) return;
+        string suffix = baseName.Substring(lastUnderscore + 1);
+        if (string.IsNullOrEmpty(suffix) || suffix.Length > 10) return;
+        for (int i = 0; i < suffix.Length; i++)
+            if (suffix[i] < '0' || suffix[i] > '9') return;
+        if (int.TryParse(suffix, out int v))
+        {
+            version = v;
+            baseName = baseName.Substring(0, lastUnderscore);
+        }
+    }
+
+    /// <summary>åç§°æœ«å°¾æ—  _æ•°å­— æ—¶è¡¥å…¨ä¸º _000ï¼Œå¹¶ç¡®ä¿ä¸è¡¨ä¸­å·²æœ‰åç§°ä¸é‡å¤ï¼ˆå–ä¸‹ä¸€ä¸ªå¯ç”¨ç‰ˆæœ¬å·ï¼‰</summary>
+    private string EnsureNameWithVersion(string name)
+    {
+        ParseVersionSuffix(name, out string baseName, out int ver);
+        if (ver < 0) baseName = name.Trim();
+        if (string.IsNullOrEmpty(baseName)) return name;
+        int nextVer = GetNextVersionForBase(baseName);
+        return baseName + "_" + nextVer.ToString("D3");
+    }
+
+    /// <summary>è¡¨ä¸­å·²æœ‰è¯¥ base ä¸‹çš„æœ€å¤§ç‰ˆæœ¬å· +1ï¼Œä¿è¯ä¸é‡å¤</summary>
+    private int GetNextVersionForBase(string baseName)
+    {
+        return GetNextVersionForBase(_store, _receiptTableName, baseName);
+    }
+
+    private static int GetNextVersionForBase(Store store, string tableName, string baseName)
+    {
+        if (store == null || string.IsNullOrEmpty(tableName)) return 0;
+        try
+        {
+            store.Query($"SELECT Name FROM {tableName}", out _, out object[,] rows);
+            if (rows == null || rows.GetLength(0) == 0) return 0;
+            int maxVer = -1;
+            string prefix = baseName + "_";
+            for (int i = 0; i < rows.GetLength(0); i++)
+            {
+                string n = rows[i, 0]?.ToString()?.Trim() ?? "";
+                if (n.Equals(baseName, StringComparison.OrdinalIgnoreCase)) { if (maxVer < 0) maxVer = 0; continue; }
+                if (!n.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) continue;
+                ParseVersionSuffix(n, out _, out int v);
+                if (v >= 0 && v > maxVer) maxVer = v;
+            }
+            return maxVer + 1;
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Error(LogCategory, $"GetNextVersionForBase å¤±è´¥: {tableName}, {ex.Message}");
+            return 0;
+        }
+    }
+
+    private bool GetReceiptRow(int receiptId, out string name, out int sequence, out string operations, out string description)
+    {
+        name = ""; sequence = 0; operations = ""; description = "";
+        if (_store == null || string.IsNullOrEmpty(_receiptTableName)) return false;
+        try
+        {
+            _store.Query($"SELECT Name, Sequence, Operations, Description FROM {_receiptTableName} WHERE ReceiptID = {receiptId}", out _, out object[,] rows);
+            if (rows == null || rows.GetLength(0) == 0) return false;
+            name = rows[0, 0]?.ToString()?.Trim() ?? "";
+            sequence = GetInt(rows[0, 1]);
+            operations = rows[0, 2]?.ToString() ?? "";
+            description = rows[0, 3]?.ToString() ?? "";
+            return true;
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Error(LogCategory, $"GetReceiptRow å¤±è´¥: {ex.Message}");
+            return false;
+        }
+    }
+
+    private static System.Collections.Generic.List<int> ParseIdList(string csv)
+    {
+        var list = new System.Collections.Generic.List<int>();
+        if (string.IsNullOrWhiteSpace(csv)) return list;
+        foreach (string s in csv.Split(','))
+        {
+            if (int.TryParse(s?.Trim(), out int id)) list.Add(id);
+        }
+        return list;
+    }
+
+    private static int GetNextId(Store store, string tableName, string idColumnName)
+    {
+        if (store == null || string.IsNullOrEmpty(tableName)) return 1;
+        try
+        {
+            store.Query($"SELECT {idColumnName} FROM {tableName}", out _, out object[,] r);
+            if (r == null || r.GetLength(0) == 0) return 1;
+            int max = 0;
+            for (int i = 0; i < r.GetLength(0); i++)
+            {
+                var cell = r[i, 0];
+                if (cell != null && cell != DBNull.Value && int.TryParse(cell.ToString(), out int val) && val > max)
+                    max = val;
+            }
+            return max + 1;
+        }
+        catch (Exception) { return 1; }
+    }
+
+    private bool GetOperationRow(int operationId, out string name, out string phases)
+    {
+        name = ""; phases = "";
+        if (_store == null || string.IsNullOrEmpty(_opTableName)) return false;
+        try
+        {
+            _store.Query($"SELECT Name, Phases FROM {_opTableName} WHERE OperationID = {operationId}", out _, out object[,] rows);
+            if (rows == null || rows.GetLength(0) == 0) return false;
+            name = rows[0, 0]?.ToString()?.Trim() ?? "";
+            phases = rows[0, 1]?.ToString() ?? "";
+            return true;
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Error(LogCategory, $"GetOperationRow å¤±è´¥: {ex.Message}");
+            return false;
+        }
+    }
+
+    /// <summary>ä» DB èŠ‚ç‚¹ä¸‹ Phase è¡¨èŠ‚ç‚¹ï¼ˆTableï¼‰çš„åˆ—å®šä¹‰è·å–åˆ—åï¼ˆTable.Columns æˆ– Childrenï¼‰ã€‚</summary>
+    private System.Collections.Generic.List<string> GetPhaseColumnNames()
+    {
+        var list = new System.Collections.Generic.List<string>();
+        if (_phaseTable == null) return list;
+        try
+        {
+            if (_phaseTable.Columns != null)
+            {
+                foreach (var col in _phaseTable.Columns)
+                {
+                    string name = col?.BrowseName?.Trim();
+                    if (!string.IsNullOrEmpty(name)) list.Add(name);
+                }
+            }
+            if (list.Count == 0)
+            {
+                foreach (var child in _phaseTable.Children)
+                {
+                    string name = child?.BrowseName?.Trim();
+                    if (!string.IsNullOrEmpty(name)) list.Add(name);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Warning(LogCategory, $"ä» Phase è¡¨èŠ‚ç‚¹è·å–åˆ—åå¤±è´¥: {ex.Message}ï¼Œå°†ä»…æ‹·è´ Name");
+        }
+        if (list.Count == 0) list.Add("Name");
+        return list;
+    }
+
+    private bool GetPhaseRow(int phaseId, out string name, System.Collections.Generic.List<string> colNames, System.Collections.Generic.List<object> colValues)
+    {
+        name = "";
+        colNames?.Clear();
+        colValues?.Clear();
+        if (_store == null || string.IsNullOrEmpty(_phaseTableName)) return false;
+        var columns = GetPhaseColumnNames();
+        if (columns.Count == 0) return false;
+        try
+        {
+            string selectList = string.Join(", ", columns);
+            _store.Query($"SELECT {selectList} FROM {_phaseTableName} WHERE PhaseID = {phaseId}", out _, out object[,] rows);
+            if (rows == null || rows.GetLength(0) == 0) return false;
+            int nameIdx = columns.IndexOf("Name");
+            name = nameIdx >= 0 ? rows[0, nameIdx]?.ToString()?.Trim() ?? "" : "";
+            if (colNames != null) colNames.AddRange(columns);
+            if (colValues != null)
+                for (int c = 0; c < rows.GetLength(1); c++)
+                    colValues.Add(rows[0, c] == null || rows[0, c] == DBNull.Value ? "" : rows[0, c]);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Error(LogCategory, $"GetPhaseRow å¤±è´¥: {ex.Message}");
+            return false;
+        }
+    }
+
+    private bool InsertOperation(int operationId, string name, string phases)
+    {
+        if (_store == null || _opTable == null) return false;
+        try
+        {
+            _opTable.Insert(new[] { "OperationID", "Name", "Phases" }, new object[,] { { operationId, name, phases ?? "" } });
+            if (EnableLog) Log.Info(LogCategory, $"Operation å·²æ’å…¥: OperationID={operationId}, Name='{name}'");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Error(LogCategory, $"InsertOperation å¤±è´¥: {ex.Message}");
+            return false;
+        }
+    }
+
+    private bool InsertPhase(int phaseId, string newName, System.Collections.Generic.List<string> colNames, System.Collections.Generic.List<object> colValues)
+    {
+        if (_store == null || _phaseTable == null) return false;
+        bool noValidColumns = colNames == null || colValues == null || colNames.Count != colValues.Count;
+        bool noPhaseId = colNames != null && colNames.Count > 0 && !colNames.Exists(c => c.Equals("PhaseID", StringComparison.OrdinalIgnoreCase));
+        if (noValidColumns || noPhaseId)
+        {
+            try { _phaseTable.Insert(new[] { "PhaseID", "Name" }, new object[,] { { phaseId, newName ?? "" } }); return true; }
+            catch (Exception ex) { if (EnableLog) Log.Error(LogCategory, $"InsertPhase å¤±è´¥: {ex.Message}"); return false; }
+        }
+        var names = colNames;
+        var values = new object[colValues.Count];
+        for (int i = 0; i < names.Count; i++)
+        {
+            if (names[i].Equals("PhaseID", StringComparison.OrdinalIgnoreCase)) values[i] = phaseId;
+            else if (names[i].Equals("Name", StringComparison.OrdinalIgnoreCase)) values[i] = newName ?? "";
+            else values[i] = colValues[i] == null || colValues[i] == DBNull.Value ? "" : colValues[i];
+        }
+        try
+        {
+            var row = new object[1, values.Length];
+            for (int i = 0; i < values.Length; i++) row[0, i] = values[i];
+            _phaseTable.Insert(names.ToArray(), row);
+            if (EnableLog) Log.Info(LogCategory, $"Phase å·²æ’å…¥: PhaseID={phaseId}, Name='{newName}'");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Error(LogCategory, $"InsertPhase å¤±è´¥: {ex.Message}");
+            return false;
+        }
+    }
     #endregion
 }

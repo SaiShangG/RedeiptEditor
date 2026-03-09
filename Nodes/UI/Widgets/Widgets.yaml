@@ -511,7 +511,7 @@ Children:
               - Name: DynamicLink
                 Type: DynamicLink
                 DataType: NodePath
-                Value: "/Objects/RedeiptEditor/Model/AddReceiptOperationPhase/name@Value"
+                Value: "/Objects/RedeiptEditor/Model/AddReceiptOperationPhase/Name@Value"
                 Children:
                 - Name: Mode
                   Type: BaseVariableType
@@ -767,26 +767,43 @@ Children:
                     - Name: ns=2;Method
                       Type: BaseDataVariableType
                       DataType: String
-                      Value: "CreateRecord"
+                      Value: "AddNewReceipt"
                     - Name: InputArguments
                       Type: BaseObjectType
                       Children:
-                      - Name: tableName
+                      - Name: nameNodeId
                         Type: BaseDataVariableType
-                        DataType: String
-                        Value: "Receipts"
-                      - Name: idColName
+                        DataType: NodeId
+                        Value: "/Objects/RedeiptEditor/Model/AddReceiptOperationPhase/Name"
+                      - Name: descriptNodeId
                         Type: BaseDataVariableType
-                        DataType: String
-                        Value: "ReceiptID"
-                      - Name: columnsCSV
-                        Type: BaseDataVariableType
-                        DataType: String
-                        Value: "Name"
-                      - Name: valuesCSV
-                        Type: BaseDataVariableType
-                        DataType: String
-                        Value: "Sai"
+                        DataType: NodeId
+                        Value: "/Objects/RedeiptEditor/Model/AddReceiptOperationPhase/Description"
+                  - Name: MethodContainer2
+                    Type: BaseObjectType
+                    Children:
+                    - Name: ns=2;ObjectPointer
+                      Type: NodePointer
+                      DataType: NodeId
+                      Children:
+                      - Name: Kind
+                        Type: PropertyType
+                        DataType: NodeId
+                        Value: "/Types/ObjectTypes/BaseObjectType"
+                      - Name: DynamicLink
+                        Type: DynamicLink
+                        DataType: NodePath
+                        Value: "../../../../../../../../../..@NodeId"
+                        Children:
+                        - Name: Mode
+                          Type: BaseVariableType
+                          DataType: DynamicLinkMode
+                          ModellingRule: Optional
+                          Value: 2
+                    - Name: ns=2;Method
+                      Type: BaseDataVariableType
+                      DataType: String
+                      Value: "Close"
                 - Name: EventArguments
                   Type: MouseClickEvent
                   Children:
@@ -996,45 +1013,44 @@ Children:
     DataType: HorizontalAlignment
     ModellingRule: Optional
     Value: 3
-  - Name: GenerateTreeList
-    Type: NetLogic
+  - Name: ScrollView1
+    Type: ScrollView
     Children:
-    - Name: ReceiptDB
+    - Name: ContentWidth
       Type: BaseDataVariableType
-      DataType: NodeId
-      Value: "/Objects/RedeiptEditor/DataStores/ReceiptDB/Tables/Receipts"
-    - Name: OperationDB
+      DataType: Size
+      AccessLevel: Read
+    - Name: ContentHeight
       Type: BaseDataVariableType
-      DataType: NodeId
-      Value: "/Objects/RedeiptEditor/DataStores/ReceiptDB/Tables/Operations"
-    - Name: PhaseDB
+      DataType: Size
+      AccessLevel: Read
+    - Name: ViewWidth
       Type: BaseDataVariableType
-      DataType: NodeId
-      Value: "/Objects/RedeiptEditor/DataStores/ReceiptDB/Tables/Phases"
-    - Name: R_O_MapDB
+      DataType: Size
+      AccessLevel: Read
+    - Name: ViewHeight
       Type: BaseDataVariableType
-      DataType: NodeId
-      Value: {"IdType":2,"Id":"91490dbffcad03f27bc0d119c760c512","Namespace":7}
-    - Name: O_P_MapDB
+      DataType: Size
+      AccessLevel: Read
+    - Name: ContentX
       Type: BaseDataVariableType
-      DataType: NodeId
-      Value: {"IdType":2,"Id":"d4d1b09e4d8a8d7e254fc7607d842e1c","Namespace":7}
-    - Class: Method
-      Name: Generate
-      Id: g=947e15f8d8f4470b2a7ff63fdddbd607
-  - Name: TreeContainer
-    Type: ColumnLayout
-    Children:
+      DataType: Size
+    - Name: ContentY
+      Type: BaseDataVariableType
+      DataType: Size
+    - Class: Reference
+      Target: ns=3;i=1394
+      Direction: Forward
     - Name: Width
       Type: BaseVariableType
       DataType: Size
       ModellingRule: Optional
-      Value: 50.0
+      Value: 300.0
     - Name: Height
       Type: BaseVariableType
       DataType: Size
       ModellingRule: Optional
-      Value: 50.0
+      Value: 300.0
     - Name: HorizontalAlignment
       Type: BaseVariableType
       DataType: HorizontalAlignment
@@ -1045,9 +1061,49 @@ Children:
       DataType: VerticalAlignment
       ModellingRule: Optional
       Value: 3
-    - Name: VerticalGap
-      Type: BaseDataVariableType
-      DataType: Size
-      ModellingRule: Optional
-      Value: 8.0
+    - Name: TreeContainer
+      Type: ColumnLayout
+      Children:
+      - Name: Width
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+        Value: 50.0
+      - Name: Height
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+        Value: 50.0
+      - Name: HorizontalAlignment
+        Type: BaseVariableType
+        DataType: HorizontalAlignment
+        ModellingRule: Optional
+        Value: 3
+      - Name: VerticalAlignment
+        Type: BaseVariableType
+        DataType: VerticalAlignment
+        ModellingRule: Optional
+        Value: 3
+      - Name: VerticalGap
+        Type: BaseDataVariableType
+        DataType: Size
+        ModellingRule: Optional
+        Value: 8.0
+    - Name: GenerateTreeList
+      Type: NetLogic
+      Children:
+      - Class: Method
+        Name: Generate
+        Id: g=fe1d8537f368676ef2ea8df9de8e5924
+      - Class: Method
+        Name: SetSelectedReceiptId
+        Id: g=0c750e588716bc2ac465f0335f1f84f3
+        Children:
+        - Name: ns=0;InputArguments
+          Type: BaseVariableType
+          DataType: Argument
+          ReferenceType: HasProperty
+          ValueRank: OneDimension
+          ArrayDimensions: [0]
+          Value: [{"TypeId":{"Id":296},"Body":{"Name":"receiptId","DataType":{"Id":6},"ValueRank":-1,"ArrayDimensions":[],"Description":{"NamespaceIndex":-1,"LocaleId":"","Text":""}}}]
 - File: Components/Components.yaml

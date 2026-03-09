@@ -4,10 +4,12 @@ Children:
 - Name: AddReceiptOperationPhase
   Type: BaseObjectType
   Children:
-  - Name: name
+  - Name: Name
+    Id: g=bf7e95a90d7cdf5fc1e918f60252c54a
     Type: BaseDataVariableType
     DataType: String
   - Name: Description
+    Id: g=b38e64892d0da6afd7c57d62971bfb71
     Type: BaseDataVariableType
     DataType: String
 - Name: SelectedTreeData
