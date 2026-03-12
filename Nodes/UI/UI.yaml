@@ -203,52 +203,20 @@ Children:
               - Name: TreeContainer
                 Type: ColumnLayout
                 Children:
-                - Name: ListContainer
-                  Type: ColumnLayout
-                  Children:
-                  - Name: ReceiptListItem2
-                    Type: ReceiptListItem
-                    Children:
-                    - Name: ItemContainer
-                      Type: RowLayout
-                      Children:
-                      - Name: ItemButton
-                        Type: Button
-                        Children:
-                        - Name: BackgroundColor
-                          Type: BaseDataVariableType
-                          DataType: Color
-                          ModellingRule: Optional
-                          Value: "#deeeff99"
-                    - Name: ReceiptID
-                      Type: BaseDataVariableType
-                      DataType: Int32
-                  - Name: OperationListItem1
-                    Type: OperationListItem
-                    Children:
-                    - Name: PolyLine1
-                      Type: PolyLine
-                    - Name: ItemContainer
-                      Type: RowLayout
-                      Children:
-                      - Name: ItemButton
-                        Type: Button
-                    - Name: OperationID
-                      Type: BaseDataVariableType
-                      DataType: Int32
-                  - Name: PhaseListItem1
-                    Type: PhaseListItem
-                    Children:
-                    - Name: PolyLine1
-                      Type: PolyLine
-                    - Name: ItemContainer
-                      Type: RowLayout
-                      Children:
-                      - Name: ItemButton
-                        Type: Button
-                    - Name: PhaseID
-                      Type: BaseDataVariableType
-                      DataType: Int32
+                - Name: BottomMargin
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                  Value: -1.0
+                - Name: VerticalAlignment
+                  Type: BaseVariableType
+                  DataType: VerticalAlignment
+                  ModellingRule: Optional
+                - Name: Height
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                  Value: 830.0
               - Name: GenerateTreeList
                 Type: NetLogic
                 Children:
@@ -267,15 +235,6 @@ Children:
                   Type: BaseDataVariableType
                   DataType: NodeId
                   Value: "/Objects/RedeiptEditor/DataStores/ReceiptDB/Tables/Phases"
-                - Class: Reference
-                  Target: g=0c750e588716bc2ac465f0335f1f84f3
-                  Direction: Forward
-                - Class: Reference
-                  Target: g=d82b4501feed82d8ebb691b8a9e2c6dd
-                  Direction: Forward
-                - Class: Reference
-                  Target: g=461452ae2b54d37aa7568de7d6d3b589
-                  Direction: Forward
                 - Name: Model
                   Type: BaseDataVariableType
                   DataType: NodeId
@@ -326,6 +285,29 @@ Children:
                     - Name: ns=2;ObjectPointer
                       Type: NodePointer
                       DataType: NodeId
+                      Value: "/Objects/RedeiptEditor/NetLogic/AddDialog"
+                      Children:
+                      - Name: Kind
+                        Type: PropertyType
+                        DataType: NodeId
+                        Value: "/Types/ObjectTypes/BaseObjectType"
+                    - Name: ns=2;Method
+                      Type: BaseDataVariableType
+                      DataType: String
+                      Value: "OnClickOpenDialog"
+                    - Name: InputArguments
+                      Type: BaseObjectType
+                      Children:
+                      - Name: type
+                        Type: BaseDataVariableType
+                        DataType: String
+                        Value: "Receipt"
+                  - Name: MethodContainer2
+                    Type: BaseObjectType
+                    Children:
+                    - Name: ns=2;ObjectPointer
+                      Type: NodePointer
+                      DataType: NodeId
                       Value: "/Objects/Commands/UICommands"
                       Children:
                       - Name: Kind
@@ -343,7 +325,7 @@ Children:
                         Type: BaseDataVariableType
                         DataType: NodeId
                         Description: {"NamespaceIndex":3,"TextId":"OpenDialogDialogDescription"}
-                        Value: "/Objects/RedeiptEditor/UI/Widgets/AddReceipt"
+                        Value: "/Objects/RedeiptEditor/UI/Widgets/AddNewDialog"
                       - Name: AliasNode
                         Type: BaseDataVariableType
                         DataType: NodeId
@@ -509,6 +491,11 @@ Children:
                         Type: DynamicLink
                         DataType: NodePath
                         Value: "/Objects/RedeiptEditor/Model/TreeListData/SelectedTreeData/SelectedReceiptName"
+                  - Name: TopMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 8.0
                 - Name: Row1
                   Type: RowLayout
                   Children:
@@ -685,6 +672,10 @@ Children:
                             Type: DynamicLink
                             DataType: NodePath
                             Value: "/Objects/RedeiptEditor/Model/TreeListData/SelectedTreeData/SelectedPhaseName"
+                  - Name: Wrap
+                    Type: BaseDataVariableType
+                    DataType: Boolean
+                    ModellingRule: Optional
               - Name: VerticalAlignment
                 Type: BaseVariableType
                 DataType: VerticalAlignment
@@ -814,22 +805,12 @@ Children:
                         - Name: Severity
                           Type: PropertyType
                           DataType: UInt16
-                    - Name: Text
-                      Type: BaseDataVariableType
-                      DataType: LocalizedText
-                      ModellingRule: Optional
-                      Value: {"LocaleId":"en-US","Text":"UP"}
                 - Name: ButtonWithIcon2
                   Type: ButtonWithIcon
                   Children:
                   - Name: Button1
                     Type: Button
                     Children:
-                    - Name: Text
-                      Type: BaseDataVariableType
-                      DataType: LocalizedText
-                      ModellingRule: Optional
-                      Value: {"LocaleId":"en-US","Text":"Down"}
                     - Name: MouseClickEventHandler1
                       Type: EventHandler
                       Children:
@@ -843,7 +824,7 @@ Children:
                         - Name: MethodContainer1
                           Type: BaseObjectType
                           Children:
-                          - Name: ns=2;ObjectPointer
+                          - Name: ObjectPointer
                             Type: NodePointer
                             DataType: NodeId
                             Value: "/Objects/RedeiptEditor/NetLogic/RecipeDatabaseManager"
@@ -852,7 +833,7 @@ Children:
                               Type: PropertyType
                               DataType: NodeId
                               Value: "/Types/ObjectTypes/BaseObjectType"
-                          - Name: ns=2;Method
+                          - Name: Method
                             Type: BaseDataVariableType
                             DataType: String
                             Value: "DoDown"
@@ -889,11 +870,6 @@ Children:
                   - Name: Button1
                     Type: Button
                     Children:
-                    - Name: Text
-                      Type: BaseDataVariableType
-                      DataType: LocalizedText
-                      ModellingRule: Optional
-                      Value: {"LocaleId":"en-US","Text":"Save"}
                     - Name: MouseClickEventHandler1
                       Type: EventHandler
                       Children:
@@ -907,7 +883,7 @@ Children:
                         - Name: MethodContainer1
                           Type: BaseObjectType
                           Children:
-                          - Name: ns=2;ObjectPointer
+                          - Name: ObjectPointer
                             Type: NodePointer
                             DataType: NodeId
                             Value: "/Objects/RedeiptEditor/NetLogic/RecipeDatabaseTreeLoader"
@@ -916,7 +892,7 @@ Children:
                               Type: PropertyType
                               DataType: NodeId
                               Value: "/Types/ObjectTypes/BaseObjectType"
-                          - Name: ns=2;Method
+                          - Name: Method
                             Type: BaseDataVariableType
                             DataType: String
                             Value: "Save"
@@ -953,11 +929,6 @@ Children:
                   - Name: Button1
                     Type: Button
                     Children:
-                    - Name: Text
-                      Type: BaseDataVariableType
-                      DataType: LocalizedText
-                      ModellingRule: Optional
-                      Value: {"LocaleId":"en-US","Text":"Save As"}
                     - Name: MouseClickEventHandler1
                       Type: EventHandler
                       Children:
@@ -971,7 +942,7 @@ Children:
                         - Name: MethodContainer1
                           Type: BaseObjectType
                           Children:
-                          - Name: ns=2;ObjectPointer
+                          - Name: ObjectPointer
                             Type: NodePointer
                             DataType: NodeId
                             Value: "/Objects/RedeiptEditor/NetLogic/RecipeDatabaseManager"
@@ -980,7 +951,7 @@ Children:
                               Type: PropertyType
                               DataType: NodeId
                               Value: "/Types/ObjectTypes/BaseObjectType"
-                          - Name: ns=2;Method
+                          - Name: Method
                             Type: BaseDataVariableType
                             DataType: String
                             Value: "DoSaveAs"
@@ -1017,11 +988,6 @@ Children:
                   - Name: Button1
                     Type: Button
                     Children:
-                    - Name: Text
-                      Type: BaseDataVariableType
-                      DataType: LocalizedText
-                      ModellingRule: Optional
-                      Value: {"LocaleId":"en-US","Text":"Remove"}
                     - Name: MouseClickEventHandler1
                       Type: EventHandler
                       Children:
@@ -1035,7 +1001,7 @@ Children:
                         - Name: MethodContainer1
                           Type: BaseObjectType
                           Children:
-                          - Name: ns=2;ObjectPointer
+                          - Name: ObjectPointer
                             Type: NodePointer
                             DataType: NodeId
                             Value: "/Objects/RedeiptEditor/NetLogic/RecipeDatabaseManager"
@@ -1044,7 +1010,7 @@ Children:
                               Type: PropertyType
                               DataType: NodeId
                               Value: "/Types/ObjectTypes/BaseObjectType"
-                          - Name: ns=2;Method
+                          - Name: Method
                             Type: BaseDataVariableType
                             DataType: String
                             Value: "DoRemove"
@@ -1079,17 +1045,17 @@ Children:
                   Type: BaseDataVariableType
                   DataType: Size
                   ModellingRule: Optional
-                  Value: 8.0
-                - Name: LeftMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 200.0
-                - Name: RightMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 230.0
+                  Value: 16.0
+              - Name: LeftMargin
+                Type: BaseVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 16.0
+              - Name: RightMargin
+                Type: BaseVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 16.0
               - Name: TopMargin
                 Type: BaseVariableType
                 DataType: Size
@@ -1128,6 +1094,355 @@ Children:
               DataType: Size
               ModellingRule: Optional
               Value: 212.0
+            - Name: Rows
+              Type: RowLayout
+              Children:
+              - Name: Width
+                Type: BaseVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 50.0
+              - Name: Height
+                Type: BaseVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 50.0
+              - Name: HorizontalAlignment
+                Type: BaseVariableType
+                DataType: HorizontalAlignment
+                ModellingRule: Optional
+                Value: 3
+              - Name: VerticalAlignment
+                Type: BaseVariableType
+                DataType: VerticalAlignment
+                ModellingRule: Optional
+                Value: 3
+              - Name: Panel1
+                Type: SelectedLayerPanel
+                Children:
+                - Name: Rec
+                  Type: Rectangle
+                  Children:
+                  - Name: Columns
+                    Type: ColumnLayout
+                    Children:
+                    - Name: Title
+                      Type: Label
+                      Children:
+                      - Name: Text
+                        Type: BaseDataVariableType
+                        DataType: LocalizedText
+                        Children:
+                        - Name: DynamicLink
+                          Type: DynamicLink
+                          DataType: NodePath
+                          Value: "../../../../SelectedLayerPanelController/Title"
+                    - Name: IconTitleWithSubtitle1
+                      Type: IconTitleWithSubtitle
+                      Children:
+                      - Name: Row
+                        Type: RowLayout
+                        Children:
+                        - Name: Background
+                          Type: Rectangle
+                          Children:
+                          - Name: Image1
+                            Type: Image
+                            Children:
+                            - Name: Path
+                              Type: BaseDataVariableType
+                              DataType: ResourceUri
+                              Value: "ns=7;%PROJECTDIR%/Images/OperationName.png"
+                              Children:
+                              - Name: ConditionalConverter1
+                                Type: ConditionalConverter
+                                Children:
+                                - Name: Condition
+                                  Type: BaseDataVariableType
+                                  DataType: Boolean
+                                  ReferenceType: HasSource
+                                  Children:
+                                  - Name: ExpressionEvaluator1
+                                    Type: ExpressionEvaluator
+                                    Children:
+                                    - Name: Source0
+                                      Type: BaseDataVariableType
+                                      DataType: BaseDataType
+                                      ReferenceType: HasSource
+                                      Children:
+                                      - Name: DynamicLink
+                                        Type: DynamicLink
+                                        DataType: NodePath
+                                        Value: "../../../../../../../../../../../SelectedLayerPanelController/Type"
+                        - Name: Columns
+                          Type: ColumnLayout
+                          Children:
+                          - Name: Title
+                            Type: Label
+                            Children:
+                            - Name: Text
+                              Type: BaseDataVariableType
+                              DataType: LocalizedText
+                              Children:
+                              - Name: DynamicLink
+                                Type: DynamicLink
+                                DataType: NodePath
+                                Value: "../../../../../../../SelectedLayerPanelController/IconText"
+                          - Name: Subtitle
+                            Type: Label
+                            Children:
+                            - Name: Text
+                              Type: BaseDataVariableType
+                              DataType: LocalizedText
+                              Children:
+                              - Name: DynamicLink
+                                Type: DynamicLink
+                                DataType: NodePath
+                                Value: "../../../../../../../SelectedLayerPanelController/IconText2"
+                    - Name: VerticalLayout1
+                      Type: ColumnLayout
+                      Children:
+                      - Name: TitleWithSubtitle1
+                        Type: TitleWithSubtitle
+                        Children:
+                        - Name: Background
+                          Type: Rectangle
+                          Children:
+                          - Name: Columns
+                            Type: ColumnLayout
+                            Children:
+                            - Name: Title
+                              Type: Label
+                            - Name: SubtitleBackground
+                              Type: Rectangle
+                              Children:
+                              - Name: Subtitle
+                                Type: Label
+                - Name: SelectedLayerPanelController
+                  Type: NetLogic
+                  Children:
+                  - Name: IconType
+                    Type: BaseDataVariableType
+                    DataType: ResourceUri
+                    Value: "ns=7;%PROJECTDIR%/Images/OperationName.png"
+                  - Name: Title
+                    Type: BaseDataVariableType
+                    DataType: String
+                    Value: "Phases in selected operation:"
+                  - Name: Type
+                    Type: BaseDataVariableType
+                    DataType: String
+                    Value: "Operation"
+                  - Name: IconText
+                    Type: BaseDataVariableType
+                    DataType: String
+                    Value: "None"
+                  - Name: IconText2
+                    Type: BaseDataVariableType
+                    DataType: String
+                    Value: "None"
+                - Name: Visible
+                  Type: BaseDataVariableType
+                  DataType: Boolean
+                  Value: true
+                  Children:
+                  - Name: DynamicLink
+                    Type: DynamicLink
+                    DataType: NodePath
+                    Value: "../../MiddlePanelManager/LeftPanelVisiable"
+              - Name: line
+                Type: PolyLine
+                Children:
+                - Name: LineThickness
+                  Type: BaseDataVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                  Value: 1.0
+                - Name: Width
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                - Name: Height
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                  Value: 960.0
+                - Name: LeftMargin
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                - Name: TopMargin
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                - Name: Path
+                  Type: BaseDataVariableType
+                  DataType: String
+                  ModellingRule: Optional
+                  Value: "M 0.000000 0.000000 L 0.000000 960.000000"
+                - Name: VerticalAlignment
+                  Type: BaseVariableType
+                  DataType: VerticalAlignment
+                  ModellingRule: Optional
+                  Value: 3
+                - Name: LineColor
+                  Type: BaseDataVariableType
+                  DataType: Color
+                  ModellingRule: Optional
+                  Value: "#0000002b"
+              - Name: HorizontalGap
+                Type: BaseDataVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 8.0
+              - Name: Panel2
+                Type: SelectedLayerPanel
+                Children:
+                - Name: Rec
+                  Type: Rectangle
+                  Children:
+                  - Name: Columns
+                    Type: ColumnLayout
+                    Children:
+                    - Name: Title
+                      Type: Label
+                      Children:
+                      - Name: Text
+                        Type: BaseDataVariableType
+                        DataType: LocalizedText
+                        Children:
+                        - Name: DynamicLink
+                          Type: DynamicLink
+                          DataType: NodePath
+                          Value: "../../../../SelectedLayerPanelController/Title"
+                    - Name: IconTitleWithSubtitle1
+                      Type: IconTitleWithSubtitle
+                      Children:
+                      - Name: Row
+                        Type: RowLayout
+                        Children:
+                        - Name: Background
+                          Type: Rectangle
+                          Children:
+                          - Name: Image1
+                            Type: Image
+                            Children:
+                            - Name: Path
+                              Type: BaseDataVariableType
+                              DataType: ResourceUri
+                              Value: "ns=7;%PROJECTDIR%/Images/OperationName.png"
+                              Children:
+                              - Name: ConditionalConverter1
+                                Type: ConditionalConverter
+                                Children:
+                                - Name: Condition
+                                  Type: BaseDataVariableType
+                                  DataType: Boolean
+                                  ReferenceType: HasSource
+                                  Children:
+                                  - Name: ExpressionEvaluator1
+                                    Type: ExpressionEvaluator
+                                    Children:
+                                    - Name: Source0
+                                      Type: BaseDataVariableType
+                                      DataType: BaseDataType
+                                      ReferenceType: HasSource
+                                      Children:
+                                      - Name: DynamicLink
+                                        Type: DynamicLink
+                                        DataType: NodePath
+                                        Value: "../../../../../../../../../../../SelectedLayerPanelController/Type"
+                        - Name: Columns
+                          Type: ColumnLayout
+                          Children:
+                          - Name: Title
+                            Type: Label
+                            Children:
+                            - Name: Text
+                              Type: BaseDataVariableType
+                              DataType: LocalizedText
+                              Children:
+                              - Name: DynamicLink
+                                Type: DynamicLink
+                                DataType: NodePath
+                                Value: "../../../../../../../SelectedLayerPanelController/IconText"
+                          - Name: Subtitle
+                            Type: Label
+                            Children:
+                            - Name: Text
+                              Type: BaseDataVariableType
+                              DataType: LocalizedText
+                              Children:
+                              - Name: DynamicLink
+                                Type: DynamicLink
+                                DataType: NodePath
+                                Value: "../../../../../../../SelectedLayerPanelController/IconText2"
+                    - Name: VerticalLayout1
+                      Type: ColumnLayout
+                      Children:
+                      - Name: TitleWithSubtitle1
+                        Type: TitleWithSubtitle
+                        Children:
+                        - Name: Background
+                          Type: Rectangle
+                          Children:
+                          - Name: Columns
+                            Type: ColumnLayout
+                            Children:
+                            - Name: Title
+                              Type: Label
+                            - Name: SubtitleBackground
+                              Type: Rectangle
+                              Children:
+                              - Name: Subtitle
+                                Type: Label
+                - Name: SelectedLayerPanelController
+                  Type: NetLogic
+                  Children:
+                  - Name: IconType
+                    Type: BaseDataVariableType
+                    DataType: ResourceUri
+                    Value: "ns=7;%PROJECTDIR%/Images/OperationName.png"
+                  - Name: Title
+                    Type: BaseDataVariableType
+                    DataType: String
+                    Value: "Phases in selected operation:"
+                  - Name: Type
+                    Type: BaseDataVariableType
+                    DataType: String
+                    Value: "Operation"
+                  - Name: IconText
+                    Type: BaseDataVariableType
+                    DataType: String
+                    Value: "None"
+                  - Name: IconText2
+                    Type: BaseDataVariableType
+                    DataType: String
+                    Value: "None"
+              - Name: MiddlePanelManager
+                Type: NetLogic
+                Children:
+                - Name: ItemPrefab
+                  Type: BaseDataVariableType
+                  DataType: NodeId
+                  Value: "/Objects/RedeiptEditor/UI/Widgets/Components/TitleWithSubtitle"
+                - Name: LeftPanelVisiable
+                  Type: BaseDataVariableType
+                  DataType: Boolean
+                  Value: true
+                - Name: RightPanelVisiable
+                  Type: BaseDataVariableType
+                  DataType: Boolean
+                  Value: true
+            - Name: Visible
+              Type: BaseDataVariableType
+              DataType: Boolean
+              Value: true
+              Children:
+              - Name: DynamicLink
+                Type: DynamicLink
+                DataType: NodePath
+                Value: "../Rows/MiddlePanelManager/RightPanelVisiable"
       - Name: MouseDownEventHandler1
         Type: EventHandler
         Children:
@@ -1216,11 +1531,159 @@ Children:
           - Name: Columns
             Type: ColumnLayout
             Children:
-            - Name: Label1
-              Type: Label
+            - Name: Row
+              Type: RowLayout
+              Children:
+              - Name: Image1
+                Type: Image
+                Children:
+                - Name: Path
+                  Type: BaseDataVariableType
+                  DataType: ResourceUri
+                  Value: "ns=7;%PROJECTDIR%/Images/OperationName.png"
+              - Name: Label1
+                Type: Label
             - Name: ButtonWithIcon1
               Type: ButtonWithIcon
               Children:
+              - Name: Rectangle1
+                Type: Rectangle
+                Children:
+                - Name: Button1
+                  Type: Button
+                  Children:
+                  - Name: MouseClickEventHandler1
+                    Type: EventHandler
+                    Children:
+                    - Name: ListenEventType
+                      Type: PropertyType
+                      DataType: NodeId
+                      Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
+                    - Name: MethodsToCall
+                      Type: BaseObjectType
+                      Children:
+                      - Name: MethodContainer1
+                        Type: BaseObjectType
+                        Children:
+                        - Name: ObjectPointer
+                          Type: NodePointer
+                          DataType: NodeId
+                          Value: "/Objects/Commands/UICommands"
+                          Children:
+                          - Name: Kind
+                            Type: PropertyType
+                            DataType: NodeId
+                            Value: "/Types/ObjectTypes/BaseObjectType"
+                        - Name: Method
+                          Type: BaseDataVariableType
+                          DataType: String
+                          Value: "OpenDialog"
+                        - Name: InputArguments
+                          Type: BaseObjectType
+                          Children:
+                          - Name: Dialog
+                            Type: BaseDataVariableType
+                            DataType: NodeId
+                            Value: "/Objects/RedeiptEditor/UI/Widgets/AddNewDialog"
+                          - Name: AliasNode
+                            Type: BaseDataVariableType
+                            DataType: NodeId
+                            ValueRank: ScalarOrOneDimension
+                          - Name: ParentItem
+                            Type: BaseDataVariableType
+                            DataType: NodeId
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "../../../../..@NodeId"
+                        - Name: OutputArguments
+                          Type: BaseObjectType
+                          Children:
+                          - Name: DialogNodeId
+                            Type: BaseDataVariableType
+                            DataType: NodeId
+                      - Name: MethodContainer2
+                        Type: BaseObjectType
+                        Children:
+                        - Name: ns=2;ObjectPointer
+                          Type: NodePointer
+                          DataType: NodeId
+                          Value: "/Objects/RedeiptEditor/NetLogic/AddDialog"
+                          Children:
+                          - Name: Kind
+                            Type: PropertyType
+                            DataType: NodeId
+                            Value: "/Types/ObjectTypes/BaseObjectType"
+                        - Name: ns=2;Method
+                          Type: BaseDataVariableType
+                          DataType: String
+                          Value: "OnClickOpenDialog"
+                        - Name: InputArguments
+                          Type: BaseObjectType
+                          Children:
+                          - Name: type
+                            Type: BaseDataVariableType
+                            DataType: String
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "../../../../../../../../../GenerateOperationPhaseListPanel/Type"
+                    - Name: EventArguments
+                      Type: MouseClickEvent
+                      Children:
+                      - Name: EventId
+                        Type: PropertyType
+                        DataType: ByteString
+                      - Name: EventType
+                        Type: PropertyType
+                        DataType: NodeId
+                      - Name: SourceNode
+                        Type: PropertyType
+                        DataType: NodeId
+                      - Name: SourceName
+                        Type: PropertyType
+                        DataType: String
+                      - Name: Time
+                        Type: PropertyType
+                        DataType: UtcTime
+                      - Name: ReceiveTime
+                        Type: PropertyType
+                        DataType: UtcTime
+                      - Name: Message
+                        Type: PropertyType
+                        DataType: LocalizedText
+                      - Name: Severity
+                        Type: PropertyType
+                        DataType: UInt16
+                  - Name: Text
+                    Type: BaseDataVariableType
+                    DataType: LocalizedText
+                    Children:
+                    - Name: StringFormatter1
+                      Type: StringFormatter
+                      Children:
+                      - Name: Format
+                        Type: BaseDataVariableType
+                        DataType: LocalizedText
+                        ReferenceType: HasParameter
+                        ModellingRule: Optional
+                        Value: {"LocaleId":"en-US","Text":"Create New {0}"}
+                      - Name: ns=2;Source0
+                        Type: BaseDataVariableType
+                        DataType: BaseDataType
+                        ReferenceType: HasSource
+                        Children:
+                        - Name: DynamicLink
+                          Type: DynamicLink
+                          DataType: NodePath
+                          Value: "../../../../../../../GenerateOperationPhaseListPanel/Type"
+                  - Name: FontSize
+                    Type: BaseDataVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 18.0
               - Name: Button1
                 Type: Button
             - Name: Search
@@ -1229,12 +1692,131 @@ Children:
               - Name: Text
                 Type: BaseDataVariableType
                 DataType: LocalizedText
+            - Name: PolyLine1
+              Type: PolyLine
+              Children:
+              - Name: Height
+                Type: BaseVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 56.0
+              - Name: LineColor
+                Type: BaseDataVariableType
+                DataType: Color
+                ModellingRule: Optional
+                Value: "#00000047"
+              - Name: LineThickness
+                Type: BaseDataVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 2.0
+              - Name: TopMargin
+                Type: BaseVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 20.0
           - Name: ColumnsCards
             Type: ColumnLayout
             Children:
-            - Name: OperationPhaseCard1
+            - Name: OperationPhaseCard4
               Type: OperationPhaseCard
               Children:
+              - Name: ItemId
+                Type: BaseDataVariableType
+                DataType: Int32
+              - Name: ReceiptID
+                Type: BaseDataVariableType
+                DataType: Int32
+              - Name: OperationID
+                Type: BaseDataVariableType
+                DataType: Int32
+              - Name: Rectangle1
+                Type: Rectangle
+                Children:
+                - Name: VerticalLayout1
+                  Type: ColumnLayout
+                  Children:
+                  - Name: ButtonWithIcon1
+                    Type: ButtonWithIcon
+                    Children:
+                    - Name: Button1
+                      Type: Button
+                    - Name: TopMargin
+                      Type: BaseVariableType
+                      DataType: Size
+                      ModellingRule: Optional
+                  - Name: Row
+                    Type: RowLayout
+                    Children:
+                    - Name: ComboBox1
+                      Type: ComboBox
+                      Children:
+                      - Class: Reference
+                        Target: ns=3;i=480
+                        Direction: Forward
+                      - Name: Text
+                        Type: BaseDataVariableType
+                        DataType: LocalizedText
+                      - Name: Model
+                        Type: NodePointer
+                        DataType: NodeId
+                        Value: "/Objects/RedeiptEditor/Model/TreeListData/Test"
+                        Children:
+                        - Name: ItemKind
+                          Type: PropertyType
+                          DataType: NodeId
+                          Value: "/Objects/RedeiptEditor/Model/TreeListData/Test/tes1"
+                        - Name: Kind
+                          Type: PropertyType
+                          DataType: NodeId
+                      - Name: SelectedValue
+                        Type: BaseDataVariableType
+                        DataType: BaseDataType
+                      - Name: SelectedItem
+                        Type: NodePointer
+                        DataType: NodeId
+                        Children:
+                        - Name: Kind
+                          Type: PropertyType
+                          DataType: NodeId
+                          Value: "/Objects/RedeiptEditor/Model/TreeListData/Test/tes1"
+                      - Name: UISelectedItem
+                        Type: BaseDataVariableType
+                        DataType: NodeId
+                        AccessLevel: Read
+                      - Name: UISelectedValue
+                        Type: BaseDataVariableType
+                        DataType: BaseDataType
+                        AccessLevel: Read
+                      - Name: Item
+                        Type: Alias
+                        DataType: NodeId
+                        Children:
+                        - Name: Kind
+                          Type: PropertyType
+                          DataType: NodeId
+                          Value: "/Objects/RedeiptEditor/Model/TreeListData/Test/tes1"
+                    - Name: ButtonWithIcon1
+                      Type: ButtonWithIcon
+                      Children:
+                      - Name: Button1
+                        Type: Button
+              - Name: TopMargin
+                Type: BaseVariableType
+                DataType: Size
+                ModellingRule: Optional
+            - Name: OperationPhaseCard5
+              Type: OperationPhaseCard
+              Children:
+              - Name: ItemId
+                Type: BaseDataVariableType
+                DataType: Int32
+              - Name: ReceiptID
+                Type: BaseDataVariableType
+                DataType: Int32
+              - Name: OperationID
+                Type: BaseDataVariableType
+                DataType: Int32
               - Name: Rectangle1
                 Type: Rectangle
                 Children:
@@ -1261,10 +1843,12 @@ Children:
                       - Name: Model
                         Type: NodePointer
                         DataType: NodeId
+                        Value: "/Objects/RedeiptEditor/Model/TreeListData/Test"
                         Children:
                         - Name: ItemKind
                           Type: PropertyType
                           DataType: NodeId
+                          Value: "/Objects/RedeiptEditor/Model/TreeListData/Test/tes1"
                         - Name: Kind
                           Type: PropertyType
                           DataType: NodeId
@@ -1278,6 +1862,7 @@ Children:
                         - Name: Kind
                           Type: PropertyType
                           DataType: NodeId
+                          Value: "/Objects/RedeiptEditor/Model/TreeListData/Test/tes1"
                       - Name: UISelectedItem
                         Type: BaseDataVariableType
                         DataType: NodeId
@@ -1293,170 +1878,17 @@ Children:
                         - Name: Kind
                           Type: PropertyType
                           DataType: NodeId
+                          Value: "/Objects/RedeiptEditor/Model/TreeListData/Test/tes1"
                     - Name: ButtonWithIcon1
                       Type: ButtonWithIcon
                       Children:
                       - Name: Button1
                         Type: Button
-              - Name: ItemId
-                Type: BaseDataVariableType
-                DataType: Int32
-              - Name: ReceiptID
-                Type: BaseDataVariableType
-                DataType: Int32
-              - Name: OperationID
-                Type: BaseDataVariableType
-                DataType: Int32
-            - Name: OperationPhaseCard2
-              Type: OperationPhaseCard
-              Children:
-              - Name: Rectangle1
-                Type: Rectangle
-                Children:
-                - Name: VerticalLayout1
-                  Type: ColumnLayout
-                  Children:
-                  - Name: ButtonWithIcon1
-                    Type: ButtonWithIcon
-                    Children:
-                    - Name: Button1
-                      Type: Button
-                  - Name: Row
-                    Type: RowLayout
-                    Children:
-                    - Name: ComboBox1
-                      Type: ComboBox
-                      Children:
-                      - Class: Reference
-                        Target: ns=3;i=480
-                        Direction: Forward
-                      - Name: Text
-                        Type: BaseDataVariableType
-                        DataType: LocalizedText
-                      - Name: Model
-                        Type: NodePointer
-                        DataType: NodeId
-                        Children:
-                        - Name: ItemKind
-                          Type: PropertyType
-                          DataType: NodeId
-                        - Name: Kind
-                          Type: PropertyType
-                          DataType: NodeId
-                      - Name: SelectedValue
-                        Type: BaseDataVariableType
-                        DataType: BaseDataType
-                      - Name: SelectedItem
-                        Type: NodePointer
-                        DataType: NodeId
-                        Children:
-                        - Name: Kind
-                          Type: PropertyType
-                          DataType: NodeId
-                      - Name: UISelectedItem
-                        Type: BaseDataVariableType
-                        DataType: NodeId
-                        AccessLevel: Read
-                      - Name: UISelectedValue
-                        Type: BaseDataVariableType
-                        DataType: BaseDataType
-                        AccessLevel: Read
-                      - Name: Item
-                        Type: Alias
-                        DataType: NodeId
-                        Children:
-                        - Name: Kind
-                          Type: PropertyType
-                          DataType: NodeId
-                    - Name: ButtonWithIcon1
-                      Type: ButtonWithIcon
-                      Children:
-                      - Name: Button1
-                        Type: Button
-              - Name: ItemId
-                Type: BaseDataVariableType
-                DataType: Int32
-              - Name: ReceiptID
-                Type: BaseDataVariableType
-                DataType: Int32
-              - Name: OperationID
-                Type: BaseDataVariableType
-                DataType: Int32
-            - Name: OperationPhaseCard3
-              Type: OperationPhaseCard
-              Children:
-              - Name: Rectangle1
-                Type: Rectangle
-                Children:
-                - Name: VerticalLayout1
-                  Type: ColumnLayout
-                  Children:
-                  - Name: ButtonWithIcon1
-                    Type: ButtonWithIcon
-                    Children:
-                    - Name: Button1
-                      Type: Button
-                  - Name: Row
-                    Type: RowLayout
-                    Children:
-                    - Name: ComboBox1
-                      Type: ComboBox
-                      Children:
-                      - Class: Reference
-                        Target: ns=3;i=480
-                        Direction: Forward
-                      - Name: Text
-                        Type: BaseDataVariableType
-                        DataType: LocalizedText
-                      - Name: Model
-                        Type: NodePointer
-                        DataType: NodeId
-                        Children:
-                        - Name: ItemKind
-                          Type: PropertyType
-                          DataType: NodeId
-                        - Name: Kind
-                          Type: PropertyType
-                          DataType: NodeId
-                      - Name: SelectedValue
-                        Type: BaseDataVariableType
-                        DataType: BaseDataType
-                      - Name: SelectedItem
-                        Type: NodePointer
-                        DataType: NodeId
-                        Children:
-                        - Name: Kind
-                          Type: PropertyType
-                          DataType: NodeId
-                      - Name: UISelectedItem
-                        Type: BaseDataVariableType
-                        DataType: NodeId
-                        AccessLevel: Read
-                      - Name: UISelectedValue
-                        Type: BaseDataVariableType
-                        DataType: BaseDataType
-                        AccessLevel: Read
-                      - Name: Item
-                        Type: Alias
-                        DataType: NodeId
-                        Children:
-                        - Name: Kind
-                          Type: PropertyType
-                          DataType: NodeId
-                    - Name: ButtonWithIcon1
-                      Type: ButtonWithIcon
-                      Children:
-                      - Name: Button1
-                        Type: Button
-              - Name: ItemId
-                Type: BaseDataVariableType
-                DataType: Int32
-              - Name: ReceiptID
-                Type: BaseDataVariableType
-                DataType: Int32
-              - Name: OperationID
-                Type: BaseDataVariableType
-                DataType: Int32
+            - Name: TopMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 220.0
           - Name: GenerateOperationPhaseListPanel
             Type: NetLogic
             Children:
@@ -1464,11 +1896,25 @@ Children:
               Target: g=613f5a46a77dc55e677b0b12c8a43cbb
               Direction: Forward
             - Class: Reference
-              Target: g=00ad10b00cc84a57ffdc92747599c984
-              Direction: Forward
-            - Class: Reference
               Target: g=5da806b8f185ab8fef27acf38e01e13a
               Direction: Forward
+            - Name: Type
+              Type: BaseDataVariableType
+              DataType: String
+            - Name: CreateNewButton
+              Type: BaseDataVariableType
+              DataType: NodeId
+              Children:
+              - Name: DynamicLink
+                Type: DynamicLink
+                DataType: NodePath
+                Value: "../../Columns/ButtonWithIcon1/Rectangle1/Button1@NodeId"
+                Children:
+                - Name: Mode
+                  Type: BaseVariableType
+                  DataType: DynamicLinkMode
+                  ModellingRule: Optional
+                  Value: 2
 - File: Screens/Screens.yaml
 - File: Keyboards/Keyboards.yaml
 - File: Widgets/Widgets.yaml

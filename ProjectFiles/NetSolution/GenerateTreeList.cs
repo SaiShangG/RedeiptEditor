@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using UAManagedCore;
 using FTOptix.UI;
@@ -47,7 +47,6 @@ public class GenerateTreeList : BaseNetLogic
     }
 
     /// <summary>Receipt 按钮点击时调用，传入自己的 ReceiptID，记录为 SelectedID，并刷新高亮。</summary>
-    [ExportMethod]
     public void SetSelectedReceiptId(int receiptId)
     {
         _selectedReceiptId = receiptId;
@@ -59,11 +58,11 @@ public class GenerateTreeList : BaseNetLogic
         ApplyOperationHighlight();
         ApplyPhaseHighlight();
         SyncSelectedItemToModel();
-        if (EnableLog) Log.Info(LogCategory, $"SelectedID = {receiptId}");
+        GenerateOperationPhaseListPanel.Instance?.RefreshIfModeChanged();
+        if (EnableLog) Log.Info(LogCategory, $"Receipt  点击，SelectedID = {receiptId}");
     }
 
     /// <summary>Operation 按钮点击时调用，记录所属 Receipt 与当前 Operation，并刷新高亮。</summary>
-    [ExportMethod]
     public void SetSelectedOperation(int receiptId, int operationId)
     {
         _selectedReceiptId = receiptId;
@@ -75,11 +74,11 @@ public class GenerateTreeList : BaseNetLogic
         ApplyOperationHighlight();
         ApplyPhaseHighlight();
         SyncSelectedItemToModel();
-        if (EnableLog) Log.Info(LogCategory, $"Selected Receipt={receiptId}, Operation={operationId}");
+        GenerateOperationPhaseListPanel.Instance?.RefreshIfModeChanged();
+        if (EnableLog) Log.Info(LogCategory, $"Operation 按钮点击，Selected Receipt={receiptId}, Operation={operationId}");
     }
 
     /// <summary>Phase 按钮点击时调用，记录所属 Receipt/Operation 与当前 Phase，并刷新高亮。</summary>
-    [ExportMethod]
     public void SetSelectedPhase(int receiptId, int operationId, int phaseId)
     {
         _selectedReceiptId = receiptId;
@@ -91,7 +90,8 @@ public class GenerateTreeList : BaseNetLogic
         ApplyOperationHighlight();
         ApplyPhaseHighlight();
         SyncSelectedItemToModel();
-        if (EnableLog) Log.Info(LogCategory, $"Selected Receipt={receiptId}, Operation={operationId}, Phase={phaseId}");
+        GenerateOperationPhaseListPanel.Instance?.RefreshIfModeChanged();
+        if (EnableLog) Log.Info(LogCategory, $"Phase 按钮点击，Selected Receipt={receiptId}, Operation={operationId}, Phase={phaseId}");
     }
 
     private void SyncSelectedItemToModel()
@@ -130,8 +130,7 @@ public class GenerateTreeList : BaseNetLogic
     [ExportMethod]
     public void Generate()
     {
-        var treeContainer = LogicObject.Owner.Get<Container>("TreeContainer")
-            ?? LogicObject.Owner.Get("ScrollView1")?.Get<Container>("TreeContainer");
+        var treeContainer = LogicObject.Owner.Get<Container>("TreeContainer");
         if (treeContainer == null)
         {
             if (EnableLog) Log.Error(LogCategory, "未找到 TreeContainer 节点！");
@@ -218,6 +217,17 @@ public class GenerateTreeList : BaseNetLogic
         }
         #endregion
 
+        #region 根据子布局高度之和设置 TreeContainer 高度
+        var columnLayout = treeContainer as ColumnLayout;
+        if (columnLayout != null)
+        {
+            float totalHeight = 0;
+            foreach (var col in treeContainer.Children.OfType<ColumnLayout>())
+                totalHeight += col.Height + 5;
+            columnLayout.Height = totalHeight + 50;
+        }
+        #endregion
+
         if (EnableLog) Log.Info(LogCategory, $"成功读取 {tree.Count} 条配方，树形列表生成完毕。");
     }
 
@@ -240,8 +250,13 @@ public class GenerateTreeList : BaseNetLogic
         var button = itemContainer?.Get<Button>("ItemButton");
         if (button != null)
         {
-            button.UAEvent -= (sender, args) => SetSelectedReceiptId(receiptId);
-            button.UAEvent += (sender, args) => SetSelectedReceiptId(receiptId);
+            button.UAEvent -= ReceiptButtonClicked;
+            button.UAEvent += ReceiptButtonClicked;
+        }
+        void ReceiptButtonClicked(object s, UAEventArgs a)
+        {
+            if (a?.EventType?.BrowseName != "MouseClickEvent") return;
+            SetSelectedReceiptId(receiptId);
         }
     }
 
@@ -291,8 +306,13 @@ public class GenerateTreeList : BaseNetLogic
         var button = itemContainer?.Get<Button>("ItemButton");
         if (button != null)
         {
-            button.UAEvent -= (s, a) => SetSelectedPhase(receiptId, operationId, phaseId);
-            button.UAEvent += (s, a) => SetSelectedPhase(receiptId, operationId, phaseId);
+            button.UAEvent -= PhaseButtonClicked;
+            button.UAEvent += PhaseButtonClicked;
+        }
+        void PhaseButtonClicked(object s, UAEventArgs a)
+        {
+            if (a?.EventType?.BrowseName != "MouseClickEvent") return;
+            SetSelectedPhase(receiptId, operationId, phaseId);
         }
     }
 
@@ -318,8 +338,16 @@ public class GenerateTreeList : BaseNetLogic
         var button = itemContainer?.Get<Button>("ItemButton");
         if (button != null)
         {
-            button.UAEvent -= (sender, args) => SetSelectedOperation(receiptId, operationId);
-            button.UAEvent += (sender, args) => SetSelectedOperation(receiptId, operationId);
+            button.UAEvent -= OperationButtonClicked;
+            button.UAEvent += OperationButtonClicked;
+            if (EnableLog) Log.Info(LogCategory, $"OperationButton event wired for item: {listItem?.BrowseName ?? "<null>"}");
+        }
+
+        void OperationButtonClicked(object sender, UAEventArgs a)
+        {
+            // 仅响应鼠标点击，忽略键盘等其它触发
+            if (a?.EventType?.BrowseName != "MouseClickEvent") return;
+            SetSelectedOperation(receiptId, operationId);
         }
     }
 

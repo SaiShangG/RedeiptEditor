@@ -44,14 +44,16 @@ Children:
     Type: BaseDataVariableType
     DataType: String
     Value: "Operation Up"
-- Name: AddReceiptOperationPhase
+- Name: Test
+  Id: g=80e6a0f102f7e84d2bd4dccc2b773337
   Type: BaseObjectType
   Children:
-  - Name: Name
-    Id: g=bf7e95a90d7cdf5fc1e918f60252c54a
+  - Name: tes1
+    Id: g=4018da88bbae4856b74209924846bfaf
     Type: BaseDataVariableType
     DataType: String
-  - Name: Description
-    Id: g=b38e64892d0da6afd7c57d62971bfb71
+    Value: "0"
+  - Name: tes2
     Type: BaseDataVariableType
     DataType: String
+    Value: "0"

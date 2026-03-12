@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 using System;
 using UAManagedCore;
 using FTOptix.UI;
@@ -69,11 +69,9 @@ public class RecipeDatabaseManager : BaseNetLogic
     #region 通过 TreeLoader 写入：配方（Receipt）
     /// <summary>新增配方：从 nameNodeId、descriptNodeId 读取名称与描述，插入内存树并刷新 UI，最后持久化。名称末尾无版本号时自动补 _000。</summary>
     [ExportMethod]
-    public void AddNewReceipt(NodeId nameNodeId, NodeId descriptNodeId)
+    public void AddNewReceipt(string name, string descript)
     {
         if (Loader == null) { if (EnableLog) Log.Error(LogCategory, "TreeLoader 未就绪"); return; }
-        string name = GetStringFromNode(nameNodeId);
-        string descript = GetStringFromNode(descriptNodeId);
         if (string.IsNullOrWhiteSpace(name)) { if (EnableLog) Log.Warning(LogCategory, "名称为空，未执行插入"); return; }
 
         name = EnsureNameWithVersion(name, Loader.Tree, n => n.Name);
@@ -192,19 +190,32 @@ public class RecipeDatabaseManager : BaseNetLogic
     [ExportMethod]
     public void SaveAsOperation()
     {
+        int oId = GenerateTreeList.Instance?.SelectedOperationId ?? 0;
+        if (oId <= 0) return;
+        SaveAsOperationFromSource(oId);
+    }
+
+    /// <summary>从指定源 Operation 另存为一个新 Operation（版本号+1），并插入到当前 Receipt 中选中项后面，同时复制其所有 Phase。</summary>
+    public void SaveAsOperationFromSource(int sourceOperationId)
+    {
+        if (EnableLog) Log.Info(LogCategory, $"[追踪] SaveAsOperationFromSource 进入 sourceOperationId={sourceOperationId}");
         if (Loader == null) { if (EnableLog) Log.Error(LogCategory, "TreeLoader 未就绪"); return; }
         int rId = GenerateTreeList.Instance?.SelectedReceiptId ?? 0;
-        int oId = GenerateTreeList.Instance?.SelectedOperationId ?? 0;
-        if (rId <= 0 || oId <= 0) { if (EnableLog) Log.Warning(LogCategory, "未选中 Receipt 或 Operation"); return; }
+        int oIdInsertAfter = GenerateTreeList.Instance?.SelectedOperationId ?? 0;
+        if (rId <= 0) { if (EnableLog) Log.Warning(LogCategory, "未选中 Receipt"); return; }
         if (!Loader.ReceiptById.TryGetValue(rId, out var rNode)) return;
-        if (!Loader.OperationById.TryGetValue(oId, out var srcOp)) return;
+        if (!Loader.OperationById.TryGetValue(sourceOperationId, out var srcOp)) return;
 
+        // 1. 为源 Operation 生成新版本的名称
         ParseVersionSuffix(srcOp.Name, out string opBase, out int _);
         string newOpName = opBase + "_" + GetNextVersionForBase(opBase, Loader.OperationById.Values, n => n.Name).ToString("D3");
+
+        // 2. 在当前 Receipt 下新增一个 Operation（仅 1 条），后续再复制 Phase
         int newOpId = Loader.AddOperation(rId, newOpName);
 
+        // 3. 调整新 Operation 在当前 Receipt 中的位置：插在当前选中 Operation 后面
         int insertIdx = rNode.Operations.FindIndex(o => o.OperationID == newOpId);
-        int srcIdx = rNode.Operations.FindIndex(o => o.OperationID == oId);
+        int srcIdx = oIdInsertAfter > 0 ? rNode.Operations.FindIndex(o => o.OperationID == oIdInsertAfter) : -1;
         if (insertIdx > 0 && srcIdx >= 0 && insertIdx != srcIdx + 1)
         {
             var newOpNode = rNode.Operations[insertIdx];
@@ -212,6 +223,7 @@ public class RecipeDatabaseManager : BaseNetLogic
             rNode.Operations.Insert(srcIdx + 1, newOpNode);
         }
 
+        // 4. 复制源 Operation 下的所有 Phase，名称同样按版本号+1 生成
         if (Loader.OperationById.TryGetValue(newOpId, out var newOp))
         {
             foreach (var srcPh in srcOp.Phases)
@@ -221,7 +233,9 @@ public class RecipeDatabaseManager : BaseNetLogic
                 Loader.AddPhase(newOpId, newPhName, new System.Collections.Generic.Dictionary<string, object>(srcPh.Columns));
             }
         }
-        SaveOrMarkDirtyAndRefresh(operationId: newOpId);
+
+        // 5. Insert 场景：仅缓存到内存树并刷新 UI，不立即写数据库
+        SaveOrMarkDirtyAndRefresh(operationId: newOpId, persistToDb: false);
         if (EnableLog) Log.Info(LogCategory, $"SaveAs Operation: '{srcOp.Name}' -> '{newOpName}', OperationID={newOpId}");
     }
 
@@ -284,26 +298,34 @@ public class RecipeDatabaseManager : BaseNetLogic
     [ExportMethod]
     public void SaveAsPhase()
     {
+        int pId = GenerateTreeList.Instance?.SelectedPhaseId ?? 0;
+        if (pId <= 0) return;
+        SaveAsPhaseFromSource(pId);
+    }
+
+    /// <summary>从指定源 Phase 另存为并插入当前 Operation，插入位置为树当前选中 Phase 后面；不改变树选中。</summary>
+    public void SaveAsPhaseFromSource(int sourcePhaseId)
+    {
         if (Loader == null) { if (EnableLog) Log.Error(LogCategory, "TreeLoader 未就绪"); return; }
         int oId = GenerateTreeList.Instance?.SelectedOperationId ?? 0;
-        int pId = GenerateTreeList.Instance?.SelectedPhaseId ?? 0;
-        if (oId <= 0 || pId <= 0) { if (EnableLog) Log.Warning(LogCategory, "未选中 Operation 或 Phase"); return; }
+        int pIdInsertAfter = GenerateTreeList.Instance?.SelectedPhaseId ?? 0;
+        if (oId <= 0) { if (EnableLog) Log.Warning(LogCategory, "未选中 Operation"); return; }
         if (!Loader.OperationById.TryGetValue(oId, out var opNode)) return;
-        if (!Loader.PhaseById.TryGetValue(pId, out var srcPh)) return;
+        if (!Loader.PhaseById.TryGetValue(sourcePhaseId, out var srcPh)) return;
 
         ParseVersionSuffix(srcPh.Name, out string phBase, out int _);
         string newPhName = phBase + "_" + GetNextVersionForBase(phBase, Loader.PhaseById.Values, n => n.Name).ToString("D3");
         int newPId = Loader.AddPhase(oId, newPhName, new System.Collections.Generic.Dictionary<string, object>(srcPh.Columns));
 
         int insertIdx = opNode.Phases.FindIndex(p => p.PhaseID == newPId);
-        int srcIdx = opNode.Phases.FindIndex(p => p.PhaseID == pId);
+        int srcIdx = pIdInsertAfter > 0 ? opNode.Phases.FindIndex(p => p.PhaseID == pIdInsertAfter) : -1;
         if (insertIdx > 0 && srcIdx >= 0 && insertIdx != srcIdx + 1)
         {
             var newPNode = opNode.Phases[insertIdx];
             opNode.Phases.RemoveAt(insertIdx);
             opNode.Phases.Insert(srcIdx + 1, newPNode);
         }
-        SaveOrMarkDirtyAndRefresh(phaseId: newPId);
+        SaveOrMarkDirtyAndRefresh(phaseId: newPId, persistToDb: false); // Insert 仅缓存+刷新树，不落库
         if (EnableLog) Log.Info(LogCategory, $"SaveAs Phase: '{srcPh.Name}' -> '{newPhName}', PhaseID={newPId}");
     }
 
@@ -344,11 +366,11 @@ public class RecipeDatabaseManager : BaseNetLogic
     [ExportMethod]
     public void DoSave(NodeId nameNodeId)
     {
-        DoSave(nameNodeId, NodeId.Empty);
+        DoSaveItem(nameNodeId, NodeId.Empty);
     }
 
     [ExportMethod]
-    public void DoSave(NodeId nameNodeId, NodeId phasesNodeId)
+    public void DoSaveItem(NodeId nameNodeId, NodeId phasesNodeId)
     {
         if (GenerateTreeList.Instance == null) return;
         if (GenerateTreeList.Instance.SelectedPhaseId != 0) SavePhase(nameNodeId);
@@ -372,6 +394,17 @@ public class RecipeDatabaseManager : BaseNetLogic
         else if (GenerateTreeList.Instance.SelectedOperationId != 0) DeleteSelectedOperation();
         else if (GenerateTreeList.Instance.SelectedReceiptId != 0) DeleteSelectedReceipt();
     }
+
+    /// <summary>将当前内存中所有修改写入数据库，供“保存”按钮调用。Insert 仅缓存，需点保存才落库。</summary>
+    [ExportMethod]
+    public void DoSaveToDatabase()
+    {
+        if (Loader == null) return;
+        Loader.Save();
+        RefreshTreeList();
+        GenerateOperationPhaseListPanel.Instance?.Generate();
+        if (EnableLog) Log.Info(LogCategory, "已保存到数据库");
+    }
     #endregion
 
     #region Autosave 与保存/仅标记
@@ -387,13 +420,12 @@ public class RecipeDatabaseManager : BaseNetLogic
         return true;
     }
 
-    private void SaveOrMarkDirtyAndRefresh(int? receiptId = null, int? operationId = null, int? phaseId = null)
+    /// <param name="persistToDb">false 时仅标记脏+刷新树，不写入数据库（用于右侧 Insert）。</param>
+    private void SaveOrMarkDirtyAndRefresh(int? receiptId = null, int? operationId = null, int? phaseId = null, bool persistToDb = true)
     {
         if (Loader == null) return;
-        if (GetAutosave())
-        {
+        if (persistToDb && GetAutosave())
             Loader.Save();
-        }
         else
         {
             if (receiptId.HasValue) Loader.MarkDirtyReceipt(receiptId.Value);
