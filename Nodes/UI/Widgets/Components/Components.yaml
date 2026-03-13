@@ -492,7 +492,7 @@ Children:
       Type: BaseDataVariableType
       DataType: LocalizedText
       ModellingRule: Optional
-      Value: {"LocaleId":"en-US","Text":"Add Receipt"}
+      Value: {"LocaleId":"en-US","Text":"Add Recipe"}
     - Name: LeftMargin
       Type: BaseVariableType
       DataType: Size
@@ -880,12 +880,12 @@ Children:
           - Name: Model
             Type: NodePointer
             DataType: NodeId
-            Value: "/Objects/RedeiptEditor/Model/TreeListData/Test"
+            Value: "/Objects/RedeiptEditor/Model/UIData/TreeListData/Test"
             Children:
             - Name: ItemKind
               Type: PropertyType
               DataType: NodeId
-              Value: "/Objects/RedeiptEditor/Model/TreeListData/Test/tes1"
+              Value: "/Objects/RedeiptEditor/Model/UIData/TreeListData/Test/tes1"
             - Name: Kind
               Type: PropertyType
               DataType: NodeId
@@ -899,7 +899,7 @@ Children:
             - Name: Kind
               Type: PropertyType
               DataType: NodeId
-              Value: "/Objects/RedeiptEditor/Model/TreeListData/Test/tes1"
+              Value: "/Objects/RedeiptEditor/Model/UIData/TreeListData/Test/tes1"
           - Name: UISelectedItem
             Type: BaseDataVariableType
             DataType: NodeId
@@ -920,7 +920,7 @@ Children:
             - Name: Kind
               Type: PropertyType
               DataType: NodeId
-              Value: "/Objects/RedeiptEditor/Model/TreeListData/Test/tes1"
+              Value: "/Objects/RedeiptEditor/Model/UIData/TreeListData/Test/tes1"
           - Name: Height
             Type: BaseVariableType
             DataType: Size
