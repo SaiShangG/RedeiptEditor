@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 using System;
 using System.Collections.Generic;
 using UAManagedCore;
@@ -214,6 +214,42 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
                 }
             }
 
+            // 加载未挂在任何 Receipt 下的独立 Operation（仅入 OperationById，供右侧 List 显示）
+            if (_opTable != null && !string.IsNullOrEmpty(_opTableName))
+            {
+                _store.Query($"SELECT OperationID, Name, Phases FROM {_opTableName}", out _, out object[,] allOpRows);
+                if (allOpRows != null)
+                    for (int r = 0; r < allOpRows.GetLength(0); r++)
+                    {
+                        int oId = CellToInt(allOpRows[r, 0]);
+                        if (OperationById.ContainsKey(oId)) continue;
+                        var oNode = new OperationNode { OperationID = oId, Name = CellToString(allOpRows[r, 1]), PhasesCsv = CellToString(allOpRows[r, 2]) ?? "" };
+                        OperationById[oId] = oNode;
+                    }
+            }
+
+            // 加载未挂在任何 Operation 下的独立 Phase（仅入 PhaseById，供右侧 List 显示）
+            if (_phaseTable != null && !string.IsNullOrEmpty(_phaseTableName) && phaseColumns.Count > 0)
+            {
+                string selectList = string.Join(", ", phaseColumns);
+                _store.Query($"SELECT {selectList} FROM {_phaseTableName}", out _, out object[,] allPhRows);
+                if (allPhRows != null)
+                {
+                    int phaseIdIdx = phaseColumns.FindIndex(c => string.Equals(c, "PhaseID", StringComparison.OrdinalIgnoreCase));
+                    int nameIdx = phaseColumns.FindIndex(c => string.Equals(c, "Name", StringComparison.OrdinalIgnoreCase));
+                    for (int r = 0; r < allPhRows.GetLength(0); r++)
+                    {
+                        int pId = phaseIdIdx >= 0 ? CellToInt(allPhRows[r, phaseIdIdx]) : CellToInt(allPhRows[r, 0]);
+                        if (PhaseById.ContainsKey(pId)) continue;
+                        var pNode = new PhaseNode { PhaseID = pId };
+                        for (int c = 0; c < phaseColumns.Count && c < allPhRows.GetLength(1); c++)
+                            pNode.Columns[phaseColumns[c]] = allPhRows[r, c] == null || allPhRows[r, c] == DBNull.Value ? "" : allPhRows[r, c];
+                        pNode.Name = nameIdx >= 0 ? CellToString(allPhRows[r, nameIdx]) : "";
+                        PhaseById[pId] = pNode;
+                    }
+                }
+            }
+
             if (EnableLog) Log.Info(LogCategory, $"已加载 {Tree.Count} 条配方到本地 dict 树");
         }
         catch (Exception ex)
@@ -414,6 +450,27 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         return true;
     }
 
+    /// <summary>仅新建到 Operation 表并加入 OperationById，不加入任何 Receipt 树；用于“创建新 Operation”仅写库、刷新右侧 List。</summary>
+    public int AddOperationStandalone(string name)
+    {
+        if (_opTable == null || string.IsNullOrEmpty(_opTableName)) return -1;
+        int newId = OperationById.Count > 0 ? MaxDictKey(OperationById) + 1 : 1;
+        var node = new OperationNode { OperationID = newId, Name = name ?? "" };
+        OperationById[newId] = node;
+        try
+        {
+            _opTable.Insert(new[] { "OperationID", "Name", "Phases" }, new object[,] { { newId, name ?? "", "" } });
+        }
+        catch (Exception ex)
+        {
+            OperationById.Remove(newId);
+            if (EnableLog) Log.Error(LogCategory, $"AddOperationStandalone 写入表失败: {ex.Message}");
+            return -1;
+        }
+        if (EnableLog) Log.Info(LogCategory, $"AddOperationStandalone: OperationID={newId}, Name='{name}'");
+        return newId;
+    }
+
     // ── Phase ─────────────────────────────────────────────────────────────────
 
     /// <summary>在指定 Operation 下新增 Phase，返回新 PhaseID。</summary>
@@ -452,6 +509,29 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         PhaseById.Remove(phaseId);
         MarkModified();
         return true;
+    }
+
+    /// <summary>仅新建到 Phase 表并加入 PhaseById，不加入任何 Operation 树；用于“创建新 Phase”仅写库、刷新右侧 List。</summary>
+    public int AddPhaseStandalone(string name)
+    {
+        if (_phaseTable == null || string.IsNullOrEmpty(_phaseTableName)) return -1;
+        int newId = PhaseById.Count > 0 ? MaxDictKey(PhaseById) + 1 : 1;
+        var node = new PhaseNode { PhaseID = newId, Name = name ?? "" };
+        node.Columns["PhaseID"] = newId;
+        node.Columns["Name"] = node.Name;
+        PhaseById[newId] = node;
+        try
+        {
+            SavePhaseInsert(node);
+        }
+        catch (Exception ex)
+        {
+            PhaseById.Remove(newId);
+            if (EnableLog) Log.Error(LogCategory, $"AddPhaseStandalone 写入表失败: {ex.Message}");
+            return -1;
+        }
+        if (EnableLog) Log.Info(LogCategory, $"AddPhaseStandalone: PhaseID={newId}, Name='{name}'");
+        return newId;
     }
 
     // ── 上下移 ───────────────────────────────────────────────────────────────
@@ -582,11 +662,6 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
                 }
             }
 
-            // 3. 同步删除：先 Phase，再 Operation，再 Receipt
-            DeleteOrphans(_phaseTableName, "PhaseID", dbPhaseIds, PhaseById.Keys);
-            DeleteOrphans(_opTableName, "OperationID", dbOpIds, OperationById.Keys);
-            DeleteOrphans(_receiptTableName, "ReceiptID", dbReceiptIds, ReceiptById.Keys);
-
             if (EnableLog) Log.Info(LogCategory, "Save 完成，正在重新加载树...");
         }
         catch (Exception ex)
@@ -658,25 +733,6 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         var row = new object[1, colNames.Count];
         for (int i = 0; i < values.Count; i++) row[0, i] = values[i];
         _phaseTable.Insert(colNames.ToArray(), row);
-    }
-
-    private void DeleteOrphans(string tableName, string idColumn, HashSet<int> dbIds, IEnumerable<int> localKeys)
-    {
-        if (string.IsNullOrEmpty(tableName)) return;
-        var localSet = new HashSet<int>(localKeys);
-        var orphans = new List<int>();
-        foreach (int id in dbIds) if (!localSet.Contains(id)) orphans.Add(id);
-        if (orphans.Count == 0) return;
-        string inClause = string.Join(",", orphans);
-        try
-        {
-            _store.Query($"DELETE FROM {tableName} WHERE {idColumn} IN ({inClause})", out _, out _);
-            if (EnableLog) Log.Info(LogCategory, $"已从 {tableName} 删除 {orphans.Count} 个孤立条目: [{inClause}]");
-        }
-        catch (Exception ex)
-        {
-            if (EnableLog) Log.Error(LogCategory, $"DeleteOrphans({tableName}) 失败: {ex.Message}");
-        }
     }
 
     private static string BuildIdCsv<T>(List<T> list, Func<T, int> selector)

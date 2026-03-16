@@ -142,6 +142,11 @@ Children:
     Children:
     - Name: Default
       Type: ScrollBarStyle
+      Children:
+      - Name: Size
+        Type: BaseDataVariableType
+        DataType: Size
+        Value: 10.0
   - Name: AccordionStyles
     Type: BaseObjectType
     Children:

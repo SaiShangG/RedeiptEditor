@@ -1,42 +1,15 @@
 #region Using directives
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UAManagedCore;
+using OpcUa = UAManagedCore.OpcUa;
 using FTOptix.UI;
 using FTOptix.HMIProject;
 using FTOptix.NetLogic;
 using FTOptix.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 #endregion
 
-/// <summary>
-/// 右侧面板列表生成器，复用于 Operation List 与 Operation Phase 两种模式。
-/// 挂在 GenerateOperationPhaseListPanel 下的 Logic，通过 Logic 变量 ListMode("Operation"/"Phase") 控制模式。
-///
-/// Optix UI 层级（与图一致）：
-///   RightContainer
-///   └── Background
-///       └── OperationPhaseTemplatePanel1
-///           ├── Columns
-///           │   ├── Label1               ← 标题 "Operation List" / "Operation Phase"
-///           │   └── ButtonWithIcon1       ← "+ Create New"，点击 OnCreateNew
-///           │   └── SearchBox (TextBox)  可选，搜索过滤
-///           ├── ColumnsCards （vertical layout）
-///                  ← 动态生成 OperationPhaseCard 实例
-///           └── GenerateOperationPhaseListPanel  ← 本 Logic 的 Owner
-///               
-///               
-///
-/// 自定义类型 OperationPhaseCard 结构（与 Optix Studio 中一致）：
-///   OperationPhaseCard (Container)
-///   ├── Variables: ItemId(Int32), ReceiptID(Int32), OperationID(Int32)
-///   ├── Rectangle1
-///       └─── VerticalLayout1
-///           └─── ButtonWithIcon1     ← 标题（如 "Operation"）
-///           └─── Row
-///                 ├─── ComboBox1       ← 版本选择
-///                 └─── ButtonWithIcon1 ← "+Insert"，点击 OnInsert
-/// </summary>
 public class GenerateOperationPhaseListPanel : BaseNetLogic
 {
     #region 日志
@@ -46,14 +19,19 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     #endregion
 
     public static GenerateOperationPhaseListPanel Instance { get; private set; }
+    private string _lastDerivedMode = "";
+    private bool _insertInProgress;
+    private static int _insertCallCount;
+    private static readonly object _insertLock = new object(); // 防止多线程/异步下多次执行
 
     #region 生命周期
     public override void Start()
     {
         try { var v = LogicObject.GetVariable("EnableLog"); if (v != null) _enableLog = (bool)v.Value; } catch { }
         if (Instance == null) Instance = this;
-        if (EnableLog) Log.Info(LogCategory, $"Start (Mode={ListMode})");
-        UpdateTitle();
+        SyncTypeVariable();
+        UpdateCreateNewButtonVisibility();
+        if (EnableLog) Log.Info(LogCategory, "Start");
         Generate();
     }
 
@@ -64,38 +42,70 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     }
     #endregion
 
-    #region 模式
-    private string ListMode
+    #region 模式（由左侧树选择推导）
+    /// <summary>
+    /// 根据左侧树当前选择推导有效模式：
+    ///   选 Phase       → "Empty"
+    ///   选 Operation   → "Phase"
+    ///   选 Receipt     → "Operation"
+    ///   无选择         → "Empty"
+    /// 同步到 LogicObject 的 Type 变量，供属性面板显示。
+    /// </summary>
+    private string DerivedMode
     {
         get
         {
-            try { var v = LogicObject.GetVariable("ListMode"); if (v != null && v.Value != null) { var s = (string)v.Value; if (!string.IsNullOrEmpty(s)) return s; } }
-            catch { }
-            return "Operation";
+            var tree = GenerateTreeList.Instance;
+            if (tree == null) return "Empty";
+            if (tree.SelectedPhaseId != 0) return "Empty";
+            if (tree.SelectedOperationId != 0) return "Phase";
+            if (tree.SelectedReceiptId != 0) return "Operation";
+            return "Empty";
         }
+    }
+
+    private void SyncTypeVariable()
+    {
+        var v = LogicObject.GetVariable("Type");
+        if (v != null) v.Value = DerivedMode;
+    }
+
+    private void UpdateCreateNewButtonVisibility()
+    {
+        var btnVar = LogicObject.GetVariable("CreateNewButton");
+        if (btnVar == null || btnVar.Value == null) return;
+        var nodeId = (NodeId)btnVar.Value;
+        if (nodeId.IsEmpty) return;
+        var btn = InformationModel.Get(nodeId) as Button;
+        if (btn != null) btn.Visible = (DerivedMode == "Phase" || DerivedMode == "Operation");
     }
     #endregion
 
     #region 生成入口
+    /// <summary>仅当左侧选中类型（Receipt/Operation/Phase）变化时刷新右侧列表，同类型下切换节点不刷新。</summary>
+    public void RefreshIfModeChanged()
+    {
+        string mode = DerivedMode;
+        if (mode == _lastDerivedMode) return;
+        _lastDerivedMode = mode;
+        Generate();
+    }
+
     [ExportMethod]
     public void Generate()
     {
+        _lastDerivedMode = DerivedMode;
+        SyncTypeVariable();
+        UpdateCreateNewButtonVisibility();
         var listContainer = GetListContainer();
-        if (listContainer == null)
-        {
-            if (EnableLog) Log.Error(LogCategory, "未找到 ListContainer！");
-            return;
-        }
+        if (listContainer == null) { if (EnableLog) Log.Error(LogCategory, "未找到 ListContainer！"); return; }
         bool wasVisible = listContainer.Visible;
         try
         {
             listContainer.Visible = false;
             GenerateCore(listContainer);
         }
-        finally
-        {
-            listContainer.Visible = wasVisible;
-        }
+        finally { listContainer.Visible = wasVisible; }
     }
     #endregion
 
@@ -105,75 +115,79 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
         foreach (var child in listContainer.Children.OfType<Container>().ToList())
             child.Delete();
 
+        UpdateTitle();
+        string mode = DerivedMode;
+        if (mode == "Empty")
+        {
+            if (EnableLog) Log.Info(LogCategory, "Empty 模式，列表为空");
+            return;
+        }
+
         var loader = RecipeDatabaseTreeLoader.Instance;
         if (loader == null) { if (EnableLog) Log.Error(LogCategory, "RecipeDatabaseTreeLoader 未就绪"); return; }
 
         NodeId itemTypeId = FindCustomTypeNodeId(Project.Current, "OperationPhaseCard");
         if (itemTypeId == NodeId.Empty) { if (EnableLog) Log.Error(LogCategory, "未找到 OperationPhaseCard 类型！"); return; }
 
-        string searchText = GetSearchText();
-
-        if (ListMode == "Phase")
-            BuildPhaseItems(listContainer, loader, itemTypeId, searchText);
+        if (mode == "Phase")
+            BuildPhaseItems(listContainer, loader, itemTypeId);
         else
-            BuildOperationItems(listContainer, loader, itemTypeId, searchText);
+            BuildOperationItems(listContainer, loader, itemTypeId);
     }
 
-    private void BuildOperationItems(Container listContainer, RecipeDatabaseTreeLoader loader, NodeId itemTypeId, string searchText)
+    private void BuildOperationItems(Container listContainer, RecipeDatabaseTreeLoader loader, NodeId itemTypeId)
     {
         int rId = GenerateTreeList.Instance?.SelectedReceiptId ?? 0;
-        if (rId <= 0 || !loader.ReceiptById.TryGetValue(rId, out var rNode))
+        if (rId <= 0)
         {
-            if (EnableLog) Log.Warning(LogCategory, "未选中有效 Receipt，跳过 Operation 列表生成");
+            if (EnableLog) Log.Warning(LogCategory, "未选中 Receipt，跳过 Operation 列表生成");
             return;
         }
 
-        var versionMap = BuildVersionMap(rNode.Operations.Select(o => (o.OperationID, o.Name)));
+        // 全库所有 Operation 按 baseName 分组，不过滤已添加的版本
+        var versionMap = BuildVersionMap(loader.OperationById.Values.Select(o => (o.OperationID, o.Name)), null);
+
         int count = 0;
-
-        foreach (var op in rNode.Operations)
+        foreach (var kvp in versionMap.OrderBy(k => k.Key, StringComparer.OrdinalIgnoreCase))
         {
-            ParseBaseName(op.Name, out string baseName, out string version);
-            if (!string.IsNullOrEmpty(searchText) && !baseName.Contains(searchText, StringComparison.OrdinalIgnoreCase)) continue;
-
-            var item = InformationModel.MakeObject(SafeName(op.Name) + "_Item", itemTypeId) as Container;
+            var item = InformationModel.MakeObject(SafeName(kvp.Key) + "_Item", itemTypeId) as Container;
             if (item == null) continue;
 
-            SetTitle(item, baseName);
-            SetVariables(item, op.OperationID, rId, 0);
-            SetVersionComboBox(item, versionMap, baseName, op.OperationID);
-            SetInsertButton(item, op.OperationID);
+            SetTitle(item, kvp.Key);
+            SetVariables(item, kvp.Value[0].Id, rId, 0);
+            SetVersionComboBoxAndIds(item, kvp.Key, kvp.Value);
+            SetTitleButtonClick(item, kvp.Key);
+            SetInsertButton(item);
             listContainer.Add(item);
             count++;
         }
         if (EnableLog) Log.Info(LogCategory, $"Operation 列表生成完毕，共 {count} 项");
     }
 
-    private void BuildPhaseItems(Container listContainer, RecipeDatabaseTreeLoader loader, NodeId itemTypeId, string searchText)
+    private void BuildPhaseItems(Container listContainer, RecipeDatabaseTreeLoader loader, NodeId itemTypeId)
     {
         int oId = GenerateTreeList.Instance?.SelectedOperationId ?? 0;
-        if (oId <= 0 || !loader.OperationById.TryGetValue(oId, out var opNode))
+        int rId = GenerateTreeList.Instance?.SelectedReceiptId ?? 0;
+        if (oId <= 0)
         {
-            if (EnableLog) Log.Warning(LogCategory, "未选中有效 Operation，跳过 Phase 列表生成");
+            if (EnableLog) Log.Warning(LogCategory, "未选中 Operation，跳过 Phase 列表生成");
             return;
         }
-        int rId = GenerateTreeList.Instance?.SelectedReceiptId ?? 0;
 
-        var versionMap = BuildVersionMap(opNode.Phases.Select(p => (p.PhaseID, p.Name)));
+        // 全库所有 Phase 按 baseName 分组，不过滤已添加的版本
+        var versionMap = BuildVersionMap(loader.PhaseById.Values.Select(p => (p.PhaseID, p.Name)), null);
+
         int count = 0;
-
-        foreach (var ph in opNode.Phases)
+        foreach (var kvp in versionMap.OrderBy(k => k.Key, StringComparer.OrdinalIgnoreCase))
         {
-            ParseBaseName(ph.Name, out string baseName, out string version);
-            if (!string.IsNullOrEmpty(searchText) && !baseName.Contains(searchText, StringComparison.OrdinalIgnoreCase)) continue;
-
-            var item = InformationModel.MakeObject(SafeName(ph.Name) + "_Item", itemTypeId) as Container;
+            var item = InformationModel.MakeObject(SafeName(kvp.Key) + "_Item", itemTypeId) as Container;
             if (item == null) continue;
 
-            SetTitle(item, baseName);
-            SetVariables(item, ph.PhaseID, rId, oId);
-            SetVersionComboBox(item, versionMap, baseName, ph.PhaseID);
-            SetInsertButton(item, ph.PhaseID);
+            SetTitle(item, kvp.Key);
+            SetVariables(item, kvp.Value[0].Id, rId, oId);
+            SetVersionComboBoxAndIds(item, kvp.Key, kvp.Value);
+            SetTitleButtonClick(item, kvp.Key);
+            SetInsertButton(item);
             listContainer.Add(item);
             count++;
         }
@@ -182,89 +196,108 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     #endregion
 
     #region ExportMethod：插入与新建
-    /// <summary>Insert 按钮点击：将选中版本对应的 Operation/Phase 另存为复制插入当前树。</summary>
     [ExportMethod]
     public void OnInsert(int itemId)
     {
+        _insertCallCount++;
+        if (EnableLog) Log.Info(LogCategory, $"[追踪] OnInsert 第 {_insertCallCount} 次进入 itemId={itemId}");
+        if (EnableLog) Log.Info(LogCategory, $"调用 OnInsert, itemId={itemId}\n{Environment.StackTrace}");
+
+
+
         if (itemId <= 0) return;
-        string mode = ListMode;
-        if (mode == "Phase")
+        lock (_insertLock)
         {
-            int rId = GenerateTreeList.Instance?.SelectedReceiptId ?? 0;
-            int oId = GenerateTreeList.Instance?.SelectedOperationId ?? 0;
-            if (oId <= 0) { if (EnableLog) Log.Warning(LogCategory, "未选中 Operation，无法插入 Phase"); return; }
-            GenerateTreeList.Instance?.SetSelectedPhase(rId, oId, itemId);
-            RecipeDatabaseManager.Instance?.SaveAsPhase();
+            if (_insertInProgress)
+            {
+                if (EnableLog) Log.Warning(LogCategory, "[追踪] OnInsert 跳过(防重入)");
+                return;
+            }
+            _insertInProgress = true;
         }
-        else
+        try
         {
-            int rId = GenerateTreeList.Instance?.SelectedReceiptId ?? 0;
-            if (rId <= 0) { if (EnableLog) Log.Warning(LogCategory, "未选中 Receipt，无法插入 Operation"); return; }
-            GenerateTreeList.Instance?.SetSelectedOperation(rId, itemId);
-            RecipeDatabaseManager.Instance?.SaveAsOperation();
+            string mode = DerivedMode;
+            if (mode == "Phase")
+            {
+                int oId = GenerateTreeList.Instance?.SelectedOperationId ?? 0;
+                if (oId <= 0) { if (EnableLog) Log.Warning(LogCategory, "未选中 Operation，无法插入 Phase"); return; }
+                if (EnableLog) Log.Info(LogCategory, "[追踪] 执行 SaveAsPhaseFromSource");
+                RecipeDatabaseManager.Instance?.SaveAsPhaseFromSource(itemId);
+            }
+            else if (mode == "Operation")
+            {
+                int rId = GenerateTreeList.Instance?.SelectedReceiptId ?? 0;
+                if (rId <= 0) { if (EnableLog) Log.Warning(LogCategory, "未选中 Receipt，无法插入 Operation"); return; }
+                if (EnableLog) Log.Info(LogCategory, "[追踪] 执行 SaveAsOperationFromSource");
+                RecipeDatabaseManager.Instance?.SaveAsOperationFromSource(itemId);
+            }
         }
-        GenerateTreeList.Instance?.Generate();
-        Generate();
+        finally { lock (_insertLock) _insertInProgress = false; }
     }
 
-    /// <summary>+ Create New 按钮点击：在当前 Receipt/Operation 下新建 Operation/Phase。</summary>
-    [ExportMethod]
-    public void OnCreateNew()
+    /// <summary>创建新的 Operation 或 Phase：仅写入对应数据库并刷新右侧 List，不加入左侧树。</summary>
+    public void OnCreate(string name)
     {
+        if (string.IsNullOrWhiteSpace(name)) { if (EnableLog) Log.Warning(LogCategory, "名称为空"); return; }
         var loader = RecipeDatabaseTreeLoader.Instance;
         if (loader == null) { if (EnableLog) Log.Error(LogCategory, "TreeLoader 未就绪"); return; }
-
-        if (ListMode == "Phase")
+        string mode = DerivedMode;
+        if (mode == "Phase")
         {
-            int oId = GenerateTreeList.Instance?.SelectedOperationId ?? 0;
-            if (oId <= 0) { if (EnableLog) Log.Warning(LogCategory, "未选中 Operation，无法新建 Phase"); return; }
-            loader.AddPhase(oId, GenerateUniqueName("NewPhase", loader.PhaseById.Values, n => n.Name), new Dictionary<string, object>());
-            if (EnableLog) Log.Info(LogCategory, "已新建 Phase");
+            string safeName = GenerateUniqueName(name.Trim(), loader.PhaseById.Values, n => n.Name);
+            int newPId = loader.AddPhaseStandalone(safeName);
+            if (newPId > 0 && EnableLog) Log.Info(LogCategory, "已新建 Phase(仅库): " + safeName);
+        }
+        else if (mode == "Operation")
+        {
+            string safeName = GenerateUniqueName(name.Trim(), loader.OperationById.Values, n => n.Name);
+            int newOpId = loader.AddOperationStandalone(safeName);
+            if (newOpId > 0 && EnableLog) Log.Info(LogCategory, "已新建 Operation(仅库): " + safeName);
         }
         else
-        {
-            int rId = GenerateTreeList.Instance?.SelectedReceiptId ?? 0;
-            if (rId <= 0) { if (EnableLog) Log.Warning(LogCategory, "未选中 Receipt，无法新建 Operation"); return; }
-            loader.AddOperation(rId, GenerateUniqueName("NewOperation", loader.OperationById.Values, n => n.Name));
-            if (EnableLog) Log.Info(LogCategory, "已新建 Operation");
-        }
-        GenerateTreeList.Instance?.Generate();
-        Generate();
+            return;
+        Generate(); // 仅刷新右侧 List，不刷新左侧树
     }
     #endregion
 
     #region 辅助：UI 控件设置
-    /// <summary>列表容器在父级 OperationPhaseTemplatePanel1 -> ColumnsCards（vertical layout）。</summary>
-    private Container GetListContainer()
-    {
-        return LogicObject.Owner.Parent?.Get<Container>("ColumnsCards");
-    }
+    private Container GetListContainer() => LogicObject.Owner?.Get<Container>("ColumnsCards");
 
-    /// <summary>标题在父级 OperationPhaseTemplatePanel1 -> Columns -> Label1。</summary>
     private void UpdateTitle()
     {
-        var columns = LogicObject.Owner.Parent?.Get("Columns");
-        var lbl = columns?.Get<Label>("Label1");
-        if (lbl == null) return;
-        lbl.Text = ListMode == "Phase" ? "Operation Phase" : "Operation List";
+        string mode = DerivedMode;
+        string titleText = mode == "Phase" ? "Operation Phase" : mode == "Operation" ? "Operation List" : "";
+
+        var titleVar = LogicObject.GetVariable("Title");
+        if (titleVar != null) titleVar.Value = titleText;
+
+        var iconVar = LogicObject.GetVariable("Icon");
+        if (iconVar != null) iconVar.Value = mode;
     }
 
-    /// <summary>搜索框在 OperationPhaseTemplatePanel1 -> Columns -> SearchBox。</summary>
-    private string GetSearchText()
-    {
-        try
-        {
-            var tb = LogicObject.Owner.Parent?.Get("Columns")?.Get<TextBox>("SearchBox");
-            return tb?.Text ?? "";
-        }
-        catch { return ""; }
-    }
-
-    /// <summary>标题在 Rectangle1 -> VerticalLayout1 -> ButtonWithIcon1。</summary>
     private static void SetTitle(Container item, string baseName)
     {
-        var titleBtn = item.Get("Rectangle1")?.Get("VerticalLayout1")?.Get<Button>("ButtonWithIcon1");
-        if (titleBtn != null) titleBtn.Text = baseName;
+        var btn = item.Get("Rectangle1")?.Get("VerticalLayout1")?.Get("ButtonWithIcon1")?.Get<Button>("Button1");
+        if (btn != null) btn.Text = baseName;
+    }
+
+    /// <summary>标题按钮（与 Insert 同级的 ButtonWithIcon1）：创建时增加 Click 回调，Log 当前是 Operation/Phase 及下拉框选中版本项（如 Operation_000、Phase_003）。</summary>
+    private void SetTitleButtonClick(Container item, string baseName)
+    {
+        var btn = item.Get("Rectangle1")?.Get("VerticalLayout1")?.Get("ButtonWithIcon1")?.Get<Button>("Button1");
+        if (btn == null) return;
+        btn.UAEvent -= TitleButtonClicked;
+        btn.UAEvent += TitleButtonClicked;
+        if (EnableLog) Log.Info(LogCategory, $"TitleButton event wired for item: {baseName}");
+        void TitleButtonClicked(object s, UAEventArgs a)
+        {
+            if (a?.EventType?.BrowseName != "MouseClickEvent") return;
+            string mode = DerivedMode;
+            string versionItem = GetSelectedVersionItemName(item, baseName);
+            Log.Info(LogCategory, $"标题按钮点击: 类型={mode}, 当前选中项={versionItem}");
+            MiddlePanelManager.Instance?.NotifyTitleClicked(mode, versionItem);
+        }
     }
 
     private static void SetVariables(Container item, int itemId, int receiptId, int operationId)
@@ -274,51 +307,173 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
         v = item.GetVariable("OperationID"); if (v != null) v.Value = operationId;
     }
 
-    /// <summary>版本下拉在 Rectangle1 -> VerticalLayout1 -> Row -> ComboBox1。</summary>
-    private static void SetVersionComboBox(Container item, Dictionary<string, List<(int Id, string Version)>> versionMap, string baseName, int currentId)
+    /// <summary>
+    /// 将版本数据写入 Information Model（卡片下 VersionOptions 容器），并设置 ComboBox.Model 指向该容器；
+    /// 同时将各版本 ID（按选项顺序）存入卡片 VersionIds 变量。选项格式：无版本号 → baseName；有版本号 → "v{N}"。
+    /// </summary>
+    private static void SetVersionComboBoxAndIds(Container item, string baseName, List<(int Id, string Version)> versions)
     {
         var comboBox = item.Get("Rectangle1")?.Get("VerticalLayout1")?.Get("Row")?.Get<ComboBox>("ComboBox1");
+
+        var vIdsVar = item.GetVariable("VersionIds");
+        if (vIdsVar == null)
+        {
+            vIdsVar = InformationModel.MakeVariable("VersionIds", OpcUa.DataTypes.String);
+            item.Add(vIdsVar);
+        }
+        vIdsVar.Value = string.Join(",", versions.Select(v => v.Id));
+
         if (comboBox == null) return;
 
-        if (!versionMap.TryGetValue(baseName, out var versions)) return;
+        // 获取或创建 Information Model 容器（存放版本选项）
+        var versionOptions = item.GetObject("VersionOptions");
+        if (versionOptions == null)
+        {
+            versionOptions = InformationModel.MakeObject("VersionOptions");
+            item.Add(versionOptions);
+        }
+        foreach (var ch in versionOptions.Children.ToList())
+            ch.Delete();
 
-        string label = baseName;
+        NodeId firstOptNodeId = NodeId.Empty;
         for (int i = 0; i < versions.Count; i++)
         {
-            if (versions[i].Id == currentId)
+            string ver = versions[i].Version;
+            string label = string.IsNullOrEmpty(ver)
+                ? baseName
+                : "v" + ver.TrimStart('0').PadLeft(1, '0');
+            string optName = string.IsNullOrEmpty(ver) ? "0" : ver;
+            var optVar = InformationModel.MakeVariable(optName, OpcUa.DataTypes.LocalizedText);
+            optVar.Value = new LocalizedText("", label);
+            versionOptions.Add(optVar);
+            if (i == 0) firstOptNodeId = optVar.NodeId;
+        }
+
+        var modelVar = comboBox.GetVariable("Model");
+        if (modelVar != null) modelVar.Value = versionOptions.NodeId;
+
+        var selVar = comboBox.GetVariable("SelectedItem");
+        if (selVar != null && !firstOptNodeId.IsEmpty) selVar.Value = firstOptNodeId;
+    }
+
+    /// <summary>
+    /// Insert 按钮：点击时读取该卡片 ComboBox 当前选中索引，从 VersionIds 查出 ID 后调用 OnInsert。
+    /// </summary>
+    private void SetInsertButton(Container item)
+    {
+        var btn = item.Get("Rectangle1")?.Get("VerticalLayout1")?.Get("Row")?.Get("ButtonWithIcon1")?.Get<Button>("Button1");
+        if (btn == null) return;
+
+        btn.UAEvent -= InsertButtonClicked; // 先移除
+        btn.UAEvent += InsertButtonClicked; // 后添加
+
+        if (EnableLog) Log.Info(LogCategory, $"InsertButton event wired for item: {item?.BrowseName ?? "<null>"}");
+
+        void InsertButtonClicked(object s, UAEventArgs a)
+        {
+            // 仅响应鼠标点击，忽略键盘等其它触发
+            if (a?.EventType?.BrowseName != "MouseClickEvent") return;
+            int id = GetSelectedVersionId(item);
+            if (id > 0) OnInsert(id);
+        }
+    }
+
+    /// <summary>从 ComboBox 当前选中项得到版本项名称，如 baseName + "_000" / "_003"。</summary>
+    private static string GetSelectedVersionItemName(Container item, string baseName)
+    {
+        var comboBox = item.Get("Rectangle1")?.Get("VerticalLayout1")?.Get("Row")?.Get<ComboBox>("ComboBox1");
+        if (comboBox == null) return baseName + "_???";
+        var modelVar = comboBox.GetVariable("Model");
+        NodeId modelNodeId = modelVar?.Value != null && modelVar.Value.Value is NodeId mid ? (NodeId)mid : NodeId.Empty;
+        IUANode modelNode = !modelNodeId.IsEmpty ? InformationModel.Get(modelNodeId) : null;
+        var optChildren = modelNode != null ? modelNode.Children.OrderBy(c => c.BrowseName).ToList() : new List<IUANode>();
+        var selVar = comboBox.GetVariable("SelectedItem");
+        string verPart = "000";
+        if (selVar?.Value?.Value is NodeId nodeId && !nodeId.IsEmpty)
+        {
+            for (int i = 0; i < optChildren.Count; i++)
             {
-                label = string.IsNullOrEmpty(versions[i].Version) ? baseName : "Rev_" + versions[i].Version;
+                if (optChildren[i].NodeId != nodeId) continue;
+                string bn = optChildren[i].BrowseName;
+                verPart = string.IsNullOrEmpty(bn) || bn == "0" ? "000" : bn.PadLeft(3, '0');
                 break;
             }
         }
-        comboBox.Text = label;
+        return baseName + "_" + verPart;
     }
 
-    /// <summary>+Insert 按钮在 Rectangle1 -> VerticalLayout1 -> Row -> ButtonWithIcon1。</summary>
-    private void SetInsertButton(Container item, int itemId)
+    /// <summary>从 ComboBox 的 Model（Information Model）与 SelectedItem 解析选中索引，再结合 VersionIds 得到当前选中的 ID。</summary>
+    private static int GetSelectedVersionId(Container item)
     {
-        var btn = item.Get("Rectangle1")?.Get("VerticalLayout1")?.Get("Row")?.Get<Button>("ButtonWithIcon1");
-        if (btn == null) return;
-        btn.UAEvent -= (s, a) => OnInsert(itemId);
-        btn.UAEvent += (s, a) => OnInsert(itemId);
+        int selectedIndex = 0;
+        var comboBox = item.Get("Rectangle1")?.Get("VerticalLayout1")?.Get("Row")?.Get<ComboBox>("ComboBox1");
+        if (comboBox != null)
+        {
+            var modelVar = comboBox.GetVariable("Model");
+            NodeId modelNodeId = modelVar?.Value != null && modelVar.Value.Value is NodeId mid ? (NodeId)mid : NodeId.Empty;
+            IUANode modelNode = !modelNodeId.IsEmpty ? InformationModel.Get(modelNodeId) : null;
+            var optChildren = modelNode != null
+                ? modelNode.Children.OrderBy(c => c.BrowseName).ToList()
+                : new List<IUANode>();
+
+            var selVar = comboBox.GetVariable("SelectedItem");
+            if (selVar?.Value != null)
+            {
+                var inner = selVar.Value.Value;
+                if (inner is NodeId nodeId && !nodeId.IsEmpty)
+                {
+                    for (int i = 0; i < optChildren.Count; i++)
+                    {
+                        if (optChildren[i].NodeId == nodeId) { selectedIndex = i; break; }
+                    }
+                }
+                else
+                {
+                    try { selectedIndex = Convert.ToInt32(inner); } catch { }
+                }
+            }
+        }
+
+        var vIdsVar = item.GetVariable("VersionIds");
+        string vIdsStr = (vIdsVar?.Value?.Value as string) ?? "";
+        if (!string.IsNullOrEmpty(vIdsStr))
+        {
+            var parts = vIdsStr.Split(',');
+            if (selectedIndex >= 0 && selectedIndex < parts.Length &&
+                int.TryParse(parts[selectedIndex], out int id))
+                return id;
+        }
+
+        var itemIdVar = item.GetVariable("ItemId");
+        if (itemIdVar?.Value != null)
+        {
+            try { return (int)itemIdVar.Value; } catch { }
+        }
+        return 0;
     }
     #endregion
 
     #region 辅助：数据处理
-    /// <summary>按名称基础部分分组，返回 baseName → [(Id, VersionSuffix)] 的映射。</summary>
-    private static Dictionary<string, List<(int Id, string Version)>> BuildVersionMap(IEnumerable<(int Id, string Name)> items)
+    /// <summary>
+    /// 按 baseName 分组，返回 baseName → [(Id, Version)] 映射。
+    /// 可选传入 excludedFullNames（HashSet）以跳过已存在的全名（base+版本）。
+    /// </summary>
+    private static Dictionary<string, List<(int Id, string Version)>> BuildVersionMap(
+        IEnumerable<(int Id, string Name)> items,
+        HashSet<string> excludedFullNames = null)
     {
         var map = new Dictionary<string, List<(int, string)>>(StringComparer.OrdinalIgnoreCase);
         foreach (var (id, name) in items)
         {
             ParseBaseName(name, out string baseName, out string version);
+            if (excludedFullNames != null && excludedFullNames.Contains(name)) continue;
             if (!map.TryGetValue(baseName, out var list)) { list = new List<(int, string)>(); map[baseName] = list; }
             list.Add((id, version));
         }
         return map;
     }
 
-    /// <summary>拆分名称末尾的纯数字版本号，如 "MixingCycle_001" → baseName="MixingCycle", version="001"。</summary>
+    /// <summary>拆分末尾纯数字版本号，如 "MixingCycle_001" → baseName="MixingCycle", version="001"。</summary>
     private static void ParseBaseName(string name, out string baseName, out string version)
     {
         baseName = name ?? "";
