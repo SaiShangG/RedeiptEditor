@@ -43,14 +43,3 @@ Children:
     Type: BaseDataVariableType
     DataType: String
     Value: "Operation Up"
-- Name: Test
-  Type: BaseObjectType
-  Children:
-  - Name: tes1
-    Type: BaseDataVariableType
-    DataType: String
-    Value: "0"
-  - Name: tes2
-    Type: BaseDataVariableType
-    DataType: String
-    Value: "0"

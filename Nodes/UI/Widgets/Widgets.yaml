@@ -2939,12 +2939,12 @@ Children:
               - Name: Model
                 Type: NodePointer
                 DataType: NodeId
-                Value: "/Objects/RedeiptEditor/Model/TreeListData/Test"
+                Value: {"IdType":2,"Id":"80e6a0f102f7e84d2bd4dccc2b773337","Namespace":7}
                 Children:
                 - Name: ItemKind
                   Type: PropertyType
                   DataType: NodeId
-                  Value: "/Objects/RedeiptEditor/Model/TreeListData/Test/tes1"
+                  Value: {"IdType":2,"Id":"4018da88bbae4856b74209924846bfaf","Namespace":7}
                 - Name: Kind
                   Type: PropertyType
                   DataType: NodeId
@@ -2958,7 +2958,7 @@ Children:
                 - Name: Kind
                   Type: PropertyType
                   DataType: NodeId
-                  Value: "/Objects/RedeiptEditor/Model/TreeListData/Test/tes1"
+                  Value: {"IdType":2,"Id":"4018da88bbae4856b74209924846bfaf","Namespace":7}
               - Name: UISelectedItem
                 Type: BaseDataVariableType
                 DataType: NodeId
@@ -2974,7 +2974,7 @@ Children:
                 - Name: Kind
                   Type: PropertyType
                   DataType: NodeId
-                  Value: "/Objects/RedeiptEditor/Model/TreeListData/Test/tes1"
+                  Value: {"IdType":2,"Id":"4018da88bbae4856b74209924846bfaf","Namespace":7}
             - Name: ButtonWithIcon1
               Type: ButtonWithIcon
               Children:
@@ -3018,12 +3018,12 @@ Children:
               - Name: Model
                 Type: NodePointer
                 DataType: NodeId
-                Value: "/Objects/RedeiptEditor/Model/TreeListData/Test"
+                Value: {"IdType":2,"Id":"80e6a0f102f7e84d2bd4dccc2b773337","Namespace":7}
                 Children:
                 - Name: ItemKind
                   Type: PropertyType
                   DataType: NodeId
-                  Value: "/Objects/RedeiptEditor/Model/TreeListData/Test/tes1"
+                  Value: {"IdType":2,"Id":"4018da88bbae4856b74209924846bfaf","Namespace":7}
                 - Name: Kind
                   Type: PropertyType
                   DataType: NodeId
@@ -3037,7 +3037,7 @@ Children:
                 - Name: Kind
                   Type: PropertyType
                   DataType: NodeId
-                  Value: "/Objects/RedeiptEditor/Model/TreeListData/Test/tes1"
+                  Value: {"IdType":2,"Id":"4018da88bbae4856b74209924846bfaf","Namespace":7}
               - Name: UISelectedItem
                 Type: BaseDataVariableType
                 DataType: NodeId
@@ -3053,7 +3053,7 @@ Children:
                 - Name: Kind
                   Type: PropertyType
                   DataType: NodeId
-                  Value: "/Objects/RedeiptEditor/Model/TreeListData/Test/tes1"
+                  Value: {"IdType":2,"Id":"4018da88bbae4856b74209924846bfaf","Namespace":7}
             - Name: ButtonWithIcon1
               Type: ButtonWithIcon
               Children:
