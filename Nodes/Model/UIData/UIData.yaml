@@ -1,0 +1,26 @@
+Name: UIData
+Type: FolderType
+Children:
+- File: TreeListData/TreeListData.yaml
+- Name: ReceiptStatus
+  Id: g=4fa46dfd3df21f931cb544b7d3e77b9b
+  Type: BaseObjectType
+  Children:
+  - Name: Development
+    Id: g=53dfeb9651e5b40169717c2b5f99720a
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Development"
+  - Name: Test
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Test"
+  - Name: Production
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Production"
+- Name: ReceiptStatusSet
+  Id: g=f5fbe0f1f65ce82e5e8d41efbf5656f3
+  Type: BaseDataVariableType
+  DataType: String
+  Value: "Development"

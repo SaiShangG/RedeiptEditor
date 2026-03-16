@@ -2,3 +2,4 @@ Name: Model
 Type: ModelCategoryFolder
 Children:
 - File: TreeListData/TreeListData.yaml
+- File: UIData/UIData.yaml

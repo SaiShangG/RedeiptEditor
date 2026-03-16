@@ -542,6 +542,15 @@ Children:
                               Value: "ns=7;%PROJECTDIR%/Images/Status.png"
                           - Name: Label2
                             Type: Label
+                            Children:
+                            - Name: Text
+                              Type: BaseDataVariableType
+                              DataType: LocalizedText
+                              Children:
+                              - Name: DynamicLink
+                                Type: DynamicLink
+                                DataType: NodePath
+                                Value: "/Objects/RedeiptEditor/Model/UIData/ReceiptStatusSet"
                     - Name: Panel2
                       Type: Panel
                       Children:
@@ -568,7 +577,7 @@ Children:
                               DataType: NodeId
                           - Name: SelectedValue
                             Type: BaseDataVariableType
-                            DataType: BaseDataType
+                            DataType: String
                           - Name: SelectedItem
                             Type: NodePointer
                             DataType: NodeId
@@ -594,6 +603,88 @@ Children:
                             - Name: Kind
                               Type: PropertyType
                               DataType: NodeId
+                          - Name: UserSelectionChangedHandler1
+                            Type: EventHandler
+                            Children:
+                            - Name: ListenEventType
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Types/EventTypes/BaseEventType/UserSelectionChanged"
+                            - Name: MethodsToCall
+                              Type: BaseObjectType
+                              Children:
+                              - Name: MethodContainer1
+                                Type: BaseObjectType
+                                Children:
+                                - Name: ObjectPointer
+                                  Type: NodePointer
+                                  DataType: NodeId
+                                  Value: "/Objects/Commands/VariableCommands"
+                                  Children:
+                                  - Name: Kind
+                                    Type: PropertyType
+                                    DataType: NodeId
+                                    Value: "/Types/ObjectTypes/BaseObjectType"
+                                - Name: Method
+                                  Type: BaseDataVariableType
+                                  DataType: String
+                                  Value: "Set"
+                                - Name: InputArguments
+                                  Type: BaseObjectType
+                                  Children:
+                                  - Name: VariableToModify
+                                    Type: BaseDataVariableType
+                                    DataType: VariablePointer
+                                    Description: {"NamespaceIndex":2,"TextId":"SetVariableToModifyDescription"}
+                                    Value: "/Objects/RedeiptEditor/Model/UIData/ReceiptStatusSet"
+                                  - Name: Value
+                                    Type: BaseDataVariableType
+                                    DataType: String
+                                    Description: {"NamespaceIndex":2,"TextId":"SetValueDescription"}
+                                    Value: "0"
+                                    Children:
+                                    - Name: DynamicLink
+                                      Type: DynamicLink
+                                      DataType: NodePath
+                                      Value: "../../../../../SelectedValue"
+                                  - Name: ArrayIndex
+                                    Type: BaseDataVariableType
+                                    DataType: UInt32
+                                    Description: {"NamespaceIndex":2,"TextId":"SetArrayIndexDescription"}
+                                    ValueRank: ScalarOrOneDimension
+                            - Name: EventArguments
+                              Type: UserSelectionChanged
+                              Children:
+                              - Name: SelectedItem
+                                Type: BaseDataVariableType
+                                DataType: NodeId
+                              - Name: SelectedValue
+                                Type: BaseDataVariableType
+                                DataType: BaseDataType
+                              - Name: EventId
+                                Type: PropertyType
+                                DataType: ByteString
+                              - Name: EventType
+                                Type: PropertyType
+                                DataType: NodeId
+                              - Name: SourceNode
+                                Type: PropertyType
+                                DataType: NodeId
+                              - Name: SourceName
+                                Type: PropertyType
+                                DataType: String
+                              - Name: Time
+                                Type: PropertyType
+                                DataType: UtcTime
+                              - Name: ReceiveTime
+                                Type: PropertyType
+                                DataType: UtcTime
+                              - Name: Message
+                                Type: PropertyType
+                                DataType: LocalizedText
+                              - Name: Severity
+                                Type: PropertyType
+                                DataType: UInt16
                   - Name: Row2
                     Type: RowLayout
                     Children:
