@@ -18,7 +18,7 @@ public class MiddlePanelManager : BaseNetLogic
     public static MiddlePanelManager Instance { get; private set; }
 
     #region 挂的变量引用
-    private IUAVariable _itemPrefabVar;
+ 
     private IUAVariable _leftPanelVisiableVar;
     private IUAVariable _rightPanelVisiableVar;
     private IUAVariable _leftPanelVar;
@@ -29,12 +29,12 @@ public class MiddlePanelManager : BaseNetLogic
     public override void Start()
     {
         Instance = this;
-        _itemPrefabVar = LogicObject.GetVariable("ItemPrefab");
+       
         _leftPanelVisiableVar = LogicObject.GetVariable("LeftPanelVisiable");
         _rightPanelVisiableVar = LogicObject.GetVariable("RightPanelVisiable");
         _leftPanelVar = LogicObject.GetVariable("LeftPanel");
         _rightPanelVar = LogicObject.GetVariable("RightPanel");
-        if (_itemPrefabVar == null || _leftPanelVisiableVar == null || _rightPanelVisiableVar == null || _leftPanelVar == null || _rightPanelVar == null)
+        if ( _leftPanelVisiableVar == null || _rightPanelVisiableVar == null || _leftPanelVar == null || _rightPanelVar == null)
         {
             Log.Error(nameof(MiddlePanelManager), "未找到挂载变量 ItemPrefab / LeftPanelVisiable / RightPanelVisiable / LeftPanel / RightPanel");
             return;
