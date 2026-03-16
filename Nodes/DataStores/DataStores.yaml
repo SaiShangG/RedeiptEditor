@@ -2,6 +2,7 @@ Name: DataStores
 Type: DataStoresCategoryFolder
 Children:
 - Name: ReceiptDB
+  Id: g=fe75536a779a2f204b32b5338738ec13
   Type: SQLiteStore
   Children:
   - Name: Tables
@@ -24,6 +25,7 @@ Children:
         Target: ns=8;i=20
         Direction: Forward
       - Name: Columns
+        Id: g=09a25664adf72c06ee3ae44c39c22a08
         Type: BaseObjectType
         Children:
         - Name: ReceiptID
@@ -42,6 +44,18 @@ Children:
         - Name: Description
           Type: StoreColumn
           DataType: String
+        - Name: Status
+          Type: StoreColumn
+          DataType: String
+          Value: "Development"
+        - Name: CreatedBy
+          Type: StoreColumn
+          DataType: String
+          Value: "Development"
+        - Name: CreatedDate
+          Type: StoreColumn
+          DataType: String
+          Value: "Development"
     - Name: Operations
       Id: g=15c01aa793314efc9480d55357da0072
       Type: SQLiteStoreTable

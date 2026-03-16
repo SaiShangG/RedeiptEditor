@@ -75,15 +75,15 @@ Project:
    Module: FTOptix.NetLogic
    Version: 4.0
  Statistics:
-  TotalNodeCount: 2090
-  Objects: 543
-  ObjectTypes: 17
-  Variables: 1501
+  TotalNodeCount: 2374
+  Objects: 599
+  ObjectTypes: 19
+  Variables: 1727
   VariableTypes: 0
   DataTypes: 0
   Methods: 29
-  References: 43
+  References: 44
   ReferenceTypes: 0
-  Files: 28
+  Files: 29
  Nodes:
  - File: Nodes/RedeiptEditor.yaml
