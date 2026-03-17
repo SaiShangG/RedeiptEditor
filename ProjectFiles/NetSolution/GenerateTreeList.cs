@@ -261,6 +261,7 @@ public class GenerateTreeList : BaseNetLogic
         {
             if (a?.EventType?.BrowseName != "MouseClickEvent") return;
             SetSelectedReceiptId(receiptId);
+            MiddlePanelManager.Instance?.NotifyTitleClicked("Empty", "");
         }
     }
 
@@ -317,6 +318,8 @@ public class GenerateTreeList : BaseNetLogic
         {
             if (a?.EventType?.BrowseName != "MouseClickEvent") return;
             SetSelectedPhase(receiptId, operationId, phaseId);
+
+            MiddlePanelManager.Instance?.NotifyTitleClicked("Empty", "");
         }
     }
 
@@ -352,6 +355,8 @@ public class GenerateTreeList : BaseNetLogic
             // 仅响应鼠标点击，忽略键盘等其它触发
             if (a?.EventType?.BrowseName != "MouseClickEvent") return;
             SetSelectedOperation(receiptId, operationId);
+
+            MiddlePanelManager.Instance?.NotifyTitleClicked("Empty", "");
         }
     }
 

@@ -1532,6 +1532,15 @@ Children:
   - Name: Description
     Type: BaseDataVariableType
     DataType: String
+  - Name: HorizontalAlignment
+    Type: BaseVariableType
+    DataType: HorizontalAlignment
+    ModellingRule: Optional
+    Value: 3
+  - Name: VerticalAlignment
+    Type: BaseVariableType
+    DataType: VerticalAlignment
+    ModellingRule: Optional
 - Name: SelectedLayerPanel
   Id: g=8fc863d4c9c90cfeaf76d4eab5152649
   Supertype: Panel
