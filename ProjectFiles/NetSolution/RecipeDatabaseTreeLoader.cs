@@ -36,6 +36,7 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
     {
         public int OperationID;
         public string Name;
+        public string Description;
         public string PhasesCsv;
         public List<PhaseNode> Phases = new List<PhaseNode>();
     }
@@ -44,6 +45,7 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
     {
         public int PhaseID;
         public string Name;
+        public string Description;
         public Dictionary<string, object> Columns = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
     }
     #endregion
@@ -60,6 +62,48 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
 
     /// <summary>PhaseID → PhaseNode 快速查找。</summary>
     public Dictionary<int, PhaseNode> PhaseById { get; private set; } = new Dictionary<int, PhaseNode>();
+
+    /// <summary>按名称查找 OperationNode（忽略大小写）。返回第一个匹配项，未找到返回 null。</summary>
+    public OperationNode FindOperationByName(string name)
+    {
+        if (string.IsNullOrEmpty(name)) return null;
+        foreach (var op in OperationById.Values)
+            if (string.Equals(op.Name, name, StringComparison.OrdinalIgnoreCase))
+                return op;
+        return null;
+    }
+
+    /// <summary>按名称查找所有匹配的 OperationNode（忽略大小写）。</summary>
+    public List<OperationNode> FindOperationsByName(string name)
+    {
+        var result = new List<OperationNode>();
+        if (string.IsNullOrEmpty(name)) return result;
+        foreach (var op in OperationById.Values)
+            if (string.Equals(op.Name, name, StringComparison.OrdinalIgnoreCase))
+                result.Add(op);
+        return result;
+    }
+
+    /// <summary>按名称查找 PhaseNode（忽略大小写）。返回第一个匹配项，未找到返回 null。</summary>
+    public PhaseNode FindPhaseByName(string name)
+    {
+        if (string.IsNullOrEmpty(name)) return null;
+        foreach (var ph in PhaseById.Values)
+            if (string.Equals(ph.Name, name, StringComparison.OrdinalIgnoreCase))
+                return ph;
+        return null;
+    }
+
+    /// <summary>按名称查找所有匹配的 PhaseNode（忽略大小写）。</summary>
+    public List<PhaseNode> FindPhasesByName(string name)
+    {
+        var result = new List<PhaseNode>();
+        if (string.IsNullOrEmpty(name)) return result;
+        foreach (var ph in PhaseById.Values)
+            if (string.Equals(ph.Name, name, StringComparison.OrdinalIgnoreCase))
+                result.Add(ph);
+        return result;
+    }
     #endregion
 
     #region 生命周期与打开数据库
@@ -185,13 +229,13 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
                 if (opIdList.Count > 0 && _opTable != null && !string.IsNullOrEmpty(_opTableName))
                 {
                     string inClause = string.Join(",", opIdList);
-                    _store.Query($"SELECT OperationID, Name, Phases FROM {_opTableName} WHERE OperationID IN ({inClause})", out _, out object[,] oRows);
+                    _store.Query($"SELECT OperationID, Name, Description, Phases FROM {_opTableName} WHERE OperationID IN ({inClause})", out _, out object[,] oRows);
                     var opById = BuildOpDict(oRows);
 
                     foreach (int oId in opIdList)
                     {
                         if (!opById.TryGetValue(oId, out var opPair)) continue;
-                        var oNode = new OperationNode { OperationID = oId, Name = opPair.Name, PhasesCsv = opPair.Phases ?? "" };
+                        var oNode = new OperationNode { OperationID = oId, Name = opPair.Name, Description = opPair.Description ?? "", PhasesCsv = opPair.Phases ?? "" };
                         rNode.Operations.Add(oNode);
                         OperationById[oId] = oNode;
 
@@ -217,13 +261,13 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
             // 加载未挂在任何 Receipt 下的独立 Operation（仅入 OperationById，供右侧 List 显示）
             if (_opTable != null && !string.IsNullOrEmpty(_opTableName))
             {
-                _store.Query($"SELECT OperationID, Name, Phases FROM {_opTableName}", out _, out object[,] allOpRows);
+                _store.Query($"SELECT OperationID, Name, Description, Phases FROM {_opTableName}", out _, out object[,] allOpRows);
                 if (allOpRows != null)
                     for (int r = 0; r < allOpRows.GetLength(0); r++)
                     {
                         int oId = CellToInt(allOpRows[r, 0]);
                         if (OperationById.ContainsKey(oId)) continue;
-                        var oNode = new OperationNode { OperationID = oId, Name = CellToString(allOpRows[r, 1]), PhasesCsv = CellToString(allOpRows[r, 2]) ?? "" };
+                        var oNode = new OperationNode { OperationID = oId, Name = CellToString(allOpRows[r, 1]), Description = CellToString(allOpRows[r, 2]) ?? "", PhasesCsv = CellToString(allOpRows[r, 3]) ?? "" };
                         OperationById[oId] = oNode;
                     }
             }
@@ -245,6 +289,8 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
                         for (int c = 0; c < phaseColumns.Count && c < allPhRows.GetLength(1); c++)
                             pNode.Columns[phaseColumns[c]] = allPhRows[r, c] == null || allPhRows[r, c] == DBNull.Value ? "" : allPhRows[r, c];
                         pNode.Name = nameIdx >= 0 ? CellToString(allPhRows[r, nameIdx]) : "";
+                        int descIdx2 = phaseColumns.FindIndex(c => string.Equals(c, "Description", StringComparison.OrdinalIgnoreCase));
+                        pNode.Description = descIdx2 >= 0 ? CellToString(allPhRows[r, descIdx2]) : "";
                         PhaseById[pId] = pNode;
                     }
                 }
@@ -301,14 +347,14 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         return list;
     }
 
-    private static Dictionary<int, (string Name, string Phases)> BuildOpDict(object[,] oRows)
+    private static Dictionary<int, (string Name, string Description, string Phases)> BuildOpDict(object[,] oRows)
     {
-        var d = new Dictionary<int, (string, string)>();
+        var d = new Dictionary<int, (string, string, string)>();
         if (oRows == null) return d;
         for (int r = 0; r < oRows.GetLength(0); r++)
         {
             int id = CellToInt(oRows[r, 0]);
-            d[id] = (CellToString(oRows[r, 1]), CellToString(oRows[r, 2]));
+            d[id] = (CellToString(oRows[r, 1]), CellToString(oRows[r, 2]), CellToString(oRows[r, 3]));
         }
         return d;
     }
@@ -329,6 +375,8 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
                 pNode.Columns[columns[c]] = val == null || val == DBNull.Value ? "" : val;
             }
             pNode.Name = nameIdx >= 0 ? CellToString(pRows[r, nameIdx]) : "";
+            int descIdx = columns.FindIndex(c => string.Equals(c, "Description", StringComparison.OrdinalIgnoreCase));
+            pNode.Description = descIdx >= 0 ? CellToString(pRows[r, descIdx]) : "";
             d[id] = pNode;
         }
         return d;
@@ -418,11 +466,11 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
     // ── Operation ────────────────────────────────────────────────────────────
 
     /// <summary>在指定 Receipt 下新增 Operation，返回新 OperationID。</summary>
-    public int AddOperation(int receiptId, string name)
+    public int AddOperation(int receiptId, string name, string description = "")
     {
         if (!ReceiptById.TryGetValue(receiptId, out var rNode)) return -1;
         int newId = OperationById.Count > 0 ? MaxDictKey(OperationById) + 1 : 1;
-        var node = new OperationNode { OperationID = newId, Name = name ?? "" };
+        var node = new OperationNode { OperationID = newId, Name = name ?? "", Description = description ?? "" };
         rNode.Operations.Add(node);
         OperationById[newId] = node;
         MarkModified();
@@ -451,15 +499,15 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
     }
 
     /// <summary>仅新建到 Operation 表并加入 OperationById，不加入任何 Receipt 树；用于“创建新 Operation”仅写库、刷新右侧 List。</summary>
-    public int AddOperationStandalone(string name)
+    public int AddOperationStandalone(string name, string description = "")
     {
         if (_opTable == null || string.IsNullOrEmpty(_opTableName)) return -1;
         int newId = OperationById.Count > 0 ? MaxDictKey(OperationById) + 1 : 1;
-        var node = new OperationNode { OperationID = newId, Name = name ?? "" };
+        var node = new OperationNode { OperationID = newId, Name = name ?? "", Description = description ?? "" };
         OperationById[newId] = node;
         try
         {
-            _opTable.Insert(new[] { "OperationID", "Name", "Phases" }, new object[,] { { newId, name ?? "", "" } });
+            _opTable.Insert(new[] { "OperationID", "Name", "Description", "Phases" }, new object[,] { { newId, name ?? "", description ?? "", "" } });
         }
         catch (Exception ex)
         {
@@ -483,6 +531,8 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
             foreach (var kv in columns) node.Columns[kv.Key] = kv.Value;
         node.Columns["PhaseID"] = newId;
         node.Columns["Name"] = node.Name;
+        if (node.Columns.TryGetValue("Description", out object descObj))
+            node.Description = descObj?.ToString() ?? "";
         opNode.Phases.Add(node);
         PhaseById[newId] = node;
         MarkModified();
@@ -512,13 +562,14 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
     }
 
     /// <summary>仅新建到 Phase 表并加入 PhaseById，不加入任何 Operation 树；用于“创建新 Phase”仅写库、刷新右侧 List。</summary>
-    public int AddPhaseStandalone(string name)
+    public int AddPhaseStandalone(string name, string description = "")
     {
         if (_phaseTable == null || string.IsNullOrEmpty(_phaseTableName)) return -1;
         int newId = PhaseById.Count > 0 ? MaxDictKey(PhaseById) + 1 : 1;
-        var node = new PhaseNode { PhaseID = newId, Name = name ?? "" };
+        var node = new PhaseNode { PhaseID = newId, Name = name ?? "", Description = description ?? "" };
         node.Columns["PhaseID"] = newId;
         node.Columns["Name"] = node.Name;
+        node.Columns["Description"] = description ?? "";
         PhaseById[newId] = node;
         try
         {
@@ -643,12 +694,12 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
                     op.PhasesCsv = phsCsv;
                     if (dbOpIds.Contains(op.OperationID))
                         _store.Query(
-                            $"UPDATE {_opTableName} SET Name='{EscapeSql(op.Name)}', Phases='{EscapeSql(phsCsv)}' WHERE OperationID={op.OperationID}",
+                            $"UPDATE {_opTableName} SET Name='{EscapeSql(op.Name)}', Description='{EscapeSql(op.Description ?? "")}', Phases='{EscapeSql(phsCsv)}' WHERE OperationID={op.OperationID}",
                             out _, out _);
                     else
                         _opTable.Insert(
-                            new[] { "OperationID", "Name", "Phases" },
-                            new object[,] { { op.OperationID, op.Name, phsCsv } });
+                            new[] { "OperationID", "Name", "Description", "Phases" },
+                            new object[,] { { op.OperationID, op.Name, op.Description ?? "", phsCsv } });
 
                     foreach (var ph in op.Phases)
                     {
@@ -661,6 +712,21 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
                     }
                 }
             }
+
+            // 3. 删除 DB 中本地已不存在的条目
+            foreach (int id in dbReceiptIds)
+                if (!ReceiptById.ContainsKey(id))
+                    _store.Query($"DELETE FROM {_receiptTableName} WHERE ReceiptID={id}", out _, out _);
+
+            if (!string.IsNullOrEmpty(_opTableName))
+                foreach (int id in dbOpIds)
+                    if (!OperationById.ContainsKey(id))
+                        _store.Query($"DELETE FROM {_opTableName} WHERE OperationID={id}", out _, out _);
+
+            if (!string.IsNullOrEmpty(_phaseTableName))
+                foreach (int id in dbPhaseIds)
+                    if (!PhaseById.ContainsKey(id))
+                        _store.Query($"DELETE FROM {_phaseTableName} WHERE PhaseID={id}", out _, out _);
 
             if (EnableLog) Log.Info(LogCategory, "Save 完成，正在重新加载树...");
         }

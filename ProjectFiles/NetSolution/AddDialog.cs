@@ -59,11 +59,11 @@ public class AddDialog : BaseNetLogic
         }
         else if (type == "Operation")
         {
-            GenerateOperationPhaseListPanel.Instance.OnCreate(name);
+            GenerateOperationPhaseListPanel.Instance.OnCreate(name, des);
         }
         else if (type == "Phase")
         {
-            GenerateOperationPhaseListPanel.Instance.OnCreate(name);
+            GenerateOperationPhaseListPanel.Instance.OnCreate(name, des);
         }
     }
 }

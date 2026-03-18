@@ -204,7 +204,6 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
         if (EnableLog) Log.Info(LogCategory, $"调用 OnInsert, itemId={itemId}\n{Environment.StackTrace}");
 
 
-
         if (itemId <= 0) return;
         lock (_insertLock)
         {
@@ -237,7 +236,7 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     }
 
     /// <summary>创建新的 Operation 或 Phase：仅写入对应数据库并刷新右侧 List，不加入左侧树。</summary>
-    public void OnCreate(string name)
+    public void OnCreate(string name, string description = "")
     {
         if (string.IsNullOrWhiteSpace(name)) { if (EnableLog) Log.Warning(LogCategory, "名称为空"); return; }
         var loader = RecipeDatabaseTreeLoader.Instance;
@@ -246,13 +245,13 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
         if (mode == "Phase")
         {
             string safeName = GenerateUniqueName(name.Trim(), loader.PhaseById.Values, n => n.Name);
-            int newPId = loader.AddPhaseStandalone(safeName);
+            int newPId = loader.AddPhaseStandalone(safeName, description);
             if (newPId > 0 && EnableLog) Log.Info(LogCategory, "已新建 Phase(仅库): " + safeName);
         }
         else if (mode == "Operation")
         {
             string safeName = GenerateUniqueName(name.Trim(), loader.OperationById.Values, n => n.Name);
-            int newOpId = loader.AddOperationStandalone(safeName);
+            int newOpId = loader.AddOperationStandalone(safeName, description);
             if (newOpId > 0 && EnableLog) Log.Info(LogCategory, "已新建 Operation(仅库): " + safeName);
         }
         else

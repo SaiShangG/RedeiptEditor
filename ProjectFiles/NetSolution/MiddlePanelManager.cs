@@ -34,9 +34,9 @@ public class MiddlePanelManager : BaseNetLogic
         _rightPanelVisiableVar = LogicObject.GetVariable("RightPanelVisiable");
         _leftPanelVar = LogicObject.GetVariable("LeftPanel");
         _rightPanelVar = LogicObject.GetVariable("RightPanel");
-        if ( _leftPanelVisiableVar == null || _rightPanelVisiableVar == null || _leftPanelVar == null || _rightPanelVar == null)
+        if (_leftPanelVisiableVar == null || _rightPanelVisiableVar == null || _leftPanelVar == null || _rightPanelVar == null)
         {
-            Log.Error(nameof(MiddlePanelManager), "未找到挂载变量 ItemPrefab / LeftPanelVisiable / RightPanelVisiable / LeftPanel / RightPanel");
+            Log.Error(nameof(MiddlePanelManager), "未找到挂载变量 LeftPanelVisiable / RightPanelVisiable / LeftPanel / RightPanel");
             return;
         }
     }
@@ -54,8 +54,11 @@ public class MiddlePanelManager : BaseNetLogic
         if (_leftPanelVisiableVar == null || _rightPanelVisiableVar == null || _leftPanelVar == null || _rightPanelVar == null) return;
         bool isOperation = string.Equals(mode, "Operation", StringComparison.OrdinalIgnoreCase);
         bool isPhase = string.Equals(mode, "Phase", StringComparison.OrdinalIgnoreCase);
+
         _leftPanelVisiableVar.Value = isOperation;
         _rightPanelVisiableVar.Value = isOperation || isPhase;
+
+        if (!isOperation && !isPhase) return;
 
         InvokeControllerUpdate(_leftPanelVar.Value.Value as NodeId, mode, versionItem, isLeftPanel: true);
         InvokeControllerUpdate(_rightPanelVar.Value.Value as NodeId, mode, versionItem, isLeftPanel: false);

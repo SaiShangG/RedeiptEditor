@@ -211,7 +211,7 @@ public class RecipeDatabaseManager : BaseNetLogic
         string newOpName = opBase + "_" + GetNextVersionForBase(opBase, Loader.OperationById.Values, n => n.Name).ToString("D3");
 
         // 2. 在当前 Receipt 下新增一个 Operation（仅 1 条），后续再复制 Phase
-        int newOpId = Loader.AddOperation(rId, newOpName);
+        int newOpId = Loader.AddOperation(rId, newOpName, srcOp.Description);
 
         // 3. 调整新 Operation 在当前 Receipt 中的位置：插在当前选中 Operation 后面
         int insertIdx = rNode.Operations.FindIndex(o => o.OperationID == newOpId);

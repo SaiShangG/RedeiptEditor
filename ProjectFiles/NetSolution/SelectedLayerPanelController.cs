@@ -45,6 +45,7 @@ public class SelectedLayerPanelController : BaseNetLogic
         public PanelType Type { get; set; }
         public string Title { get; set; }
         public string Subtitle { get; set; }
+        public string Subtitle2 { get; set; }
         public List<SubDataItem> SubDataItems { get; set; } = new List<SubDataItem>();
     }
 
@@ -119,7 +120,7 @@ public class SelectedLayerPanelController : BaseNetLogic
         if (_typeVar != null) _typeVar.Value = mode ?? string.Empty;
         if (_titleVar != null) _titleVar.Value = dataItem.Title ?? string.Empty;
         if (_iconTextVar != null) _iconTextVar.Value = dataItem.Subtitle ?? "None";
-        if (_iconText2Var != null) _iconText2Var.Value = dataItem.Subtitle ?? "None";
+        if (_iconText2Var != null) _iconText2Var.Value = dataItem.Subtitle2 ?? "None";
 
         // Step 4 & 5: 清空 VerticalLayout 并按 SubDataItems 重建子组件
         RefreshSubItemList(dataItem.SubDataItems);
@@ -154,25 +155,45 @@ public class SelectedLayerPanelController : BaseNetLogic
      */
     private static DataItem BuildDataItem(PanelType panelType, string item)
     {
+        var loader = RecipeDatabaseTreeLoader.Instance;
+
+        // 按 item 名称从缓存中查找对应节点的 Description 作为副标题
+        string des = item ?? "None";
+        if (loader != null && !string.IsNullOrEmpty(item))
+        {
+            if (panelType == PanelType.PhasesInOperation || panelType == PanelType.ReceiptsWithOperation)
+            {
+                var opNode = loader.FindOperationByName(item);
+                if (opNode != null && !string.IsNullOrEmpty(opNode.Description))
+                    des = opNode.Description;
+            }
+            else
+            {
+                var phNode = loader.FindPhaseByName(item);
+                if (phNode != null && !string.IsNullOrEmpty(phNode.Description))
+                    des = phNode.Description;
+            }
+        }
+
         var dataItem = new DataItem
         {
             Type = panelType,
             Title = PanelTypeTitleMap.TryGetValue(panelType, out var title) ? title : panelType.ToString(),
-            Subtitle = item ?? "None",
+            Subtitle = item,
+            Subtitle2 = des,
         };
 
-        var loader = RecipeDatabaseTreeLoader.Instance;
         if (loader == null) return dataItem;
 
         switch (panelType)
         {
             case PanelType.PhasesInOperation:
-                // 左侧面板：按 item 名称找到 Operation，列出其所有 Phase
+                // 左侧面板：按 item 名称找到 Operation，列出其所有 Phase 
                 foreach (var op in loader.OperationById.Values)
                 {
                     if (!string.Equals(op.Name, item, StringComparison.OrdinalIgnoreCase)) continue;
                     foreach (var ph in op.Phases)
-                        dataItem.SubDataItems.Add(new SubDataItem { Title = ph.Name, Subtitle = "" });
+                        dataItem.SubDataItems.Add(new SubDataItem { Title = ph.Name, Subtitle = ph.Description ?? "" });
                     break;
                 }
                 break;
@@ -195,7 +216,7 @@ public class SelectedLayerPanelController : BaseNetLogic
                 foreach (var op in loader.OperationById.Values)
                 {
                     if (op.Phases.Any(ph => string.Equals(ph.Name, item, StringComparison.OrdinalIgnoreCase)))
-                        dataItem.SubDataItems.Add(new SubDataItem { Title = op.Name, Subtitle = "" });
+                        dataItem.SubDataItems.Add(new SubDataItem { Title = op.Name, Subtitle = op.Description ?? "" });
                 }
                 break;
         }
