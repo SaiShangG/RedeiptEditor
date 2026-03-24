@@ -11,6 +11,7 @@ using FTOptix.SQLiteStore;
 using FTOptix.Retentivity;
 using FTOptix.CoreBase;
 using FTOptix.Core;
+using FTOptix.EventLogger;
 #endregion
 
 public class AddDialog : BaseNetLogic

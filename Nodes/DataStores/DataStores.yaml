@@ -52,10 +52,16 @@ Children:
           Type: StoreColumn
           DataType: String
           Value: "Development"
-        - Name: CreatedDate
+        - Name: CreatedDateTime
+          Type: StoreColumn
+          DataType: DateTime
+        - Name: LastModifiedBY
           Type: StoreColumn
           DataType: String
           Value: "Development"
+        - Name: LastModifiedDateTime
+          Type: StoreColumn
+          DataType: DateTime
     - Name: Operations
       Id: g=15c01aa793314efc9480d55357da0072
       Type: SQLiteStoreTable
@@ -88,6 +94,20 @@ Children:
         - Name: Description
           Type: StoreColumn
           DataType: String
+        - Name: CreatedBy
+          Type: StoreColumn
+          DataType: String
+          Value: "Development"
+        - Name: CreatedDateTime
+          Type: StoreColumn
+          DataType: DateTime
+        - Name: LastModifiedBY
+          Type: StoreColumn
+          DataType: String
+          Value: "Development"
+        - Name: LastModifiedDateTime
+          Type: StoreColumn
+          DataType: DateTime
     - Name: Phases
       Id: g=c054a1a8544f0c988ab391db1daacc4f
       Type: SQLiteStoreTable
@@ -123,6 +143,20 @@ Children:
         - Name: Description
           Type: StoreColumn
           DataType: String
+        - Name: CreatedBy
+          Type: StoreColumn
+          DataType: String
+          Value: "Development"
+        - Name: CreatedDateTime
+          Type: StoreColumn
+          DataType: DateTime
+        - Name: LastModifiedBY
+          Type: StoreColumn
+          DataType: String
+          Value: "Development"
+        - Name: LastModifiedDateTime
+          Type: StoreColumn
+          DataType: DateTime
   - Class: Reference
     Target: ns=9;i=30
     Direction: Forward
@@ -191,3 +225,114 @@ Children:
     Type: BaseDataVariableType
     DataType: String
     Value: "ReceiptEditorDB"
+- Name: EmbeddedDatabase1
+  Id: g=87d01755022cab1a083345029e3b18ba
+  Type: SQLiteStore
+  Children:
+  - Name: Tables
+    Type: BaseObjectType
+    Children:
+    - Name: AuditEventLogger1
+      Type: SQLiteStoreTable
+      Children:
+      - Class: Reference
+        Target: ns=8;i=12
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=15
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=21
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=20
+        Direction: Forward
+      - Name: Columns
+        Type: BaseObjectType
+        Children:
+        - Name: ClientUserId
+          Type: StoreColumn
+          DataType: String
+        - Name: 'Status_en-US'
+          Type: StoreColumn
+          DataType: String
+        - Name: 'Message_en-US'
+          Type: StoreColumn
+          DataType: String
+        - Name: Severity
+          Type: StoreColumn
+          DataType: UInt16
+        - Name: SourceName
+          Type: StoreColumn
+          DataType: String
+        - Name: Time
+          Type: StoreColumn
+          DataType: UtcTime
+        - Name: EventType
+          Type: StoreColumn
+          DataType: String
+      - Name: RecordLimit
+        Type: BaseDataVariableType
+        DataType: UInt32
+        Value: 1000
+  - Class: Reference
+    Target: ns=9;i=30
+    Direction: Forward
+  - Class: Reference
+    Target: ns=9;i=33
+    Direction: Forward
+  - Name: MaxColumnNameLength
+    Type: BaseDataVariableType
+    DataType: UInt32
+    AccessLevel: Read
+  - Name: MaxColumnCount
+    Type: BaseDataVariableType
+    DataType: UInt32
+    AccessLevel: Read
+  - Name: DataTypeCompatibilityMap
+    Type: BaseDataVariableType
+    DataType: NodeId
+    AccessLevel: Read
+    ValueRank: OneOrMoreDimensions
+    ArrayDimensions: [0,0]
+  - Name: Status
+    Type: PropertyType
+    DataType: StoreStatus
+    AccessLevel: Read
+    Value: 2
+  - Class: Reference
+    Target: ns=8;i=22
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=6
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=8
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=25
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=38
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=41
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=44
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=53
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=55
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=57
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=59
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=67
+    Direction: Forward

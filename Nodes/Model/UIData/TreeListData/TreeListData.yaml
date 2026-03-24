@@ -2,6 +2,7 @@ Name: TreeListData
 Type: FolderType
 Children:
 - Name: SelectedTreeData
+  Id: g=9b4063668ebbb117212574bd6bd38843
   Type: BaseObjectType
   Children:
   - Name: CurrentSelectedItemType
@@ -14,13 +15,13 @@ Children:
     Value: "0"
   - Name: SelectedReceiptCreatedDate
     Type: BaseDataVariableType
-    DataType: String
-    Value: "0"
+    DataType: DateTime
   - Name: SelectedReceiptCreatedBy
     Type: BaseDataVariableType
     DataType: String
     Value: "0"
   - Name: SelectedReceiptCurrentStatus
+    Id: g=67b3b9d845e808e653dade8ccf8c3cf4
     Type: BaseDataVariableType
     DataType: String
     Value: "0"
@@ -43,3 +44,6 @@ Children:
     Type: BaseDataVariableType
     DataType: String
     Value: "Operation Up"
+- Name: TreeItemNameRepeated
+  Type: BaseDataVariableType
+  DataType: Boolean

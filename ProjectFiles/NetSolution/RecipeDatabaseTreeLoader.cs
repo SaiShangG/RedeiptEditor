@@ -1,12 +1,14 @@
 #region Using directives
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using UAManagedCore;
 using FTOptix.CoreBase;
 using FTOptix.Core;
 using FTOptix.NetLogic;
 using FTOptix.Store;
 using FTOptix.HMIProject;
+using FTOptix.EventLogger;
 #endregion
 
 /// <summary>从配方数据库读取全部数据并保存到本地 dict 树（Receipt → Operation → Phase）。</summary>
@@ -14,6 +16,51 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
 {
     private const string LogCategory = "RecipeDatabaseTreeLoader";
     private const bool EnableLog = true;
+    /// <summary>新建 Receipt 时 Status 列的默认值（与 DataStores 中 StoreColumn 默认值一致）。</summary>
+    public const string DefaultReceiptStatus = "Development";
+
+    /// <summary>Receipt.CreatedDateTime 在库内/内存中的统一格式，例如 2026-03-22T16:49:03.6596165。</summary>
+    public const string CreatedDateTimeStorageFormat = "yyyy-MM-ddTHH:mm:ss.fffffff";
+
+    /// <summary>当前本地时刻，按 <see cref="CreatedDateTimeStorageFormat"/> 格式化，用于新建 Receipt。</summary>
+    public static string FormatStoredCreatedDateTimeNow()
+    {
+        return DateTime.Now.ToString(CreatedDateTimeStorageFormat, CultureInfo.InvariantCulture);
+    }
+
+    /// <summary>将数据库单元格或字符串统一为 <see cref="CreatedDateTimeStorageFormat"/>；无法解析时保留原字符串修剪结果。</summary>
+    public static string NormalizeStoredCreatedDateTime(object value)
+    {
+        if (value == null || value == DBNull.Value) return "";
+        if (value is DateTime dt)
+            return dt.ToString(CreatedDateTimeStorageFormat, CultureInfo.InvariantCulture);
+        string s = Convert.ToString(value)?.Trim() ?? "";
+        if (string.IsNullOrEmpty(s)) return "";
+        if (DateTime.TryParse(s, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out DateTime p1))
+            return p1.ToString(CreatedDateTimeStorageFormat, CultureInfo.InvariantCulture);
+        if (DateTime.TryParse(s, CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime p2))
+            return p2.ToString(CreatedDateTimeStorageFormat, CultureInfo.InvariantCulture);
+        foreach (string cultureName in new[] { "zh-CN", "en-US" })
+        {
+            try
+            {
+                if (DateTime.TryParse(s, CultureInfo.GetCultureInfo(cultureName), DateTimeStyles.None, out DateTime p3))
+                    return p3.ToString(CreatedDateTimeStorageFormat, CultureInfo.InvariantCulture);
+            }
+            catch (CultureNotFoundException) { }
+        }
+        string[] exactFormats =
+        {
+            "yyyy/M/d H:mm:ss", "yyyy/M/d HH:mm:ss", "yyyy/MM/dd H:mm:ss", "yyyy/MM/dd HH:mm:ss",
+            "yyyy-M-d H:mm:ss", "yyyy-MM-dd HH:mm:ss"
+        };
+        foreach (string fmt in exactFormats)
+        {
+            if (DateTime.TryParseExact(s, fmt, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime p4))
+                return p4.ToString(CreatedDateTimeStorageFormat, CultureInfo.InvariantCulture);
+        }
+        return s;
+    }
 
     public static RecipeDatabaseTreeLoader Instance { get; private set; }
 
@@ -29,6 +76,12 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         public int Sequence;
         public string OperationsCsv;
         public string Description;
+        /// <summary>状态（与 Receipt 表 Status 列对应；新建时默认为 Development）。</summary>
+        public string Status = DefaultReceiptStatus;
+        /// <summary>创建人（与 Receipt 表 CreatedBy 列对应，表无此列时不参与 SQL）。</summary>
+        public string CreatedBy = "";
+        /// <summary>创建时间（与 Receipt 表 CreatedDateTime 列对应，表无此列时不参与 SQL）。</summary>
+        public string CreatedDateTime = "";
         public List<OperationNode> Operations = new List<OperationNode>();
     }
 
@@ -196,23 +249,34 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
 
         try
         {
-            _store.Query($"SELECT ReceiptID, Name, Sequence, Operations, Description FROM {_receiptTableName} ORDER BY Sequence", out _, out object[,] rRows);
+            var receiptCols = GetReceiptSelectColumnNames();
+            string receiptSelectList = string.Join(", ", receiptCols);
+            _store.Query($"SELECT {receiptSelectList} FROM {_receiptTableName} ORDER BY Sequence", out _, out object[,] rRows);
             if (rRows == null || rRows.GetLength(0) == 0)
             {
                 if (EnableLog) Log.Info(LogCategory, "Receipt 表无数据");
                 return;
             }
 
+            int Idx(string col) => receiptCols.FindIndex(c => string.Equals(c, col, StringComparison.OrdinalIgnoreCase));
+
             var phaseColumns = GetPhaseColumnNames();
             int rCount = rRows.GetLength(0);
 
             for (int i = 0; i < rCount; i++)
             {
-                int receiptId = CellToInt(rRows[i, 0]);
-                string name = CellToString(rRows[i, 1]);
-                int seq = CellToInt(rRows[i, 2]);
-                string operationsCsv = CellToString(rRows[i, 3]);
-                string description = CellToString(rRows[i, 4]);
+                int receiptId = CellToInt(rRows[i, Idx("ReceiptID")]);
+                string name = CellToString(rRows[i, Idx("Name")]);
+                int seq = CellToInt(rRows[i, Idx("Sequence")]);
+                string operationsCsv = CellToString(rRows[i, Idx("Operations")]);
+                string description = CellToString(rRows[i, Idx("Description")]);
+                int iSt = Idx("Status");
+                int iBy = Idx("CreatedBy");
+                int iDt = Idx("CreatedDateTime");
+                string status = iSt >= 0 ? CellToString(rRows[i, iSt]) : "";
+                string createdBy = iBy >= 0 ? CellToString(rRows[i, iBy]) : "";
+                string createdDt = iDt >= 0 ? NormalizeStoredCreatedDateTime(rRows[i, iDt]) : "";
+                if (string.IsNullOrEmpty(status)) status = DefaultReceiptStatus;
 
                 var rNode = new ReceiptNode
                 {
@@ -220,7 +284,10 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
                     Name = name,
                     Sequence = seq,
                     OperationsCsv = operationsCsv ?? "",
-                    Description = description ?? ""
+                    Description = description ?? "",
+                    Status = status ?? DefaultReceiptStatus,
+                    CreatedBy = createdBy ?? "",
+                    CreatedDateTime = createdDt ?? ""
                 };
                 Tree.Add(rNode);
                 ReceiptById[receiptId] = rNode;
@@ -310,6 +377,28 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         ReceiptById.Clear();
         OperationById.Clear();
         PhaseById.Clear();
+    }
+
+    private bool HasReceiptColumn(string columnName)
+    {
+        if (_receiptTable?.Columns == null) return false;
+        foreach (var col in _receiptTable.Columns)
+        {
+            string n = col?.BrowseName?.Trim();
+            if (string.Equals(n, columnName, StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+        return false;
+    }
+
+    /// <summary>与 Load/Save 一致的 Receipt 表列顺序（含可选审计列）。</summary>
+    private List<string> GetReceiptSelectColumnNames()
+    {
+        var list = new List<string> { "ReceiptID", "Name", "Sequence", "Operations", "Description" };
+        if (HasReceiptColumn("Status")) list.Add("Status");
+        if (HasReceiptColumn("CreatedBy")) list.Add("CreatedBy");
+        if (HasReceiptColumn("CreatedDateTime")) list.Add("CreatedDateTime");
+        return list;
     }
 
     private List<string> GetPhaseColumnNames()
@@ -426,12 +515,21 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
     #region 树增删改 API（仅修改内存树，不写 Store）
     // ── Receipt ──────────────────────────────────────────────────────────────
 
-    /// <summary>新增 Receipt 到本地树，返回新 ReceiptID。</summary>
-    public int AddReceipt(string name, string description = "")
+    /// <summary>新增 Receipt 到本地树，返回新 ReceiptID。若表含 CreatedBy/CreatedDateTime 列，应传入当前用户与时间字符串。</summary>
+    public int AddReceipt(string name, string description = "", string createdBy = "", string createdDateTime = "")
     {
         int newId = ReceiptById.Count > 0 ? MaxDictKey(ReceiptById) + 1 : 1;
         int newSeq = Tree.Count > 0 ? MaxReceiptSeq() + 1 : 1;
-        var node = new ReceiptNode { ReceiptID = newId, Name = name ?? "", Sequence = newSeq, Description = description ?? "" };
+        var node = new ReceiptNode
+        {
+            ReceiptID = newId,
+            Name = name ?? "",
+            Sequence = newSeq,
+            Description = description ?? "",
+            Status = DefaultReceiptStatus,
+            CreatedBy = createdBy ?? "",
+            CreatedDateTime = string.IsNullOrWhiteSpace(createdDateTime) ? "" : NormalizeStoredCreatedDateTime(createdDateTime)
+        };
         Tree.Add(node);
         ReceiptById[newId] = node;
         MarkModified();
@@ -445,6 +543,16 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         if (name != null) node.Name = name;
         if (description != null) node.Description = description;
         MarkModified();
+        return true;
+    }
+
+    /// <summary>更新 Receipt.Status（下拉暂存后在保存前写入）。</summary>
+    public bool UpdateReceiptStatus(int receiptId, string status)
+    {
+        if (!ReceiptById.TryGetValue(receiptId, out var node)) return false;
+        node.Status = string.IsNullOrWhiteSpace(status) ? DefaultReceiptStatus : status.Trim();
+        MarkModified();
+        MarkDirtyReceipt(receiptId);
         return true;
     }
 
@@ -679,14 +787,39 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
             {
                 string opsCsv = BuildIdCsv(receipt.Operations, op => op.OperationID);
                 receipt.OperationsCsv = opsCsv;
+                if (HasReceiptColumn("CreatedDateTime") && !string.IsNullOrWhiteSpace(receipt.CreatedDateTime))
+                    receipt.CreatedDateTime = NormalizeStoredCreatedDateTime(receipt.CreatedDateTime);
+
                 if (dbReceiptIds.Contains(receipt.ReceiptID))
+                {
+                    var setParts = new List<string>
+                    {
+                        $"Name='{EscapeSql(receipt.Name)}'",
+                        $"Sequence={receipt.Sequence}",
+                        $"Operations='{EscapeSql(opsCsv)}'",
+                        $"Description='{EscapeSql(receipt.Description)}'"
+                    };
+                    if (HasReceiptColumn("Status"))
+                        setParts.Add($"Status='{EscapeSql(string.IsNullOrEmpty(receipt.Status) ? DefaultReceiptStatus : receipt.Status)}'");
+                    if (HasReceiptColumn("CreatedBy"))
+                        setParts.Add($"CreatedBy='{EscapeSql(receipt.CreatedBy ?? "")}'");
+                    if (HasReceiptColumn("CreatedDateTime"))
+                        setParts.Add($"CreatedDateTime='{EscapeSql(receipt.CreatedDateTime ?? "")}'");
                     _store.Query(
-                        $"UPDATE {_receiptTableName} SET Name='{EscapeSql(receipt.Name)}', Sequence={receipt.Sequence}, Operations='{EscapeSql(opsCsv)}', Description='{EscapeSql(receipt.Description)}' WHERE ReceiptID={receipt.ReceiptID}",
+                        $"UPDATE {_receiptTableName} SET {string.Join(", ", setParts)} WHERE ReceiptID={receipt.ReceiptID}",
                         out _, out _);
+                }
                 else
-                    _receiptTable.Insert(
-                        new[] { "ReceiptID", "Name", "Sequence", "Operations", "Description" },
-                        new object[,] { { receipt.ReceiptID, receipt.Name, receipt.Sequence, opsCsv, receipt.Description } });
+                {
+                    var insCols = new List<string> { "ReceiptID", "Name", "Sequence", "Operations", "Description" };
+                    var insVals = new List<object> { receipt.ReceiptID, receipt.Name, receipt.Sequence, opsCsv, receipt.Description };
+                    if (HasReceiptColumn("Status")) { insCols.Add("Status"); insVals.Add(string.IsNullOrEmpty(receipt.Status) ? DefaultReceiptStatus : receipt.Status); }
+                    if (HasReceiptColumn("CreatedBy")) { insCols.Add("CreatedBy"); insVals.Add(receipt.CreatedBy ?? ""); }
+                    if (HasReceiptColumn("CreatedDateTime")) { insCols.Add("CreatedDateTime"); insVals.Add(receipt.CreatedDateTime ?? ""); }
+                    var row = new object[1, insVals.Count];
+                    for (int c = 0; c < insVals.Count; c++) row[0, c] = insVals[c];
+                    _receiptTable.Insert(insCols.ToArray(), row);
+                }
 
                 foreach (var op in receipt.Operations)
                 {

@@ -1,13 +1,16 @@
 #region Using directives
 
 using UAManagedCore;
+using OpcUa = UAManagedCore.OpcUa;
 using FTOptix.UI;
 using FTOptix.HMIProject;
 using FTOptix.NetLogic;
 using FTOptix.Core;
+using FTOptix.CoreBase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FTOptix.EventLogger;
 
 #endregion
 
@@ -32,6 +35,15 @@ public class GenerateTreeList : BaseNetLogic
     /// <summary>当前选中的阶段 PhaseID（Phase 按钮点击时通过 SetSelectedPhase 记录）</summary>
     public int SelectedPhaseId => _selectedPhaseId;
     private int _selectedPhaseId;
+
+    #region 树展开折叠（与 Components 中 ExpandButton 一致）
+    private readonly Dictionary<int, bool> _treeReceiptExpanded = new Dictionary<int, bool>();
+    private readonly Dictionary<int, bool> _treeOperationExpanded = new Dictionary<int, bool>();
+    /// <summary>右箭头资源；展开时 Rotation=90°，折叠时 Rotation=0。</summary>
+    private const string ExpandButtonImagePath = "ns=7;%PROJECTDIR%/Right-sm.svg";
+    /// <summary>与模板 ExpandButton Width 一致；无展开时按钮隐藏不占位，此项加在 ItemContainer.LeftMargin 上以对齐右侧内容。</summary>
+    private const float ExpandButtonSlotWidth = 25f;
+    #endregion
 
     public override void Start()
     {
@@ -120,6 +132,18 @@ public class GenerateTreeList : BaseNetLogic
         return InformationModel.Get(modelVar.Value);
     }
 
+    /// <summary>下拉暂存与模型绑定一致：<c>SelectedReceiptCurrentStatus</c>；保存前由 <see cref="RecipeDatabaseManager"/> 读取写入 DB Status。</summary>
+    public string ReadSelectedReceiptCurrentStatusFromModel()
+    {
+        var n = ResolveSelectedTreeData();
+        if (n == null) return RecipeDatabaseTreeLoader.DefaultReceiptStatus;
+        var v = n.GetVariable("SelectedReceiptCurrentStatus");
+        string s = RecipeDatabaseManager.GetPlainStringFromVariableValue(v);
+        if (string.IsNullOrWhiteSpace(s) || s == "0")
+            return RecipeDatabaseTreeLoader.DefaultReceiptStatus;
+        return s;
+    }
+
     private static void SetModelVar(IUANode node, string name, string value)
     {
         if (node == null || string.IsNullOrEmpty(name)) return;
@@ -127,8 +151,44 @@ public class GenerateTreeList : BaseNetLogic
         if (v != null) v.Value = value;
     }
 
+    #region 搜索过滤（关键字由 UI 事件参数传入，不解析控件树）
+    private string _receiptNameSearchFilter = "";
+
+    private static List<RecipeDatabaseTreeLoader.ReceiptNode> FilterReceiptsByName(
+        List<RecipeDatabaseTreeLoader.ReceiptNode> tree, string filter)
+    {
+        if (tree == null || tree.Count == 0) return new List<RecipeDatabaseTreeLoader.ReceiptNode>();
+        if (string.IsNullOrWhiteSpace(filter)) return tree.ToList();
+        string f = filter.Trim();
+        return tree.Where(r => r.Name != null && r.Name.IndexOf(f, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+    }
+    #endregion
+
+    /// <summary>全量重建树（清除名称过滤）。保存、刷新数据等内部调用。</summary>
     [ExportMethod]
     public void Generate()
+    {
+        _receiptNameSearchFilter = "";
+        RunGenerateTreeContainer();
+    }
+
+    /// <summary>按配方名包含关系过滤并重建树。将 TextBox「Modified text」绑定到此方法，并把当前文本作为参数传入。</summary>
+    [ExportMethod]
+    public void RefreshTreeListBySearchText(string filterText)
+    {
+        _receiptNameSearchFilter = filterText?.Trim() ?? "";
+        RunGenerateTreeContainer();
+    }
+
+    /// <summary>若事件只能绑定 LocalizedText（与 Text 变量类型一致），可选此重载。</summary>
+    [ExportMethod]
+    public void RefreshTreeListBySearchLocalizedText(LocalizedText filterText)
+    {
+        _receiptNameSearchFilter = filterText?.Text?.Trim() ?? "";
+        RunGenerateTreeContainer();
+    }
+
+    private void RunGenerateTreeContainer()
     {
         var treeContainer = LogicObject.Owner.Get<Container>("TreeContainer");
         if (treeContainer == null)
@@ -172,12 +232,22 @@ public class GenerateTreeList : BaseNetLogic
         }
 
         var tree = loader.Tree;
+        string filterText = _receiptNameSearchFilter ?? "";
+        var visibleReceipts = FilterReceiptsByName(tree, filterText);
+
+        if (_selectedReceiptId != 0 && !visibleReceipts.Exists(r => r.ReceiptID == _selectedReceiptId))
+        {
+            _selectedReceiptId = 0;
+            _selectedOperationId = 0;
+            _selectedPhaseId = 0;
+            var selV = LogicObject.GetVariable("SelectedID");
+            if (selV != null) selV.Value = 0;
+        }
 
         #region 主流程：三层级 UI 生成
-        for (int i = 0; i < tree.Count; i++)
+        for (int i = 0; i < visibleReceipts.Count; i++)
         {
-            var rNode = tree[i];
-            int itemCount = 1;
+            var rNode = visibleReceipts[i];
             string containerName = (i == 0) ? "ListContainer" : $"ListContainer{i}";
             var listContainer = InformationModel.MakeObject<ColumnLayout>(containerName);
             listContainer.HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -190,6 +260,7 @@ public class GenerateTreeList : BaseNetLogic
             SetReceiptItemIdAndClick(rItem, rNode.ReceiptID);
             SetReceiptButtonHighlight(rItem, rNode.ReceiptID);
             listContainer.Add(rItem);
+            WireReceiptTreeExpandUi(rItem, rNode.ReceiptID, CountReceiptDescendantRows(rNode) > 1);
 
             foreach (var opNode in rNode.Operations)
             {
@@ -199,7 +270,7 @@ public class GenerateTreeList : BaseNetLogic
                 SetOperationItemIdAndClick(oItem, rNode.ReceiptID, opNode.OperationID);
                 SetOperationButtonHighlight(oItem, opNode.OperationID);
                 listContainer.Add(oItem);
-                itemCount++;
+                WireOperationTreeExpandUi(oItem, opNode.OperationID, opNode.Phases.Count > 1);
 
                 foreach (var phNode in opNode.Phases)
                 {
@@ -209,38 +280,52 @@ public class GenerateTreeList : BaseNetLogic
                     SetPhaseItemIdAndClick(pItem, rNode.ReceiptID, opNode.OperationID, phNode.PhaseID);
                     SetPhaseButtonHighlight(pItem, phNode.PhaseID);
                     listContainer.Add(pItem);
-                    itemCount++;
+                    HideTreeExpandButton(pItem);
                 }
             }
-            listContainer.Height = itemCount * 40;
             treeContainer.Add(listContainer);
         }
         #endregion
 
-        #region 根据子布局高度之和设置 TreeContainer 高度
-        var columnLayout = treeContainer as ColumnLayout;
-        if (columnLayout != null)
+        ApplyTreeExpandCollapseVisuals(treeContainer);
+
+        if (EnableLog)
         {
-            float totalHeight = 0;
-            foreach (var col in treeContainer.Children.OfType<ColumnLayout>())
-                totalHeight += col.Height + 5;
-            columnLayout.Height = totalHeight + 50;
+            if (string.IsNullOrWhiteSpace(filterText))
+                Log.Info(LogCategory, $"成功读取 {visibleReceipts.Count} 条配方，树形列表生成完毕。");
+            else
+                Log.Info(LogCategory, $"按名称过滤「{filterText}」：显示 {visibleReceipts.Count}/{tree.Count} 条配方。");
         }
-        #endregion
 
-        if (EnableLog) Log.Info(LogCategory, $"成功读取 {tree.Count} 条配方，树形列表生成完毕。");
+        if (visibleReceipts.Count == 0)
+        {
+            SyncSelectedItemToModel();
+            return;
+        }
 
-        // 若当前无选中项，自动选中第一个 Receipt
-        if (_selectedReceiptId == 0 && tree.Count > 0)
-            SetSelectedReceiptId(tree[0].ReceiptID);
+        if (_selectedReceiptId == 0 || !visibleReceipts.Exists(r => r.ReceiptID == _selectedReceiptId))
+            SetSelectedReceiptId(visibleReceipts[0].ReceiptID);
     }
 
     #region 辅助方法
+
+    #region 树列表项 UI 路径（Receipt/Operation/PhaseListItem：Container → ItemContainer → ItemButton，ExpandButton 与 ItemContainer 同级）
+    private static Container GetTreeListRowHost(Container listItem) =>
+        listItem?.Get<Container>("Container");
+
+    private static Container GetTreeListItemContainer(Container listItem) =>
+        GetTreeListRowHost(listItem)?.Get<Container>("ItemContainer");
+
+    private static Button GetTreeListItemButton(Container listItem) =>
+        GetTreeListItemContainer(listItem)?.Get<Button>("ItemButton");
+
+    private static Button GetTreeListExpandButton(Container listItem) =>
+        GetTreeListRowHost(listItem)?.Get<Button>("ExpandButton");
+    #endregion
+
     private void SetItemButtonText(Container listItem, string textValue)
     {
-        if (listItem == null) return;
-        var itemContainer = listItem.Get<Container>("ItemContainer");
-        var button = itemContainer?.Get<Button>("ItemButton");
+        var button = GetTreeListItemButton(listItem);
         if (button != null) button.Text = textValue;
     }
 
@@ -250,8 +335,7 @@ public class GenerateTreeList : BaseNetLogic
         if (listItem == null) return;
         var v = listItem.GetVariable("ReceiptID");
         if (v != null) v.Value = receiptId;
-        var itemContainer = listItem.Get<Container>("ItemContainer");
-        var button = itemContainer?.Get<Button>("ItemButton");
+        var button = GetTreeListItemButton(listItem);
         if (button != null)
         {
             button.UAEvent -= ReceiptButtonClicked;
@@ -270,8 +354,7 @@ public class GenerateTreeList : BaseNetLogic
     {
         if (listItem == null) return;
         bool highlightReceipt = (_selectedOperationId == 0 && _selectedPhaseId == 0 && receiptId == _selectedReceiptId);
-        var itemContainer = listItem.Get<Container>("ItemContainer");
-        var button = itemContainer?.Get<Button>("ItemButton");
+        var button = GetTreeListItemButton(listItem);
         if (button != null)
             button.BackgroundColor = highlightReceipt ? HighlightColor : NormalColor;
     }
@@ -290,8 +373,7 @@ public class GenerateTreeList : BaseNetLogic
             var receiptVar = rItem?.GetVariable("ReceiptID");
             if (receiptVar == null) continue;
             if (!int.TryParse(receiptVar.Value, out int rid)) continue;
-            var itemContainer = rItem.Get<Container>("ItemContainer");
-            var button = itemContainer?.Get<Button>("ItemButton");
+            var button = GetTreeListItemButton(rItem);
             if (button != null)
                 button.BackgroundColor = (highlightReceipt && rid == _selectedReceiptId) ? HighlightColor : NormalColor;
         }
@@ -301,14 +383,10 @@ public class GenerateTreeList : BaseNetLogic
     private void SetPhaseItemIdAndClick(Container listItem, int receiptId, int operationId, int phaseId)
     {
         if (listItem == null) return;
-        var rv = listItem.GetVariable("ReceiptID");
-        if (rv != null) rv.Value = receiptId;
-        var ov = listItem.GetVariable("OperationID");
-        if (ov != null) ov.Value = operationId;
-        var pv = listItem.GetVariable("PhaseID");
-        if (pv != null) pv.Value = phaseId;
-        var itemContainer = listItem.Get<Container>("ItemContainer");
-        var button = itemContainer?.Get<Button>("ItemButton");
+        EnsureSetInt32Variable(listItem, "ReceiptID", receiptId);
+        EnsureSetInt32Variable(listItem, "OperationID", operationId);
+        EnsureSetInt32Variable(listItem, "PhaseID", phaseId);
+        var button = GetTreeListItemButton(listItem);
         if (button != null)
         {
             button.UAEvent -= PhaseButtonClicked;
@@ -327,8 +405,7 @@ public class GenerateTreeList : BaseNetLogic
     private void SetPhaseButtonHighlight(Container listItem, int phaseId)
     {
         if (listItem == null) return;
-        var itemContainer = listItem.Get<Container>("ItemContainer");
-        var button = itemContainer?.Get<Button>("ItemButton");
+        var button = GetTreeListItemButton(listItem);
         if (button != null)
             button.BackgroundColor = (phaseId == _selectedPhaseId) ? HighlightColor : TransparentColor;
     }
@@ -337,12 +414,9 @@ public class GenerateTreeList : BaseNetLogic
     private void SetOperationItemIdAndClick(Container listItem, int receiptId, int operationId)
     {
         if (listItem == null) return;
-        var rv = listItem.GetVariable("ReceiptID");
-        if (rv != null) rv.Value = receiptId;
-        var ov = listItem.GetVariable("OperationID");
-        if (ov != null) ov.Value = operationId;
-        var itemContainer = listItem.Get<Container>("ItemContainer");
-        var button = itemContainer?.Get<Button>("ItemButton");
+        EnsureSetInt32Variable(listItem, "ReceiptID", receiptId);
+        EnsureSetInt32Variable(listItem, "OperationID", operationId);
+        var button = GetTreeListItemButton(listItem);
         if (button != null)
         {
             button.UAEvent -= OperationButtonClicked;
@@ -364,8 +438,7 @@ public class GenerateTreeList : BaseNetLogic
     private void SetOperationButtonHighlight(Container listItem, int operationId)
     {
         if (listItem == null) return;
-        var itemContainer = listItem.Get<Container>("ItemContainer");
-        var button = itemContainer?.Get<Button>("ItemButton");
+        var button = GetTreeListItemButton(listItem);
         if (button != null)
             button.BackgroundColor = (_selectedPhaseId == 0 && operationId == _selectedOperationId) ? HighlightColor : TransparentColor;
     }
@@ -386,8 +459,7 @@ public class GenerateTreeList : BaseNetLogic
                 var pVar = opNode?.GetVariable("PhaseID");
                 if (pVar != null) continue;
                 if (!int.TryParse(opVar.Value, out int oid)) continue;
-                var itemContainer = opNode?.Get<Container>("ItemContainer");
-                var button = itemContainer?.Get<Button>("ItemButton");
+                var button = GetTreeListItemButton(opNode);
                 if (button != null) button.BackgroundColor = TransparentColor;
             }
         }
@@ -403,8 +475,7 @@ public class GenerateTreeList : BaseNetLogic
                 if (pVar != null) continue;
                 if (!int.TryParse(opVar.Value, out int oid)) continue;
                 if (oid != _selectedOperationId) continue;
-                var itemContainer = opNode?.Get<Container>("ItemContainer");
-                var button = itemContainer?.Get<Button>("ItemButton");
+                var button = GetTreeListItemButton(opNode);
                 if (button != null) button.BackgroundColor = HighlightColor;
                 return;
             }
@@ -425,8 +496,7 @@ public class GenerateTreeList : BaseNetLogic
                 var pVar = node?.GetVariable("PhaseID");
                 if (pVar == null) continue;
                 if (!int.TryParse(pVar.Value, out int pid)) continue;
-                var itemContainer = node?.Get<Container>("ItemContainer");
-                var button = itemContainer?.Get<Button>("ItemButton");
+                var button = GetTreeListItemButton(node);
                 if (button != null) button.BackgroundColor = TransparentColor;
             }
         }
@@ -440,13 +510,221 @@ public class GenerateTreeList : BaseNetLogic
                 if (pVar == null) continue;
                 if (!int.TryParse(pVar.Value, out int pid)) continue;
                 if (pid != _selectedPhaseId) continue;
-                var itemContainer = node?.Get<Container>("ItemContainer");
-                var button = itemContainer?.Get<Button>("ItemButton");
+                var button = GetTreeListItemButton(node);
                 if (button != null) button.BackgroundColor = HighlightColor;
                 return;
             }
         }
     }
+
+    #region 树展开折叠逻辑（ExpandButton）
+    private static int CountReceiptDescendantRows(RecipeDatabaseTreeLoader.ReceiptNode r)
+    {
+        if (r?.Operations == null) return 0;
+        int n = 0;
+        foreach (var op in r.Operations)
+            n += 1 + (op.Phases?.Count ?? 0);
+        return n;
+    }
+
+    private void WireReceiptTreeExpandUi(Container listItem, int receiptId, bool showButton)
+    {
+        var btn = GetTreeListExpandButton(listItem);
+        if (btn == null) return;
+        ConfigureExpandButtonAndItemMargin(listItem, btn, showButton);
+        if (!showButton) return;
+        btn.UAEvent -= ReceiptExpandClicked;
+        btn.UAEvent += ReceiptExpandClicked;
+        SetExpandButtonExpandedLook(btn, TreeReceiptExpanded(receiptId));
+
+        void ReceiptExpandClicked(object sender, UAEventArgs a)
+        {
+            if (a?.EventType?.BrowseName != "MouseClickEvent") return;
+            _treeReceiptExpanded[receiptId] = !TreeReceiptExpanded(receiptId);
+            var tc = ResolveTreeContainer();
+            if (tc != null) ApplyTreeExpandCollapseVisuals(tc);
+        }
+    }
+
+    private void WireOperationTreeExpandUi(Container listItem, int operationId, bool showButton)
+    {
+        var btn = GetTreeListExpandButton(listItem);
+        if (btn == null) return;
+        ConfigureExpandButtonAndItemMargin(listItem, btn, showButton);
+        if (!showButton) return;
+        btn.UAEvent -= OperationExpandClicked;
+        btn.UAEvent += OperationExpandClicked;
+        SetExpandButtonExpandedLook(btn, TreeOperationExpanded(operationId));
+
+        void OperationExpandClicked(object sender, UAEventArgs a)
+        {
+            if (a?.EventType?.BrowseName != "MouseClickEvent") return;
+            _treeOperationExpanded[operationId] = !TreeOperationExpanded(operationId);
+            var tc = ResolveTreeContainer();
+            if (tc != null) ApplyTreeExpandCollapseVisuals(tc);
+        }
+    }
+
+    private static void HideTreeExpandButton(Container listItem)
+    {
+        var btn = GetTreeListExpandButton(listItem);
+        if (btn == null) return;
+        ConfigureExpandButtonAndItemMargin(listItem, btn, false);
+    }
+
+    /// <summary>有子项：显示 ExpandButton；无子项：隐藏不占位，并把 <c>ItemContainer.LeftMargin</c> 增加槽宽，与有按钮行右侧对齐。</summary>
+    private static void ConfigureExpandButtonAndItemMargin(Container listItem, Button btn, bool interactive)
+    {
+        if (btn == null) return;
+        var ic = GetTreeListItemContainer(listItem);
+        float baseLeft = ic?.LeftMargin ?? 0f;
+        EnsureSetBoolVariable(btn, "IsHasSubItem", interactive);
+        if (interactive)
+        {
+            btn.Visible = true;
+            btn.Width = ExpandButtonSlotWidth;
+            if (ic != null) ic.LeftMargin = baseLeft;
+        }
+        else
+        {
+            btn.Visible = false;
+            if (ic != null) ic.LeftMargin = baseLeft + ExpandButtonSlotWidth;
+        }
+    }
+
+    private static void EnsureSetBoolVariable(IUANode item, string name, bool value)
+    {
+        if (item == null || string.IsNullOrEmpty(name)) return;
+        var v = item.GetVariable(name);
+        if (v == null)
+        {
+            v = InformationModel.MakeVariable(name, OpcUa.DataTypes.Boolean);
+            item.Add(v);
+        }
+        v.Value = value;
+    }
+
+    private static void SetExpandButtonExpandedLook(Button btn, bool expanded)
+    {
+        if (btn == null) return;
+        var ip = btn.GetVariable("ImagePath");
+        if (ip != null)
+            ip.Value = ExpandButtonImagePath;
+        SetExpandButtonRotationDegrees(btn, expanded ? 90f : 0f);
+    }
+
+    private static void SetExpandButtonRotationDegrees(Button btn, float degrees)
+    {
+        if (btn == null) return;
+        btn.Rotation = degrees;
+        var rot = btn.GetVariable("Rotation");
+        if (rot != null)
+            rot.Value = degrees;
+        else
+        {
+            rot = InformationModel.MakeVariable("Rotation", OpcUa.DataTypes.Float);
+            btn.Add(rot);
+            rot.Value = degrees;
+        }
+    }
+
+    private bool TreeReceiptExpanded(int receiptId) =>
+        !_treeReceiptExpanded.TryGetValue(receiptId, out bool v) || v;
+
+    private bool TreeOperationExpanded(int operationId) =>
+        !_treeOperationExpanded.TryGetValue(operationId, out bool v) || v;
+
+    private Container ResolveTreeContainer()
+    {
+        return LogicObject.Owner?.Get<Container>("TreeContainer")
+            ?? LogicObject.Owner?.Get("ScrollView1")?.Get<Container>("TreeContainer");
+    }
+
+    private static bool TryReadVariableInt(IUAVariable v, out int id)
+    {
+        id = 0;
+        if (v?.Value == null) return false;
+        try
+        {
+            object raw = v.Value.Value;
+            if (raw is int i) { id = i; return true; }
+            return int.TryParse(raw?.ToString(), out id);
+        }
+        catch { return false; }
+    }
+
+    private static bool TryReadRowIds(Container row, out int receiptId, out int operationId, out int phaseId)
+    {
+        receiptId = operationId = phaseId = 0;
+        if (row == null) return false;
+        var rv = row.GetVariable("ReceiptID");
+        var ov = row.GetVariable("OperationID");
+        var pv = row.GetVariable("PhaseID");
+        if (rv != null) TryReadVariableInt(rv, out receiptId);
+        if (ov != null) TryReadVariableInt(ov, out operationId);
+        if (pv != null) TryReadVariableInt(pv, out phaseId);
+        return true;
+    }
+
+    private void ApplyTreeExpandCollapseVisuals(Container treeContainer)
+    {
+        if (treeContainer == null) return;
+
+        foreach (var col in treeContainer.Children.OfType<ColumnLayout>())
+        {
+            if (col.Children.Count == 0) continue;
+            var rItem = col.Children[0] as Container;
+            var rVar = rItem?.GetVariable("ReceiptID");
+            if (rVar == null || !TryReadVariableInt(rVar, out int receiptId) || receiptId <= 0) continue;
+
+            bool rExp = TreeReceiptExpanded(receiptId);
+            UpdateTreeExpandButtonGlyph(rItem, rExp);
+
+            for (int i = 1; i < col.Children.Count; i++)
+            {
+                if (!(col.Children[i] is Container row)) continue;
+                TryReadRowIds(row, out _, out int opId, out int phId);
+
+                if (phId > 0)
+                    row.Visible = rExp && TreeOperationExpanded(opId);
+                else if (opId > 0)
+                {
+                    row.Visible = rExp;
+                    UpdateTreeExpandButtonGlyph(row, TreeOperationExpanded(opId));
+                }
+                else
+                    row.Visible = rExp;
+            }
+
+            int visibleRows = 0;
+            foreach (var ch in col.Children)
+            {
+                if (ch is Panel p && p.Visible) visibleRows++;
+            }
+            col.Height = Math.Max(visibleRows, 1) * 40f;
+        }
+
+        if (treeContainer is ColumnLayout columnLayout)
+        {
+            float totalHeight = 0;
+            foreach (var c in treeContainer.Children.OfType<ColumnLayout>())
+                totalHeight += c.Height + 5;
+            columnLayout.Height = totalHeight + 50;
+        }
+    }
+
+    private static void UpdateTreeExpandButtonGlyph(Container listItem, bool expanded)
+    {
+        var btn = GetTreeListExpandButton(listItem);
+        if (btn == null || !btn.Visible) return;
+        var hasSub = btn.GetVariable("IsHasSubItem");
+        if (hasSub?.Value == null) return;
+        object raw = hasSub.Value.Value;
+        if (raw is not bool sub || !sub) return;
+        SetExpandButtonExpandedLook(btn, expanded);
+    }
+    #endregion
+
     private static readonly Color TransparentColor = new Color(0, 0xe4, 0xe4, 0xe4);
     private static readonly Color HighlightColor = new Color(255, 255, 220, 150);
     private static readonly Color NormalColor = new Color(0x99, 0xde, 0xee, 0xff);
@@ -461,5 +739,17 @@ public class GenerateTreeList : BaseNetLogic
         }
         return NodeId.Empty;
     }
+
+    private static void EnsureSetInt32Variable(Container item, string name, int value)
+    {
+        var v = item.GetVariable(name);
+        if (v == null)
+        {
+            v = InformationModel.MakeVariable(name, OpcUa.DataTypes.Int32);
+            item.Add(v);
+        }
+        v.Value = value;
+    }
+
     #endregion
 }

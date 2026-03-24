@@ -15,5 +15,8 @@
   <PropertyGroup>
     <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Quickenshtein" Version="1.5.1"/>
+  </ItemGroup>
   <Import Project="RedeiptEditor.references"/>
 </Project>

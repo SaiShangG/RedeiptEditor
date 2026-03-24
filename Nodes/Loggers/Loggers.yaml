@@ -1,2 +1,201 @@
 Name: Loggers
 Type: LoggersCategoryFolder
+Children:
+- Name: AuditEventLogger1
+  Type: EventLogger
+  WriteMask: BrowseName|DataType|Description|DisplayName|MinimumSamplingInterval|UserAccessLevel
+  Children:
+  - Name: Enabled
+    Type: PropertyType
+    DataType: Boolean
+    Value: true
+  - Name: Store
+    Type: NodePointer
+    DataType: NodeId
+    Value: "/Objects/RedeiptEditor/DataStores/EmbeddedDatabase1"
+    Children:
+    - Name: Kind
+      Type: PropertyType
+      DataType: NodeId
+      Value: "/Types/ObjectTypes/BaseObjectType/Store"
+  - Name: EventConfigurations
+    Type: BaseObjectType
+    Children:
+    - Name: EventConfiguration1
+      Type: EventConfiguration
+      Children:
+      - Name: EventType
+        Type: NodePointer
+        DataType: NodeId
+        ReferenceType: HasProperty
+        Value: "/Types/EventTypes/BaseEventType/AuditEventType/UserSessionEvent"
+        Children:
+        - Name: Kind
+          Type: PropertyType
+          DataType: NodeId
+          Value: "/Types/EventTypes/BaseEventType"
+  - Name: EventFieldPaths
+    Type: BaseObjectType
+    Children:
+    - Name: ClientUserId
+      Type: EventFieldPath
+      DataType: NodePath
+      Value: "0:ClientUserId"
+    - Name: Status
+      Type: EventFieldPath
+      DataType: NodePath
+      Value: "0:Status"
+    - Name: Message
+      Type: EventFieldPath
+      DataType: NodePath
+      Value: "/0:Message"
+    - Name: Severity
+      Type: EventFieldPath
+      DataType: NodePath
+      Value: "/0:Severity"
+    - Name: SourceName
+      Type: EventFieldPath
+      DataType: NodePath
+      Value: "/0:SourceName"
+    - Name: Time
+      Type: EventFieldPath
+      DataType: NodePath
+      Value: "/0:Time"
+  - Name: EventArguments
+    Type: BaseObjectType
+    Children:
+    - Name: EventTypeId
+      Type: BaseDataVariableType
+      DataType: NodeId
+    - Name: ClientUserId
+      Type: BaseDataVariableType
+      DataType: String
+    - Name: Status
+      Type: BaseDataVariableType
+      DataType: Boolean
+    - Name: Message
+      Type: BaseDataVariableType
+      DataType: LocalizedText
+    - Name: Severity
+      Type: BaseDataVariableType
+      DataType: UInt16
+    - Name: SourceName
+      Type: BaseDataVariableType
+      DataType: String
+    - Name: Time
+      Type: BaseDataVariableType
+      DataType: UtcTime
+  - Name: EventFieldsToLog
+    Type: BaseObjectType
+    Children:
+    - Name: EventType
+      Type: EventFieldToLog
+      DataType: String
+      ValueRank: Any
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../EventArguments/EventTypeId@BrowseName"
+    - Name: ClientUserId
+      Type: EventFieldToLog
+      DataType: String
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../EventArguments/ClientUserId"
+    - Name: Status
+      Type: EventFieldToLog
+      DataType: LocalizedText
+      Value: {"LocaleId":"en-US","Text":"0"}
+      Children:
+      - Name: KeyValueConverter1
+        Type: ValueMapConverter
+        Children:
+        - Name: Source
+          Type: BaseDataVariableType
+          DataType: BaseDataType
+          ReferenceType: HasSource
+          Children:
+          - Name: DynamicLink
+            Type: DynamicLink
+            DataType: NodePath
+            Value: "../../../../EventArguments/Status"
+        - Name: ns=2;Pairs
+          Type: BaseObjectType
+          Children:
+          - Name: Pair
+            Type: ValueMapPair
+            Children:
+            - Name: Key
+              Type: BaseDataVariableType
+              DataType: Boolean
+            - Name: Value
+              Type: BaseDataVariableType
+              DataType: LocalizedText
+              Value: {"NamespaceIndex":7,"TextId":"Failed"}
+          - Name: Pair1
+            Type: ValueMapPair
+            Children:
+            - Name: Key
+              Type: BaseDataVariableType
+              DataType: Boolean
+              Value: true
+            - Name: Value
+              Type: BaseDataVariableType
+              DataType: LocalizedText
+              Value: {"NamespaceIndex":7,"TextId":"Success"}
+    - Name: Message
+      Type: EventFieldToLog
+      DataType: LocalizedText
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../EventArguments/Message"
+        Children:
+        - Name: IsPull
+          Type: BaseVariableType
+          DataType: Boolean
+          Value: true
+    - Name: Severity
+      Type: EventFieldToLog
+      DataType: UInt16
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../EventArguments/Severity"
+    - Name: SourceName
+      Type: EventFieldToLog
+      DataType: String
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../EventArguments/SourceName"
+    - Name: Time
+      Type: EventFieldToLog
+      DataType: UtcTime
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../EventArguments/Time"
+  - Name: ns=4;LibraryReference
+    Type: ObjectLibraryReference
+    DataType: ObjectLibraryReferenceDataType
+    Value: 
+     {
+      "TypeId": {
+       "Id": 72,
+       "Namespace": 4
+      },
+      "Body": {
+       "libraryGuid": "7402740dce8643d69ca9ee0cf46be879",
+       "objectGuid": "26abfb728ab9bf74e355a802a6a4b32e",
+       "objectVersion": 1,
+       "highestIgnoredVersion": 0
+      }
+     }
