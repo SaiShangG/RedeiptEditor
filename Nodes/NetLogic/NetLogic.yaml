@@ -92,6 +92,16 @@ Children:
       Value: [{"TypeId":{"Id":296},"Body":{"Name":"nameNodeId","DataType":{"Id":17},"ValueRank":-1,"ArrayDimensions":[],"Description":{"NamespaceIndex":-1,"LocaleId":"","Text":""}}},{"TypeId":{"Id":296},"Body":{"Name":"phasesNodeId","DataType":{"Id":17},"ValueRank":-1,"ArrayDimensions":[],"Description":{"NamespaceIndex":-1,"LocaleId":"","Text":""}}}]
   - Class: Method
     Name: DoSaveToDatabase
+  - Class: Method
+    Name: RenameSelectedTreeItem
+    Children:
+    - Name: ns=0;InputArguments
+      Type: BaseVariableType
+      DataType: Argument
+      ReferenceType: HasProperty
+      ValueRank: OneDimension
+      ArrayDimensions: [0]
+      Value: [{"TypeId":{"Id":296},"Body":{"Name":"newName","DataType":{"Id":12},"ValueRank":-1,"ArrayDimensions":[],"Description":{"NamespaceIndex":-1,"LocaleId":"","Text":""}}}]
 - Name: RecipeDatabaseTreeLoader
   Id: g=de78c853a6b213a6ddc2c1cf47150346
   Type: NetLogic
