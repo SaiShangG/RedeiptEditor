@@ -122,6 +122,49 @@ Children:
     Children:
     - Name: Default
       Type: NavigationPanelStyle
+    - Name: Blue
+      Type: NavigationPanelStyle
+      Children:
+      - Name: BackgroundColor
+        Type: BaseDataVariableType
+        DataType: Color
+        Value: "#ffffff92"
+      - Name: InactiveTextColor
+        Type: BaseDataVariableType
+        DataType: Color
+        Value: "#000000"
+      - Name: InactiveColor
+        Type: BaseDataVariableType
+        DataType: Color
+        Value: "#cfdeea"
+      - Name: FontSize
+        Type: BaseDataVariableType
+        DataType: Size
+        Value: 20.0
+      - Name: IconUsesTextColor
+        Type: BaseDataVariableType
+        DataType: Boolean
+        Value: true
+      - Name: TabSpacing
+        Type: BaseDataVariableType
+        DataType: Size
+        Value: 4.0
+      - Name: TabPadding
+        Type: BaseDataVariableType
+        DataType: Size
+        Value: 8.0
+      - Name: FontWeight
+        Type: BaseDataVariableType
+        DataType: FontWeightEnum
+        Value: 400
+      - Name: ActivePrimaryColor
+        Type: BaseDataVariableType
+        DataType: Color
+        Value: "#247cc4"
+      - Name: ActiveSecondaryColor
+        Type: BaseDataVariableType
+        DataType: Color
+        Value: "#000000"
   - Name: ChartStyles
     Type: BaseObjectType
     Children:
@@ -132,6 +175,19 @@ Children:
     Children:
     - Name: Default
       Type: DataListStyle
+      Children:
+      - Name: HeaderFontSize
+        Type: BaseDataVariableType
+        DataType: Size
+        Value: 18.0
+      - Name: HeaderFontWeight
+        Type: BaseDataVariableType
+        DataType: FontWeightEnum
+        Value: 700
+      - Name: FontSize
+        Type: BaseDataVariableType
+        DataType: Size
+        Value: 14.0
   - Name: ToolTipStyles
     Type: BaseObjectType
     Children:

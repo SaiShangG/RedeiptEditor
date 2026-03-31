@@ -1,12 +1,14 @@
 #region Using directives
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using UAManagedCore;
 using FTOptix.CoreBase;
 using FTOptix.Core;
 using FTOptix.NetLogic;
 using FTOptix.Store;
 using FTOptix.HMIProject;
+using FTOptix.EventLogger;
 #endregion
 
 /// <summary>从配方数据库读取全部数据并保存到本地 dict 树（Receipt → Operation → Phase）。</summary>
@@ -14,6 +16,51 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
 {
     private const string LogCategory = "RecipeDatabaseTreeLoader";
     private const bool EnableLog = true;
+    /// <summary>新建 Receipt 时 Status 列的默认值（与 DataStores 中 StoreColumn 默认值一致）。</summary>
+    public const string DefaultReceiptStatus = "Development";
+
+    /// <summary>Receipt.CreatedDateTime 在库内/内存中的统一格式，例如 2026-03-22T16:49:03.6596165。</summary>
+    public const string CreatedDateTimeStorageFormat = "yyyy-MM-ddTHH:mm:ss.fffffff";
+
+    /// <summary>当前本地时刻，按 <see cref="CreatedDateTimeStorageFormat"/> 格式化，用于新建 Receipt。</summary>
+    public static string FormatStoredCreatedDateTimeNow()
+    {
+        return DateTime.Now.ToString(CreatedDateTimeStorageFormat, CultureInfo.InvariantCulture);
+    }
+
+    /// <summary>将数据库单元格或字符串统一为 <see cref="CreatedDateTimeStorageFormat"/>；无法解析时保留原字符串修剪结果。</summary>
+    public static string NormalizeStoredCreatedDateTime(object value)
+    {
+        if (value == null || value == DBNull.Value) return "";
+        if (value is DateTime dt)
+            return dt.ToString(CreatedDateTimeStorageFormat, CultureInfo.InvariantCulture);
+        string s = Convert.ToString(value)?.Trim() ?? "";
+        if (string.IsNullOrEmpty(s)) return "";
+        if (DateTime.TryParse(s, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out DateTime p1))
+            return p1.ToString(CreatedDateTimeStorageFormat, CultureInfo.InvariantCulture);
+        if (DateTime.TryParse(s, CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime p2))
+            return p2.ToString(CreatedDateTimeStorageFormat, CultureInfo.InvariantCulture);
+        foreach (string cultureName in new[] { "zh-CN", "en-US" })
+        {
+            try
+            {
+                if (DateTime.TryParse(s, CultureInfo.GetCultureInfo(cultureName), DateTimeStyles.None, out DateTime p3))
+                    return p3.ToString(CreatedDateTimeStorageFormat, CultureInfo.InvariantCulture);
+            }
+            catch (CultureNotFoundException) { }
+        }
+        string[] exactFormats =
+        {
+            "yyyy/M/d H:mm:ss", "yyyy/M/d HH:mm:ss", "yyyy/MM/dd H:mm:ss", "yyyy/MM/dd HH:mm:ss",
+            "yyyy-M-d H:mm:ss", "yyyy-MM-dd HH:mm:ss"
+        };
+        foreach (string fmt in exactFormats)
+        {
+            if (DateTime.TryParseExact(s, fmt, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime p4))
+                return p4.ToString(CreatedDateTimeStorageFormat, CultureInfo.InvariantCulture);
+        }
+        return s;
+    }
 
     public static RecipeDatabaseTreeLoader Instance { get; private set; }
 
@@ -29,6 +76,12 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         public int Sequence;
         public string OperationsCsv;
         public string Description;
+        /// <summary>状态（与 Receipt 表 Status 列对应；新建时默认为 Development）。</summary>
+        public string Status = DefaultReceiptStatus;
+        /// <summary>创建人（与 Receipt 表 CreatedBy 列对应，表无此列时不参与 SQL）。</summary>
+        public string CreatedBy = "";
+        /// <summary>创建时间（与 Receipt 表 CreatedDateTime 列对应，表无此列时不参与 SQL）。</summary>
+        public string CreatedDateTime = "";
         public List<OperationNode> Operations = new List<OperationNode>();
     }
 
@@ -38,6 +91,10 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         public string Name;
         public string Description;
         public string PhasesCsv;
+        /// <summary>创建人（与 Operations 表 CreatedBy 列对应，表无此列时不参与 SQL）。</summary>
+        public string CreatedBy = "";
+        /// <summary>创建时间（与 Operations 表 CreatedDateTime 列对应）。</summary>
+        public string CreatedDateTime = "";
         public List<PhaseNode> Phases = new List<PhaseNode>();
     }
 
@@ -196,23 +253,35 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
 
         try
         {
-            _store.Query($"SELECT ReceiptID, Name, Sequence, Operations, Description FROM {_receiptTableName} ORDER BY Sequence", out _, out object[,] rRows);
+            var receiptCols = GetReceiptSelectColumnNames();
+            string receiptSelectList = string.Join(", ", receiptCols);
+            _store.Query($"SELECT {receiptSelectList} FROM {_receiptTableName} ORDER BY Sequence", out _, out object[,] rRows);
             if (rRows == null || rRows.GetLength(0) == 0)
             {
                 if (EnableLog) Log.Info(LogCategory, "Receipt 表无数据");
+                ApplyDiscardedUnusedQueriesToModel();
                 return;
             }
+
+            int Idx(string col) => receiptCols.FindIndex(c => string.Equals(c, col, StringComparison.OrdinalIgnoreCase));
 
             var phaseColumns = GetPhaseColumnNames();
             int rCount = rRows.GetLength(0);
 
             for (int i = 0; i < rCount; i++)
             {
-                int receiptId = CellToInt(rRows[i, 0]);
-                string name = CellToString(rRows[i, 1]);
-                int seq = CellToInt(rRows[i, 2]);
-                string operationsCsv = CellToString(rRows[i, 3]);
-                string description = CellToString(rRows[i, 4]);
+                int receiptId = CellToInt(rRows[i, Idx("ReceiptID")]);
+                string name = CellToString(rRows[i, Idx("Name")]);
+                int seq = CellToInt(rRows[i, Idx("Sequence")]);
+                string operationsCsv = CellToString(rRows[i, Idx("Operations")]);
+                string description = CellToString(rRows[i, Idx("Description")]);
+                int iSt = Idx("Status");
+                int iBy = Idx("CreatedBy");
+                int iDt = Idx("CreatedDateTime");
+                string status = iSt >= 0 ? CellToString(rRows[i, iSt]) : "";
+                string createdBy = iBy >= 0 ? CellToString(rRows[i, iBy]) : "";
+                string createdDt = iDt >= 0 ? NormalizeStoredCreatedDateTime(rRows[i, iDt]) : "";
+                if (string.IsNullOrEmpty(status)) status = DefaultReceiptStatus;
 
                 var rNode = new ReceiptNode
                 {
@@ -220,7 +289,10 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
                     Name = name,
                     Sequence = seq,
                     OperationsCsv = operationsCsv ?? "",
-                    Description = description ?? ""
+                    Description = description ?? "",
+                    Status = status ?? DefaultReceiptStatus,
+                    CreatedBy = createdBy ?? "",
+                    CreatedDateTime = createdDt ?? ""
                 };
                 Tree.Add(rNode);
                 ReceiptById[receiptId] = rNode;
@@ -229,13 +301,23 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
                 if (opIdList.Count > 0 && _opTable != null && !string.IsNullOrEmpty(_opTableName))
                 {
                     string inClause = string.Join(",", opIdList);
-                    _store.Query($"SELECT OperationID, Name, Description, Phases FROM {_opTableName} WHERE OperationID IN ({inClause})", out _, out object[,] oRows);
-                    var opById = BuildOpDict(oRows);
+                    var opColList = GetOperationSelectColumnNames();
+                    string opSel = string.Join(", ", opColList);
+                    _store.Query($"SELECT {opSel} FROM {_opTableName} WHERE OperationID IN ({inClause})", out _, out object[,] oRows);
+                    var opById = BuildOpDict(oRows, opColList);
 
                     foreach (int oId in opIdList)
                     {
                         if (!opById.TryGetValue(oId, out var opPair)) continue;
-                        var oNode = new OperationNode { OperationID = oId, Name = opPair.Name, Description = opPair.Description ?? "", PhasesCsv = opPair.Phases ?? "" };
+                        var oNode = new OperationNode
+                        {
+                            OperationID = oId,
+                            Name = opPair.Name,
+                            Description = opPair.Description ?? "",
+                            PhasesCsv = opPair.Phases ?? "",
+                            CreatedBy = opPair.CreatedBy ?? "",
+                            CreatedDateTime = opPair.CreatedDateTime ?? ""
+                        };
                         rNode.Operations.Add(oNode);
                         OperationById[oId] = oNode;
 
@@ -261,13 +343,25 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
             // 加载未挂在任何 Receipt 下的独立 Operation（仅入 OperationById，供右侧 List 显示）
             if (_opTable != null && !string.IsNullOrEmpty(_opTableName))
             {
-                _store.Query($"SELECT OperationID, Name, Description, Phases FROM {_opTableName}", out _, out object[,] allOpRows);
-                if (allOpRows != null)
-                    for (int r = 0; r < allOpRows.GetLength(0); r++)
+                var opColListAll = GetOperationSelectColumnNames();
+                string opSelAll = string.Join(", ", opColListAll);
+                _store.Query($"SELECT {opSelAll} FROM {_opTableName}", out _, out object[,] allOpRows);
+                var opDictAll = BuildOpDict(allOpRows, opColListAll);
+                if (opDictAll != null)
+                    foreach (var kv in opDictAll)
                     {
-                        int oId = CellToInt(allOpRows[r, 0]);
+                        int oId = kv.Key;
                         if (OperationById.ContainsKey(oId)) continue;
-                        var oNode = new OperationNode { OperationID = oId, Name = CellToString(allOpRows[r, 1]), Description = CellToString(allOpRows[r, 2]) ?? "", PhasesCsv = CellToString(allOpRows[r, 3]) ?? "" };
+                        var op = kv.Value;
+                        var oNode = new OperationNode
+                        {
+                            OperationID = oId,
+                            Name = op.Name,
+                            Description = op.Description ?? "",
+                            PhasesCsv = op.Phases ?? "",
+                            CreatedBy = op.CreatedBy ?? "",
+                            CreatedDateTime = op.CreatedDateTime ?? ""
+                        };
                         OperationById[oId] = oNode;
                     }
             }
@@ -297,6 +391,7 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
             }
 
             if (EnableLog) Log.Info(LogCategory, $"已加载 {Tree.Count} 条配方到本地 dict 树");
+            ApplyDiscardedUnusedQueriesToModel();
         }
         catch (Exception ex)
         {
@@ -304,12 +399,195 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         }
     }
 
+    #region Discarded 面板：UnusedOperation / UnusedPhases 简单 Query（供 DataGrid）
+    /// <summary>
+    /// 从数据库统计「未出现在任何 Receipt.Operations 的工序」与「未出现在任何 Operation.Phases 的阶段」，
+    /// 写成 <c>SELECT * FROM ... WHERE Id IN (...)</c> 写入 UIData（DataGrid 不支持子查询）。
+    /// </summary>
+    private void ApplyDiscardedUnusedQueriesToModel()
+    {
+        try
+        {
+            if (_store == null || string.IsNullOrEmpty(_opTableName)) return;
+
+            ComputeUnusedIdsFromDatabase(out List<int> unusedOpIds, out List<int> unusedPhIds);
+
+            string qOp = BuildSimpleIdInQuery(_opTableName, "OperationID", unusedOpIds);
+            string qPh = string.IsNullOrEmpty(_phaseTableName)
+                ? "SELECT * FROM Phases WHERE 0"
+                : BuildSimpleIdInQuery(_phaseTableName, "PhaseID", unusedPhIds);
+
+            var root = GetProjectRedeiptEditorRoot(LogicObject);
+            if (root == null) return;
+
+            var unusedOpNode = root.GetObject("Model")?.GetObject("UIData")?.GetObject("DiscardedData")?.GetObject("UnusedOperation");
+            var unusedPhNode = root.GetObject("Model")?.GetObject("UIData")?.GetObject("DiscardedData")?.GetObject("UnusedPhases");
+            var vOp = unusedOpNode?.GetVariable("Query");
+            var vPh = unusedPhNode?.GetVariable("Query");
+            if (vOp != null) vOp.Value = new UAValue(qOp);
+            if (vPh != null) vPh.Value = new UAValue(qPh);
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Warning(LogCategory, $"ApplyDiscardedUnusedQueriesToModel: {ex.Message}");
+        }
+    }
+
+    /// <summary>按当前数据库内容刷新 Discarded 面板 UnusedOperation / UnusedPhases 的 DataGrid Query。</summary>
+    public void RefreshDiscardedUnusedGridQueries()
+    {
+        ApplyDiscardedUnusedQueriesToModel();
+    }
+
+    private static IUANode GetProjectRedeiptEditorRoot(IUANode from)
+    {
+        var n = from;
+        while (n != null)
+        {
+            if (string.Equals(n.BrowseName, "RedeiptEditor", StringComparison.OrdinalIgnoreCase))
+                return n;
+            n = n.Owner;
+        }
+        return null;
+    }
+
+    private static string BuildSimpleIdInQuery(string tableName, string idColumn, List<int> ids)
+    {
+        if (string.IsNullOrEmpty(tableName)) return "SELECT * FROM Operations WHERE 0";
+        if (ids == null || ids.Count == 0)
+            return $"SELECT * FROM {tableName} WHERE 0";
+        return $"SELECT * FROM {tableName} WHERE {idColumn} IN ({string.Join(",", ids)})";
+    }
+
+    private void ComputeUnusedIdsFromDatabase(out List<int> unusedOpIds, out List<int> unusedPhIds)
+    {
+        unusedOpIds = new List<int>();
+        unusedPhIds = new List<int>();
+
+        var usedOpIds = new HashSet<int>();
+        if (!string.IsNullOrEmpty(_receiptTableName))
+        {
+            try
+            {
+                _store.Query($"SELECT Operations FROM {_receiptTableName}", out _, out object[,] rRows);
+                if (rRows != null)
+                    for (int i = 0; i < rRows.GetLength(0); i++)
+                        foreach (int id in ParseIdList(CellToString(rRows[i, 0])))
+                            usedOpIds.Add(id);
+            }
+            catch (Exception ex)
+            {
+                if (EnableLog) Log.Warning(LogCategory, $"ComputeUnusedIdsFromDatabase(Receipts): {ex.Message}");
+            }
+        }
+
+        foreach (int id in QueryIdSet(_opTableName, "OperationID"))
+            if (!usedOpIds.Contains(id))
+                unusedOpIds.Add(id);
+        unusedOpIds.Sort();
+
+        var usedPhaseIds = new HashSet<int>();
+        if (!string.IsNullOrEmpty(_opTableName))
+        {
+            try
+            {
+                _store.Query($"SELECT Phases FROM {_opTableName}", out _, out object[,] oRows);
+                if (oRows != null)
+                    for (int i = 0; i < oRows.GetLength(0); i++)
+                        foreach (int id in ParseIdList(CellToString(oRows[i, 0])))
+                            usedPhaseIds.Add(id);
+            }
+            catch (Exception ex)
+            {
+                if (EnableLog) Log.Warning(LogCategory, $"ComputeUnusedIdsFromDatabase(Phases): {ex.Message}");
+            }
+        }
+
+        if (!string.IsNullOrEmpty(_phaseTableName))
+        {
+            foreach (int id in QueryIdSet(_phaseTableName, "PhaseID"))
+                if (!usedPhaseIds.Contains(id))
+                    unusedPhIds.Add(id);
+            unusedPhIds.Sort();
+        }
+    }
+    #endregion
+
     private void ClearTree()
     {
         Tree.Clear();
         ReceiptById.Clear();
         OperationById.Clear();
         PhaseById.Clear();
+    }
+
+    private bool HasReceiptColumn(string columnName)
+    {
+        if (_receiptTable?.Columns == null) return false;
+        foreach (var col in _receiptTable.Columns)
+        {
+            string n = col?.BrowseName?.Trim();
+            if (string.Equals(n, columnName, StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+        return false;
+    }
+
+    #region Operation / Phase 表可选列（审计）
+    private bool HasOperationColumn(string columnName)
+    {
+        if (_opTable?.Columns == null) return false;
+        foreach (var col in _opTable.Columns)
+        {
+            string n = col?.BrowseName?.Trim();
+            if (string.Equals(n, columnName, StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+        return false;
+    }
+
+    private bool HasPhaseColumn(string columnName)
+    {
+        if (_phaseTable?.Columns == null) return false;
+        foreach (var col in _phaseTable.Columns)
+        {
+            string n = col?.BrowseName?.Trim();
+            if (string.Equals(n, columnName, StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+        return false;
+    }
+
+    /// <summary>与 RecipeDatabaseManager 一致：当前会话用户 BrowseName。</summary>
+    private string GetSessionUserBrowseName()
+    {
+        try
+        {
+            var u = Session.User;
+            if (u != null && !string.IsNullOrEmpty(u.BrowseName))
+                return u.BrowseName.Trim();
+        }
+        catch { }
+        return "";
+    }
+
+    private List<string> GetOperationSelectColumnNames()
+    {
+        var list = new List<string> { "OperationID", "Name", "Description", "Phases" };
+        if (HasOperationColumn("CreatedBy")) list.Add("CreatedBy");
+        if (HasOperationColumn("CreatedDateTime")) list.Add("CreatedDateTime");
+        return list;
+    }
+    #endregion
+
+    /// <summary>与 Load/Save 一致的 Receipt 表列顺序（含可选审计列）。</summary>
+    private List<string> GetReceiptSelectColumnNames()
+    {
+        var list = new List<string> { "ReceiptID", "Name", "Sequence", "Operations", "Description" };
+        if (HasReceiptColumn("Status")) list.Add("Status");
+        if (HasReceiptColumn("CreatedBy")) list.Add("CreatedBy");
+        if (HasReceiptColumn("CreatedDateTime")) list.Add("CreatedDateTime");
+        return list;
     }
 
     private List<string> GetPhaseColumnNames()
@@ -347,14 +625,20 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         return list;
     }
 
-    private static Dictionary<int, (string Name, string Description, string Phases)> BuildOpDict(object[,] oRows)
+    private static Dictionary<int, (string Name, string Description, string Phases, string CreatedBy, string CreatedDateTime)> BuildOpDict(object[,] oRows, List<string> cols)
     {
-        var d = new Dictionary<int, (string, string, string)>();
-        if (oRows == null) return d;
+        var d = new Dictionary<int, (string, string, string, string, string)>();
+        if (oRows == null || cols == null || cols.Count == 0) return d;
+        int Col(string name) => cols.FindIndex(c => string.Equals(c, name, StringComparison.OrdinalIgnoreCase));
+        int iId = Col("OperationID"), iName = Col("Name"), iDesc = Col("Description"), iPh = Col("Phases");
+        int iBy = Col("CreatedBy"), iDt = Col("CreatedDateTime");
+        if (iId < 0 || iName < 0 || iDesc < 0 || iPh < 0) return d;
         for (int r = 0; r < oRows.GetLength(0); r++)
         {
-            int id = CellToInt(oRows[r, 0]);
-            d[id] = (CellToString(oRows[r, 1]), CellToString(oRows[r, 2]), CellToString(oRows[r, 3]));
+            int id = CellToInt(oRows[r, iId]);
+            string cb = iBy >= 0 ? CellToString(oRows[r, iBy]) : "";
+            string cdt = iDt >= 0 ? NormalizeStoredCreatedDateTime(oRows[r, iDt]) : "";
+            d[id] = (CellToString(oRows[r, iName]), CellToString(oRows[r, iDesc]), CellToString(oRows[r, iPh]), cb, cdt);
         }
         return d;
     }
@@ -426,12 +710,23 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
     #region 树增删改 API（仅修改内存树，不写 Store）
     // ── Receipt ──────────────────────────────────────────────────────────────
 
-    /// <summary>新增 Receipt 到本地树，返回新 ReceiptID。</summary>
-    public int AddReceipt(string name, string description = "")
+    /// <summary>新增 Receipt 到本地树，返回新 ReceiptID。createdBy/createdDateTime 为空时与 <see cref="AddOperation"/> 一致：自动填当前会话用户与当前时间（Save 时写入表）。</summary>
+    public int AddReceipt(string name, string description = "", string createdBy = "", string createdDateTime = "")
     {
         int newId = ReceiptById.Count > 0 ? MaxDictKey(ReceiptById) + 1 : 1;
         int newSeq = Tree.Count > 0 ? MaxReceiptSeq() + 1 : 1;
-        var node = new ReceiptNode { ReceiptID = newId, Name = name ?? "", Sequence = newSeq, Description = description ?? "" };
+        string by = !string.IsNullOrEmpty(createdBy) ? createdBy : GetSessionUserBrowseName();
+        string dt = !string.IsNullOrEmpty(createdDateTime) ? NormalizeStoredCreatedDateTime(createdDateTime) : FormatStoredCreatedDateTimeNow();
+        var node = new ReceiptNode
+        {
+            ReceiptID = newId,
+            Name = name ?? "",
+            Sequence = newSeq,
+            Description = description ?? "",
+            Status = DefaultReceiptStatus,
+            CreatedBy = by,
+            CreatedDateTime = dt
+        };
         Tree.Add(node);
         ReceiptById[newId] = node;
         MarkModified();
@@ -445,6 +740,16 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         if (name != null) node.Name = name;
         if (description != null) node.Description = description;
         MarkModified();
+        return true;
+    }
+
+    /// <summary>更新 Receipt.Status（下拉暂存后在保存前写入）。</summary>
+    public bool UpdateReceiptStatus(int receiptId, string status)
+    {
+        if (!ReceiptById.TryGetValue(receiptId, out var node)) return false;
+        node.Status = string.IsNullOrWhiteSpace(status) ? DefaultReceiptStatus : status.Trim();
+        MarkModified();
+        MarkDirtyReceipt(receiptId);
         return true;
     }
 
@@ -465,16 +770,64 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
 
     // ── Operation ────────────────────────────────────────────────────────────
 
-    /// <summary>在指定 Receipt 下新增 Operation，返回新 OperationID。</summary>
-    public int AddOperation(int receiptId, string name, string description = "")
+    /// <summary>在指定 Receipt 下新增 Operation，返回新 OperationID。createdBy/createdDateTime 为空时自动填当前用户与当前时间（表含对应列时 Save 会写入）。</summary>
+    public int AddOperation(int receiptId, string name, string description = "", string createdBy = "", string createdDateTime = "")
     {
         if (!ReceiptById.TryGetValue(receiptId, out var rNode)) return -1;
         int newId = OperationById.Count > 0 ? MaxDictKey(OperationById) + 1 : 1;
-        var node = new OperationNode { OperationID = newId, Name = name ?? "", Description = description ?? "" };
+        string by = !string.IsNullOrEmpty(createdBy) ? createdBy : GetSessionUserBrowseName();
+        string dt = !string.IsNullOrEmpty(createdDateTime) ? NormalizeStoredCreatedDateTime(createdDateTime) : FormatStoredCreatedDateTimeNow();
+        var node = new OperationNode
+        {
+            OperationID = newId,
+            Name = name ?? "",
+            Description = description ?? "",
+            CreatedBy = by,
+            CreatedDateTime = dt
+        };
         rNode.Operations.Add(node);
         OperationById[newId] = node;
         MarkModified();
         return newId;
+    }
+
+    /// <summary>工序是否未挂在任何配方的 <see cref="ReceiptNode.Operations"/> 下（仅存在于 <see cref="OperationById"/> 的独立工序）。</summary>
+    public bool IsOperationUnattachedToAnyReceipt(int operationId)
+    {
+        if (operationId <= 0) return false;
+        foreach (var r in Tree)
+            foreach (var op in r.Operations)
+                if (op.OperationID == operationId)
+                    return false;
+        return true;
+    }
+
+    /// <summary>
+    /// 将已在库中的工序挂到指定配方下：不新建 OperationID、不复制 Phase，仅把同一节点加入配方序列（Save 时只更新 Receipt.Operations CSV）。
+    /// 用于「Create New Operation」已生成独立行后，Insert 到配方时避免同名同版本重复行。
+    /// </summary>
+    /// <param name="insertAfterOperationId">0 表示插在配方工序列表末尾；否则插在该 OperationID 之后。</param>
+    /// <returns>成功返回 <paramref name="operationId"/>；已在树中或其它配方下占用时返回 -1。</returns>
+    public int AttachExistingOperationToReceipt(int receiptId, int operationId, int insertAfterOperationId)
+    {
+        if (!ReceiptById.TryGetValue(receiptId, out var rNode)) return -1;
+        if (!OperationById.TryGetValue(operationId, out var opNode)) return -1;
+        if (rNode.Operations.Exists(o => o.OperationID == operationId)) return -1;
+        foreach (var r in Tree)
+        {
+            if (r.ReceiptID == receiptId) continue;
+            if (r.Operations.Exists(o => o.OperationID == operationId)) return -1;
+        }
+        rNode.Operations.Add(opNode);
+        int insertIdx = rNode.Operations.Count - 1;
+        int srcIdx = insertAfterOperationId > 0 ? rNode.Operations.FindIndex(o => o.OperationID == insertAfterOperationId) : -1;
+        if (insertIdx > 0 && srcIdx >= 0 && insertIdx != srcIdx + 1)
+        {
+            rNode.Operations.RemoveAt(insertIdx);
+            rNode.Operations.Insert(srcIdx + 1, opNode);
+        }
+        MarkModified();
+        return operationId;
     }
 
     /// <summary>更新本地树中指定 Operation 的 Name。</summary>
@@ -498,16 +851,56 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         return true;
     }
 
+    /// <summary>
+    /// Discarded「Unused Operation」网格：删除未挂在任何配方下的工序及其内存中的 Phase 引用。
+    /// </summary>
+    public bool RemoveStandaloneOperationForDiscardedGrid(int operationId)
+    {
+        if (operationId <= 0) return false;
+        if (!OperationById.TryGetValue(operationId, out var opNode)) return false;
+        if (!IsOperationUnattachedToAnyReceipt(operationId)) return false;
+        var phasesCopy = new List<PhaseNode>(opNode.Phases);
+        foreach (var ph in phasesCopy)
+            PhaseById.Remove(ph.PhaseID);
+        opNode.Phases.Clear();
+        OperationById.Remove(operationId);
+        MarkModified();
+        return true;
+    }
+
+    /// <summary>
+    /// Discarded「Unused Phases」网格：删除未出现在任何 Operation.Phases 中的阶段（与 ComputeUnusedIdsFromDatabase 定义一致）。
+    /// </summary>
+    public bool RemoveStandalonePhaseForDiscardedGrid(int phaseId)
+    {
+        if (phaseId <= 0) return false;
+        if (!PhaseById.TryGetValue(phaseId, out _)) return false;
+        foreach (var op in OperationById.Values)
+            if (op.Phases.Exists(p => p.PhaseID == phaseId))
+                return false;
+        PhaseById.Remove(phaseId);
+        MarkModified();
+        return true;
+    }
+
     /// <summary>仅新建到 Operation 表并加入 OperationById，不加入任何 Receipt 树；用于“创建新 Operation”仅写库、刷新右侧 List。</summary>
     public int AddOperationStandalone(string name, string description = "")
     {
         if (_opTable == null || string.IsNullOrEmpty(_opTableName)) return -1;
         int newId = OperationById.Count > 0 ? MaxDictKey(OperationById) + 1 : 1;
-        var node = new OperationNode { OperationID = newId, Name = name ?? "", Description = description ?? "" };
+        string user = GetSessionUserBrowseName();
+        string dt = FormatStoredCreatedDateTimeNow();
+        var node = new OperationNode { OperationID = newId, Name = name ?? "", Description = description ?? "", CreatedBy = user, CreatedDateTime = dt };
         OperationById[newId] = node;
         try
         {
-            _opTable.Insert(new[] { "OperationID", "Name", "Description", "Phases" }, new object[,] { { newId, name ?? "", description ?? "", "" } });
+            var insCols = new List<string> { "OperationID", "Name", "Description", "Phases" };
+            var insVals = new List<object> { newId, name ?? "", description ?? "", "" };
+            if (HasOperationColumn("CreatedBy")) { insCols.Add("CreatedBy"); insVals.Add(user); }
+            if (HasOperationColumn("CreatedDateTime")) { insCols.Add("CreatedDateTime"); insVals.Add(dt); }
+            var row = new object[1, insVals.Count];
+            for (int c = 0; c < insVals.Count; c++) row[0, c] = insVals[c];
+            _opTable.Insert(insCols.ToArray(), row);
         }
         catch (Exception ex)
         {
@@ -516,13 +909,14 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
             return -1;
         }
         if (EnableLog) Log.Info(LogCategory, $"AddOperationStandalone: OperationID={newId}, Name='{name}'");
+        RefreshDiscardedUnusedGridQueries();
         return newId;
     }
 
     // ── Phase ─────────────────────────────────────────────────────────────────
 
-    /// <summary>在指定 Operation 下新增 Phase，返回新 PhaseID。</summary>
-    public int AddPhase(int operationId, string name, Dictionary<string, object> columns = null)
+    /// <summary>在指定 Operation 下新增 Phase，返回新 PhaseID。createdBy/createdDateTime 用于另存为等新行审计；为空则用当前用户与时间。</summary>
+    public int AddPhase(int operationId, string name, Dictionary<string, object> columns = null, string createdBy = null, string createdDateTime = null)
     {
         if (!OperationById.TryGetValue(operationId, out var opNode)) return -1;
         int newId = PhaseById.Count > 0 ? MaxDictKey(PhaseById) + 1 : 1;
@@ -533,6 +927,12 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         node.Columns["Name"] = node.Name;
         if (node.Columns.TryGetValue("Description", out object descObj))
             node.Description = descObj?.ToString() ?? "";
+        if (HasPhaseColumn("CreatedBy"))
+            node.Columns["CreatedBy"] = !string.IsNullOrEmpty(createdBy) ? createdBy : GetSessionUserBrowseName();
+        if (HasPhaseColumn("CreatedDateTime"))
+            node.Columns["CreatedDateTime"] = !string.IsNullOrEmpty(createdDateTime)
+                ? NormalizeStoredCreatedDateTime(createdDateTime)
+                : FormatStoredCreatedDateTimeNow();
         opNode.Phases.Add(node);
         PhaseById[newId] = node;
         MarkModified();
@@ -566,10 +966,14 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
     {
         if (_phaseTable == null || string.IsNullOrEmpty(_phaseTableName)) return -1;
         int newId = PhaseById.Count > 0 ? MaxDictKey(PhaseById) + 1 : 1;
+        string user = GetSessionUserBrowseName();
+        string dt = FormatStoredCreatedDateTimeNow();
         var node = new PhaseNode { PhaseID = newId, Name = name ?? "", Description = description ?? "" };
         node.Columns["PhaseID"] = newId;
         node.Columns["Name"] = node.Name;
         node.Columns["Description"] = description ?? "";
+        if (HasPhaseColumn("CreatedBy")) node.Columns["CreatedBy"] = user;
+        if (HasPhaseColumn("CreatedDateTime")) node.Columns["CreatedDateTime"] = dt;
         PhaseById[newId] = node;
         try
         {
@@ -582,6 +986,7 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
             return -1;
         }
         if (EnableLog) Log.Info(LogCategory, $"AddPhaseStandalone: PhaseID={newId}, Name='{name}'");
+        RefreshDiscardedUnusedGridQueries();
         return newId;
     }
 
@@ -642,6 +1047,42 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         return true;
     }
 
+    /// <summary>根据当前树选中项判断是否可以上移/下移（与 Swap* 中索引边界一致）。</summary>
+    public bool TryGetMoveAvailability(int receiptId, int operationId, int phaseId, out bool canUp, out bool canDown)
+    {
+        canUp = canDown = false;
+        if (phaseId > 0 && operationId > 0)
+        {
+            if (!OperationById.TryGetValue(operationId, out var opNode)) return false;
+            var phases = opNode.Phases;
+            int idx = phases.FindIndex(p => p.PhaseID == phaseId);
+            if (idx < 0) return false;
+            canUp = idx > 0;
+            canDown = idx < phases.Count - 1;
+            return true;
+        }
+        if (operationId > 0 && receiptId > 0)
+        {
+            if (!ReceiptById.TryGetValue(receiptId, out var rNode)) return false;
+            var ops = rNode.Operations;
+            int idx = ops.FindIndex(o => o.OperationID == operationId);
+            if (idx < 0) return false;
+            canUp = idx > 0;
+            canDown = idx < ops.Count - 1;
+            return true;
+        }
+        if (receiptId > 0)
+        {
+            if (!ReceiptById.TryGetValue(receiptId, out var node)) return false;
+            int idx = Tree.IndexOf(node);
+            if (idx < 0) return false;
+            canUp = idx > 0;
+            canDown = idx < Tree.Count - 1;
+            return true;
+        }
+        return false;
+    }
+
     private static int MaxDictKey<T>(Dictionary<int, T> dict)
     {
         int max = 0;
@@ -667,6 +1108,7 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
             if (EnableLog) Log.Warning(LogCategory, "数据库未就绪，跳过 Save");
             return;
         }
+        RecipeDatabaseManager.Instance?.SyncReceiptStatusFromModelBeforeSave();
         try
         {
             // 1. 读取 DB 中现有 ID 集合
@@ -679,14 +1121,48 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
             {
                 string opsCsv = BuildIdCsv(receipt.Operations, op => op.OperationID);
                 receipt.OperationsCsv = opsCsv;
+                if (HasReceiptColumn("CreatedDateTime") && !string.IsNullOrWhiteSpace(receipt.CreatedDateTime))
+                    receipt.CreatedDateTime = NormalizeStoredCreatedDateTime(receipt.CreatedDateTime);
+
                 if (dbReceiptIds.Contains(receipt.ReceiptID))
+                {
+                    var setParts = new List<string>
+                    {
+                        $"Name='{EscapeSql(receipt.Name)}'",
+                        $"Sequence={receipt.Sequence}",
+                        $"Operations='{EscapeSql(opsCsv)}'",
+                        $"Description='{EscapeSql(receipt.Description)}'"
+                    };
+                    if (HasReceiptColumn("Status"))
+                        setParts.Add($"Status='{EscapeSql(string.IsNullOrEmpty(receipt.Status) ? DefaultReceiptStatus : receipt.Status)}'");
+                    if (HasReceiptColumn("CreatedBy"))
+                        setParts.Add($"CreatedBy='{EscapeSql(receipt.CreatedBy ?? "")}'");
+                    if (HasReceiptColumn("CreatedDateTime"))
+                        setParts.Add($"CreatedDateTime='{EscapeSql(receipt.CreatedDateTime ?? "")}'");
+                    if (IsDirtyReceipt(receipt.ReceiptID))
+                    {
+                        if (HasReceiptColumn("LastModifiedBY"))
+                            setParts.Add($"LastModifiedBY='{EscapeSql(GetSessionUserBrowseName())}'");
+                        if (HasReceiptColumn("LastModifiedDateTime"))
+                            setParts.Add($"LastModifiedDateTime='{EscapeSql(FormatStoredCreatedDateTimeNow())}'");
+                    }
                     _store.Query(
-                        $"UPDATE {_receiptTableName} SET Name='{EscapeSql(receipt.Name)}', Sequence={receipt.Sequence}, Operations='{EscapeSql(opsCsv)}', Description='{EscapeSql(receipt.Description)}' WHERE ReceiptID={receipt.ReceiptID}",
+                        $"UPDATE {_receiptTableName} SET {string.Join(", ", setParts)} WHERE ReceiptID={receipt.ReceiptID}",
                         out _, out _);
+                }
                 else
-                    _receiptTable.Insert(
-                        new[] { "ReceiptID", "Name", "Sequence", "Operations", "Description" },
-                        new object[,] { { receipt.ReceiptID, receipt.Name, receipt.Sequence, opsCsv, receipt.Description } });
+                {
+                    var insCols = new List<string> { "ReceiptID", "Name", "Sequence", "Operations", "Description" };
+                    var insVals = new List<object> { receipt.ReceiptID, receipt.Name, receipt.Sequence, opsCsv, receipt.Description };
+                    if (HasReceiptColumn("Status")) { insCols.Add("Status"); insVals.Add(string.IsNullOrEmpty(receipt.Status) ? DefaultReceiptStatus : receipt.Status); }
+                    if (HasReceiptColumn("CreatedBy")) { insCols.Add("CreatedBy"); insVals.Add(receipt.CreatedBy ?? ""); }
+                    if (HasReceiptColumn("CreatedDateTime")) { insCols.Add("CreatedDateTime"); insVals.Add(receipt.CreatedDateTime ?? ""); }
+                    if (HasReceiptColumn("LastModifiedBY")) { insCols.Add("LastModifiedBY"); insVals.Add(receipt.CreatedBy ?? ""); }
+                    if (HasReceiptColumn("LastModifiedDateTime")) { insCols.Add("LastModifiedDateTime"); insVals.Add(receipt.CreatedDateTime ?? ""); }
+                    var row = new object[1, insVals.Count];
+                    for (int c = 0; c < insVals.Count; c++) row[0, c] = insVals[c];
+                    _receiptTable.Insert(insCols.ToArray(), row);
+                }
 
                 foreach (var op in receipt.Operations)
                 {
@@ -697,9 +1173,15 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
                             $"UPDATE {_opTableName} SET Name='{EscapeSql(op.Name)}', Description='{EscapeSql(op.Description ?? "")}', Phases='{EscapeSql(phsCsv)}' WHERE OperationID={op.OperationID}",
                             out _, out _);
                     else
-                        _opTable.Insert(
-                            new[] { "OperationID", "Name", "Description", "Phases" },
-                            new object[,] { { op.OperationID, op.Name, op.Description ?? "", phsCsv } });
+                    {
+                        var insCols = new List<string> { "OperationID", "Name", "Description", "Phases" };
+                        var insVals = new List<object> { op.OperationID, op.Name, op.Description ?? "", phsCsv };
+                        if (HasOperationColumn("CreatedBy")) { insCols.Add("CreatedBy"); insVals.Add(op.CreatedBy ?? ""); }
+                        if (HasOperationColumn("CreatedDateTime")) { insCols.Add("CreatedDateTime"); insVals.Add(op.CreatedDateTime ?? ""); }
+                        var row = new object[1, insVals.Count];
+                        for (int c = 0; c < insVals.Count; c++) row[0, c] = insVals[c];
+                        _opTable.Insert(insCols.ToArray(), row);
+                    }
 
                     foreach (var ph in op.Phases)
                     {
@@ -769,6 +1251,8 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         foreach (var kv in ph.Columns)
         {
             if (string.Equals(kv.Key, "PhaseID", StringComparison.OrdinalIgnoreCase)) continue;
+            if (string.Equals(kv.Key, "CreatedBy", StringComparison.OrdinalIgnoreCase)) continue;
+            if (string.Equals(kv.Key, "CreatedDateTime", StringComparison.OrdinalIgnoreCase)) continue;
             string val = kv.Value == null || kv.Value == DBNull.Value ? "" : kv.Value.ToString();
             setClauses.Add($"{kv.Key}='{EscapeSql(val)}'");
         }

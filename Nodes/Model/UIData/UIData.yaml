@@ -11,16 +11,92 @@ Children:
     Type: BaseDataVariableType
     DataType: String
     Value: "Development"
-  - Name: Test
+  - Name: Released
     Type: BaseDataVariableType
     DataType: String
-    Value: "Test"
-  - Name: Production
+    Value: "Released"
+  - Name: Discarded
     Type: BaseDataVariableType
     DataType: String
-    Value: "Production"
+    Value: "Discarded"
 - Name: ReceiptStatusSet
   Id: g=f5fbe0f1f65ce82e5e8d41efbf5656f3
   Type: BaseDataVariableType
   DataType: String
   Value: "Development"
+- Name: DiscardedData
+  Type: BaseObjectType
+  Children:
+  - Name: DiscardedRecipes
+    Id: g=706d771b431917744a2a325fd528cf92
+    Type: DiscardedInfo
+    Children:
+    - Name: Query
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "SELECT * FROM Receipts WHERE Status = 'Discarded'"
+    - Name: ItemKindNodeId
+      Type: BaseDataVariableType
+      DataType: NodeId
+      Value: "/Objects/RedeiptEditor/DataStores/ReceiptDB"
+    - Name: ShowStatusColumn
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+  - Name: UnusedOperation
+    Id: g=a12aac9bac550fe6f8b08c9da75234a0
+    Type: DiscardedInfo
+    Children:
+    - Name: Query
+      Type: BaseDataVariableType
+      DataType: String
+    - Name: ItemKindNodeId
+      Type: BaseDataVariableType
+      DataType: NodeId
+      Value: "/Objects/RedeiptEditor/DataStores/ReceiptDB"
+    - Name: ShowStatusColumn
+      Type: BaseDataVariableType
+      DataType: Boolean
+  - Name: UnusedPhases
+    Id: g=228d1b174aa31c53b0d76e61de74124d
+    Type: DiscardedInfo
+    Children:
+    - Name: Query
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "SELECT * FROM Phases"
+    - Name: ItemKindNodeId
+      Type: BaseDataVariableType
+      DataType: NodeId
+      Value: "/Objects/RedeiptEditor/DataStores/ReceiptDB"
+    - Name: ShowStatusColumn
+      Type: BaseDataVariableType
+      DataType: Boolean
+  - Name: SelectedDiscardedItem
+    Type: BaseObjectType
+    Children:
+    - Name: SelectedItem
+      Id: g=dded143e4a7ba86bb6e3b506c326f897
+      Type: BaseDataVariableType
+      DataType: NodeId
+    - Name: SelectedTap
+      Id: g=633a8b4a5090528ca8cd136b580d0994
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+- Name: DiscardedInfo
+  Id: g=a16fbc3983a4eca21c857d08d33348a9
+  Supertype: BaseObjectType
+  Children:
+  - Name: Query
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "SELECT * FROM Receipts"
+  - Name: ItemKindNodeId
+    Type: BaseDataVariableType
+    DataType: NodeId
+    Value: "/Objects/RedeiptEditor/DataStores/ReceiptDB"
+  - Name: ShowStatusColumn
+    Type: BaseDataVariableType
+    DataType: Boolean
+    Value: true

@@ -10,6 +10,7 @@ using System.Linq.Expressions;
 using FTOptix.RecipeX;
 using FTOptix.SQLiteStore;
 using FTOptix.Store;
+using FTOptix.EventLogger;
 #endregion
 
 public class MatrixEditorUpdater : BaseNetLogic

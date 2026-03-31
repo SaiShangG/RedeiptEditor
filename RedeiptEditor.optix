@@ -74,16 +74,24 @@ Project:
    Uri: 'urn:FTOptix:NetLogic'
    Module: FTOptix.NetLogic
    Version: 4.0
+  19:
+   Uri: 'urn:FTOptix:EventLogger'
+   Module: FTOptix.EventLogger
+   Version: 2.0
+  20:
+   Uri: 'urn:FTOptix:EventLogger:Net'
+   Module: FTOptix.EventLogger.Net
+   Version: 1.0
  Statistics:
-  TotalNodeCount: 2367
-  Objects: 598
-  ObjectTypes: 19
-  Variables: 1721
+  TotalNodeCount: 5228
+  Objects: 1112
+  ObjectTypes: 45
+  Variables: 4037
   VariableTypes: 0
   DataTypes: 0
-  Methods: 29
-  References: 44
+  Methods: 34
+  References: 90
   ReferenceTypes: 0
-  Files: 29
+  Files: 32
  Nodes:
  - File: Nodes/RedeiptEditor.yaml

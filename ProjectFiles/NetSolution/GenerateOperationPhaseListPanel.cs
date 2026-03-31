@@ -8,6 +8,8 @@ using FTOptix.UI;
 using FTOptix.HMIProject;
 using FTOptix.NetLogic;
 using FTOptix.Core;
+using FTOptix.CoreBase;
+using FTOptix.EventLogger;
 #endregion
 
 public class GenerateOperationPhaseListPanel : BaseNetLogic
@@ -21,6 +23,14 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     public static GenerateOperationPhaseListPanel Instance { get; private set; }
     private string _lastDerivedMode = "";
     private bool _insertInProgress;
+    /// <summary>重建右侧卡片时抑制版本下拉事件，避免初始化误刷新中间面板。</summary>
+    private bool _suppressVersionComboNotify;
+    /// <summary>当前选中的模板卡片（标题行），与左侧树 GenerateTreeList 高亮色一致。</summary>
+    private string _selectedTemplateTitleBaseName = "";
+    private string _selectedTemplateDerivedMode = "";
+    private static readonly Color TemplateTitleHighlightColor = new Color(255, 255, 220, 150);
+    /// <summary>未选中标题背景：与 <see cref="GenerateTreeList"/> 中 Receipt 行 NormalColor 一致。</summary>
+    private static readonly Color TemplateTitleNormalColor = new Color(0x99, 0xde, 0xee, 0xff);
     private static int _insertCallCount;
     private static readonly object _insertLock = new object(); // 防止多线程/异步下多次执行
 
@@ -45,7 +55,7 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     #region 模式（由左侧树选择推导）
     /// <summary>
     /// 根据左侧树当前选择推导有效模式：
-    ///   选 Phase       → "Empty"
+    ///   选 Phase       → "Empty"（右侧 Phase 模板列表在 GenerateCore 中保留不清空）
     ///   选 Operation   → "Phase"
     ///   选 Receipt     → "Operation"
     ///   无选择         → "Empty"
@@ -81,6 +91,33 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     }
     #endregion
 
+    #region 模板列表名称过滤（Search 绑定 ExportMethod）
+    private string _templateListSearchFilter = "";
+
+    private bool TemplateBaseNameMatchesSearch(string baseName)
+    {
+        if (string.IsNullOrWhiteSpace(_templateListSearchFilter)) return true;
+        if (string.IsNullOrEmpty(baseName)) return false;
+        return baseName.IndexOf(_templateListSearchFilter.Trim(), StringComparison.OrdinalIgnoreCase) >= 0;
+    }
+
+    /// <summary>按模板标题基名包含关系过滤右侧 Operation/Phase 卡片。在 Optix 中将 Search 的「文本变更」绑定到此方法并传入当前文本（或 Text 变量）。</summary>
+    [ExportMethod]
+    public void RefreshTemplateListBySearchText(string filterText)
+    {
+        _templateListSearchFilter = filterText?.Trim() ?? "";
+        Generate();
+    }
+
+    /// <summary>事件仅能提供 LocalizedText 时使用此重载。</summary>
+    [ExportMethod]
+    public void RefreshTemplateListBySearchLocalizedText(LocalizedText filterText)
+    {
+        _templateListSearchFilter = filterText?.Text?.Trim() ?? "";
+        Generate();
+    }
+    #endregion
+
     #region 生成入口
     /// <summary>仅当左侧选中类型（Receipt/Operation/Phase）变化时刷新右侧列表，同类型下切换节点不刷新。</summary>
     public void RefreshIfModeChanged()
@@ -112,27 +149,42 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     #region 核心生成
     private void GenerateCore(Container listContainer)
     {
-        foreach (var child in listContainer.Children.OfType<Container>().ToList())
-            child.Delete();
-
-        UpdateTitle();
-        string mode = DerivedMode;
-        if (mode == "Empty")
+        // 左侧树选中 Phase 时 DerivedMode 为 Empty；不删除、不重建最右侧 Phase 模板列表，保持上次内容
+        if (DerivedMode == "Empty" && (GenerateTreeList.Instance?.SelectedPhaseId ?? 0) != 0)
         {
-            if (EnableLog) Log.Info(LogCategory, "Empty 模式，列表为空");
+            if (EnableLog) Log.Info(LogCategory, "左侧树选中 Phase：保留右侧 Phase 列表");
             return;
         }
 
-        var loader = RecipeDatabaseTreeLoader.Instance;
-        if (loader == null) { if (EnableLog) Log.Error(LogCategory, "RecipeDatabaseTreeLoader 未就绪"); return; }
+        _suppressVersionComboNotify = true;
+        try
+        {
+            foreach (var child in listContainer.Children.OfType<Container>().ToList())
+                child.Delete();
 
-        NodeId itemTypeId = FindCustomTypeNodeId(Project.Current, "OperationPhaseCard");
-        if (itemTypeId == NodeId.Empty) { if (EnableLog) Log.Error(LogCategory, "未找到 OperationPhaseCard 类型！"); return; }
+            UpdateTitle();
+            string mode = DerivedMode;
+            if (mode == "Empty")
+            {
+                _selectedTemplateTitleBaseName = "";
+                _selectedTemplateDerivedMode = "";
+                if (EnableLog) Log.Info(LogCategory, "Empty 模式，列表为空");
+                return;
+            }
 
-        if (mode == "Phase")
-            BuildPhaseItems(listContainer, loader, itemTypeId);
-        else
-            BuildOperationItems(listContainer, loader, itemTypeId);
+            var loader = RecipeDatabaseTreeLoader.Instance;
+            if (loader == null) { if (EnableLog) Log.Error(LogCategory, "RecipeDatabaseTreeLoader 未就绪"); return; }
+
+            NodeId itemTypeId = FindCustomTypeNodeId(Project.Current, "OperationPhaseCard");
+            if (itemTypeId == NodeId.Empty) { if (EnableLog) Log.Error(LogCategory, "未找到 OperationPhaseCard 类型！"); return; }
+
+            if (mode == "Phase")
+                BuildPhaseItems(listContainer, loader, itemTypeId);
+            else
+                BuildOperationItems(listContainer, loader, itemTypeId);
+            ApplyTemplateTitleSelectionHighlights(listContainer);
+        }
+        finally { _suppressVersionComboNotify = false; }
     }
 
     private void BuildOperationItems(Container listContainer, RecipeDatabaseTreeLoader loader, NodeId itemTypeId)
@@ -150,10 +202,12 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
         int count = 0;
         foreach (var kvp in versionMap.OrderBy(k => k.Key, StringComparer.OrdinalIgnoreCase))
         {
+            if (!TemplateBaseNameMatchesSearch(kvp.Key)) continue;
             var item = InformationModel.MakeObject(SafeName(kvp.Key) + "_Item", itemTypeId) as Container;
             if (item == null) continue;
 
             SetTitle(item, kvp.Key);
+            SetTemplateBaseNameTag(item, kvp.Key);
             SetVariables(item, kvp.Value[0].Id, rId, 0);
             SetVersionComboBoxAndIds(item, kvp.Key, kvp.Value);
             SetTitleButtonClick(item, kvp.Key);
@@ -180,10 +234,12 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
         int count = 0;
         foreach (var kvp in versionMap.OrderBy(k => k.Key, StringComparer.OrdinalIgnoreCase))
         {
+            if (!TemplateBaseNameMatchesSearch(kvp.Key)) continue;
             var item = InformationModel.MakeObject(SafeName(kvp.Key) + "_Item", itemTypeId) as Container;
             if (item == null) continue;
 
             SetTitle(item, kvp.Key);
+            SetTemplateBaseNameTag(item, kvp.Key);
             SetVariables(item, kvp.Value[0].Id, rId, oId);
             SetVersionComboBoxAndIds(item, kvp.Key, kvp.Value);
             SetTitleButtonClick(item, kvp.Key);
@@ -266,7 +322,7 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     private void UpdateTitle()
     {
         string mode = DerivedMode;
-        string titleText = mode == "Phase" ? "Operation Phase" : mode == "Operation" ? "Operation List" : "";
+        string titleText = mode == "Phase" ? "Phase List" : mode == "Operation" ? "Operation List" : "";
 
         var titleVar = LogicObject.GetVariable("Title");
         if (titleVar != null) titleVar.Value = titleText;
@@ -279,6 +335,45 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     {
         var btn = item.Get("Rectangle1")?.Get("VerticalLayout1")?.Get("ButtonWithIcon1")?.Get<Button>("Button1");
         if (btn != null) btn.Text = baseName;
+    }
+
+    private static void SetTemplateBaseNameTag(Container item, string baseName)
+    {
+        var v = item.GetVariable("TemplateBaseName");
+        if (v == null)
+        {
+            v = InformationModel.MakeVariable("TemplateBaseName", OpcUa.DataTypes.String);
+            item.Add(v);
+        }
+        v.Value = baseName ?? "";
+    }
+
+    private static Button GetTemplateTitleButton(Container item)
+    {
+        return item?.Get("Rectangle1")?.Get("VerticalLayout1")?.Get("ButtonWithIcon1")?.Get<Button>("Button1");
+    }
+
+    /// <summary>根据记录的选中模板刷新各卡片标题按钮背景色（与左侧树选中行一致）。</summary>
+    private void ApplyTemplateTitleSelectionHighlights(Container listContainer)
+    {
+        if (listContainer == null) return;
+        string modeNow = DerivedMode;
+        foreach (var child in listContainer.Children.OfType<Container>())
+        {
+            var btn = GetTemplateTitleButton(child);
+            if (btn == null) continue;
+            var tagVar = child.GetVariable("TemplateBaseName");
+            string tag = "";
+            if (tagVar?.Value != null)
+            {
+                var raw = tagVar.Value.Value;
+                tag = raw as string ?? raw?.ToString() ?? "";
+            }
+            bool sel = !string.IsNullOrEmpty(_selectedTemplateTitleBaseName)
+                && string.Equals(modeNow, _selectedTemplateDerivedMode, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(tag, _selectedTemplateTitleBaseName, StringComparison.OrdinalIgnoreCase);
+            btn.BackgroundColor = sel ? TemplateTitleHighlightColor : TemplateTitleNormalColor;
+        }
     }
 
     /// <summary>标题按钮（与 Insert 同级的 ButtonWithIcon1）：创建时增加 Click 回调，Log 当前是 Operation/Phase 及下拉框选中版本项（如 Operation_000、Phase_003）。</summary>
@@ -295,6 +390,9 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
             string mode = DerivedMode;
             string versionItem = GetSelectedVersionItemName(item, baseName);
             Log.Info(LogCategory, $"标题按钮点击: 类型={mode}, 当前选中项={versionItem}");
+            _selectedTemplateTitleBaseName = baseName;
+            _selectedTemplateDerivedMode = mode;
+            ApplyTemplateTitleSelectionHighlights(GetListContainer());
             MiddlePanelManager.Instance?.NotifyTitleClicked(mode, versionItem);
         }
     }
@@ -310,7 +408,7 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     /// 将版本数据写入 Information Model（卡片下 VersionOptions 容器），并设置 ComboBox.Model 指向该容器；
     /// 同时将各版本 ID（按选项顺序）存入卡片 VersionIds 变量。选项格式：无版本号 → baseName；有版本号 → "v{N}"。
     /// </summary>
-    private static void SetVersionComboBoxAndIds(Container item, string baseName, List<(int Id, string Version)> versions)
+    private void SetVersionComboBoxAndIds(Container item, string baseName, List<(int Id, string Version)> versions)
     {
         var comboBox = item.Get("Rectangle1")?.Get("VerticalLayout1")?.Get("Row")?.Get<ComboBox>("ComboBox1");
 
@@ -353,7 +451,36 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
 
         var selVar = comboBox.GetVariable("SelectedItem");
         if (selVar != null && !firstOptNodeId.IsEmpty) selVar.Value = firstOptNodeId;
+
+        WireVersionComboBoxForMiddlePanelSync(item, baseName);
     }
+
+    #region 版本下拉与中间模板面板同步
+    /// <summary>与标题按钮一致：切换版本后仍刷新 Operation/Phase 模板面板，避免仅操作下拉导致中间区“掉选中”。</summary>
+    private void WireVersionComboBoxForMiddlePanelSync(Container item, string baseName)
+    {
+        var comboBox = item.Get("Rectangle1")?.Get("VerticalLayout1")?.Get("Row")?.Get<ComboBox>("ComboBox1");
+        if (comboBox == null) return;
+
+        comboBox.UAEvent -= OnVersionComboUserSelectionChanged;
+        comboBox.UAEvent += OnVersionComboUserSelectionChanged;
+        if (EnableLog) Log.Info(LogCategory, $"Version ComboBox UserSelectionChanged 已绑定: {baseName}");
+
+        void OnVersionComboUserSelectionChanged(object sender, UAEventArgs a)
+        {
+            if (_suppressVersionComboNotify) return;
+            if (a?.EventType?.BrowseName != "UserSelectionChanged") return;
+            string mode = DerivedMode;
+            if (mode != "Operation" && mode != "Phase") return;
+            string versionItem = GetSelectedVersionItemName(item, baseName);
+            if (EnableLog) Log.Info(LogCategory, $"版本下拉变更，同步中间面板: {versionItem}");
+            _selectedTemplateTitleBaseName = baseName;
+            _selectedTemplateDerivedMode = mode;
+            ApplyTemplateTitleSelectionHighlights(GetListContainer());
+            MiddlePanelManager.Instance?.NotifyTitleClicked(mode, versionItem);
+        }
+    }
+    #endregion
 
     /// <summary>
     /// Insert 按钮：点击时读取该卡片 ComboBox 当前选中索引，从 VersionIds 查出 ID 后调用 OnInsert。
@@ -492,6 +619,7 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
         return new string(name.Select(c => char.IsLetterOrDigit(c) || c == '_' ? c : '_').ToArray());
     }
 
+    /// <summary>生成不重复的 <c>base_NNN</c>：仅按已有 <c>base_NNN</c> 取 max；无后缀的 base 不占位，首个为 <c>_000</c>。</summary>
     private static string GenerateUniqueName<T>(string baseName, IEnumerable<T> existing, Func<T, string> getName)
     {
         int max = -1;
@@ -499,7 +627,6 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
         foreach (var item in existing)
         {
             string n = getName(item) ?? "";
-            if (n.Equals(baseName, StringComparison.OrdinalIgnoreCase)) { if (max < 0) max = 0; continue; }
             if (!n.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) continue;
             ParseBaseName(n, out _, out string ver);
             if (!string.IsNullOrEmpty(ver) && int.TryParse(ver, out int v) && v > max) max = v;

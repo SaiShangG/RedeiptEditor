@@ -49,7 +49,11 @@ public class RecipeDatabaseManager : BaseNetLogic
         if (rId > 0 && Loader.ReceiptById.TryGetValue(rId, out var rNode))
         {
             receiptName = rNode.Name ?? "";
-            receiptCurrentStatus = rNode.Description ?? "";
+            receiptCreatedBy = rNode.CreatedBy ?? "";
+            receiptCreatedDate = rNode.CreatedDateTime ?? "";
+            receiptCurrentStatus = string.IsNullOrWhiteSpace(rNode.Status)
+                ? RecipeDatabaseTreeLoader.DefaultReceiptStatus
+                : rNode.Status;
         }
         if (pId > 0)
         {
@@ -436,10 +440,63 @@ public class RecipeDatabaseManager : BaseNetLogic
     }
     #endregion
 
+    #region 树移动按钮与保存前 Status 同步
+
+    /// <summary>按当前树选中项更新 <c>SelectedTreeData</c> 的 EnableUp / EnableDown。</summary>
+    public void RefreshTreeMoveButtonsEnabled()
+    {
+        var gt = GenerateTreeList.Instance;
+        if (gt == null || Loader == null) return;
+        var holder = gt.GetSelectedTreeDataNode();
+        if (holder == null) return;
+        var vUp = holder.GetVariable("EnableUp");
+        var vDown = holder.GetVariable("EnableDown");
+        if (vUp == null || vDown == null) return;
+        int rId = gt.SelectedReceiptId;
+        int oId = gt.SelectedOperationId;
+        int pId = gt.SelectedPhaseId;
+        if (!Loader.TryGetMoveAvailability(rId, oId, pId, out bool canUp, out bool canDown))
+        {
+            vUp.Value = new UAValue(false);
+            vDown.Value = new UAValue(false);
+            return;
+        }
+        vUp.Value = new UAValue(canUp);
+        vDown.Value = new UAValue(canDown);
+    }
+
+    /// <summary>保存到数据库前将模型中 Receipt 状态下推到内存树（与下拉暂存一致）。</summary>
+    public void SyncReceiptStatusFromModelBeforeSave()
+    {
+        var gt = GenerateTreeList.Instance;
+        if (gt == null || Loader == null) return;
+        int rId = gt.SelectedReceiptId;
+        if (rId <= 0) return;
+        string status = gt.ReadSelectedReceiptCurrentStatusFromModel();
+        Loader.UpdateReceiptStatus(rId, status);
+    }
+
+    #endregion
+
     #region 辅助
     private static void RefreshTreeList()
     {
         GenerateTreeList.Instance?.Generate();
+    }
+
+    /// <summary>从变量读取纯文本（支持 LocalizedText 与普通标量）。</summary>
+    public static string GetPlainStringFromVariableValue(IUAVariable v)
+    {
+        if (v?.Value == null) return "";
+        try
+        {
+            object inner = v.Value.Value;
+            if (inner == null) return "";
+            if (inner is LocalizedText lt)
+                return lt.Text?.Trim() ?? "";
+            return Convert.ToString(inner)?.Trim() ?? "";
+        }
+        catch { return ""; }
     }
 
     private static string GetStringFromNode(NodeId nodeId)

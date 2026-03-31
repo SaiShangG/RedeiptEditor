@@ -11,6 +11,7 @@ using FTOptix.SQLiteStore;
 using FTOptix.Retentivity;
 using FTOptix.CoreBase;
 using FTOptix.Core;
+using FTOptix.EventLogger;
 #endregion
 
 public class AddDialog : BaseNetLogic
@@ -65,5 +66,10 @@ public class AddDialog : BaseNetLogic
         {
             GenerateOperationPhaseListPanel.Instance.OnCreate(name, des);
         }
+
+        if (nameVar != null)
+            nameVar.Value = "";
+        if (desVar != null)
+            desVar.Value = "";
     }
 }
