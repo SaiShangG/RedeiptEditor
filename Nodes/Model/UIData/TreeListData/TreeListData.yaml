@@ -33,6 +33,14 @@ Children:
     Type: BaseDataVariableType
     DataType: String
     Value: "0"
+  - Name: EnableUp
+    Type: BaseDataVariableType
+    DataType: Boolean
+    Value: true
+  - Name: EnableDown
+    Type: BaseDataVariableType
+    DataType: Boolean
+    Value: true
 - Name: InteractionTexts
   Type: BaseObjectType
   Children:

@@ -71,6 +71,7 @@ public class GenerateTreeList : BaseNetLogic
         ApplyPhaseHighlight();
         SyncSelectedItemToModel();
         GenerateOperationPhaseListPanel.Instance?.RefreshIfModeChanged();
+        RecipeDatabaseManager.Instance?.RefreshTreeMoveButtonsEnabled();
         if (EnableLog) Log.Info(LogCategory, $"Receipt  点击，SelectedID = {receiptId}");
     }
 
@@ -87,6 +88,7 @@ public class GenerateTreeList : BaseNetLogic
         ApplyPhaseHighlight();
         SyncSelectedItemToModel();
         GenerateOperationPhaseListPanel.Instance?.RefreshIfModeChanged();
+        RecipeDatabaseManager.Instance?.RefreshTreeMoveButtonsEnabled();
         if (EnableLog) Log.Info(LogCategory, $"Operation 按钮点击，Selected Receipt={receiptId}, Operation={operationId}");
     }
 
@@ -103,6 +105,7 @@ public class GenerateTreeList : BaseNetLogic
         ApplyPhaseHighlight();
         SyncSelectedItemToModel();
         GenerateOperationPhaseListPanel.Instance?.RefreshIfModeChanged();
+        RecipeDatabaseManager.Instance?.RefreshTreeMoveButtonsEnabled();
         if (EnableLog) Log.Info(LogCategory, $"Phase 按钮点击，Selected Receipt={receiptId}, Operation={operationId}, Phase={phaseId}");
     }
 
@@ -130,6 +133,12 @@ public class GenerateTreeList : BaseNetLogic
         var modelVar = LogicObject.Owner?.GetVariable("Model");
         if (modelVar == null) return null;
         return InformationModel.Get(modelVar.Value);
+    }
+
+    /// <summary>供 <see cref="RecipeDatabaseManager.RefreshTreeMoveButtonsEnabled"/> 写入 EnableUp/EnableDown。</summary>
+    public IUANode GetSelectedTreeDataNode()
+    {
+        return ResolveSelectedTreeData();
     }
 
     /// <summary>下拉暂存与模型绑定一致：<c>SelectedReceiptCurrentStatus</c>；保存前由 <see cref="RecipeDatabaseManager"/> 读取写入 DB Status。</summary>
@@ -206,6 +215,7 @@ public class GenerateTreeList : BaseNetLogic
         finally
         {
             treeContainer.Visible = wasVisible;
+            RecipeDatabaseManager.Instance?.RefreshTreeMoveButtonsEnabled();
         }
     }
 

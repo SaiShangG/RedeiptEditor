@@ -809,7 +809,7 @@ Children:
         Type: BaseDataVariableType
         DataType: Size
         ModellingRule: Optional
-        Value: 20.0
+        Value: 18.0
     - Name: HorizontalAlignment
       Type: BaseVariableType
       DataType: HorizontalAlignment
@@ -1731,136 +1731,209 @@ Children:
         DataType: Size
         ModellingRule: Optional
         Value: 50.0
-      - Name: Title
-        Type: Label
+      - Name: Rectangle1
+        Type: Rectangle
         Children:
-        - Name: Text
-          Type: BaseDataVariableType
-          DataType: LocalizedText
+        - Name: Width
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 100.0
+        - Name: Height
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 100.0
+        - Name: LeftMargin
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+        - Name: TopMargin
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+        - Name: VerticalLayout1
+          Type: ColumnLayout
           Children:
-          - Name: DynamicLink
-            Type: DynamicLink
-            DataType: NodePath
-            Value: "../../../../SelectedLayerPanelController/Title"
+          - Name: Width
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 50.0
+          - Name: Height
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 100.0
+          - Name: Title
+            Type: Label
+            Children:
+            - Name: Text
+              Type: BaseDataVariableType
+              DataType: LocalizedText
+              Children:
+              - Name: DynamicLink
+                Type: DynamicLink
+                DataType: NodePath
+                Value: "../../../../../../SelectedLayerPanelController/Title"
+            - Name: HorizontalAlignment
+              Type: BaseVariableType
+              DataType: HorizontalAlignment
+              ModellingRule: Optional
+              Value: 3
+            - Name: LeftMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 8.0
+            - Name: FontSize
+              Type: BaseDataVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 20.0
+            - Name: FontWeight
+              Type: BaseDataVariableType
+              DataType: FontWeightEnum
+              ModellingRule: Optional
+              Value: 700
+            - Name: TopMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 8.0
+            - Name: Height
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 30.0
+          - Name: IconTitleWithSubtitle1
+            Type: IconTitleWithSubtitle
+            Children:
+            - Name: Row
+              Type: RowLayout
+              Children:
+              - Name: Background
+                Type: Rectangle
+                Children:
+                - Name: Image1
+                  Type: Image
+                  Children:
+                  - Name: Path
+                    Type: BaseDataVariableType
+                    DataType: ResourceUri
+                    Value: "ns=7;%PROJECTDIR%/Images/OperationName.png"
+                    Children:
+                    - Name: ConditionalConverter1
+                      Type: ConditionalConverter
+                      Children:
+                      - Name: Condition
+                        Type: BaseDataVariableType
+                        DataType: Boolean
+                        ReferenceType: HasSource
+                        Children:
+                        - Name: ExpressionEvaluator1
+                          Type: ExpressionEvaluator
+                          Children:
+                          - Name: Expression
+                            Type: BaseDataVariableType
+                            DataType: String
+                            ReferenceType: HasParameter
+                            ModellingRule: Optional
+                            Value: "{0}==\"Operation\""
+                          - Name: ns=2;Source0
+                            Type: BaseDataVariableType
+                            DataType: BaseDataType
+                            ReferenceType: HasSource
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "../../../../../../../../../../../../../SelectedLayerPanelController/Type"
+                      - Name: TrueValue
+                        Type: BaseDataVariableType
+                        DataType: ResourceUri
+                        ReferenceType: HasParameter
+                        ModellingRule: Optional
+                        Value: "ns=7;%PROJECTDIR%/Images/OperationName.png"
+                      - Name: FalseValue
+                        Type: BaseDataVariableType
+                        DataType: ResourceUri
+                        ReferenceType: HasParameter
+                        ModellingRule: Optional
+                        Value: "ns=7;%PROJECTDIR%/Images/PhaseName.png"
+              - Name: Columns
+                Type: ColumnLayout
+                Children:
+                - Name: Title
+                  Type: Label
+                  Children:
+                  - Name: TopMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 4.0
+                  - Name: Text
+                    Type: BaseDataVariableType
+                    DataType: LocalizedText
+                    Children:
+                    - Name: DynamicLink
+                      Type: DynamicLink
+                      DataType: NodePath
+                      Value: "../../../../../../../../../SelectedLayerPanelController/IconText"
+                - Name: Subtitle
+                  Type: Label
+                  Children:
+                  - Name: Text
+                    Type: BaseDataVariableType
+                    DataType: LocalizedText
+                    Children:
+                    - Name: DynamicLink
+                      Type: DynamicLink
+                      DataType: NodePath
+                      Value: "../../../../../../../../../SelectedLayerPanelController/IconText2"
+            - Name: VerticalAlignment
+              Type: BaseVariableType
+              DataType: VerticalAlignment
+              ModellingRule: Optional
+            - Name: TopMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: -6.0
+          - Name: HorizontalAlignment
+            Type: BaseVariableType
+            DataType: HorizontalAlignment
+            ModellingRule: Optional
+            Value: 3
+          - Name: VerticalAlignment
+            Type: BaseVariableType
+            DataType: VerticalAlignment
+            ModellingRule: Optional
+            Value: 3
         - Name: HorizontalAlignment
           Type: BaseVariableType
           DataType: HorizontalAlignment
           ModellingRule: Optional
           Value: 3
-        - Name: LeftMargin
-          Type: BaseVariableType
-          DataType: Size
-          ModellingRule: Optional
-          Value: 8.0
-        - Name: FontSize
-          Type: BaseDataVariableType
-          DataType: Size
-          ModellingRule: Optional
-          Value: 20.0
-        - Name: FontWeight
-          Type: BaseDataVariableType
-          DataType: FontWeightEnum
-          ModellingRule: Optional
-          Value: 700
-        - Name: TopMargin
-          Type: BaseVariableType
-          DataType: Size
-          ModellingRule: Optional
-          Value: 8.0
-      - Name: IconTitleWithSubtitle1
-        Type: IconTitleWithSubtitle
-        Children:
-        - Name: Row
-          Type: RowLayout
-          Children:
-          - Name: Background
-            Type: Rectangle
-            Children:
-            - Name: Image1
-              Type: Image
-              Children:
-              - Name: Path
-                Type: BaseDataVariableType
-                DataType: ResourceUri
-                Value: "ns=7;%PROJECTDIR%/Images/OperationName.png"
-                Children:
-                - Name: ConditionalConverter1
-                  Type: ConditionalConverter
-                  Children:
-                  - Name: Condition
-                    Type: BaseDataVariableType
-                    DataType: Boolean
-                    ReferenceType: HasSource
-                    Children:
-                    - Name: ExpressionEvaluator1
-                      Type: ExpressionEvaluator
-                      Children:
-                      - Name: Expression
-                        Type: BaseDataVariableType
-                        DataType: String
-                        ReferenceType: HasParameter
-                        ModellingRule: Optional
-                        Value: "{0}==\"Operation\""
-                      - Name: ns=2;Source0
-                        Type: BaseDataVariableType
-                        DataType: BaseDataType
-                        ReferenceType: HasSource
-                        Children:
-                        - Name: DynamicLink
-                          Type: DynamicLink
-                          DataType: NodePath
-                          Value: "../../../../../../../../../../../SelectedLayerPanelController/Type"
-                  - Name: TrueValue
-                    Type: BaseDataVariableType
-                    DataType: ResourceUri
-                    ReferenceType: HasParameter
-                    ModellingRule: Optional
-                    Value: "ns=7;%PROJECTDIR%/Images/OperationName.png"
-                  - Name: FalseValue
-                    Type: BaseDataVariableType
-                    DataType: ResourceUri
-                    ReferenceType: HasParameter
-                    ModellingRule: Optional
-                    Value: "ns=7;%PROJECTDIR%/Images/PhaseName.png"
-          - Name: Columns
-            Type: ColumnLayout
-            Children:
-            - Name: Title
-              Type: Label
-              Children:
-              - Name: TopMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 4.0
-              - Name: Text
-                Type: BaseDataVariableType
-                DataType: LocalizedText
-                Children:
-                - Name: DynamicLink
-                  Type: DynamicLink
-                  DataType: NodePath
-                  Value: "../../../../../../../SelectedLayerPanelController/IconText"
-            - Name: Subtitle
-              Type: Label
-              Children:
-              - Name: Text
-                Type: BaseDataVariableType
-                DataType: LocalizedText
-                Children:
-                - Name: DynamicLink
-                  Type: DynamicLink
-                  DataType: NodePath
-                  Value: "../../../../../../../SelectedLayerPanelController/IconText2"
         - Name: VerticalAlignment
           Type: BaseVariableType
           DataType: VerticalAlignment
           ModellingRule: Optional
-        - Name: TopMargin
-          Type: BaseVariableType
+        - Name: FillColor
+          Type: BaseDataVariableType
+          DataType: Color
+          ModellingRule: Optional
+          Value: "#0759824a"
+        - Name: BorderColor
+          Type: BaseDataVariableType
+          DataType: Color
+          ModellingRule: Optional
+          Value: "#00000041"
+        - Name: CornerRadius
+          Type: BaseDataVariableType
           DataType: Size
           ModellingRule: Optional
-          Value: -6.0
+          Value: 5.0
       - Name: VerticalGap
         Type: BaseDataVariableType
         DataType: Size
@@ -2013,11 +2086,20 @@ Children:
           DataType: HorizontalAlignment
           ModellingRule: Optional
           Value: 3
+        - Name: LeftMargin
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 16.0
+        - Name: RightMargin
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 16.0
       - Name: LeftMargin
         Type: BaseVariableType
         DataType: Size
         ModellingRule: Optional
-        Value: 29.0
     - Name: CornerRadius
       Type: BaseDataVariableType
       DataType: Size

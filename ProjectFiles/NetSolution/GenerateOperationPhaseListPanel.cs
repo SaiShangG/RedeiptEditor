@@ -55,7 +55,7 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     #region 模式（由左侧树选择推导）
     /// <summary>
     /// 根据左侧树当前选择推导有效模式：
-    ///   选 Phase       → "Empty"
+    ///   选 Phase       → "Empty"（右侧 Phase 模板列表在 GenerateCore 中保留不清空）
     ///   选 Operation   → "Phase"
     ///   选 Receipt     → "Operation"
     ///   无选择         → "Empty"
@@ -149,6 +149,13 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     #region 核心生成
     private void GenerateCore(Container listContainer)
     {
+        // 左侧树选中 Phase 时 DerivedMode 为 Empty；不删除、不重建最右侧 Phase 模板列表，保持上次内容
+        if (DerivedMode == "Empty" && (GenerateTreeList.Instance?.SelectedPhaseId ?? 0) != 0)
+        {
+            if (EnableLog) Log.Info(LogCategory, "左侧树选中 Phase：保留右侧 Phase 列表");
+            return;
+        }
+
         _suppressVersionComboNotify = true;
         try
         {
@@ -315,7 +322,7 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     private void UpdateTitle()
     {
         string mode = DerivedMode;
-        string titleText = mode == "Phase" ? "Phase Template" : mode == "Operation" ? "Operation Template" : "";
+        string titleText = mode == "Phase" ? "Phase List" : mode == "Operation" ? "Operation List" : "";
 
         var titleVar = LogicObject.GetVariable("Title");
         if (titleVar != null) titleVar.Value = titleText;
@@ -612,6 +619,7 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
         return new string(name.Select(c => char.IsLetterOrDigit(c) || c == '_' ? c : '_').ToArray());
     }
 
+    /// <summary>生成不重复的 <c>base_NNN</c>：仅按已有 <c>base_NNN</c> 取 max；无后缀的 base 不占位，首个为 <c>_000</c>。</summary>
     private static string GenerateUniqueName<T>(string baseName, IEnumerable<T> existing, Func<T, string> getName)
     {
         int max = -1;
@@ -619,7 +627,6 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
         foreach (var item in existing)
         {
             string n = getName(item) ?? "";
-            if (n.Equals(baseName, StringComparison.OrdinalIgnoreCase)) { if (max < 0) max = 0; continue; }
             if (!n.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) continue;
             ParseBaseName(n, out _, out string ver);
             if (!string.IsNullOrEmpty(ver) && int.TryParse(ver, out int v) && v > max) max = v;
