@@ -4029,3 +4029,4 @@ Children:
       DataType: VerticalAlignment
       ModellingRule: Optional
       Value: 3
+- File: PhaseParaTemplate/PhaseParaTemplate.yaml
