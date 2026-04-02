@@ -66,6 +66,11 @@ public class AddDialog : BaseNetLogic
         {
             GenerateOperationPhaseListPanel.Instance.OnCreate(name, des);
         }
+        else if (type == "Batch")
+        {
+            string createdBy = Session?.User?.BrowseName ?? "Unknown";
+            BatchEditorLogic.AddNewBatch(name, des, createdBy);
+        }
 
         if (nameVar != null)
             nameVar.Value = "";

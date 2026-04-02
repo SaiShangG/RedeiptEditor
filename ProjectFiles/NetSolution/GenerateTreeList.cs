@@ -50,10 +50,13 @@ public class GenerateTreeList : BaseNetLogic
         try { var v = LogicObject.GetVariable("EnableLog"); if (v != null) _enableLog = (bool)v.Value; } catch { }
         if (Instance == null) Instance = this;
         if (EnableLog) Log.Info(LogCategory, "Start");
+        TryWireDevReleasedFilterButtons();
+        ApplyDevReleasedFilterBarVisuals();
         Generate();
     }
     public override void Stop()
     {
+        UnwireDevReleasedFilterButtons();
         Instance = null;
         if (EnableLog) Log.Info(LogCategory, "Stop");
     }
@@ -163,6 +166,19 @@ public class GenerateTreeList : BaseNetLogic
     #region 搜索过滤（关键字由 UI 事件参数传入，不解析控件树）
     private string _receiptNameSearchFilter = "";
 
+    /// <summary>与库中 Status 一致：Development / Released（不区分大小写匹配行数据）。</summary>
+    private string _receiptStatusFilter = RecipeDatabaseTreeLoader.DefaultReceiptStatus;
+
+    private const string ReleasedStatusFilter = "Released";
+
+    private Button _devFilterButton;
+    private Button _releasedFilterButton;
+
+    private static readonly Color FilterBarSelectedBg = new Color(255, 0x05, 0x52, 0x88);
+    private static readonly Color FilterBarUnselectedBg = new Color(255, 0xf1, 0xf5, 0xf9);
+    private static readonly Color FilterBarSelectedText = new Color(255, 255, 255, 255);
+    private static readonly Color FilterBarUnselectedText = new Color(255, 0, 0, 0);
+
     private static List<RecipeDatabaseTreeLoader.ReceiptNode> FilterReceiptsByName(
         List<RecipeDatabaseTreeLoader.ReceiptNode> tree, string filter)
     {
@@ -170,6 +186,135 @@ public class GenerateTreeList : BaseNetLogic
         if (string.IsNullOrWhiteSpace(filter)) return tree.ToList();
         string f = filter.Trim();
         return tree.Where(r => r.Name != null && r.Name.IndexOf(f, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+    }
+
+    private static string NormalizeReceiptStatusForFilter(RecipeDatabaseTreeLoader.ReceiptNode r)
+    {
+        if (r == null) return RecipeDatabaseTreeLoader.DefaultReceiptStatus;
+        string s = r.Status?.Trim();
+        if (string.IsNullOrEmpty(s) || s == "0")
+            return RecipeDatabaseTreeLoader.DefaultReceiptStatus;
+        return s;
+    }
+
+    private static List<RecipeDatabaseTreeLoader.ReceiptNode> FilterReceiptsByStatus(
+        List<RecipeDatabaseTreeLoader.ReceiptNode> receipts, string requiredStatus)
+    {
+        if (receipts == null || receipts.Count == 0) return receipts ?? new List<RecipeDatabaseTreeLoader.ReceiptNode>();
+        string need = requiredStatus?.Trim() ?? "";
+        if (string.IsNullOrEmpty(need)) return receipts;
+        return receipts.Where(r =>
+            string.Equals(NormalizeReceiptStatusForFilter(r), need, StringComparison.OrdinalIgnoreCase)).ToList();
+    }
+
+    private bool StatusFilterIsDevelopment() =>
+        string.Equals(_receiptStatusFilter, RecipeDatabaseTreeLoader.DefaultReceiptStatus, StringComparison.OrdinalIgnoreCase);
+
+    private void ApplyDevReleasedFilterBarVisuals()
+    {
+        if (_devFilterButton == null || _releasedFilterButton == null) return;
+        bool dev = StatusFilterIsDevelopment();
+        _devFilterButton.BackgroundColor = dev ? FilterBarSelectedBg : FilterBarUnselectedBg;
+        _devFilterButton.TextColor = dev ? FilterBarSelectedText : FilterBarUnselectedText;
+        _releasedFilterButton.BackgroundColor = !dev ? FilterBarSelectedBg : FilterBarUnselectedBg;
+        _releasedFilterButton.TextColor = !dev ? FilterBarSelectedText : FilterBarUnselectedText;
+    }
+
+    private static string BrowseNameTail(IUANode node)
+    {
+        string bn = node?.BrowseName?.ToString() ?? "";
+        int c = bn.LastIndexOf(':');
+        return c >= 0 && c < bn.Length - 1 ? bn.Substring(c + 1) : bn;
+    }
+
+    private static IUAObject FindChildObjectByBrowseTail(IUANode parent, string tail)
+    {
+        if (parent == null || string.IsNullOrEmpty(tail)) return null;
+        foreach (var ch in parent.Children)
+        {
+            if (string.Equals(BrowseNameTail(ch), tail, StringComparison.OrdinalIgnoreCase))
+                return ch as IUAObject;
+        }
+        return null;
+    }
+
+    private static Button TryGetButtonWithIconInnerButton(IUAObject wrap)
+    {
+        if (wrap == null) return null;
+        return wrap.Get<Button>("Button1") ?? wrap.GetObject("Button1") as Button;
+    }
+
+    /// <summary>在左侧面板 <c>VerticalLayout1</c> 下定位 Dev/Released，订阅点击（无需改 yaml）。</summary>
+    private void TryWireDevReleasedFilterButtons()
+    {
+        UnwireDevReleasedFilterButtons();
+        try
+        {
+            IUANode vertical = LogicObject.Owner?.Owner?.Owner;
+            var row = FindChildObjectByBrowseTail(vertical, "DevReleasedContainer");
+            var devWrap = FindChildObjectByBrowseTail(row, "Dev");
+            var relWrap = FindChildObjectByBrowseTail(row, "Released");
+            _devFilterButton = TryGetButtonWithIconInnerButton(devWrap);
+            _releasedFilterButton = TryGetButtonWithIconInnerButton(relWrap);
+            if (_devFilterButton != null)
+                _devFilterButton.UAEvent += OnDevFilterButtonClicked;
+            if (_releasedFilterButton != null)
+                _releasedFilterButton.UAEvent += OnReleasedFilterButtonClicked;
+            if ((_devFilterButton == null || _releasedFilterButton == null) && EnableLog)
+                Log.Warning(LogCategory, "Dev/Released 筛选按钮未找到（期望路径: TreeList1 父级 ColumnLayout / DevReleasedContainer）。");
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Warning(LogCategory, $"TryWireDevReleasedFilterButtons: {ex.Message}");
+        }
+    }
+
+    private void UnwireDevReleasedFilterButtons()
+    {
+        if (_devFilterButton != null)
+        {
+            _devFilterButton.UAEvent -= OnDevFilterButtonClicked;
+            _devFilterButton = null;
+        }
+        if (_releasedFilterButton != null)
+        {
+            _releasedFilterButton.UAEvent -= OnReleasedFilterButtonClicked;
+            _releasedFilterButton = null;
+        }
+    }
+
+    private void OnDevFilterButtonClicked(object sender, UAEventArgs a)
+    {
+        if (a?.EventType?.BrowseName != "MouseClickEvent") return;
+        _receiptStatusFilter = RecipeDatabaseTreeLoader.DefaultReceiptStatus;
+        ApplyDevReleasedFilterBarVisuals();
+        RunGenerateTreeContainer();
+    }
+
+    private void OnReleasedFilterButtonClicked(object sender, UAEventArgs a)
+    {
+        if (a?.EventType?.BrowseName != "MouseClickEvent") return;
+        _receiptStatusFilter = ReleasedStatusFilter;
+        ApplyDevReleasedFilterBarVisuals();
+        RunGenerateTreeContainer();
+    }
+
+    /// <summary>供面板事件绑定（可选）；逻辑与点击 Dev 相同。</summary>
+    [ExportMethod]
+    public void FilterTreeListByDevelopmentStatus()
+    {
+        _receiptStatusFilter = RecipeDatabaseTreeLoader.DefaultReceiptStatus;
+        ApplyDevReleasedFilterBarVisuals();
+        RunGenerateTreeContainer();
+    }
+
+    /// <summary>供面板事件绑定（可选）；逻辑与点击 Released 相同。</summary>
+    [ExportMethod]
+    public void FilterTreeListByReleasedStatus()
+    {
+        _receiptStatusFilter = ReleasedStatusFilter;
+        ApplyDevReleasedFilterBarVisuals();
+        RunGenerateTreeContainer();
     }
     #endregion
 
@@ -244,6 +389,7 @@ public class GenerateTreeList : BaseNetLogic
         var tree = loader.Tree;
         string filterText = _receiptNameSearchFilter ?? "";
         var visibleReceipts = FilterReceiptsByName(tree, filterText);
+        visibleReceipts = FilterReceiptsByStatus(visibleReceipts, _receiptStatusFilter);
 
         if (_selectedReceiptId != 0 && !visibleReceipts.Exists(r => r.ReceiptID == _selectedReceiptId))
         {
@@ -301,10 +447,11 @@ public class GenerateTreeList : BaseNetLogic
 
         if (EnableLog)
         {
+            string st = _receiptStatusFilter ?? "";
             if (string.IsNullOrWhiteSpace(filterText))
-                Log.Info(LogCategory, $"成功读取 {visibleReceipts.Count} 条配方，树形列表生成完毕。");
+                Log.Info(LogCategory, $"成功读取 {visibleReceipts.Count} 条配方（状态筛选={st}），树形列表生成完毕。");
             else
-                Log.Info(LogCategory, $"按名称过滤「{filterText}」：显示 {visibleReceipts.Count}/{tree.Count} 条配方。");
+                Log.Info(LogCategory, $"按名称「{filterText}」+ 状态「{st}」：显示 {visibleReceipts.Count}/{tree.Count} 条配方。");
         }
 
         if (visibleReceipts.Count == 0)

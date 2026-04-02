@@ -1,0 +1,61 @@
+Name: AuditData
+Type: FolderType
+Children:
+- Name: EventItem
+  Type: BaseObjectType
+  Children:
+  - Name: Evt_NA
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "NA"
+  - Name: Evt_ButtonClick
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Button Click"
+  - Name: Evt_InvertClick
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Invert Click"
+  - Name: Evt_ValueChange
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Value Change"
+- Name: ActionTemplate
+  Type: BaseObjectType
+  Children:
+  - Name: Act_Create
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "({name}) new {type} has been created"
+  - Name: Act_Delete
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "({name})  {type} has been deleted"
+  - Name: Act_Save
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "({name})  {type} has been saved"
+  - Name: Act_Up
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "({name})  {type} has been moved up"
+  - Name: Act_Down
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "({name})  {type} has been moved down"
+  - Name: Act_Rename
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "({name})  {type} has been renamed to ({newName})"
+  - Name: Act_SaveAs
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "({name})  {type} has been saved as ({newName})"
+  - Name: Act_Remove
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "({name})  {type} has been removed"
+  - Name: Act_Insert
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "({name})  {childrenType} has been inserted in {type} ({parentName})"

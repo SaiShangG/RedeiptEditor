@@ -31,14 +31,9 @@ public class EventsDispatcher : BaseNetLogic
     }
 
     [ExportMethod]
-    public void TriggerUserSessionEvent(object[] inputArgs)
+    public void TriggerUserSessionEvent(string sourceName, NodeId sourceNode, string clientUserId, bool status, string messageText)
     {
-        // Convert input arguments to the expected types
-        var sourceName = (string) inputArgs[0];
-        var sourceNode = (NodeId) inputArgs[1];
-        var clientUserId = (string) inputArgs[2];
-        var status = (bool) inputArgs[3];
-        var message = new LocalizedText((string) inputArgs[4], "en-US");
+        var message = new LocalizedText(messageText, "en-US");
 
         // Get the UserSessionEvent object type
         var userSessionEvent = (IUAObjectType) InformationModel.Get(FTOptix.Core.ObjectTypes.UserSessionEvent);

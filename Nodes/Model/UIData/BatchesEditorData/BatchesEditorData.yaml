@@ -1,0 +1,18 @@
+Name: BatchesEditorData
+Type: FolderType
+Children:
+- Name: BatchEditorData
+  Type: BaseObjectType
+  Children:
+  - Name: Name
+    Id: g=bf382470105703ac805a58e5e767041f
+    Type: BaseDataVariableType
+    DataType: String
+  - Name: Comments
+    Id: g=b86ad321217cc44c440a676d651572fc
+    Type: BaseDataVariableType
+    DataType: String
+  - Name: Recipe
+    Id: g=f493ac38df2ccc2e5ff9c741724b77c0
+    Type: BaseDataVariableType
+    DataType: String
