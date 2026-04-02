@@ -11,7 +11,7 @@ Children:
   - Name: StartWindow
     Type: NodePointer
     DataType: NodeId
-    Value: "/Objects/RedeiptEditor/UI/MainWindow"
+    Value: "/Objects/RedeiptEditor/UI/Window1"
     Children:
     - Name: Kind
       Type: PropertyType
@@ -103,9 +103,39 @@ Children:
       DataType: VerticalAlignment
       ModellingRule: Optional
       Value: 3
-- File: Screens/Screens.yaml
+- Name: Window1
+  Id: g=1fc34a0fb9ed8a8e62d5af1c844b2e6d
+  Supertype: Window
+  Children:
+  - Name: Width
+    Type: BaseDataVariableType
+    DataType: Size
+    ModellingRule: Optional
+    Value: 1024.0
+  - Name: Height
+    Type: BaseDataVariableType
+    DataType: Size
+    ModellingRule: Optional
+    Value: 768.0
+  - Name: PhaseParasWindow1
+    Type: PhaseParasWindow
+    Children:
+    - Name: Rows
+      Type: ColumnLayout
+    - Name: RuntimeNetLogic1
+      Type: NetLogic
+  - Name: FullScreen
+    Type: BaseDataVariableType
+    DataType: Boolean
+    ModellingRule: Optional
+  - Name: Caption
+    Type: BaseDataVariableType
+    DataType: String
+    ModellingRule: Optional
+    Value: "TestWin"
 - File: Keyboards/Keyboards.yaml
 - File: Styles/Styles.yaml
 - File: Panels/Panels.yaml
 - File: Templates/Templates.yaml
 - File: Widgets/Widgets.yaml
+- File: Screens/Screens.yaml
