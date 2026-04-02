@@ -8563,6 +8563,11 @@ Children:
                   - Name: Severity
                     Type: PropertyType
                     DataType: UInt16
+              - Name: AllowDeselection
+                Type: BaseDataVariableType
+                DataType: Boolean
+                ModellingRule: Optional
+                Value: true
             - Name: HorizontalAlignment
               Type: BaseVariableType
               DataType: HorizontalAlignment

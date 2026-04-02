@@ -11,7 +11,7 @@ Children:
   - Name: StartWindow
     Type: NodePointer
     DataType: NodeId
-    Value: "/Objects/RedeiptEditor/UI/Window1"
+    Value: "/Objects/RedeiptEditor/UI/MainWindow"
     Children:
     - Name: Kind
       Type: PropertyType
@@ -37,6 +37,36 @@ Children:
       Value: "/Types/ObjectTypes/BaseObjectType/UserType"
   - Name: Sessions
     Type: BaseObjectType
+- Name: Window1
+  Id: g=1fc34a0fb9ed8a8e62d5af1c844b2e6d
+  Supertype: Window
+  Children:
+  - Name: Width
+    Type: BaseDataVariableType
+    DataType: Size
+    ModellingRule: Optional
+    Value: 1024.0
+  - Name: Height
+    Type: BaseDataVariableType
+    DataType: Size
+    ModellingRule: Optional
+    Value: 768.0
+  - Name: PhaseParasWindow1
+    Type: PhaseParasWindow
+    Children:
+    - Name: Rows
+      Type: ColumnLayout
+    - Name: RuntimeNetLogic1
+      Type: NetLogic
+  - Name: FullScreen
+    Type: BaseDataVariableType
+    DataType: Boolean
+    ModellingRule: Optional
+  - Name: Caption
+    Type: BaseDataVariableType
+    DataType: String
+    ModellingRule: Optional
+    Value: "TestWin"
 - Name: MainWindow
   Id: g=01a7e8933afd7c95fe894b0859308138
   Supertype: Window
@@ -103,36 +133,6 @@ Children:
       DataType: VerticalAlignment
       ModellingRule: Optional
       Value: 3
-- Name: Window1
-  Id: g=1fc34a0fb9ed8a8e62d5af1c844b2e6d
-  Supertype: Window
-  Children:
-  - Name: Width
-    Type: BaseDataVariableType
-    DataType: Size
-    ModellingRule: Optional
-    Value: 1024.0
-  - Name: Height
-    Type: BaseDataVariableType
-    DataType: Size
-    ModellingRule: Optional
-    Value: 768.0
-  - Name: PhaseParasWindow1
-    Type: PhaseParasWindow
-    Children:
-    - Name: Rows
-      Type: ColumnLayout
-    - Name: RuntimeNetLogic1
-      Type: NetLogic
-  - Name: FullScreen
-    Type: BaseDataVariableType
-    DataType: Boolean
-    ModellingRule: Optional
-  - Name: Caption
-    Type: BaseDataVariableType
-    DataType: String
-    ModellingRule: Optional
-    Value: "TestWin"
 - File: Keyboards/Keyboards.yaml
 - File: Styles/Styles.yaml
 - File: Panels/Panels.yaml
