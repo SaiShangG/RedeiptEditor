@@ -27,19 +27,19 @@ public class RuntimeNetLogic1 : BaseNetLogic
         ParaPanel1.Get<Label>("VerticalLayout1/Title").Text = "This is the Phase Parameter Area";
         ParaPanel2.Get<Label>("VerticalLayout1/Title").Text = "This is the End Conditions Area";
 
-        Owner.Get("Rows").Add(ParaPanel1);
-        Owner.Get("Rows").Add(ParaPanel2);
+        Owner.Get("ScrollView1/Rows").Add(ParaPanel1);
+        Owner.Get("ScrollView1/Rows").Add(ParaPanel2);
 
 
         for (int i = 0; i < 10; i++) { 
         var Para = InformationModel.Make<PhaseSinglePara>("Para"+ i.ToString());
-            Owner.Get("Rows/ParaPanel1/VerticalLayout1/HorizontalLayout1").Add(Para);
+            Owner.Get("ScrollView1/Rows/ParaPanel1/VerticalLayout1/HorizontalLayout1").Add(Para);
         }
 
         for (int i = 0; i < 16; i++)
         {
             var Para = InformationModel.Make<PhaseSinglePara>("Para" + i.ToString());
-            Owner.Get("Rows/ParaPanel2/VerticalLayout1/HorizontalLayout1").Add(Para);
+            Owner.Get("ScrollView1/Rows/ParaPanel2/VerticalLayout1/HorizontalLayout1").Add(Para);
         }
 
 

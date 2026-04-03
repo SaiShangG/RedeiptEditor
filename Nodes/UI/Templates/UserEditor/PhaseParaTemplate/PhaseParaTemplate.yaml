@@ -26,19 +26,70 @@ Children:
     DataType: VerticalAlignment
     ModellingRule: Optional
     Value: 3
-  - Name: Rows
-    Type: ColumnLayout
+  - Name: ScrollView1
+    Type: ScrollView
     Children:
+    - Name: ContentWidth
+      Type: BaseDataVariableType
+      DataType: Size
+      AccessLevel: Read
+    - Name: ContentHeight
+      Type: BaseDataVariableType
+      DataType: Size
+      AccessLevel: Read
+    - Name: ViewWidth
+      Type: BaseDataVariableType
+      DataType: Size
+      AccessLevel: Read
+    - Name: ViewHeight
+      Type: BaseDataVariableType
+      DataType: Size
+      AccessLevel: Read
+    - Name: ContentX
+      Type: BaseDataVariableType
+      DataType: Size
+    - Name: ContentY
+      Type: BaseDataVariableType
+      DataType: Size
+    - Class: Reference
+      Target: ns=3;i=1394
+      Direction: Forward
     - Name: Width
       Type: BaseVariableType
       DataType: Size
       ModellingRule: Optional
-      Value: 1440.0
+      Value: 300.0
     - Name: Height
       Type: BaseVariableType
       DataType: Size
       ModellingRule: Optional
-      Value: -1.0
+      Value: 300.0
+    - Name: Rows
+      Type: ColumnLayout
+      Children:
+      - Name: Width
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+        Value: 1440.0
+      - Name: Height
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+        Value: -1.0
+      - Name: HorizontalAlignment
+        Type: BaseVariableType
+        DataType: HorizontalAlignment
+        ModellingRule: Optional
+        Value: 3
+      - Name: VerticalAlignment
+        Type: BaseVariableType
+        DataType: VerticalAlignment
+        ModellingRule: Optional
+      - Name: ContentAlignment
+        Type: BaseVariableType
+        DataType: ContentVerticalAlignment
+        ModellingRule: Optional
     - Name: HorizontalAlignment
       Type: BaseVariableType
       DataType: HorizontalAlignment
@@ -49,10 +100,6 @@ Children:
       DataType: VerticalAlignment
       ModellingRule: Optional
       Value: 3
-    - Name: ContentAlignment
-      Type: BaseVariableType
-      DataType: ContentVerticalAlignment
-      ModellingRule: Optional
   - Name: RuntimeNetLogic1
     Type: NetLogic
 - Name: PhaseParasPanel
@@ -79,7 +126,6 @@ Children:
     Type: BaseVariableType
     DataType: VerticalAlignment
     ModellingRule: Optional
-    Value: 3
   - Name: Rectangle1
     Type: Rectangle
     Children:
@@ -124,7 +170,7 @@ Children:
       Type: BaseVariableType
       DataType: Size
       ModellingRule: Optional
-      Value: 50.0
+      Value: -1.0
     - Name: Title
       Type: Label
       Children:
@@ -193,7 +239,7 @@ Children:
         Type: BaseVariableType
         DataType: Size
         ModellingRule: Optional
-        Value: 50.0
+        Value: -1.0
       - Name: HorizontalGap
         Type: BaseDataVariableType
         DataType: Size
@@ -218,7 +264,6 @@ Children:
         Type: BaseVariableType
         DataType: VerticalAlignment
         ModellingRule: Optional
-        Value: 3
       - Name: ContentAlignment
         Type: BaseVariableType
         DataType: ContentHorizontalAlignment
@@ -252,7 +297,6 @@ Children:
       Type: BaseVariableType
       DataType: VerticalAlignment
       ModellingRule: Optional
-      Value: 3
 - Name: PhaseSinglePara
   Id: g=b5c33206a9c19c54026df42f1a7e482a
   Supertype: Panel
