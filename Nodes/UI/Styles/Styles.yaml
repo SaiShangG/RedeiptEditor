@@ -10,6 +10,11 @@ Children:
     Children:
     - Name: Default
       Type: ButtonStyle
+      Children:
+      - Name: BorderColor
+        Type: BaseDataVariableType
+        DataType: Color
+        Value: "#b3b3b39c"
     - Name: Accent
       Type: ButtonStyle
       Children:

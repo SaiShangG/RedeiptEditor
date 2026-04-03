@@ -278,14 +278,14 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
                 int oId = GenerateTreeList.Instance?.SelectedOperationId ?? 0;
                 if (oId <= 0) { if (EnableLog) Log.Warning(LogCategory, "未选中 Operation，无法插入 Phase"); return; }
                 if (EnableLog) Log.Info(LogCategory, "[追踪] 执行 SaveAsPhaseFromSource");
-                RecipeDatabaseManager.Instance?.SaveAsPhaseFromSource(itemId);
+                RecipeDatabaseManager.Instance?.SaveAsPhaseFromSource(itemId, fromInsertPanel: true);
             }
             else if (mode == "Operation")
             {
                 int rId = GenerateTreeList.Instance?.SelectedReceiptId ?? 0;
                 if (rId <= 0) { if (EnableLog) Log.Warning(LogCategory, "未选中 Receipt，无法插入 Operation"); return; }
                 if (EnableLog) Log.Info(LogCategory, "[追踪] 执行 SaveAsOperationFromSource");
-                RecipeDatabaseManager.Instance?.SaveAsOperationFromSource(itemId);
+                RecipeDatabaseManager.Instance?.SaveAsOperationFromSource(itemId, fromInsertPanel: true);
             }
         }
         finally { lock (_insertLock) _insertInProgress = false; }
@@ -303,18 +303,34 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
             string safeName = GenerateUniqueName(name.Trim(), loader.PhaseById.Values, n => n.Name);
             int newPId = loader.AddPhaseStandalone(safeName, description);
             if (newPId > 0 && EnableLog) Log.Info(LogCategory, "已新建 Phase(仅库): " + safeName);
+            if (newPId > 0)
+                RecipeAuditLogHelper.Append(LogicObject, GetAuditUserBrowseName(), "Evt_ButtonClick", "Act_Create", new Dictionary<string, string> { ["name"] = safeName, ["type"] = "Phase" });
         }
         else if (mode == "Operation")
         {
             string safeName = GenerateUniqueName(name.Trim(), loader.OperationById.Values, n => n.Name);
             int newOpId = loader.AddOperationStandalone(safeName, description);
             if (newOpId > 0 && EnableLog) Log.Info(LogCategory, "已新建 Operation(仅库): " + safeName);
+            if (newOpId > 0)
+                RecipeAuditLogHelper.Append(LogicObject, GetAuditUserBrowseName(), "Evt_ButtonClick", "Act_Create", new Dictionary<string, string> { ["name"] = safeName, ["type"] = "Operation" });
         }
         else
             return;
         Generate(); // 仅刷新右侧 List，不刷新左侧树
     }
     #endregion
+
+    private string GetAuditUserBrowseName()
+    {
+        try
+        {
+            var u = Session?.User;
+            if (u != null && !string.IsNullOrEmpty(u.BrowseName))
+                return u.BrowseName.Trim();
+        }
+        catch { }
+        return "";
+    }
 
     #region 辅助：UI 控件设置
     private Container GetListContainer() => LogicObject.Owner?.Get<Container>("ColumnsCards");

@@ -166,6 +166,64 @@ Children:
         - Name: Reversion
           Type: StoreColumn
           DataType: String
+    - Name: Batches
+      Type: SQLiteStoreTable
+      Children:
+      - Class: Reference
+        Target: ns=8;i=12
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=15
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=21
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=20
+        Direction: Forward
+      - Name: Columns
+        Type: BaseObjectType
+        Children:
+        - Name: BatchID
+          Type: StoreColumn
+          DataType: Int16
+        - Name: Name
+          Type: StoreColumn
+          DataType: String
+          Value: "0"
+        - Name: State
+          Type: StoreColumn
+          DataType: String
+          Value: "0"
+        - Name: CreatedBy
+          Type: StoreColumn
+          DataType: String
+          Value: "Development"
+        - Name: CreatedDateTime
+          Type: StoreColumn
+          DataType: DateTime
+        - Name: LastModifiedBY
+          Type: StoreColumn
+          DataType: String
+          Value: "Development"
+        - Name: LastModifiedDateTime
+          Type: StoreColumn
+          DataType: DateTime
+        - Name: ProductCode
+          Type: StoreColumn
+          DataType: Int16
+        - Name: RecipeName
+          Type: StoreColumn
+          DataType: String
+        - Name: Status
+          Type: StoreColumn
+          DataType: String
+        - Name: Comments
+          Type: StoreColumn
+          DataType: String
+        - Name: Description
+          Type: StoreColumn
+          DataType: String
   - Class: Reference
     Target: ns=9;i=30
     Direction: Forward
@@ -235,55 +293,10 @@ Children:
     DataType: String
     Value: "ReceiptEditorDB"
 - Name: EmbeddedDatabase1
-  Id: g=87d01755022cab1a083345029e3b18ba
   Type: SQLiteStore
   Children:
   - Name: Tables
     Type: BaseObjectType
-    Children:
-    - Name: AuditEventLogger1
-      Type: SQLiteStoreTable
-      Children:
-      - Class: Reference
-        Target: ns=8;i=12
-        Direction: Forward
-      - Class: Reference
-        Target: ns=8;i=15
-        Direction: Forward
-      - Class: Reference
-        Target: ns=8;i=21
-        Direction: Forward
-      - Class: Reference
-        Target: ns=8;i=20
-        Direction: Forward
-      - Name: Columns
-        Type: BaseObjectType
-        Children:
-        - Name: ClientUserId
-          Type: StoreColumn
-          DataType: String
-        - Name: 'Status_en-US'
-          Type: StoreColumn
-          DataType: String
-        - Name: 'Message_en-US'
-          Type: StoreColumn
-          DataType: String
-        - Name: Severity
-          Type: StoreColumn
-          DataType: UInt16
-        - Name: SourceName
-          Type: StoreColumn
-          DataType: String
-        - Name: Time
-          Type: StoreColumn
-          DataType: UtcTime
-        - Name: EventType
-          Type: StoreColumn
-          DataType: String
-      - Name: RecordLimit
-        Type: BaseDataVariableType
-        DataType: UInt32
-        Value: 1000
   - Class: Reference
     Target: ns=9;i=30
     Direction: Forward
@@ -345,3 +358,151 @@ Children:
   - Class: Reference
     Target: ns=8;i=67
     Direction: Forward
+  - Name: Filename
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Audit"
+- Name: BatchRecipeEditorAuditDB
+  Id: g=afc89d5face378c91e1228ef603b1f73
+  Type: SQLiteStore
+  Children:
+  - Name: Tables
+    Type: BaseObjectType
+    Children:
+    - Name: BatchRecipeAuditTable
+      Type: SQLiteStoreTable
+      Children:
+      - Class: Reference
+        Target: ns=8;i=12
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=15
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=21
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=20
+        Direction: Forward
+      - Name: Columns
+        Type: BaseObjectType
+        Children:
+        - Name: AuditID
+          Type: StoreColumn
+          DataType: Int32
+        - Name: DateTime
+          Type: StoreColumn
+          DataType: DateTime
+        - Name: OperationMode
+          Type: StoreColumn
+          DataType: String
+        - Name: EventItem
+          Type: StoreColumn
+          DataType: String
+        - Name: UserName
+          Type: StoreColumn
+          DataType: String
+        - Name: UserGroup
+          Type: StoreColumn
+          DataType: String
+        - Name: Action
+          Type: StoreColumn
+          DataType: String
+        - Name: Status
+          Type: StoreColumn
+          DataType: String
+        - Name: OldValue
+          Type: StoreColumn
+          DataType: String
+        - Name: NewValue
+          Type: StoreColumn
+          DataType: String
+    - Name: RecipeAuditLog
+      Type: SQLiteStoreTable
+      Children:
+      - Class: Reference
+        Target: ns=8;i=12
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=15
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=21
+        Direction: Forward
+      - Class: Reference
+        Target: ns=8;i=20
+        Direction: Forward
+      - Name: Columns
+        Type: BaseObjectType
+        Children:
+        - Name: EventFieldToLog1
+          Type: StoreColumn
+          DataType: String
+        - Name: EventFieldToLog2
+          Type: StoreColumn
+          DataType: String
+  - Class: Reference
+    Target: ns=9;i=30
+    Direction: Forward
+  - Class: Reference
+    Target: ns=9;i=33
+    Direction: Forward
+  - Name: MaxColumnNameLength
+    Type: BaseDataVariableType
+    DataType: UInt32
+    AccessLevel: Read
+  - Name: MaxColumnCount
+    Type: BaseDataVariableType
+    DataType: UInt32
+    AccessLevel: Read
+  - Name: DataTypeCompatibilityMap
+    Type: BaseDataVariableType
+    DataType: NodeId
+    AccessLevel: Read
+    ValueRank: OneOrMoreDimensions
+    ArrayDimensions: [0,0]
+  - Name: Status
+    Type: PropertyType
+    DataType: StoreStatus
+    AccessLevel: Read
+    Value: 2
+  - Class: Reference
+    Target: ns=8;i=22
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=67
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=6
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=8
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=25
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=38
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=41
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=44
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=53
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=55
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=57
+    Direction: Forward
+  - Class: Reference
+    Target: ns=8;i=59
+    Direction: Forward
+  - Name: Filename
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "BatchRecipeEditorAuditDB"

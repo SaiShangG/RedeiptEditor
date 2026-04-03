@@ -1076,12 +1076,34 @@ Children:
           Type: BaseVariableType
           DataType: Size
           ModellingRule: Optional
-          Value: 50.0
+          Value: 40.0
         - Name: Height
           Type: BaseVariableType
           DataType: Size
           ModellingRule: Optional
-          Value: 50.0
+          Value: -1.0
+        - Name: DynamicColor
+          Type: BaseDataVariableType
+          DataType: Color
+          ModellingRule: Optional
+          Value: "#1e3a78"
+        - Name: ColorizationMode
+          Type: BaseDataVariableType
+          DataType: ColorizationModeEnum
+          ModellingRule: Optional
+        - Name: FillMode
+          Type: BaseDataVariableType
+          DataType: ImageFillModeEnum
+          ModellingRule: Optional
+        - Name: HorizontalAlignment
+          Type: BaseVariableType
+          DataType: HorizontalAlignment
+          ModellingRule: Optional
+        - Name: VerticalAlignment
+          Type: BaseVariableType
+          DataType: VerticalAlignment
+          ModellingRule: Optional
+          Value: 2
       - Name: Label1
         Type: Label
         Children:
@@ -1667,12 +1689,12 @@ Children:
               - Name: Path
                 Type: BaseDataVariableType
                 DataType: ResourceUri
-                Value: "ns=7;%PROJECTDIR%/Images/People.png"
+                Value: "ns=7;%PROJECTDIR%/Images/people.svg"
               - Name: Width
                 Type: BaseVariableType
                 DataType: Size
                 ModellingRule: Optional
-                Value: 30.0
+                Value: 25.0
               - Name: LeftMargin
                 Type: BaseVariableType
                 DataType: Size
@@ -1711,7 +1733,7 @@ Children:
               - Name: Path
                 Type: BaseDataVariableType
                 DataType: ResourceUri
-                Value: "ns=7;%PROJECTDIR%/Images/People.png"
+                Value: "ns=7;%PROJECTDIR%/Images/people.svg"
             - Name: Label1
               Type: Label
               Children:
@@ -1743,7 +1765,7 @@ Children:
               - Name: Path
                 Type: BaseDataVariableType
                 DataType: ResourceUri
-                Value: "ns=7;%PROJECTDIR%/Images/People.png"
+                Value: "ns=7;%PROJECTDIR%/Images/people.svg"
             - Name: Label1
               Type: Label
               Children:
@@ -1778,7 +1800,7 @@ Children:
               - Name: Path
                 Type: BaseDataVariableType
                 DataType: ResourceUri
-                Value: "ns=7;%PROJECTDIR%/Images/People.png"
+                Value: "ns=7;%PROJECTDIR%/Images/people.svg"
             - Name: Label1
               Type: Label
               Children:
@@ -1822,7 +1844,7 @@ Children:
     Type: BaseVariableType
     DataType: Size
     ModellingRule: Optional
-    Value: 105.0
+    Value: 80.0
   - Name: HorizontalAlignment
     Type: BaseVariableType
     DataType: HorizontalAlignment
@@ -1863,7 +1885,7 @@ Children:
       Type: BaseDataVariableType
       DataType: Color
       ModellingRule: Optional
-      Value: "#deeeff"
+      Value: "#e0eff8"
     - Name: BorderColor
       Type: BaseDataVariableType
       DataType: Color
@@ -1892,71 +1914,107 @@ Children:
         DataType: VerticalAlignment
         ModellingRule: Optional
         Value: 3
-      - Name: Icon
-        Type: Image
+      - Name: HorizontalLayout1
+        Type: RowLayout
         Children:
-        - Name: Path
-          Type: BaseDataVariableType
-          DataType: ResourceUri
-          Value: "ns=7;%PROJECTDIR%/Images/editor.png"
         - Name: Width
           Type: BaseVariableType
           DataType: Size
           ModellingRule: Optional
-          Value: 40.0
+          Value: 50.0
         - Name: Height
           Type: BaseVariableType
           DataType: Size
           ModellingRule: Optional
-          Value: 40.0
-        - Name: VerticalAlignment
+          Value: 50.0
+        - Name: Icon
+          Type: Image
+          Children:
+          - Name: Path
+            Type: BaseDataVariableType
+            DataType: ResourceUri
+            Value: "ns=7;%PROJECTDIR%/Images/editor.svg"
+          - Name: Width
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 40.0
+          - Name: Height
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 40.0
+          - Name: VerticalAlignment
+            Type: BaseVariableType
+            DataType: VerticalAlignment
+            ModellingRule: Optional
+            Value: 2
+          - Name: LeftMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 10.0
+          - Name: TopMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+          - Name: BottomMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+        - Name: ReceiptEditor
+          Type: Label
+          Children:
+          - Name: Text
+            Type: BaseDataVariableType
+            DataType: LocalizedText
+            ModellingRule: Optional
+            Value: {"LocaleId":"en-US","Text":"Recipe Editor"}
+          - Name: VerticalAlignment
+            Type: BaseVariableType
+            DataType: VerticalAlignment
+            ModellingRule: Optional
+            Value: 3
+          - Name: TextHorizontalAlignment
+            Type: BaseVariableType
+            DataType: TextHorizontalAlignment
+            ModellingRule: Optional
+            Value: 1
+          - Name: TextVerticalAlignment
+            Type: BaseVariableType
+            DataType: TextVerticalAlignment
+            ModellingRule: Optional
+            Value: 1
+          - Name: FontSize
+            Type: BaseDataVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 30.0
+          - Name: FontWeight
+            Type: BaseDataVariableType
+            DataType: FontWeightEnum
+            ModellingRule: Optional
+            Value: 700
+          - Name: LeftMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 8.0
+          - Name: TextColor
+            Type: BaseDataVariableType
+            DataType: Color
+            ModellingRule: Optional
+            Value: "#1e3a78"
+        - Name: HorizontalAlignment
           Type: BaseVariableType
-          DataType: VerticalAlignment
+          DataType: HorizontalAlignment
           ModellingRule: Optional
-          Value: 2
-        - Name: LeftMargin
-          Type: BaseVariableType
-          DataType: Size
-          ModellingRule: Optional
-          Value: 8.0
-      - Name: ReceiptEditor
-        Type: Label
-        Children:
-        - Name: Text
-          Type: BaseDataVariableType
-          DataType: LocalizedText
-          ModellingRule: Optional
-          Value: {"LocaleId":"en-US","Text":"Recipe Editor"}
+          Value: 3
         - Name: VerticalAlignment
           Type: BaseVariableType
           DataType: VerticalAlignment
           ModellingRule: Optional
           Value: 3
-        - Name: TextHorizontalAlignment
-          Type: BaseVariableType
-          DataType: TextHorizontalAlignment
-          ModellingRule: Optional
-          Value: 1
-        - Name: TextVerticalAlignment
-          Type: BaseVariableType
-          DataType: TextVerticalAlignment
-          ModellingRule: Optional
-          Value: 1
-        - Name: FontSize
-          Type: BaseDataVariableType
-          DataType: Size
-          ModellingRule: Optional
-          Value: 45.0
-        - Name: FontWeight
-          Type: BaseDataVariableType
-          DataType: FontWeightEnum
-          ModellingRule: Optional
-          Value: 700
-        - Name: LeftMargin
-          Type: BaseVariableType
-          DataType: Size
-          ModellingRule: Optional
-          Value: 2.0
       - Name: ExitEditor
         Type: Button
         Children:
@@ -1964,7 +2022,7 @@ Children:
           Type: BaseDataVariableType
           DataType: LocalizedText
           ModellingRule: Optional
-          Value: {"LocaleId":"en-US","Text":"Exit Editor"}
+          Value: {"LocaleId":"en-US","Text":"Exit"}
         - Name: HorizontalAlignment
           Type: BaseVariableType
           DataType: HorizontalAlignment
@@ -1979,11 +2037,12 @@ Children:
           Type: BaseVariableType
           DataType: Size
           ModellingRule: Optional
-          Value: 165.0
+          Value: 110.0
         - Name: RightMargin
           Type: BaseVariableType
           DataType: Size
           ModellingRule: Optional
+          Value: 16.0
         - Name: TopMargin
           Type: BaseVariableType
           DataType: Size
@@ -2005,17 +2064,27 @@ Children:
           Type: BaseDataVariableType
           DataType: Color
           ModellingRule: Optional
-          Value: "#0069b5"
+          Value: "#ffffff"
         - Name: TextColor
           Type: BaseDataVariableType
           DataType: Color
           ModellingRule: Optional
-          Value: "#ffffff"
+          Value: "#3b3b3b"
         - Name: FontSize
           Type: BaseDataVariableType
           DataType: Size
           ModellingRule: Optional
           Value: 26.0
+        - Name: ImagePath
+          Type: BaseDataVariableType
+          DataType: ResourceUri
+          ModellingRule: Optional
+          Value: "ns=7;%PROJECTDIR%/Images/logout.svg"
+        - Name: ImagePosition
+          Type: BaseDataVariableType
+          DataType: ButtonImagePosition
+          ModellingRule: Optional
+          Value: 9
 - Name: LeftContainer
   Id: g=f2eb04d19a1dbef294fc48f208086c52
   Supertype: Panel
@@ -2225,6 +2294,11 @@ Children:
               DataType: Boolean
               ReferenceType: HasParameter
               ModellingRule: Optional
+        - Name: FontSize
+          Type: BaseDataVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 18.0
     - Name: ButtonWithIcon2
       Type: ButtonWithIcon
       Children:
@@ -2327,6 +2401,11 @@ Children:
               DataType: Boolean
               ReferenceType: HasParameter
               ModellingRule: Optional
+        - Name: FontSize
+          Type: BaseDataVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 18.0
     - Name: ButtonWithIcon3
       Type: ButtonWithIcon
       Children:
@@ -2396,6 +2475,16 @@ Children:
           DataType: ResourceUri
           ModellingRule: Optional
           Value: "ns=7;%PROJECTDIR%/Images/save 1.png"
+        - Name: FontSize
+          Type: BaseDataVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 18.0
+        - Name: ImageWidth
+          Type: BaseDataVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 24.0
     - Name: ButtonWithIcon4
       Type: ButtonWithIcon
       Children:
@@ -2469,7 +2558,12 @@ Children:
           Type: BaseDataVariableType
           DataType: Size
           ModellingRule: Optional
-          Value: 22.0
+          Value: 20.0
+        - Name: FontSize
+          Type: BaseDataVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 18.0
     - Name: ButtonWithIcon6
       Type: ButtonWithIcon
       Children:
@@ -2572,7 +2666,12 @@ Children:
           Type: BaseDataVariableType
           DataType: Size
           ModellingRule: Optional
-          Value: 22.0
+          Value: 20.0
+        - Name: FontSize
+          Type: BaseDataVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 18.0
     - Name: ButtonWithIcon5
       Type: ButtonWithIcon
       Children:
@@ -2641,7 +2740,22 @@ Children:
           Type: BaseDataVariableType
           DataType: ResourceUri
           ModellingRule: Optional
-          Value: "ns=7;%PROJECTDIR%/Images/delete 1.png"
+          Value: "ns=7;%PROJECTDIR%/Images/delete.svg"
+        - Name: BackgroundColor
+          Type: BaseDataVariableType
+          DataType: Color
+          ModellingRule: Optional
+          Value: "#ffffff"
+        - Name: TextColor
+          Type: BaseDataVariableType
+          DataType: Color
+          ModellingRule: Optional
+          Value: "#eb001b"
+        - Name: FontSize
+          Type: BaseDataVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 18.0
     - Name: HorizontalGap
       Type: BaseDataVariableType
       DataType: Size
@@ -2794,6 +2908,12 @@ Children:
           ValueRank: OneDimension
           ArrayDimensions: [0]
           Value: [{"TypeId":{"Id":296},"Body":{"Name":"filterText","DataType":{"Id":21},"ValueRank":-1,"ArrayDimensions":[],"Description":{"NamespaceIndex":-1,"LocaleId":"","Text":""}}}]
+      - Class: Method
+        Name: FilterTreeListByDevelopmentStatus
+        Id: g=98dc68771d4e32709cf8b522c1f89f9b
+      - Class: Method
+        Name: FilterTreeListByReleasedStatus
+        Id: g=4fd7d641f39e1053a7a136ff16c86848
     - Name: Model
       Type: BaseDataVariableType
       DataType: NodeId
@@ -2995,7 +3115,7 @@ Children:
         Type: BaseDataVariableType
         DataType: Color
         ModellingRule: Optional
-        Value: "#075982a7"
+        Value: "#e0eaf5"
       - Name: CornerRadius
         Type: BaseDataVariableType
         DataType: Size
@@ -3006,6 +3126,11 @@ Children:
         DataType: Size
         ModellingRule: Optional
         Value: 1.0
+      - Name: BorderColor
+        Type: BaseDataVariableType
+        DataType: Color
+        ModellingRule: Optional
+        Value: "#0000002b"
     - Name: HorizontalAlignment
       Type: BaseVariableType
       DataType: HorizontalAlignment
@@ -3175,6 +3300,11 @@ Children:
               - Name: Severity
                 Type: PropertyType
                 DataType: UInt16
+          - Name: ImageWidth
+            Type: BaseDataVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 20.0
         - Name: BorderColor
           Type: BaseDataVariableType
           DataType: Color
@@ -3256,6 +3386,11 @@ Children:
           Type: BaseVariableType
           DataType: Size
           ModellingRule: Optional
+        - Name: ImageWidth
+          Type: BaseDataVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 18.0
       - Name: VerticalAlignment
         Type: BaseVariableType
         DataType: VerticalAlignment
@@ -3274,7 +3409,7 @@ Children:
         Type: BaseVariableType
         DataType: Size
         ModellingRule: Optional
-        Value: 45.0
+        Value: 60.0
       - Name: TopMargin
         Type: BaseVariableType
         DataType: Size
@@ -3393,7 +3528,17 @@ Children:
         Type: BaseVariableType
         DataType: Size
         ModellingRule: Optional
-        Value: 45.0
+        Value: 60.0
+      - Name: BorderColor
+        Type: BaseDataVariableType
+        DataType: Color
+        ModellingRule: Optional
+        Value: "#cbd5e1"
+      - Name: FillColor
+        Type: BaseDataVariableType
+        DataType: Color
+        ModellingRule: Optional
+        Value: "#07598244"
     - Name: PolyLine1
       Type: PolyLine
       Children:
@@ -3429,6 +3574,11 @@ Children:
         DataType: HorizontalAlignment
         ModellingRule: Optional
         Value: 3
+      - Name: LineColor
+        Type: BaseDataVariableType
+        DataType: Color
+        ModellingRule: Optional
+        Value: "#00000074"
   - Name: ColumnsCards
     Type: ColumnLayout
     Children:
@@ -3456,7 +3606,7 @@ Children:
       Type: BaseVariableType
       DataType: Size
       ModellingRule: Optional
-      Value: 190.0
+      Value: 210.0
     - Name: OperationPhaseCard4
       Type: OperationPhaseCard
       Children:
@@ -3490,7 +3640,12 @@ Children:
                 Type: BaseDataVariableType
                 DataType: Color
                 ModellingRule: Optional
-                Value: "#deeeff40"
+                Value: "#f0f6fcb0"
+              - Name: FontSize
+                Type: BaseDataVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 20.0
           - Name: Row
             Type: RowLayout
             Children:
@@ -4602,7 +4757,6 @@ Children:
             - Name: Text
               Type: BaseDataVariableType
               DataType: LocalizedText
-              ModellingRule: Optional
               Value: {"LocaleId":"en-US","Text":"Name:"}
             - Name: Height
               Type: BaseVariableType
@@ -4962,6 +5116,95 @@ Children:
               DataType: Size
               ModellingRule: Optional
               Value: 7.0
+            - Name: MouseDownEventHandler1
+              Type: EventHandler
+              Children:
+              - Name: ListenEventType
+                Type: PropertyType
+                DataType: NodeId
+                Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseDownEvent"
+              - Name: MethodsToCall
+                Type: BaseObjectType
+                Children:
+                - Name: MethodContainer1
+                  Type: BaseObjectType
+                  Children:
+                  - Name: ns=2;ObjectPointer
+                    Type: NodePointer
+                    DataType: NodeId
+                    Value: "/Objects/RedeiptEditor/NetLogic/RecipeDatabaseManager"
+                    Children:
+                    - Name: Kind
+                      Type: PropertyType
+                      DataType: NodeId
+                      Value: "/Types/ObjectTypes/BaseObjectType"
+                  - Name: ns=2;Method
+                    Type: BaseDataVariableType
+                    DataType: String
+                    Value: "RenameSelectedTreeItem"
+                  - Name: InputArguments
+                    Type: BaseObjectType
+                    Children:
+                    - Name: newName
+                      Type: BaseDataVariableType
+                      DataType: String
+                      Children:
+                      - Name: DynamicLink
+                        Type: DynamicLink
+                        DataType: NodePath
+                        Value: "../../../../../../../Name/Label1/Text"
+                - Name: MethodContainer2
+                  Type: BaseObjectType
+                  Children:
+                  - Name: ns=2;ObjectPointer
+                    Type: NodePointer
+                    DataType: NodeId
+                    Children:
+                    - Name: Kind
+                      Type: PropertyType
+                      DataType: NodeId
+                      Value: "/Types/ObjectTypes/BaseObjectType"
+                    - Name: DynamicLink
+                      Type: DynamicLink
+                      DataType: NodePath
+                      Value: "../../../../../../../../..@NodeId"
+                      Children:
+                      - Name: Mode
+                        Type: BaseVariableType
+                        DataType: DynamicLinkMode
+                        ModellingRule: Optional
+                        Value: 2
+                  - Name: ns=2;Method
+                    Type: BaseDataVariableType
+                    DataType: String
+                    Value: "Close"
+              - Name: EventArguments
+                Type: MouseDownEvent
+                Children:
+                - Name: EventId
+                  Type: PropertyType
+                  DataType: ByteString
+                - Name: EventType
+                  Type: PropertyType
+                  DataType: NodeId
+                - Name: SourceNode
+                  Type: PropertyType
+                  DataType: NodeId
+                - Name: SourceName
+                  Type: PropertyType
+                  DataType: String
+                - Name: Time
+                  Type: PropertyType
+                  DataType: UtcTime
+                - Name: ReceiveTime
+                  Type: PropertyType
+                  DataType: UtcTime
+                - Name: Message
+                  Type: PropertyType
+                  DataType: LocalizedText
+                - Name: Severity
+                  Type: PropertyType
+                  DataType: UInt16
           - Name: ButtonWithIcon2
             Type: ButtonWithIcon
             Children:
@@ -5606,3 +5849,128 @@ Children:
       DataType: Color
       ModellingRule: Optional
       Value: "#e4e4e4"
+- Name: TitlleValue
+  Id: g=a1455aab64eb23add9018494176f51c2
+  Supertype: Panel
+  ReferenceType: HasComponent
+  Children:
+  - Name: Width
+    Type: BaseVariableType
+    DataType: Size
+    ModellingRule: Optional
+    Value: 300.0
+  - Name: Height
+    Type: BaseVariableType
+    DataType: Size
+    ModellingRule: Optional
+    Value: 100.0
+  - Name: HorizontalAlignment
+    Type: BaseVariableType
+    DataType: HorizontalAlignment
+    ModellingRule: Optional
+    Value: 3
+  - Name: VerticalAlignment
+    Type: BaseVariableType
+    DataType: VerticalAlignment
+    ModellingRule: Optional
+    Value: 3
+  - Name: VerticalLayout1
+    Type: ColumnLayout
+    Children:
+    - Name: Width
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 370.0
+    - Name: Height
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 114.0
+    - Name: Label1
+      Type: Label
+      Children:
+      - Name: Text
+        Type: BaseDataVariableType
+        DataType: LocalizedText
+        ModellingRule: Optional
+        Value: {"LocaleId":"en-US","Text":"BATCH NAME"}
+      - Name: Width
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+        Value: 230.0
+      - Name: HorizontalAlignment
+        Type: BaseVariableType
+        DataType: HorizontalAlignment
+        ModellingRule: Optional
+        Value: 3
+      - Name: VerticalAlignment
+        Type: BaseVariableType
+        DataType: VerticalAlignment
+        ModellingRule: Optional
+        Value: 3
+      - Name: FontSize
+        Type: BaseDataVariableType
+        DataType: Size
+        ModellingRule: Optional
+        Value: 18.0
+      - Name: TextVerticalAlignment
+        Type: BaseVariableType
+        DataType: TextVerticalAlignment
+        ModellingRule: Optional
+        Value: 1
+      - Name: FontWeight
+        Type: BaseDataVariableType
+        DataType: FontWeightEnum
+        ModellingRule: Optional
+        Value: 700
+      - Name: TextColor
+        Type: BaseDataVariableType
+        DataType: Color
+        ModellingRule: Optional
+        Value: "#3b3b3b"
+    - Name: HorizontalAlignment
+      Type: BaseVariableType
+      DataType: HorizontalAlignment
+      ModellingRule: Optional
+      Value: 3
+    - Name: VerticalAlignment
+      Type: BaseVariableType
+      DataType: VerticalAlignment
+      ModellingRule: Optional
+      Value: 3
+    - Name: TextBox1
+      Type: TextBox
+      Children:
+      - Name: Text
+        Type: BaseDataVariableType
+        DataType: LocalizedText
+      - Name: Width
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+        Value: 530.0
+      - Name: Height
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+        Value: 40.0
+      - Name: TopMargin
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+      - Name: HorizontalAlignment
+        Type: BaseVariableType
+        DataType: HorizontalAlignment
+        ModellingRule: Optional
+        Value: 3
+      - Name: VerticalAlignment
+        Type: BaseVariableType
+        DataType: VerticalAlignment
+        ModellingRule: Optional
+      - Name: BorderColor
+        Type: BaseDataVariableType
+        DataType: Color
+        ModellingRule: Optional
+        Value: "#e2e8f0"
