@@ -253,6 +253,17 @@ Children:
     Children:
     - Name: Default
       Type: ScreenStyle
+  - Name: Radius
+    Type: BaseDataVariableType
+    DataType: Size
+  - Name: WindowColor
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#ffffff00"
+  - Name: DataInputBackgroundColor
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#ffffff"
 - Name: LightStyle
   Type: StyleSheet
   Children:
@@ -438,3 +449,7 @@ Children:
     Children:
     - Name: Default
       Type: ScreenStyle
+  - Name: Radius
+    Type: BaseDataVariableType
+    DataType: Size
+    Value: 5.0

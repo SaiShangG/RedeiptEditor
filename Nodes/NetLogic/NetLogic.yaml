@@ -94,6 +94,16 @@ Children:
     Name: DoSaveToDatabase
   - Class: Method
     Name: ConfirmDeleteDiscardedGridSelection
+  - Class: Method
+    Name: RenameSelectedTreeItem
+    Children:
+    - Name: ns=0;InputArguments
+      Type: BaseVariableType
+      DataType: Argument
+      ReferenceType: HasProperty
+      ValueRank: OneDimension
+      ArrayDimensions: [0]
+      Value: [{"TypeId":{"Id":296},"Body":{"Name":"newName","DataType":{"Id":12},"ValueRank":-1,"ArrayDimensions":[],"Description":{"NamespaceIndex":-1,"LocaleId":"","Text":""}}}]
 - Name: RecipeDatabaseTreeLoader
   Id: g=de78c853a6b213a6ddc2c1cf47150346
   Type: NetLogic

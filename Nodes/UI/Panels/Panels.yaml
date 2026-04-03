@@ -3946,6 +3946,41 @@ Children:
                   Type: DynamicLink
                   DataType: NodePath
                   Value: "../Rows/MiddlePanelManager/RightPanelVisiable"
+            - Name: PhaseParasWindow1
+              Type: PhaseParasWindow
+              Children:
+              - Name: ScrollView1
+                Type: ScrollView
+                Children:
+                - Name: ContentWidth
+                  Type: BaseDataVariableType
+                  DataType: Size
+                  AccessLevel: Read
+                - Name: ContentHeight
+                  Type: BaseDataVariableType
+                  DataType: Size
+                  AccessLevel: Read
+                - Name: ViewWidth
+                  Type: BaseDataVariableType
+                  DataType: Size
+                  AccessLevel: Read
+                - Name: ViewHeight
+                  Type: BaseDataVariableType
+                  DataType: Size
+                  AccessLevel: Read
+                - Name: ContentX
+                  Type: BaseDataVariableType
+                  DataType: Size
+                - Name: ContentY
+                  Type: BaseDataVariableType
+                  DataType: Size
+                - Class: Reference
+                  Target: ns=3;i=1394
+                  Direction: Forward
+                - Name: Rows
+                  Type: ColumnLayout
+              - Name: PhaseManager
+                Type: NetLogic
         - Name: MouseDownEventHandler1
           Type: EventHandler
           Children:

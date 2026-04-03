@@ -120,3 +120,14 @@ Children:
   Type: BaseObjectType
 - File: BatchesEditorData/BatchesEditorData.yaml
 - File: AuditData/AuditData.yaml
+- Name: ParaCompareMethods
+  Id: g=42a141643a45d23e2cae76aab07fb0da
+  Type: BaseObjectType
+  Children:
+  - Name: '>='
+    Id: g=7097e60b307b15e2cdad4fb7732cff76
+    Type: BaseObjectType
+  - Name: '>'
+    Type: BaseObjectType
+  - Name: <
+    Type: BaseObjectType
