@@ -1,0 +1,358 @@
+Name: Filter
+Type: FolderType
+Children:
+- Class: DataType
+  Name: FilterType
+  Id: g=cd49f0467dd6dcbccabc5c053af41777
+  Supertype: Enumeration
+  EnumDefinition: 
+   {
+    "Name": "FilterType",
+    "DataType": {
+     "IdType": 2,
+     "Id": "cd49f0467dd6dcbccabc5c053af41777",
+     "Namespace": 7
+    },
+    "Fields": [{
+      "Name": "Value0",
+      "Value": 0,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "Recipe"
+      },
+      "Description": {
+       "LocaleId": "en-US",
+       "Text": "Filter for recipe"
+      }
+     },{
+      "Name": "Value1",
+      "Value": 1,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "Batch"
+      },
+      "Description": {
+       "LocaleId": "en-US",
+       "Text": "Filter for batch"
+      }
+     },{
+      "Name": "Value2",
+      "Value": 2,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "Audit"
+      },
+      "Description": {
+       "LocaleId": "en-US",
+       "Text": "Filter for audit"
+      }
+     },{
+      "Name": "Value3",
+      "Value": 3,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "Alarm"
+      },
+      "Description": {
+       "LocaleId": "en-US",
+       "Text": "Filter for alarm"
+      }
+     },{
+      "Name": "Value4",
+      "Value": 4
+     }]
+   }
+  Children:
+  - Name: ns=0;EnumValues
+    Type: BaseDataVariableType
+    DataType: EnumValueType
+    ModellingRule: None
+    ValueRank: OneDimension
+    ArrayDimensions: [0]
+    Value: [{"TypeId":{"Id":7594},"Body":{"Value":0,"DisplayName":{"LocaleId":"en-US","Text":"Recipe"},"Description":{"LocaleId":"en-US","Text":"Filter for recipe"}}},{"TypeId":{"Id":7594},"Body":{"Value":1,"DisplayName":{"LocaleId":"en-US","Text":"Batch"},"Description":{"LocaleId":"en-US","Text":"Filter for batch"}}},{"TypeId":{"Id":7594},"Body":{"Value":2,"DisplayName":{"LocaleId":"en-US","Text":"Audit"},"Description":{"LocaleId":"en-US","Text":"Filter for audit"}}},{"TypeId":{"Id":7594},"Body":{"Value":3,"DisplayName":{"LocaleId":"en-US","Text":"Alarm"},"Description":{"LocaleId":"en-US","Text":"Filter for alarm"}}},{"TypeId":{"Id":7594},"Body":{"Value":4,"DisplayName":{"NamespaceIndex":-1,"LocaleId":"","Text":""},"Description":{"NamespaceIndex":-1,"LocaleId":"","Text":""}}}]
+- Class: DataType
+  Name: BatchState
+  Id: g=c14d0058cf040d7cf7fc16b466bce49c
+  Supertype: Enumeration
+  EnumDefinition: 
+   {
+    "Name": "BatchState",
+    "DataType": {
+     "IdType": 2,
+     "Id": "c14d0058cf040d7cf7fc16b466bce49c",
+     "Namespace": 7
+    },
+    "Fields": [{
+      "Name": "Value0",
+      "Value": 0,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "Idle"
+      },
+      "Description": {
+       "LocaleId": "en-US",
+       "Text": "In either Semi Auto Mode or Auto Mode, the system is in its idle state where controllers\n(ON/OFF valves) or equipment module are not energized, or Phase is not active."
+      }
+     },{
+      "Name": "Value1",
+      "Value": 1,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "Pause"
+      },
+      "Description": {
+       "LocaleId": "en-US",
+       "Text": "Filter by name"
+      }
+     },{
+      "Name": "Value2",
+      "Value": 2,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "Resume"
+      },
+      "Description": {
+       "LocaleId": "en-US",
+       "Text": "Filter by daterange"
+      }
+     },{
+      "Name": "Value3",
+      "Value": 4,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "Start"
+      },
+      "Description": {
+       "LocaleId": "en-US",
+       "Text": "In Auto /Semi Auto Mode, process can be started by an operator. Process that has been\nstarted first checks to determine whether defined starting conditions for the process are\nfulfilled.\n"
+      }
+     },{
+      "Name": "Value4",
+      "Value": 5,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "Stop"
+      },
+      "Description": {
+       "LocaleId": "en-US",
+       "Text": "In Auto /Semi Auto Mode, batch be stopped by an operator. All control and equipment\nmodules are de-energized. The operation or Phase will end and system returns to its Idle\nState."
+      }
+     },{
+      "Name": "Value5",
+      "Value": 6,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "Running"
+      },
+      "Description": {
+       "LocaleId": "en-US",
+       "Text": "In either Semi Auto Mode or Auto Mode, after starting the batch the system will be\nin running status with the specific phase conditions saved by the user."
+      }
+     },{
+      "Name": "Value6",
+      "Value": 7,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "Paused"
+      },
+      "Description": {
+       "LocaleId": "en-US",
+       "Text": "Operation or Phase in auto mode and semi auto batch in semi auto mode can be\npaused by the user. In this state, all control and equipment modules are de-energized while\nan Operation or Phase is still active. All Phase Timer(s) are paused. This state is achieved\neither by operator activation of the pause phase (Pause) or by the triggering of a critical\nalarm (Error).\n"
+      }
+     },{
+      "Name": "Value7",
+      "Value": 8,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "Safe Restart"
+      },
+      "Description": {
+       "LocaleId": "en-US",
+       "Text": "From Pause State, upon activating the resume command, the system will\nresume the phase (which is part of an operation) and restarts devices after a delay timer and\nparameters defined in section 8.1.9 Global parameter Screen once this timer elapses the\nsystem continues with parameters as per the automated sequence."
+      }
+     },{
+      "Name": "Value8",
+      "Value": 9,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "Abort"
+      },
+      "Description": {
+       "LocaleId": "en-US",
+       "Text": "Operation or Phase in auto mode and semi auto batch in semi auto mode can be\nstopped/aborted by an operator. All control and equipment modules are de-energized. The\noperation or phase is aborted, and the system returns to its Idle State."
+      }
+     },{
+      "Name": "Value9",
+      "Value": 10,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "Completed"
+      },
+      "Description": {
+       "LocaleId": "en-US",
+       "Text": "In either Semi Auto Mode or Auto Mode, Batch will be completed upon\nsatisfying the end conditions of the respective mode."
+      }
+     }]
+   }
+  Children:
+  - Name: ns=0;EnumValues
+    Type: BaseDataVariableType
+    DataType: EnumValueType
+    ModellingRule: None
+    ValueRank: OneDimension
+    ArrayDimensions: [0]
+    Value: [{"TypeId":{"Id":7594},"Body":{"Value":0,"DisplayName":{"LocaleId":"en-US","Text":"Idle"},"Description":{"LocaleId":"en-US","Text":"In either Semi Auto Mode or Auto Mode, the system is in its idle state where controllers\n(ON/OFF valves) or equipment module are not energized, or Phase is not active."}}},{"TypeId":{"Id":7594},"Body":{"Value":1,"DisplayName":{"LocaleId":"en-US","Text":"Pause"},"Description":{"LocaleId":"en-US","Text":"Filter by name"}}},{"TypeId":{"Id":7594},"Body":{"Value":2,"DisplayName":{"LocaleId":"en-US","Text":"Resume"},"Description":{"LocaleId":"en-US","Text":"Filter by daterange"}}},{"TypeId":{"Id":7594},"Body":{"Value":4,"DisplayName":{"LocaleId":"en-US","Text":"Start"},"Description":{"LocaleId":"en-US","Text":"In Auto /Semi Auto Mode, process can be started by an operator. Process that has been\nstarted first checks to determine whether defined starting conditions for the process are\nfulfilled.\n"}}},{"TypeId":{"Id":7594},"Body":{"Value":5,"DisplayName":{"LocaleId":"en-US","Text":"Stop"},"Description":{"LocaleId":"en-US","Text":"In Auto /Semi Auto Mode, batch be stopped by an operator. All control and equipment\nmodules are de-energized. The operation or Phase will end and system returns to its Idle\nState."}}},{"TypeId":{"Id":7594},"Body":{"Value":6,"DisplayName":{"LocaleId":"en-US","Text":"Running"},"Description":{"LocaleId":"en-US","Text":"In either Semi Auto Mode or Auto Mode, after starting the batch the system will be\nin running status with the specific phase conditions saved by the user."}}},{"TypeId":{"Id":7594},"Body":{"Value":7,"DisplayName":{"LocaleId":"en-US","Text":"Paused"},"Description":{"LocaleId":"en-US","Text":"Operation or Phase in auto mode and semi auto batch in semi auto mode can be\npaused by the user. In this state, all control and equipment modules are de-energized while\nan Operation or Phase is still active. All Phase Timer(s) are paused. This state is achieved\neither by operator activation of the pause phase (Pause) or by the triggering of a critical\nalarm (Error).\n"}}},{"TypeId":{"Id":7594},"Body":{"Value":8,"DisplayName":{"LocaleId":"en-US","Text":"Safe Restart"},"Description":{"LocaleId":"en-US","Text":"From Pause State, upon activating the resume command, the system will\nresume the phase (which is part of an operation) and restarts devices after a delay timer and\nparameters defined in section 8.1.9 Global parameter Screen once this timer elapses the\nsystem continues with parameters as per the automated sequence."}}},{"TypeId":{"Id":7594},"Body":{"Value":9,"DisplayName":{"LocaleId":"en-US","Text":"Abort"},"Description":{"LocaleId":"en-US","Text":"Operation or Phase in auto mode and semi auto batch in semi auto mode can be\nstopped/aborted by an operator. All control and equipment modules are de-energized. The\noperation or phase is aborted, and the system returns to its Idle State."}}},{"TypeId":{"Id":7594},"Body":{"Value":10,"DisplayName":{"LocaleId":"en-US","Text":"Completed"},"Description":{"LocaleId":"en-US","Text":"In either Semi Auto Mode or Auto Mode, Batch will be completed upon\nsatisfying the end conditions of the respective mode."}}}]
+- Class: DataType
+  Name: RecipeStatus
+  Id: g=a9405c75e5c6676d06e692e503288a61
+  Supertype: Enumeration
+  EnumDefinition: 
+   {
+    "Name": "RecipeStatus",
+    "DataType": {
+     "IdType": 2,
+     "Id": "a9405c75e5c6676d06e692e503288a61",
+     "Namespace": 7
+    },
+    "Fields": [{
+      "Name": "Value0",
+      "Value": 0,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "Development"
+      },
+      "Description": {
+       "LocaleId": "en-US",
+       "Text": "Recipe in development and configured"
+      }
+     },{
+      "Name": "Value1",
+      "Value": 1,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "Release"
+      },
+      "Description": {
+       "LocaleId": "en-US",
+       "Text": "Release for batch useage"
+      }
+     },{
+      "Name": "Value2",
+      "Value": 4,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "Discarded"
+      },
+      "Description": {
+       "LocaleId": "en-US",
+       "Text": "Discarded recipe"
+      }
+     }]
+   }
+  Children:
+  - Name: ns=0;EnumValues
+    Type: BaseDataVariableType
+    DataType: EnumValueType
+    ModellingRule: None
+    ValueRank: OneDimension
+    ArrayDimensions: [0]
+    Value: [{"TypeId":{"Id":7594},"Body":{"Value":0,"DisplayName":{"LocaleId":"en-US","Text":"Development"},"Description":{"LocaleId":"en-US","Text":"Recipe in development and configured"}}},{"TypeId":{"Id":7594},"Body":{"Value":1,"DisplayName":{"LocaleId":"en-US","Text":"Release"},"Description":{"LocaleId":"en-US","Text":"Release for batch useage"}}},{"TypeId":{"Id":7594},"Body":{"Value":4,"DisplayName":{"LocaleId":"en-US","Text":"Discarded"},"Description":{"LocaleId":"en-US","Text":"Discarded recipe"}}}]
+- Class: DataType
+  Name: UserType
+  Id: g=e6df4fbdc2499cd5cdedf2c0c196e5d8
+  Supertype: Enumeration
+  EnumDefinition: 
+   {
+    "Name": "UserType",
+    "DataType": {
+     "IdType": 2,
+     "Id": "e6df4fbdc2499cd5cdedf2c0c196e5d8",
+     "Namespace": 7
+    },
+    "Fields": [{
+      "Name": "Value0",
+      "Value": 0,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "Administrator"
+      },
+      "Description": {
+       "LocaleId": "en-US",
+       "Text": ""
+      }
+     },{
+      "Name": "Value1",
+      "Value": 1,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "Operator"
+      },
+      "Description": {
+       "LocaleId": "en-US",
+       "Text": ""
+      }
+     },{
+      "Name": "Value2",
+      "Value": 2,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "Engineer"
+      },
+      "Description": {
+       "LocaleId": "en-US",
+       "Text": ""
+      }
+     }]
+   }
+  Children:
+  - Name: ns=0;EnumValues
+    Type: BaseDataVariableType
+    DataType: EnumValueType
+    ModellingRule: None
+    ValueRank: OneDimension
+    ArrayDimensions: [0]
+    Value: [{"TypeId":{"Id":7594},"Body":{"Value":0,"DisplayName":{"LocaleId":"en-US","Text":"Administrator"},"Description":{"LocaleId":"en-US","Text":""}}},{"TypeId":{"Id":7594},"Body":{"Value":1,"DisplayName":{"LocaleId":"en-US","Text":"Operator"},"Description":{"LocaleId":"en-US","Text":""}}},{"TypeId":{"Id":7594},"Body":{"Value":2,"DisplayName":{"LocaleId":"en-US","Text":"Engineer"},"Description":{"LocaleId":"en-US","Text":""}}}]
+- Class: DataType
+  Name: AlarmType
+  Id: g=dc59900420be35a8ea904a5d75b545c1
+  Supertype: Enumeration
+  EnumDefinition: 
+   {
+    "Name": "AlarmType",
+    "DataType": {
+     "IdType": 2,
+     "Id": "dc59900420be35a8ea904a5d75b545c1",
+     "Namespace": 7
+    },
+    "Fields": [{
+      "Name": "Value0",
+      "Value": 0,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "Warning Alarm"
+      },
+      "Description": {
+       "LocaleId": "en-US",
+       "Text": ""
+      }
+     },{
+      "Name": "Value1",
+      "Value": 1,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "Critical Alarm"
+      },
+      "Description": {
+       "LocaleId": "en-US",
+       "Text": ""
+      }
+     }]
+   }
+  Children:
+  - Name: ns=0;EnumValues
+    Type: BaseDataVariableType
+    DataType: EnumValueType
+    ModellingRule: None
+    ValueRank: OneDimension
+    ArrayDimensions: [0]
+    Value: [{"TypeId":{"Id":7594},"Body":{"Value":0,"DisplayName":{"LocaleId":"en-US","Text":"Warning Alarm"},"Description":{"LocaleId":"en-US","Text":""}}},{"TypeId":{"Id":7594},"Body":{"Value":1,"DisplayName":{"LocaleId":"en-US","Text":"Critical Alarm"},"Description":{"LocaleId":"en-US","Text":""}}}]

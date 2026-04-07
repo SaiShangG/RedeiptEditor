@@ -1,0 +1,4 @@
+Name: Type
+Type: FolderType
+Children:
+- File: Filter/Filter.yaml

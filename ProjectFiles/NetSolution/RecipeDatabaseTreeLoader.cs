@@ -260,6 +260,7 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
             {
                 if (EnableLog) Log.Info(LogCategory, "Receipt 表无数据");
                 ApplyDiscardedUnusedQueriesToModel();
+                BumpDiscardedDataGridQueryNonces();
                 return;
             }
 
@@ -392,11 +393,68 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
 
             if (EnableLog) Log.Info(LogCategory, $"已加载 {Tree.Count} 条配方到本地 dict 树");
             ApplyDiscardedUnusedQueriesToModel();
+            BumpDiscardedDataGridQueryNonces();
         }
         catch (Exception ex)
         {
             if (EnableLog) Log.Error(LogCategory, $"LoadAllToTree 失败: {ex.Message}");
         }
+    }
+
+    /// <summary>
+    /// Discarded 三个 DataGrid 的 Query 若文本不变，绑 Store 时往往不会重新查库；在 SQL 末尾追加恒真谓词 <c>(t=t)</c>（t 为 Ticks）强制刷新。
+    /// </summary>
+    private void BumpDiscardedDataGridQueryNonces()
+    {
+        try
+        {
+            var root = GetProjectRedeiptEditorRoot(LogicObject);
+            var dd = root?.GetObject("Model")?.GetObject("UIData")?.GetObject("DiscardedData");
+            if (dd == null) return;
+            long t = DateTime.UtcNow.Ticks;
+            string nonce = $" AND ({t}={t})";
+
+            void Bump(IUANode childObj)
+            {
+                var v = childObj?.GetVariable("Query");
+                if (v == null) return;
+                if (v.Value?.Value is not string sql || string.IsNullOrWhiteSpace(sql)) return;
+                string baseSql = StripDiscardedGridRefreshNonce(sql.Trim().TrimEnd(';'));
+                v.Value = new UAValue(baseSql + nonce);
+            }
+
+            Bump(dd.GetObject("DiscardedRecipes"));
+            Bump(dd.GetObject("UnusedOperation"));
+            Bump(dd.GetObject("UnusedPhases"));
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Warning(LogCategory, $"BumpDiscardedDataGridQueryNonces: {ex.Message}");
+        }
+    }
+
+    private static string StripDiscardedGridRefreshNonce(string sql)
+    {
+        if (string.IsNullOrEmpty(sql)) return sql;
+        string s = sql.TrimEnd();
+        while (true)
+        {
+            int p = s.LastIndexOf(" AND (", StringComparison.OrdinalIgnoreCase);
+            if (p < 0) break;
+            string tail = s.Substring(p + " AND (".Length);
+            int close = tail.IndexOf(')');
+            if (close < 0) break;
+            string inner = tail.Substring(0, close).Trim();
+            int eq = inner.IndexOf('=');
+            if (eq <= 0) break;
+            string left = inner.Substring(0, eq).Trim();
+            string right = inner.Substring(eq + 1).Trim();
+            if (left == right && long.TryParse(left, out _))
+                s = s.Substring(0, p).TrimEnd();
+            else
+                break;
+        }
+        return s;
     }
 
     #region Discarded 面板：UnusedOperation / UnusedPhases 简单 Query（供 DataGrid）
@@ -414,7 +472,7 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
 
             string qOp = BuildSimpleIdInQuery(_opTableName, "OperationID", unusedOpIds);
             string qPh = string.IsNullOrEmpty(_phaseTableName)
-                ? "SELECT * FROM Phases WHERE 0"
+                ? "SELECT * FROM Phases WHERE 1=0"
                 : BuildSimpleIdInQuery(_phaseTableName, "PhaseID", unusedPhIds);
 
             var root = GetProjectRedeiptEditorRoot(LogicObject);
@@ -433,10 +491,11 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         }
     }
 
-    /// <summary>按当前数据库内容刷新 Discarded 面板 UnusedOperation / UnusedPhases 的 DataGrid Query。</summary>
+    /// <summary>按当前数据库内容刷新 Discarded 面板的 DataGrid Query，并 bump 全部 Query 以强制网格重查。</summary>
     public void RefreshDiscardedUnusedGridQueries()
     {
         ApplyDiscardedUnusedQueriesToModel();
+        BumpDiscardedDataGridQueryNonces();
     }
 
     private static IUANode GetProjectRedeiptEditorRoot(IUANode from)
@@ -453,9 +512,10 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
 
     private static string BuildSimpleIdInQuery(string tableName, string idColumn, List<int> ids)
     {
-        if (string.IsNullOrEmpty(tableName)) return "SELECT * FROM Operations WHERE 0";
+        // Store SQL 不支持 “WHERE 0” 这类写法，需用恒假谓词（如 1=0）表示空结果集
+        if (string.IsNullOrEmpty(tableName)) return "SELECT * FROM Operations WHERE 1=0";
         if (ids == null || ids.Count == 0)
-            return $"SELECT * FROM {tableName} WHERE 0";
+            return $"SELECT * FROM {tableName} WHERE 1=0";
         return $"SELECT * FROM {tableName} WHERE {idColumn} IN ({string.Join(",", ids)})";
     }
 
@@ -563,12 +623,45 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
     {
         try
         {
-            var u = Session.User;
+            var u = Session?.User;
             if (u != null && !string.IsNullOrEmpty(u.BrowseName))
                 return u.BrowseName.Trim();
         }
         catch { }
+        string fromMgr = RecipeDatabaseManager.TryGetInstanceUserBrowseName();
+        if (!string.IsNullOrEmpty(fromMgr)) return fromMgr;
         return "";
+    }
+
+    /// <summary>写入 Receipt.LastModifiedBY：优先当前登录用户，否则用配方创建人（与列表 Created By 一致），再否则 Anonymous。</summary>
+    private string GetLastModifiedByForReceipt(ReceiptNode receipt)
+    {
+        string u = GetSessionUserBrowseName();
+        if (!string.IsNullOrEmpty(u)) return u;
+        string by = receipt?.CreatedBy?.Trim() ?? "";
+        if (!string.IsNullOrEmpty(by)) return by;
+        return "Anonymous";
+    }
+
+    private string GetLastModifiedByForOperation(OperationNode op)
+    {
+        string u = GetSessionUserBrowseName();
+        if (!string.IsNullOrEmpty(u)) return u;
+        string by = op?.CreatedBy?.Trim() ?? "";
+        if (!string.IsNullOrEmpty(by)) return by;
+        return "Anonymous";
+    }
+
+    private string GetLastModifiedByForPhase(PhaseNode ph)
+    {
+        string u = GetSessionUserBrowseName();
+        if (!string.IsNullOrEmpty(u)) return u;
+        if (ph?.Columns != null && ph.Columns.TryGetValue("CreatedBy", out object cb) && cb != null)
+        {
+            string s = cb.ToString()?.Trim();
+            if (!string.IsNullOrEmpty(s)) return s;
+        }
+        return "Anonymous";
     }
 
     private List<string> GetOperationSelectColumnNames()
@@ -699,11 +792,166 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
     public void MarkDirtyOperation(int operationId) => _dirtyOperationIds.Add(operationId);
     public void MarkDirtyPhase(int phaseId) => _dirtyPhaseIds.Add(phaseId);
 
+    /// <summary>配方本身或其下工序/阶段被标为 dirty（含仅 MarkDirtyOperation 未保存场景）时，需要回写 Receipt 的 LastModified*。</summary>
+    private bool ReceiptNeedsLastModifiedStamp(int receiptId)
+    {
+        if (receiptId <= 0) return false;
+        if (IsDirtyReceipt(receiptId)) return true;
+        if (!ReceiptById.TryGetValue(receiptId, out var r)) return false;
+        foreach (var o in r.Operations)
+        {
+            if (IsDirtyOperation(o.OperationID)) return true;
+            foreach (var p in o.Phases)
+            {
+                if (IsDirtyPhase(p.PhaseID)) return true;
+            }
+        }
+        return false;
+    }
+
+    private bool OperationNeedsLastModifiedStamp(int operationId)
+    {
+        if (operationId <= 0) return false;
+        if (IsDirtyOperation(operationId)) return true;
+        if (!OperationById.TryGetValue(operationId, out var op)) return false;
+        foreach (var p in op.Phases)
+        {
+            if (IsDirtyPhase(p.PhaseID)) return true;
+        }
+        return false;
+    }
+
+    private bool PhaseNeedsLastModifiedStamp(int phaseId) => phaseId > 0 && IsDirtyPhase(phaseId);
+
+    /// <summary>将挂有该工序的配方标为已改，以便 Save 时写入 Receipt 的 LastModified*。</summary>
+    private void MarkReceiptsAffectedByOperation(int operationId)
+    {
+        if (operationId <= 0) return;
+        foreach (var r in Tree)
+        {
+            if (r.Operations.Exists(o => o.OperationID == operationId))
+                MarkDirtyReceipt(r.ReceiptID);
+        }
+    }
+
+    /// <summary>将包含该阶段的配方标为已改。</summary>
+    private void MarkReceiptAffectedByPhase(int phaseId)
+    {
+        if (phaseId <= 0) return;
+        foreach (var r in Tree)
+        {
+            foreach (var o in r.Operations)
+            {
+                if (o.Phases.Exists(p => p.PhaseID == phaseId))
+                {
+                    MarkDirtyReceipt(r.ReceiptID);
+                    return;
+                }
+            }
+        }
+    }
+
     private void ClearDirty()
     {
         _dirtyReceiptIds.Clear();
         _dirtyOperationIds.Clear();
         _dirtyPhaseIds.Clear();
+    }
+
+    /// <summary>
+    /// 仅更新库中 Receipt 的 LastModified*（不改 Operations 等）。用于 Insert 工序/阶段且 persistToDb=false 时，
+    /// 配方列表等直接读库的界面能立即看到最后修改人与时间。
+    /// </summary>
+    public void TouchReceiptLastModifiedInStore(int receiptId)
+    {
+        if (_store == null || string.IsNullOrEmpty(_receiptTableName) || receiptId <= 0) return;
+        if (!ReceiptById.TryGetValue(receiptId, out var receipt)) return;
+        if (!HasReceiptColumn("LastModifiedBY") && !HasReceiptColumn("LastModifiedDateTime")) return;
+        var parts = new List<string>();
+        if (HasReceiptColumn("LastModifiedBY"))
+            parts.Add($"LastModifiedBY='{EscapeSql(GetLastModifiedByForReceipt(receipt))}'");
+        if (HasReceiptColumn("LastModifiedDateTime"))
+            parts.Add($"LastModifiedDateTime='{EscapeSql(FormatStoredCreatedDateTimeNow())}'");
+        if (parts.Count == 0) return;
+        try
+        {
+            _store.Query(
+                $"UPDATE {_receiptTableName} SET {string.Join(", ", parts)} WHERE ReceiptID={receiptId}",
+                out _, out _);
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Warning(LogCategory, $"TouchReceiptLastModifiedInStore({receiptId}): {ex.Message}");
+        }
+    }
+
+    private void TouchReceiptLastModifiedInStoreForOperation(int operationId)
+    {
+        if (operationId <= 0) return;
+        foreach (var r in Tree)
+        {
+            if (r.Operations.Exists(o => o.OperationID == operationId))
+                TouchReceiptLastModifiedInStore(r.ReceiptID);
+        }
+    }
+
+    public void TouchOperationLastModifiedInStore(int operationId)
+    {
+        if (_store == null || string.IsNullOrEmpty(_opTableName) || operationId <= 0) return;
+        if (!OperationById.TryGetValue(operationId, out var op)) return;
+        if (!HasOperationColumn("LastModifiedBY") && !HasOperationColumn("LastModifiedDateTime")) return;
+        var parts = new List<string>();
+        if (HasOperationColumn("LastModifiedBY"))
+            parts.Add($"LastModifiedBY='{EscapeSql(GetLastModifiedByForOperation(op))}'");
+        if (HasOperationColumn("LastModifiedDateTime"))
+            parts.Add($"LastModifiedDateTime='{EscapeSql(FormatStoredCreatedDateTimeNow())}'");
+        if (parts.Count == 0) return;
+        try
+        {
+            _store.Query(
+                $"UPDATE {_opTableName} SET {string.Join(", ", parts)} WHERE OperationID={operationId}",
+                out _, out _);
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Warning(LogCategory, $"TouchOperationLastModifiedInStore({operationId}): {ex.Message}");
+        }
+    }
+
+    public void TouchPhaseLastModifiedInStore(int phaseId)
+    {
+        if (_store == null || string.IsNullOrEmpty(_phaseTableName) || phaseId <= 0) return;
+        if (!PhaseById.TryGetValue(phaseId, out var ph)) return;
+        if (!HasPhaseColumn("LastModifiedBY") && !HasPhaseColumn("LastModifiedDateTime")) return;
+        var parts = new List<string>();
+        if (HasPhaseColumn("LastModifiedBY"))
+            parts.Add($"LastModifiedBY='{EscapeSql(GetLastModifiedByForPhase(ph))}'");
+        if (HasPhaseColumn("LastModifiedDateTime"))
+            parts.Add($"LastModifiedDateTime='{EscapeSql(FormatStoredCreatedDateTimeNow())}'");
+        if (parts.Count == 0) return;
+        try
+        {
+            _store.Query(
+                $"UPDATE {_phaseTableName} SET {string.Join(", ", parts)} WHERE PhaseID={phaseId}",
+                out _, out _);
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Warning(LogCategory, $"TouchPhaseLastModifiedInStore({phaseId}): {ex.Message}");
+        }
+    }
+
+    private void TouchOperationLastModifiedInStoreForPhase(int phaseId)
+    {
+        if (phaseId <= 0) return;
+        foreach (var op in OperationById.Values)
+        {
+            if (op.Phases.Exists(p => p.PhaseID == phaseId))
+            {
+                TouchOperationLastModifiedInStore(op.OperationID);
+                return;
+            }
+        }
     }
     #endregion
 
@@ -740,6 +988,7 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         if (name != null) node.Name = name;
         if (description != null) node.Description = description;
         MarkModified();
+        MarkDirtyReceipt(receiptId);
         return true;
     }
 
@@ -788,6 +1037,9 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         rNode.Operations.Add(node);
         OperationById[newId] = node;
         MarkModified();
+        MarkDirtyReceipt(receiptId);
+        TouchReceiptLastModifiedInStore(receiptId);
+        TouchOperationLastModifiedInStore(newId);
         return newId;
     }
 
@@ -827,6 +1079,9 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
             rNode.Operations.Insert(srcIdx + 1, opNode);
         }
         MarkModified();
+        MarkDirtyReceipt(receiptId);
+        TouchReceiptLastModifiedInStore(receiptId);
+        TouchOperationLastModifiedInStore(operationId);
         return operationId;
     }
 
@@ -836,6 +1091,8 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         if (!OperationById.TryGetValue(operationId, out var node)) return false;
         if (name != null) node.Name = name;
         MarkModified();
+        MarkReceiptsAffectedByOperation(operationId);
+        TouchOperationLastModifiedInStore(operationId);
         return true;
     }
 
@@ -848,6 +1105,7 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         rNode.Operations.Remove(opNode);
         OperationById.Remove(operationId);
         MarkModified();
+        MarkDirtyReceipt(receiptId);
         return true;
     }
 
@@ -936,6 +1194,10 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         opNode.Phases.Add(node);
         PhaseById[newId] = node;
         MarkModified();
+        MarkReceiptsAffectedByOperation(operationId);
+        TouchReceiptLastModifiedInStoreForOperation(operationId);
+        TouchOperationLastModifiedInStore(operationId);
+        TouchPhaseLastModifiedInStore(newId);
         return newId;
     }
 
@@ -947,6 +1209,9 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         if (columns != null)
             foreach (var kv in columns) node.Columns[kv.Key] = kv.Value;
         MarkModified();
+        MarkReceiptAffectedByPhase(phaseId);
+        TouchPhaseLastModifiedInStore(phaseId);
+        TouchOperationLastModifiedInStoreForPhase(phaseId);
         return true;
     }
 
@@ -958,6 +1223,8 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         opNode.Phases.Remove(pNode);
         PhaseById.Remove(phaseId);
         MarkModified();
+        MarkReceiptsAffectedByOperation(operationId);
+        TouchOperationLastModifiedInStore(operationId);
         return true;
     }
 
@@ -1003,6 +1270,8 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         if (idx < 0) return false;
         int swapIdx = up ? idx - 1 : idx + 1;
         if (swapIdx < 0 || swapIdx >= Tree.Count) return false;
+        int dirtyA = Tree[idx].ReceiptID;
+        int dirtyB = Tree[swapIdx].ReceiptID;
         int seqA = Tree[idx].Sequence;
         int seqB = Tree[swapIdx].Sequence;
         Tree[idx].Sequence = seqB;
@@ -1010,6 +1279,8 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         Tree[idx] = Tree[swapIdx];
         Tree[swapIdx] = node;
         MarkModified();
+        MarkDirtyReceipt(dirtyA);
+        MarkDirtyReceipt(dirtyB);
         return true;
     }
 
@@ -1025,8 +1296,13 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         if (idx < 0) return false;
         int swapIdx = up ? idx - 1 : idx + 1;
         if (swapIdx < 0 || swapIdx >= ops.Count) return false;
+        int opIdA = ops[idx].OperationID;
+        int opIdB = ops[swapIdx].OperationID;
         var tmp = ops[idx]; ops[idx] = ops[swapIdx]; ops[swapIdx] = tmp;
         MarkModified();
+        MarkDirtyReceipt(receiptId);
+        TouchOperationLastModifiedInStore(opIdA);
+        TouchOperationLastModifiedInStore(opIdB);
         return true;
     }
 
@@ -1042,8 +1318,14 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         if (idx < 0) return false;
         int swapIdx = up ? idx - 1 : idx + 1;
         if (swapIdx < 0 || swapIdx >= phases.Count) return false;
+        int idA = phases[idx].PhaseID;
+        int idB = phases[swapIdx].PhaseID;
         var tmp = phases[idx]; phases[idx] = phases[swapIdx]; phases[swapIdx] = tmp;
         MarkModified();
+        MarkReceiptsAffectedByOperation(operationId);
+        TouchOperationLastModifiedInStore(operationId);
+        TouchPhaseLastModifiedInStore(idA);
+        TouchPhaseLastModifiedInStore(idB);
         return true;
     }
 
@@ -1139,10 +1421,10 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
                         setParts.Add($"CreatedBy='{EscapeSql(receipt.CreatedBy ?? "")}'");
                     if (HasReceiptColumn("CreatedDateTime"))
                         setParts.Add($"CreatedDateTime='{EscapeSql(receipt.CreatedDateTime ?? "")}'");
-                    if (IsDirtyReceipt(receipt.ReceiptID))
+                    if (ReceiptNeedsLastModifiedStamp(receipt.ReceiptID))
                     {
                         if (HasReceiptColumn("LastModifiedBY"))
-                            setParts.Add($"LastModifiedBY='{EscapeSql(GetSessionUserBrowseName())}'");
+                            setParts.Add($"LastModifiedBY='{EscapeSql(GetLastModifiedByForReceipt(receipt))}'");
                         if (HasReceiptColumn("LastModifiedDateTime"))
                             setParts.Add($"LastModifiedDateTime='{EscapeSql(FormatStoredCreatedDateTimeNow())}'");
                     }
@@ -1157,7 +1439,7 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
                     if (HasReceiptColumn("Status")) { insCols.Add("Status"); insVals.Add(string.IsNullOrEmpty(receipt.Status) ? DefaultReceiptStatus : receipt.Status); }
                     if (HasReceiptColumn("CreatedBy")) { insCols.Add("CreatedBy"); insVals.Add(receipt.CreatedBy ?? ""); }
                     if (HasReceiptColumn("CreatedDateTime")) { insCols.Add("CreatedDateTime"); insVals.Add(receipt.CreatedDateTime ?? ""); }
-                    if (HasReceiptColumn("LastModifiedBY")) { insCols.Add("LastModifiedBY"); insVals.Add(receipt.CreatedBy ?? ""); }
+                    if (HasReceiptColumn("LastModifiedBY")) { insCols.Add("LastModifiedBY"); insVals.Add(GetLastModifiedByForReceipt(receipt)); }
                     if (HasReceiptColumn("LastModifiedDateTime")) { insCols.Add("LastModifiedDateTime"); insVals.Add(receipt.CreatedDateTime ?? ""); }
                     var row = new object[1, insVals.Count];
                     for (int c = 0; c < insVals.Count; c++) row[0, c] = insVals[c];
@@ -1169,15 +1451,32 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
                     string phsCsv = BuildIdCsv(op.Phases, ph => ph.PhaseID);
                     op.PhasesCsv = phsCsv;
                     if (dbOpIds.Contains(op.OperationID))
+                    {
+                        var opSet = new List<string>
+                        {
+                            $"Name='{EscapeSql(op.Name)}'",
+                            $"Description='{EscapeSql(op.Description ?? "")}'",
+                            $"Phases='{EscapeSql(phsCsv)}'"
+                        };
+                        if (OperationNeedsLastModifiedStamp(op.OperationID))
+                        {
+                            if (HasOperationColumn("LastModifiedBY"))
+                                opSet.Add($"LastModifiedBY='{EscapeSql(GetLastModifiedByForOperation(op))}'");
+                            if (HasOperationColumn("LastModifiedDateTime"))
+                                opSet.Add($"LastModifiedDateTime='{EscapeSql(FormatStoredCreatedDateTimeNow())}'");
+                        }
                         _store.Query(
-                            $"UPDATE {_opTableName} SET Name='{EscapeSql(op.Name)}', Description='{EscapeSql(op.Description ?? "")}', Phases='{EscapeSql(phsCsv)}' WHERE OperationID={op.OperationID}",
+                            $"UPDATE {_opTableName} SET {string.Join(", ", opSet)} WHERE OperationID={op.OperationID}",
                             out _, out _);
+                    }
                     else
                     {
                         var insCols = new List<string> { "OperationID", "Name", "Description", "Phases" };
                         var insVals = new List<object> { op.OperationID, op.Name, op.Description ?? "", phsCsv };
                         if (HasOperationColumn("CreatedBy")) { insCols.Add("CreatedBy"); insVals.Add(op.CreatedBy ?? ""); }
                         if (HasOperationColumn("CreatedDateTime")) { insCols.Add("CreatedDateTime"); insVals.Add(op.CreatedDateTime ?? ""); }
+                        if (HasOperationColumn("LastModifiedBY")) { insCols.Add("LastModifiedBY"); insVals.Add(GetLastModifiedByForOperation(op)); }
+                        if (HasOperationColumn("LastModifiedDateTime")) { insCols.Add("LastModifiedDateTime"); insVals.Add(op.CreatedDateTime ?? FormatStoredCreatedDateTimeNow()); }
                         var row = new object[1, insVals.Count];
                         for (int c = 0; c < insVals.Count; c++) row[0, c] = insVals[c];
                         _opTable.Insert(insCols.ToArray(), row);
@@ -1240,11 +1539,22 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         return set;
     }
 
+    private void AppendPhaseLastModifiedSetClauses(PhaseNode ph, List<string> setClauses)
+    {
+        if (!PhaseNeedsLastModifiedStamp(ph.PhaseID)) return;
+        if (HasPhaseColumn("LastModifiedBY"))
+            setClauses.Add($"LastModifiedBY='{EscapeSql(GetLastModifiedByForPhase(ph))}'");
+        if (HasPhaseColumn("LastModifiedDateTime"))
+            setClauses.Add($"LastModifiedDateTime='{EscapeSql(FormatStoredCreatedDateTimeNow())}'");
+    }
+
     private void SavePhaseUpdate(PhaseNode ph)
     {
         if (ph.Columns.Count == 0)
         {
-            _store.Query($"UPDATE {_phaseTableName} SET Name='{EscapeSql(ph.Name)}' WHERE PhaseID={ph.PhaseID}", out _, out _);
+            var parts = new List<string> { $"Name='{EscapeSql(ph.Name)}'" };
+            AppendPhaseLastModifiedSetClauses(ph, parts);
+            _store.Query($"UPDATE {_phaseTableName} SET {string.Join(", ", parts)} WHERE PhaseID={ph.PhaseID}", out _, out _);
             return;
         }
         var setClauses = new List<string>();
@@ -1253,9 +1563,12 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
             if (string.Equals(kv.Key, "PhaseID", StringComparison.OrdinalIgnoreCase)) continue;
             if (string.Equals(kv.Key, "CreatedBy", StringComparison.OrdinalIgnoreCase)) continue;
             if (string.Equals(kv.Key, "CreatedDateTime", StringComparison.OrdinalIgnoreCase)) continue;
+            if (string.Equals(kv.Key, "LastModifiedBY", StringComparison.OrdinalIgnoreCase)) continue;
+            if (string.Equals(kv.Key, "LastModifiedDateTime", StringComparison.OrdinalIgnoreCase)) continue;
             string val = kv.Value == null || kv.Value == DBNull.Value ? "" : kv.Value.ToString();
             setClauses.Add($"{kv.Key}='{EscapeSql(val)}'");
         }
+        AppendPhaseLastModifiedSetClauses(ph, setClauses);
         if (setClauses.Count == 0) return;
         _store.Query($"UPDATE {_phaseTableName} SET {string.Join(", ", setClauses)} WHERE PhaseID={ph.PhaseID}", out _, out _);
     }
@@ -1277,6 +1590,10 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
                 values.Add(ph.PhaseID);
             else if (string.Equals(col, "Name", StringComparison.OrdinalIgnoreCase))
                 values.Add(ph.Name);
+            else if (string.Equals(col, "LastModifiedBY", StringComparison.OrdinalIgnoreCase))
+                values.Add(GetLastModifiedByForPhase(ph));
+            else if (string.Equals(col, "LastModifiedDateTime", StringComparison.OrdinalIgnoreCase))
+                values.Add(FormatStoredCreatedDateTimeNow());
             else
                 values.Add("");
         }

@@ -1,0 +1,165 @@
+Name: FilterData
+Type: FolderType
+Children:
+- Name: FilterData
+  Type: BaseObjectType
+  Children:
+  - Name: FilterType
+    Id: g=65442b8e5645ce3c425ed3455a8a8d74
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "State"
+- Name: FilterContext
+  Type: BaseObjectType
+  Children:
+  - Name: BatchFilterContext
+    Id: g=accd0e040d3744b0c55981654874baa3
+    Type: BaseObjectType
+    Children:
+    - Name: FilterContext
+      Type: BaseDataVariableType
+      DataType: FilterType
+      Value: 1
+    - Name: TitleOfFilterByButton
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["Batch State","Batch Name","Date Range"]
+    - Name: TitleOfSearchByString
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Name Contain"
+    - Name: SubtitleOfSearchByString
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Enter partial or full batch name to filter results."
+    - Name: TitleOfSearchByDate
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Select Date Range"
+    - Name: TitleOfSearchByCheckbox
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Search Batch State "
+    - Name: CheckBoxCategory
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [10]
+      Value: ["Idle","Resume","Pause","Start","Stop","Running","Safe Restart","Absort","Completed","Paused"]
+  - Name: RecipeFilterContext
+    Id: g=4097f66c59ca2a071886b5a3df6a710c
+    Type: BaseObjectType
+    Children:
+    - Name: FilterContext
+      Type: BaseDataVariableType
+      DataType: FilterType
+    - Name: TitleOfFilterByButton
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["Recipe Status","Recipe Name","Date Range"]
+    - Name: TitleOfSearchByString
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Name Contain"
+    - Name: SubtitleOfSearchByString
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Enter partial or full recipe name to filter results."
+    - Name: TitleOfSearchByDate
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Select Date Range"
+    - Name: CheckBoxCategory
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [10]
+      Value: ["Development","Released","Discarded","","","","","","",""]
+    - Name: TitleOfSearchByCheckbox
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Search Recipe Status"
+  - Name: FilterType
+    Id: g=5c5f9f5fed0807cf8798a1fb39b1d1fe
+    Type: BaseDataVariableType
+    DataType: FilterType
+    Value: 1
+  - Name: AuditFilterContext
+    Id: g=c07c984c0e77c3b40ffb9d8d6f1b5f9d
+    Type: BaseObjectType
+    Children:
+    - Name: FilterContext
+      Type: BaseDataVariableType
+      DataType: FilterType
+      Value: 2
+    - Name: TitleOfFilterByButton
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["Audit Type","Audit Action","Date Range"]
+    - Name: TitleOfSearchByString
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Action Contain"
+    - Name: SubtitleOfSearchByString
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Enter partial or full action name to filter results."
+    - Name: TitleOfSearchByDate
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Select Date Range"
+    - Name: CheckBoxCategory
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [10]
+      Value: ["Root","Administrator","Engineer","","","","","","",""]
+    - Name: TitleOfSearchByCheckbox
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Search Audit Type"
+- Name: FilterConditions
+  Type: BaseObjectType
+  Children:
+  - Name: SearchByCategoryData
+    Type: BaseObjectType
+    Children:
+    - Name: TypeLabels
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [10]
+      Value: ["0","0","0","0","0","0","0","0","0","0"]
+    - Name: TypeChecked
+      Type: BaseDataVariableType
+      DataType: Boolean
+      ValueRank: OneDimension
+      ArrayDimensions: [10]
+  - Name: SearchedString
+    Id: g=f8b5d2cfbabd1688c98225ef5d73645e
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "0"
+  - Name: DateFrom
+    Id: g=faa6989625d0f276cb24e042ecad0be8
+    Type: BaseDataVariableType
+    DataType: DateTime
+  - Name: DateTo
+    Id: g=b5c8018d5eac83fa404649becc570ab6
+    Type: BaseDataVariableType
+    DataType: DateTime
+  - Name: FilteredTable
+    Id: g=b916b3423005d1ca72a6b201d1dc698d
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Batch"
+  - Name: FiltertedDBName
+    Id: g=49463d9fcbbe3562213f717a0f0550f3
+    Type: BaseDataVariableType
+    DataType: String
