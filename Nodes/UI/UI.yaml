@@ -103,9 +103,9 @@ Children:
       DataType: VerticalAlignment
       ModellingRule: Optional
       Value: 3
-- File: Screens/Screens.yaml
 - File: Keyboards/Keyboards.yaml
 - File: Styles/Styles.yaml
 - File: Panels/Panels.yaml
 - File: Templates/Templates.yaml
 - File: Widgets/Widgets.yaml
+- File: Screens/Screens.yaml
