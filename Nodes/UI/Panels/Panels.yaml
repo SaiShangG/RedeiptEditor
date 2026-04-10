@@ -3332,6 +3332,10 @@ Children:
                     DataType: Size
                     ModellingRule: Optional
                     Value: 16.0
+                  - Name: Wrap
+                    Type: BaseDataVariableType
+                    DataType: Boolean
+                    ModellingRule: Optional
                 - Name: LeftMargin
                   Type: BaseVariableType
                   DataType: Size
@@ -3940,15 +3944,134 @@ Children:
                   DataType: Size
                   ModellingRule: Optional
                   Value: 8.0
+                - Name: Visible
+                  Type: BaseDataVariableType
+                  DataType: Boolean
+                  Value: true
+                  Children:
+                  - Name: ConditionalConverter1
+                    Type: ConditionalConverter
+                    Children:
+                    - Name: Condition
+                      Type: BaseDataVariableType
+                      DataType: Boolean
+                      ReferenceType: HasSource
+                      Children:
+                      - Name: ExpressionEvaluator1
+                        Type: ExpressionEvaluator
+                        Children:
+                        - Name: Expression
+                          Type: BaseDataVariableType
+                          DataType: String
+                          ReferenceType: HasParameter
+                          ModellingRule: Optional
+                          Value: "{0}!=\"Phase\""
+                        - Name: ns=2;Source0
+                          Type: BaseDataVariableType
+                          DataType: BaseDataType
+                          ReferenceType: HasSource
+                          Children:
+                          - Name: DynamicLink
+                            Type: DynamicLink
+                            DataType: NodePath
+                            Value: "/Objects/RedeiptEditor/Model/UIData/TreeListData/SelectedTreeData/CurrentSelectedItemType"
+                    - Name: TrueValue
+                      Type: BaseDataVariableType
+                      DataType: Boolean
+                      ReferenceType: HasParameter
+                      ModellingRule: Optional
+                      Value: true
+                    - Name: FalseValue
+                      Type: BaseDataVariableType
+                      DataType: Boolean
+                      ReferenceType: HasParameter
+                      ModellingRule: Optional
               - Name: Visible
                 Type: BaseDataVariableType
                 DataType: Boolean
                 Value: true
+              - Name: PhaseParasWindow1
+                Type: PhaseParasWindow
                 Children:
-                - Name: DynamicLink
-                  Type: DynamicLink
-                  DataType: NodePath
-                  Value: "../Rows/MiddlePanelManager/RightPanelVisiable"
+                - Name: ScrollView1
+                  Type: ScrollView
+                  Children:
+                  - Name: ContentWidth
+                    Type: BaseDataVariableType
+                    DataType: Size
+                    AccessLevel: Read
+                  - Name: ContentHeight
+                    Type: BaseDataVariableType
+                    DataType: Size
+                    AccessLevel: Read
+                  - Name: ViewWidth
+                    Type: BaseDataVariableType
+                    DataType: Size
+                    AccessLevel: Read
+                  - Name: ViewHeight
+                    Type: BaseDataVariableType
+                    DataType: Size
+                    AccessLevel: Read
+                  - Name: ContentX
+                    Type: BaseDataVariableType
+                    DataType: Size
+                  - Name: ContentY
+                    Type: BaseDataVariableType
+                    DataType: Size
+                  - Class: Reference
+                    Target: ns=3;i=1394
+                    Direction: Forward
+                  - Name: Rows
+                    Type: ColumnLayout
+                - Name: PhaseManager
+                  Type: NetLogic
+                - Name: Visible
+                  Type: BaseDataVariableType
+                  DataType: Boolean
+                  Value: true
+                  Children:
+                  - Name: ConditionalConverter1
+                    Type: ConditionalConverter
+                    Children:
+                    - Name: Condition
+                      Type: BaseDataVariableType
+                      DataType: Boolean
+                      ReferenceType: HasSource
+                      Children:
+                      - Name: ExpressionEvaluator1
+                        Type: ExpressionEvaluator
+                        Children:
+                        - Name: Expression
+                          Type: BaseDataVariableType
+                          DataType: String
+                          ReferenceType: HasParameter
+                          ModellingRule: Optional
+                          Value: "{0}==\"Phase\""
+                        - Name: ns=2;Source0
+                          Type: BaseDataVariableType
+                          DataType: BaseDataType
+                          ReferenceType: HasSource
+                          Children:
+                          - Name: DynamicLink
+                            Type: DynamicLink
+                            DataType: NodePath
+                            Value: "/Objects/RedeiptEditor/Model/UIData/TreeListData/SelectedTreeData/CurrentSelectedItemType"
+                    - Name: TrueValue
+                      Type: BaseDataVariableType
+                      DataType: Boolean
+                      ReferenceType: HasParameter
+                      ModellingRule: Optional
+                      Value: true
+                    - Name: FalseValue
+                      Type: BaseDataVariableType
+                      DataType: Boolean
+                      ReferenceType: HasParameter
+                      ModellingRule: Optional
+                - Name: TopMargin
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                  Value: 16.0
         - Name: MouseDownEventHandler1
           Type: EventHandler
           Children:
@@ -4693,6 +4816,10 @@ Children:
               ReferenceType: HasParameter
               ModellingRule: Optional
               Value: true
+        - Name: LeftMargin
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
     - Name: HorizontalAlignment
       Type: BaseVariableType
       DataType: HorizontalAlignment
@@ -5480,7 +5607,6 @@ Children:
         Type: BaseVariableType
         DataType: Size
         ModellingRule: Optional
-        Value: 8.0
       - Name: VerticalLayout1
         Type: ColumnLayout
         Children:
@@ -6083,7 +6209,7 @@ Children:
         Type: BaseDataVariableType
         DataType: Color
         ModellingRule: Optional
-        Value: "#deeaf4"
+        Value: "#ffffff"
   - Name: DiscardedData
     Type: Alias
     DataType: NodeId
@@ -7853,51 +7979,6 @@ Children:
             Type: BaseVariableType
             DataType: Size
             ModellingRule: Optional
-          - Name: Rectangle3
-            Type: Rectangle
-            Children:
-            - Name: Width
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-              Value: 5.0
-            - Name: Height
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-              Value: 150.0
-            - Name: LeftMargin
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-            - Name: TopMargin
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-            - Name: HorizontalAlignment
-              Type: BaseVariableType
-              DataType: HorizontalAlignment
-              ModellingRule: Optional
-            - Name: VerticalAlignment
-              Type: BaseVariableType
-              DataType: VerticalAlignment
-              ModellingRule: Optional
-              Value: 3
-            - Name: FillColor
-              Type: BaseDataVariableType
-              DataType: Color
-              ModellingRule: Optional
-              Value: "#075982"
-            - Name: CornerRadius
-              Type: BaseDataVariableType
-              DataType: Size
-              ModellingRule: Optional
-              Value: 5.0
-            - Name: BorderColor
-              Type: BaseDataVariableType
-              DataType: Color
-              ModellingRule: Optional
-              Value: "#075982"
           - Name: VerticalLayout1
             Type: ColumnLayout
             Children:
@@ -9171,51 +9252,6 @@ Children:
             Type: BaseVariableType
             DataType: Size
             ModellingRule: Optional
-          - Name: Rectangle3
-            Type: Rectangle
-            Children:
-            - Name: Width
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-              Value: 5.0
-            - Name: Height
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-              Value: 150.0
-            - Name: LeftMargin
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-            - Name: TopMargin
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-            - Name: HorizontalAlignment
-              Type: BaseVariableType
-              DataType: HorizontalAlignment
-              ModellingRule: Optional
-            - Name: VerticalAlignment
-              Type: BaseVariableType
-              DataType: VerticalAlignment
-              ModellingRule: Optional
-              Value: 3
-            - Name: FillColor
-              Type: BaseDataVariableType
-              DataType: Color
-              ModellingRule: Optional
-              Value: "#075982"
-            - Name: CornerRadius
-              Type: BaseDataVariableType
-              DataType: Size
-              ModellingRule: Optional
-              Value: 5.0
-            - Name: BorderColor
-              Type: BaseDataVariableType
-              DataType: Color
-              ModellingRule: Optional
-              Value: "#075982"
           - Name: VerticalLayout1
             Type: ColumnLayout
             Children:

@@ -101,7 +101,7 @@ Children:
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [3]
-      Value: ["Audit Type","Audit Action","Date Range"]
+      Value: ["User Type","Audit Action","Date Range"]
     - Name: TitleOfSearchByString
       Type: BaseDataVariableType
       DataType: String
@@ -123,7 +123,7 @@ Children:
     - Name: TitleOfSearchByCheckbox
       Type: BaseDataVariableType
       DataType: String
-      Value: "Search Audit Type"
+      Value: "Search User Type"
 - Name: FilterConditions
   Type: BaseObjectType
   Children:

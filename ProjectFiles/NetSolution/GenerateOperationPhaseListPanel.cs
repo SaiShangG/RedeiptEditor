@@ -10,6 +10,7 @@ using FTOptix.NetLogic;
 using FTOptix.Core;
 using FTOptix.CoreBase;
 using FTOptix.EventLogger;
+using FTOptix.RecipeX;
 #endregion
 
 public class GenerateOperationPhaseListPanel : BaseNetLogic

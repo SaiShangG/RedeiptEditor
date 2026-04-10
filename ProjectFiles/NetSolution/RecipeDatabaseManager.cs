@@ -8,6 +8,7 @@ using FTOptix.NetLogic;
 using FTOptix.CoreBase;
 using FTOptix.Core;
 using FTOptix.Store;
+using FTOptix.RecipeX;
 #endregion
 
 public class RecipeDatabaseManager : BaseNetLogic

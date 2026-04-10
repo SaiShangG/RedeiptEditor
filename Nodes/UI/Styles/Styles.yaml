@@ -197,6 +197,10 @@ Children:
         Type: BaseDataVariableType
         DataType: Size
         Value: 14.0
+      - Name: BackgroundColor
+        Type: BaseDataVariableType
+        DataType: Color
+        Value: "#ffffff00"
   - Name: ToolTipStyles
     Type: BaseObjectType
     Children:

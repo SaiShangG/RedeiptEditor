@@ -369,12 +369,12 @@ Children:
       Type: BaseDataVariableType
       DataType: Color
       ModellingRule: Optional
-      Value: "#2d1616"
+      Value: "#2d161632"
     - Name: FillColor
       Type: BaseDataVariableType
       DataType: Color
       ModellingRule: Optional
-      Value: "#c0b1b1"
+      Value: "#e9f0f6"
   - Name: VerticalLayout1
     Type: ColumnLayout
     Children:
@@ -646,7 +646,7 @@ Children:
       Type: BaseDataVariableType
       DataType: Color
       ModellingRule: Optional
-      Value: "#e6e1e1"
+      Value: "#e9f0f6"
   - Name: VerticalLayout1
     Type: ColumnLayout
     Children:
@@ -913,7 +913,7 @@ Children:
       Type: BaseDataVariableType
       DataType: Color
       ModellingRule: Optional
-      Value: "#e6e1e1"
+      Value: "#e9f0f6"
   - Name: VerticalLayout1
     Type: ColumnLayout
     Children:
@@ -1197,7 +1197,7 @@ Children:
       Type: BaseDataVariableType
       DataType: Color
       ModellingRule: Optional
-      Value: "#e6e1e1"
+      Value: "#e9f0f6"
   - Name: VerticalLayout1
     Type: ColumnLayout
     Children:
@@ -1624,11 +1624,12 @@ Children:
       Type: BaseDataVariableType
       DataType: Color
       ModellingRule: Optional
+      Value: "#0000002d"
     - Name: FillColor
       Type: BaseDataVariableType
       DataType: Color
       ModellingRule: Optional
-      Value: "#e6e1e1"
+      Value: "#e9f0f6"
   - Name: VerticalLayout1
     Type: ColumnLayout
     Children:
@@ -1880,7 +1881,6 @@ Children:
           Type: BaseVariableType
           DataType: Size
           ModellingRule: Optional
-          Value: 3.0
         - Name: VerticalAlignment
           Type: BaseVariableType
           DataType: VerticalAlignment
@@ -1941,7 +1941,7 @@ Children:
       Type: BaseDataVariableType
       DataType: Color
       ModellingRule: Optional
-      Value: "#e6e1e1"
+      Value: "#e9f0f6"
   - Name: VerticalLayout1
     Type: ColumnLayout
     Children:
@@ -2167,6 +2167,11 @@ Children:
           Type: BaseVariableType
           DataType: Size
           ModellingRule: Optional
+        - Name: Height
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: -1.0
       - Name: TextBox1
         Type: TextBox
         Children:
@@ -2188,7 +2193,6 @@ Children:
           Type: BaseVariableType
           DataType: Size
           ModellingRule: Optional
-          Value: 3.0
         - Name: VerticalAlignment
           Type: BaseVariableType
           DataType: VerticalAlignment
@@ -2276,12 +2280,11 @@ Children:
           Type: BaseVariableType
           DataType: Size
           ModellingRule: Optional
-          Value: 7.0
         - Name: Height
           Type: BaseVariableType
           DataType: Size
           ModellingRule: Optional
-          Value: 17.0
+          Value: -1.0
         - Name: ForSelectedValue
           Type: BaseDataVariableType
           DataType: String
@@ -2328,12 +2331,12 @@ Children:
       Type: BaseDataVariableType
       DataType: Color
       ModellingRule: Optional
-      Value: "#2d1616"
+      Value: "#2d161648"
     - Name: FillColor
       Type: BaseDataVariableType
       DataType: Color
       ModellingRule: Optional
-      Value: "#c0b1b1"
+      Value: "#e9f0f6"
     - Name: RightMargin
       Type: BaseVariableType
       DataType: Size

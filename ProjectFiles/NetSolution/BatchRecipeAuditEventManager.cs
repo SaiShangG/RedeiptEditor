@@ -15,6 +15,7 @@ using FTOptix.Store;
 using FTOptix.Retentivity;
 using FTOptix.CoreBase;
 using FTOptix.Core;
+using FTOptix.RecipeX;
 #endregion
 
 /// <summary>

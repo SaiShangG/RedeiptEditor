@@ -16,6 +16,7 @@ using FTOptix.SQLiteStore;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
+using FTOptix.RecipeX;
 #endregion
 
 public class EventsDispatcher : BaseNetLogic

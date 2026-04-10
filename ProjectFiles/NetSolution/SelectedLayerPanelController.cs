@@ -14,6 +14,7 @@ using FTOptix.Retentivity;
 using FTOptix.CoreBase;
 using FTOptix.Core;
 using FTOptix.EventLogger;
+using FTOptix.RecipeX;
 #endregion
 
 public class SelectedLayerPanelController : BaseNetLogic

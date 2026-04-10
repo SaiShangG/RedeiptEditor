@@ -10,6 +10,7 @@ using FTOptix.HMIProject;
 using FTOptix.NetLogic;
 using FTOptix.CoreBase;
 using FTOptix.Core;
+using FTOptix.RecipeX;
 #endregion
 
 /// <summary>
