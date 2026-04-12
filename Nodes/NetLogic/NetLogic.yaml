@@ -104,6 +104,10 @@ Children:
       ValueRank: OneDimension
       ArrayDimensions: [0]
       Value: [{"TypeId":{"Id":296},"Body":{"Name":"newName","DataType":{"Id":12},"ValueRank":-1,"ArrayDimensions":[],"Description":{"NamespaceIndex":-1,"LocaleId":"","Text":""}}}]
+  - Class: Method
+    Name: NotifyPhaseParameterBufferEdited
+  - Class: Method
+    Name: ClearRenameDuplicateHint
 - Name: RecipeDatabaseTreeLoader
   Id: g=de78c853a6b213a6ddc2c1cf47150346
   Type: NetLogic
@@ -124,6 +128,8 @@ Children:
     Value: "/Objects/RedeiptEditor/DataStores/ReceiptDB/Tables/Phases"
   - Class: Method
     Name: Save
+  - Class: Method
+    Name: Export_LoadSelectedPhaseToPhaseUIBuffer
 - Name: AddDialog
   Id: g=0f49e0cfd1cd305ad7c425a47802d960
   Type: NetLogic

@@ -76,6 +76,7 @@ public class GenerateTreeList : BaseNetLogic
         SyncSelectedItemToModel();
         GenerateOperationPhaseListPanel.Instance?.RefreshIfModeChanged();
         RecipeDatabaseManager.Instance?.RefreshTreeMoveButtonsEnabled();
+        RecipeDatabaseTreeLoader.Instance?.LoadPhaseParametersToPhaseUIBuffer(0);
         if (EnableLog) Log.Info(LogCategory, $"Receipt  点击，SelectedID = {receiptId}");
     }
 
@@ -93,6 +94,7 @@ public class GenerateTreeList : BaseNetLogic
         SyncSelectedItemToModel();
         GenerateOperationPhaseListPanel.Instance?.RefreshIfModeChanged();
         RecipeDatabaseManager.Instance?.RefreshTreeMoveButtonsEnabled();
+        RecipeDatabaseTreeLoader.Instance?.LoadPhaseParametersToPhaseUIBuffer(0);
         if (EnableLog) Log.Info(LogCategory, $"Operation 按钮点击，Selected Receipt={receiptId}, Operation={operationId}");
     }
 
@@ -110,6 +112,7 @@ public class GenerateTreeList : BaseNetLogic
         SyncSelectedItemToModel();
         GenerateOperationPhaseListPanel.Instance?.RefreshIfModeChanged();
         RecipeDatabaseManager.Instance?.RefreshTreeMoveButtonsEnabled();
+        RecipeDatabaseTreeLoader.Instance?.LoadPhaseParametersToPhaseUIBuffer(phaseId);
         if (EnableLog) Log.Info(LogCategory, $"Phase 按钮点击，Selected Receipt={receiptId}, Operation={operationId}, Phase={phaseId}");
     }
 

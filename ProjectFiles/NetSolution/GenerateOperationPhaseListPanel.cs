@@ -428,6 +428,10 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     private void SetVersionComboBoxAndIds(Container item, string baseName, List<(int Id, string Version)> versions)
     {
         var comboBox = item.Get("Rectangle1")?.Get("VerticalLayout1")?.Get("Row")?.Get<ComboBox>("ComboBox1");
+        // 与 GetSelectedVersionId 一致：Model 子节点按 BrowseName 排序，VersionIds 须同一顺序
+        var ordered = versions
+            .OrderBy(v => string.IsNullOrEmpty(v.Version) ? "0" : v.Version, StringComparer.Ordinal)
+            .ToList();
 
         var vIdsVar = item.GetVariable("VersionIds");
         if (vIdsVar == null)
@@ -435,7 +439,7 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
             vIdsVar = InformationModel.MakeVariable("VersionIds", OpcUa.DataTypes.String);
             item.Add(vIdsVar);
         }
-        vIdsVar.Value = string.Join(",", versions.Select(v => v.Id));
+        vIdsVar.Value = string.Join(",", ordered.Select(v => v.Id));
 
         if (comboBox == null) return;
 
@@ -450,9 +454,9 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
             ch.Delete();
 
         NodeId firstOptNodeId = NodeId.Empty;
-        for (int i = 0; i < versions.Count; i++)
+        for (int i = 0; i < ordered.Count; i++)
         {
-            string ver = versions[i].Version;
+            string ver = ordered[i].Version;
             string label = string.IsNullOrEmpty(ver)
                 ? baseName
                 : "v" + ver.TrimStart('0').PadLeft(1, '0');

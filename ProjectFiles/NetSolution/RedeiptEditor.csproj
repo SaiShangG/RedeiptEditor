@@ -16,6 +16,7 @@
     <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4"/>
     <PackageReference Include="Quickenshtein" Version="1.5.1"/>
   </ItemGroup>
   <Import Project="RedeiptEditor.references"/>

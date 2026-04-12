@@ -1,6 +1,7 @@
 #region Using directives
 using System;
 using System.Collections.Generic;
+using OpcUa = UAManagedCore.OpcUa;
 using UAManagedCore;
 using FTOptix.UI;
 using FTOptix.HMIProject;
@@ -56,6 +57,16 @@ public class RecipeDatabaseManager : BaseNetLogic
     {
         Instance = null;
         if (EnableLog) Log.Info(LogCategory, "RecipeDatabaseManager 已停止");
+    }
+    #endregion
+
+    #region Phase 列克隆
+    /// <summary>克隆源 Phase 列并合并 Parameter1..3（与 PhaseUIBuffer 加载一致）；另存 Operation/Receipt/Phase 共用。</summary>
+    private Dictionary<string, object> ClonePhaseColumnsForInsert(RecipeDatabaseTreeLoader.PhaseNode srcPh)
+    {
+        var colCopy = new Dictionary<string, object>(srcPh.Columns, StringComparer.OrdinalIgnoreCase);
+        Loader.ApplyResolvedParameter123ToColumnCopy(srcPh, colCopy);
+        return colCopy;
     }
     #endregion
 
@@ -142,7 +153,7 @@ public class RecipeDatabaseManager : BaseNetLogic
             {
                 ParseVersionSuffix(srcPh.Name, out string phBase, out int _);
                 string newPhName = phBase + "_" + GetNextVersionForBase(phBase, Loader.PhaseById.Values, n => n.Name).ToString("D3");
-                Loader.AddPhase(newOpId, newPhName, new System.Collections.Generic.Dictionary<string, object>(srcPh.Columns));
+                Loader.AddPhase(newOpId, newPhName, ClonePhaseColumnsForInsert(srcPh));
             }
         }
         SaveOrMarkDirtyAndRefresh(receiptId: newRId);
@@ -150,7 +161,7 @@ public class RecipeDatabaseManager : BaseNetLogic
         Audit("Act_SaveAs", new Dictionary<string, string> { ["name"] = src.Name ?? "", ["newName"] = newName, ["type"] = "Receipt" });
     }
 
-    /// <summary>删除当前选中的 Receipt（内存 + 持久化）。</summary>
+    /// <summary>删除当前选中的 Receipt（仅内存树）；落库请点保存 <see cref="DoSaveToDatabase"/> 或 Save Phase/Operation。</summary>
     [ExportMethod]
     public void DeleteSelectedReceipt()
     {
@@ -160,11 +171,6 @@ public class RecipeDatabaseManager : BaseNetLogic
         string deletedName = "";
         if (Loader.ReceiptById.TryGetValue(selectedId, out var rDel)) deletedName = rDel.Name ?? "";
         if (!Loader.RemoveReceipt(selectedId)) { if (EnableLog) Log.Warning(LogCategory, $"RemoveReceipt 失败: ReceiptID={selectedId}"); return; }
-        if (GetAutosave())
-        {
-            Loader.Save();
-            AfterReceiptDatabasePersisted();
-        }
         RefreshTreeList();
         if (EnableLog) Log.Info(LogCategory, $"已删除 ReceiptID={selectedId}");
         Audit("Act_Delete", new Dictionary<string, string> { ["name"] = deletedName, ["type"] = "Receipt" });
@@ -334,7 +340,7 @@ public class RecipeDatabaseManager : BaseNetLogic
             {
                 ParseVersionSuffix(srcPh.Name, out string phBase, out int _);
                 string newPhName = phBase + "_" + GetNextVersionForBase(phBase, Loader.PhaseById.Values, n => n.Name).ToString("D3");
-                Loader.AddPhase(newOpId, newPhName, new System.Collections.Generic.Dictionary<string, object>(srcPh.Columns));
+                Loader.AddPhase(newOpId, newPhName, ClonePhaseColumnsForInsert(srcPh));
             }
         }
 
@@ -347,7 +353,7 @@ public class RecipeDatabaseManager : BaseNetLogic
             Audit("Act_SaveAs", new Dictionary<string, string> { ["name"] = srcOp.Name ?? "", ["newName"] = newOpName, ["type"] = "Operation" });
     }
 
-    /// <summary>删除当前选中的 Operation（内存 + 持久化）。</summary>
+    /// <summary>删除当前选中的 Operation（仅内存树）；落库请点保存。</summary>
     [ExportMethod]
     public void DeleteSelectedOperation()
     {
@@ -358,11 +364,6 @@ public class RecipeDatabaseManager : BaseNetLogic
         string opDelName = "";
         if (Loader.OperationById.TryGetValue(oId, out var opDel)) opDelName = opDel.Name ?? "";
         if (!Loader.RemoveOperation(rId, oId)) return;
-        if (GetAutosave())
-        {
-            Loader.Save();
-            AfterReceiptDatabasePersisted();
-        }
         RefreshTreeList();
         if (EnableLog) Log.Info(LogCategory, $"已删除 Operation: OperationID={oId}");
         Audit("Act_Delete", new Dictionary<string, string> { ["name"] = opDelName, ["type"] = "Operation" });
@@ -440,7 +441,7 @@ public class RecipeDatabaseManager : BaseNetLogic
 
         ParseVersionSuffix(srcPh.Name, out string phBase, out int _);
         string newPhName = phBase + "_" + GetNextVersionForBase(phBase, Loader.PhaseById.Values, n => n.Name).ToString("D3");
-        int newPId = Loader.AddPhase(oId, newPhName, new System.Collections.Generic.Dictionary<string, object>(srcPh.Columns));
+        int newPId = Loader.AddPhase(oId, newPhName, ClonePhaseColumnsForInsert(srcPh));
 
         int insertIdx = opNode.Phases.FindIndex(p => p.PhaseID == newPId);
         int srcIdx = pIdInsertAfter > 0 ? opNode.Phases.FindIndex(p => p.PhaseID == pIdInsertAfter) : -1;
@@ -458,7 +459,7 @@ public class RecipeDatabaseManager : BaseNetLogic
             Audit("Act_SaveAs", new Dictionary<string, string> { ["name"] = srcPh.Name ?? "", ["newName"] = newPhName, ["type"] = "Phase" });
     }
 
-    /// <summary>删除当前选中的 Phase（内存 + 持久化）。</summary>
+    /// <summary>删除当前选中的 Phase（仅内存树）；落库请点保存。</summary>
     [ExportMethod]
     public void DeleteSelectedPhase()
     {
@@ -469,11 +470,7 @@ public class RecipeDatabaseManager : BaseNetLogic
         string phDelName = "";
         if (Loader.PhaseById.TryGetValue(pId, out var phDel)) phDelName = phDel.Name ?? "";
         if (!Loader.RemovePhase(oId, pId)) return;
-        if (GetAutosave())
-        {
-            Loader.Save();
-            AfterReceiptDatabasePersisted();
-        }
+        Loader.MarkDirtyOperation(oId);
         RefreshTreeList();
         if (EnableLog) Log.Info(LogCategory, $"已删除 Phase: PhaseID={pId}");
         Audit("Act_Delete", new Dictionary<string, string> { ["name"] = phDelName, ["type"] = "Phase" });
@@ -531,6 +528,142 @@ public class RecipeDatabaseManager : BaseNetLogic
         else if (GenerateTreeList.Instance.SelectedReceiptId != 0) DeleteSelectedReceipt();
     }
 
+    #region Rename 校验与提示（Modal 绑定 RenameDuplicateHint，非空时红色提示）
+    /// <summary>清空重命名错误提示；弹窗打开时可调用。</summary>
+    [ExportMethod]
+    public void ClearRenameDuplicateHint()
+    {
+        SetRenameDuplicateHint("");
+    }
+
+    private void SetRenameDuplicateHint(string message)
+    {
+        try
+        {
+            var v = LogicObject.GetVariable("RenameDuplicateHint");
+            if (v == null)
+            {
+                v = InformationModel.MakeVariable("RenameDuplicateHint", OpcUa.DataTypes.String);
+                LogicObject.Add(v);
+            }
+            v.Value = message ?? "";
+        }
+        catch { }
+    }
+
+    private static bool PhaseFullNameTakenElsewhere(RecipeDatabaseTreeLoader loader, int exceptPhaseId, string fullName)
+    {
+        if (string.IsNullOrEmpty(fullName) || loader == null) return false;
+        foreach (var p in loader.PhaseById.Values)
+        {
+            if (p.PhaseID == exceptPhaseId) continue;
+            if (string.Equals((p.Name ?? "").Trim(), fullName, StringComparison.OrdinalIgnoreCase)) return true;
+        }
+        return false;
+    }
+
+    private static bool OperationFullNameTakenElsewhere(RecipeDatabaseTreeLoader loader, int exceptOperationId, string fullName)
+    {
+        if (string.IsNullOrEmpty(fullName) || loader == null) return false;
+        foreach (var o in loader.OperationById.Values)
+        {
+            if (o.OperationID == exceptOperationId) continue;
+            if (string.Equals((o.Name ?? "").Trim(), fullName, StringComparison.OrdinalIgnoreCase)) return true;
+        }
+        return false;
+    }
+
+    private static bool ReceiptFullNameTakenElsewhere(RecipeDatabaseTreeLoader loader, int exceptReceiptId, string fullName)
+    {
+        if (string.IsNullOrEmpty(fullName) || loader == null) return false;
+        foreach (var r in loader.ReceiptById.Values)
+        {
+            if (r.ReceiptID == exceptReceiptId) continue;
+            if (string.Equals((r.Name ?? "").Trim(), fullName, StringComparison.OrdinalIgnoreCase)) return true;
+        }
+        return false;
+    }
+
+    /// <summary>无后缀则分配 base 下下一个 _NNN；有后缀则原样使用（须全库唯一）。</summary>
+    private static bool TryResolvePhaseRenameName(RecipeDatabaseTreeLoader loader, int phaseId, string input, out string finalName, out string error)
+    {
+        finalName = null;
+        error = "";
+        input = (input ?? "").Trim();
+        if (string.IsNullOrEmpty(input)) { error = "名称为空"; return false; }
+        ParseVersionSuffix(input, out string basePart, out int ver);
+        if (ver >= 0)
+        {
+            if (PhaseFullNameTakenElsewhere(loader, phaseId, input))
+            {
+                error = $"名称「{input}」已存在（_ 前基名「{basePart}」下同全名不可重复）。请更换名称或版本号。";
+                return false;
+            }
+            finalName = input;
+            return true;
+        }
+        finalName = EnsureNameWithVersion(input, loader.PhaseById.Values, n => n.Name);
+        if (PhaseFullNameTakenElsewhere(loader, phaseId, finalName))
+        {
+            error = "无法生成唯一名称，请手动指定带 _数字 后缀的名称。";
+            return false;
+        }
+        return true;
+    }
+
+    private static bool TryResolveOperationRenameName(RecipeDatabaseTreeLoader loader, int operationId, string input, out string finalName, out string error)
+    {
+        finalName = null;
+        error = "";
+        input = (input ?? "").Trim();
+        if (string.IsNullOrEmpty(input)) { error = "名称为空"; return false; }
+        ParseVersionSuffix(input, out _, out int ver);
+        if (ver >= 0)
+        {
+            if (OperationFullNameTakenElsewhere(loader, operationId, input))
+            {
+                error = $"名称「{input}」已存在。请更换名称或版本号。";
+                return false;
+            }
+            finalName = input;
+            return true;
+        }
+        finalName = EnsureNameWithVersion(input, loader.OperationById.Values, n => n.Name);
+        if (OperationFullNameTakenElsewhere(loader, operationId, finalName))
+        {
+            error = "无法生成唯一名称，请手动指定带 _数字 后缀的名称。";
+            return false;
+        }
+        return true;
+    }
+
+    private static bool TryResolveReceiptRenameName(RecipeDatabaseTreeLoader loader, int receiptId, string input, out string finalName, out string error)
+    {
+        finalName = null;
+        error = "";
+        input = (input ?? "").Trim();
+        if (string.IsNullOrEmpty(input)) { error = "名称为空"; return false; }
+        ParseVersionSuffix(input, out _, out int ver);
+        if (ver >= 0)
+        {
+            if (ReceiptFullNameTakenElsewhere(loader, receiptId, input))
+            {
+                error = $"名称「{input}」已存在。请更换名称或版本号。";
+                return false;
+            }
+            finalName = input;
+            return true;
+        }
+        finalName = EnsureNameWithVersion(input, loader.Tree, n => n.Name);
+        if (ReceiptFullNameTakenElsewhere(loader, receiptId, finalName))
+        {
+            error = "无法生成唯一名称，请手动指定带 _数字 后缀的名称。";
+            return false;
+        }
+        return true;
+    }
+    #endregion
+
     /// <summary>重命名树当前选中项（重命名弹窗确认）。参数来自 UI <c>InputArguments/newName</c>。</summary>
     [ExportMethod]
     public void RenameSelectedTreeItem(string newName)
@@ -538,7 +671,8 @@ public class RecipeDatabaseManager : BaseNetLogic
         if (Loader == null) { if (EnableLog) Log.Error(LogCategory, "TreeLoader 未就绪"); return; }
         if (GenerateTreeList.Instance == null) return;
         newName = (newName ?? "").Trim();
-        if (string.IsNullOrEmpty(newName)) { if (EnableLog) Log.Warning(LogCategory, "RenameSelectedTreeItem: 名称为空"); return; }
+        if (string.IsNullOrEmpty(newName)) { if (EnableLog) Log.Warning(LogCategory, "RenameSelectedTreeItem: 名称为空"); SetRenameDuplicateHint("名称为空"); return; }
+        SetRenameDuplicateHint("");
 
         int rId = GenerateTreeList.Instance.SelectedReceiptId;
         int oId = GenerateTreeList.Instance.SelectedOperationId;
@@ -548,8 +682,13 @@ public class RecipeDatabaseManager : BaseNetLogic
         {
             if (!Loader.PhaseById.TryGetValue(pId, out var ph)) return;
             string oldName = ph.Name ?? "";
-            if (string.Equals(oldName, newName, StringComparison.Ordinal)) return;
-            Loader.UpdatePhase(pId, newName);
+            if (!TryResolvePhaseRenameName(Loader, pId, newName, out string resolved, out string err))
+            {
+                SetRenameDuplicateHint(err);
+                return;
+            }
+            if (string.Equals(oldName, resolved, StringComparison.Ordinal)) return;
+            Loader.UpdatePhase(pId, resolved);
             if (GetAutosave())
             {
                 Loader.Save();
@@ -558,16 +697,22 @@ public class RecipeDatabaseManager : BaseNetLogic
             else Loader.MarkDirtyPhase(pId);
             RefreshTreeList();
             GenerateOperationPhaseListPanel.Instance?.Generate();
-            Audit("Act_Rename", new Dictionary<string, string> { ["name"] = oldName, ["newName"] = newName, ["type"] = "Phase" });
-            if (EnableLog) Log.Info(LogCategory, $"Rename Phase: '{oldName}' -> '{newName}'");
+            Audit("Act_Rename", new Dictionary<string, string> { ["name"] = oldName, ["newName"] = resolved, ["type"] = "Phase" });
+            if (EnableLog) Log.Info(LogCategory, $"Rename Phase: '{oldName}' -> '{resolved}'");
+            SetRenameDuplicateHint("");
             return;
         }
         if (oId > 0)
         {
             if (!Loader.OperationById.TryGetValue(oId, out var op)) return;
             string oldName = op.Name ?? "";
-            if (string.Equals(oldName, newName, StringComparison.Ordinal)) return;
-            Loader.UpdateOperation(oId, newName);
+            if (!TryResolveOperationRenameName(Loader, oId, newName, out string resolvedOp, out string errOp))
+            {
+                SetRenameDuplicateHint(errOp);
+                return;
+            }
+            if (string.Equals(oldName, resolvedOp, StringComparison.Ordinal)) return;
+            Loader.UpdateOperation(oId, resolvedOp);
             if (GetAutosave())
             {
                 Loader.Save();
@@ -576,16 +721,22 @@ public class RecipeDatabaseManager : BaseNetLogic
             else Loader.MarkDirtyOperation(oId);
             RefreshTreeList();
             GenerateOperationPhaseListPanel.Instance?.Generate();
-            Audit("Act_Rename", new Dictionary<string, string> { ["name"] = oldName, ["newName"] = newName, ["type"] = "Operation" });
-            if (EnableLog) Log.Info(LogCategory, $"Rename Operation: '{oldName}' -> '{newName}'");
+            Audit("Act_Rename", new Dictionary<string, string> { ["name"] = oldName, ["newName"] = resolvedOp, ["type"] = "Operation" });
+            if (EnableLog) Log.Info(LogCategory, $"Rename Operation: '{oldName}' -> '{resolvedOp}'");
+            SetRenameDuplicateHint("");
             return;
         }
         if (rId > 0)
         {
             if (!Loader.ReceiptById.TryGetValue(rId, out var r)) return;
             string oldName = r.Name ?? "";
-            if (string.Equals(oldName, newName, StringComparison.Ordinal)) return;
-            Loader.UpdateReceipt(rId, newName, null);
+            if (!TryResolveReceiptRenameName(Loader, rId, newName, out string resolvedR, out string errR))
+            {
+                SetRenameDuplicateHint(errR);
+                return;
+            }
+            if (string.Equals(oldName, resolvedR, StringComparison.Ordinal)) return;
+            Loader.UpdateReceipt(rId, resolvedR, null);
             if (GetAutosave())
             {
                 Loader.Save();
@@ -594,8 +745,9 @@ public class RecipeDatabaseManager : BaseNetLogic
             else Loader.MarkDirtyReceipt(rId);
             RefreshTreeList();
             GenerateOperationPhaseListPanel.Instance?.Generate();
-            Audit("Act_Rename", new Dictionary<string, string> { ["name"] = oldName, ["newName"] = newName, ["type"] = "Receipt" });
-            if (EnableLog) Log.Info(LogCategory, $"Rename Receipt: '{oldName}' -> '{newName}'");
+            Audit("Act_Rename", new Dictionary<string, string> { ["name"] = oldName, ["newName"] = resolvedR, ["type"] = "Receipt" });
+            if (EnableLog) Log.Info(LogCategory, $"Rename Receipt: '{oldName}' -> '{resolvedR}'");
+            SetRenameDuplicateHint("");
             return;
         }
         if (EnableLog) Log.Warning(LogCategory, "RenameSelectedTreeItem: 未选中树项");
@@ -657,6 +809,36 @@ public class RecipeDatabaseManager : BaseNetLogic
             if (phaseId.HasValue) Loader.MarkDirtyPhase(phaseId.Value);
         }
         RefreshTreeList();
+    }
+
+    /// <summary>Phase 面板输入变更：Buffer→内存树、<see cref="RecipeDatabaseTreeLoader.MarkDirtyPhase"/>（树名 *）；autosave 时立即 <see cref="RecipeDatabaseTreeLoader.Save"/>。</summary>
+    [ExportMethod]
+    public void NotifyPhaseParameterBufferEdited()
+    {
+        if (Loader == null || GenerateTreeList.Instance == null) return;
+        int pId = GenerateTreeList.Instance.SelectedPhaseId;
+        if (pId <= 0) return;
+        try
+        {
+            bool wasDirty = Loader.IsDirtyPhase(pId);
+            Loader.MergePhaseUiBufferIntoPhaseNode(pId);
+            Loader.MarkDirtyPhase(pId);
+            Loader.MarkModified();
+            if (GetAutosave())
+            {
+                Loader.Save();
+                AfterReceiptDatabasePersisted();
+            }
+            else if (!wasDirty)
+            {
+                RefreshTreeList();
+                GenerateOperationPhaseListPanel.Instance?.Generate();
+            }
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Warning(LogCategory, $"NotifyPhaseParameterBufferEdited: {ex.Message}");
+        }
     }
     #endregion
 

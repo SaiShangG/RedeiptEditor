@@ -166,6 +166,13 @@ Children:
         - Name: Reversion
           Type: StoreColumn
           DataType: String
+        - Name: PhaseTemplateTypeID
+          Type: StoreColumn
+          DataType: Int32
+          Value: 1
+        - Name: PhaseParameterInfoID
+          Type: StoreColumn
+          DataType: Int32
     - Name: Batches
       Type: SQLiteStoreTable
       Children:
@@ -436,7 +443,7 @@ Children:
     Type: BaseDataVariableType
     DataType: String
     Value: "BatchRecipeEditorAuditDB"
-- Name: PhaseDB
+- Name: PhaseParametersDB
   Type: SQLiteStore
   Children:
   - Name: Tables
@@ -460,10 +467,11 @@ Children:
       - Name: Columns
         Type: BaseObjectType
         Children:
-        - Name: TypeID
+        - Name: PhaseTemplateTypeID
           Type: StoreColumn
           DataType: Int16
-        - Name: PhaseID
+          Value: 1
+        - Name: PhaseParameterInfoID
           Type: StoreColumn
           DataType: Int32
         - Name: Parameter1
@@ -473,6 +481,12 @@ Children:
           Type: StoreColumn
           DataType: Int32
         - Name: Parameter3
+          Type: StoreColumn
+          DataType: Int32
+        - Name: Parameter4
+          Type: StoreColumn
+          DataType: Int32
+        - Name: Parameter5
           Type: StoreColumn
           DataType: Int32
     - Name: PhaseType2
@@ -493,10 +507,11 @@ Children:
       - Name: Columns
         Type: BaseObjectType
         Children:
-        - Name: TypeID
+        - Name: PhaseTemplateTypeID
           Type: StoreColumn
           DataType: Int16
-        - Name: PhaseID
+          Value: 2
+        - Name: PhaseParameterInfoID
           Type: StoreColumn
           DataType: Int32
   - Class: Reference
@@ -563,4 +578,4 @@ Children:
   - Name: Filename
     Type: BaseDataVariableType
     DataType: String
-    Value: "PhaseTemplateDB"
+    Value: "PhaseParametersDB"
