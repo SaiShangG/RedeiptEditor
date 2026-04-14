@@ -489,6 +489,12 @@ Children:
         - Name: Parameter5
           Type: StoreColumn
           DataType: Int32
+        - Name: Parameter6
+          Type: StoreColumn
+          DataType: Int32
+        - Name: Parameter7
+          Type: StoreColumn
+          DataType: Int32
     - Name: PhaseType2
       Type: SQLiteStoreTable
       Children:

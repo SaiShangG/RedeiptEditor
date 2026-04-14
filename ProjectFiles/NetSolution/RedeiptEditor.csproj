@@ -19,5 +19,10 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4"/>
     <PackageReference Include="Quickenshtein" Version="1.5.1"/>
   </ItemGroup>
+  <ItemGroup>
+    <None Update="phase_ui_layout.sample.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="RedeiptEditor.references"/>
 </Project>

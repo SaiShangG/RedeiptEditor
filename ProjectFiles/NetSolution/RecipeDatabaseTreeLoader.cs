@@ -85,6 +85,14 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
     /// <summary>Phase 参数缓冲对象路径（与 PhaseManager 一致）。</summary>
     public const string DefaultPhaseBufferObjectPath = "Model/UIData/PhaseData/PhaseUIBufferData";
     private const string PhaseLayoutJsonFileName = "phase_ui_layout.sample.json";
+    /// <summary>与 phase_ui_layout.sample.json 中 bindKey 一致；JSON 未随 DLL 部署时仍保证缓冲变量存在。</summary>
+    private static readonly string[] DefaultPhaseUiLayoutBindKeys =
+    {
+        "Parameter1", "Parameter2", "Parameter3", "Parameter4", "Parameter5",
+        "Parameter6", "ParaSlot6", "ParaSlot7", "ParaSlot8", "ParaSlot9",
+        "Valve0", "Valve1", "Valve2", "Valve3", "Valve4", "Valve5",
+        "Valve6", "Valve7", "Valve8", "Valve9", "Valve10", "Valve11"
+    };
     /// <summary>PhaseType1 中非业务数据列（不参与 SELECT/UPDATE 业务字段）。</summary>
     private static readonly HashSet<string> PhaseType1ReservedColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
@@ -1440,6 +1448,7 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
             return;
         }
         RecipeDatabaseManager.Instance?.SyncReceiptStatusFromModelBeforeSave();
+        FlushSelectedPhaseUiBufferToTreeForPersist();
         try
         {
             // 1. 读取 DB 中现有 ID 集合
@@ -1582,6 +1591,23 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         LoadAllToTree();
         ClearDirty();
         GenerateTreeList.Instance?.Generate();
+    }
+
+    /// <summary>
+    /// 写库前将当前选中 Phase 的 <see cref="DefaultPhaseBufferObjectPath"/> 变量并入 <see cref="PhaseNode.Columns"/> 并标脏。
+    /// 否则 <see cref="TryPersistPhaseType1FromPhaseNode"/> 因未标脏被跳过，或 Buffer 未合并导致新列（如 Parameter6）不落库。
+    /// </summary>
+    public void FlushSelectedPhaseUiBufferToTreeForPersist()
+    {
+        int pId = GenerateTreeList.Instance?.SelectedPhaseId ?? 0;
+        if (pId <= 0) return;
+        MergePhaseUiBufferIntoPhaseNode(pId);
+        MarkDirtyPhase(pId);
+    }
+
+    private void ClearPhaseType1TableCache()
+    {
+        _phaseType1Table = null;
     }
 
     private HashSet<int> QueryIdSet(string tableName, string idColumn)
@@ -2025,6 +2051,8 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         catch { buffer = null; }
         if (buffer == null) return false;
 
+        Instance?.ClearPhaseType1TableCache();
+
         Table t1 = null;
         try
         {
@@ -2050,6 +2078,8 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         }
 
         foreach (var k in TryGetPhaseLayoutBindKeys())
+            names.Add(k);
+        foreach (var k in DefaultPhaseUiLayoutBindKeys)
             names.Add(k);
 
         bool added = false;

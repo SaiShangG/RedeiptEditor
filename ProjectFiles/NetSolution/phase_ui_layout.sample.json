@@ -13,8 +13,8 @@
         { "id": "Para2", "widgetType": "PhaseSinglePara", "bindKey": "Parameter3" },
         { "id": "Para3", "widgetType": "PhaseSinglePara", "bindKey": "Parameter4" },
         { "id": "Para4", "widgetType": "PhaseSinglePara", "bindKey": "Parameter5" },
-        { "id": "Para5", "widgetType": "PhaseSinglePara", "bindKey": "ParaSlot5" },
-        { "id": "Para6", "widgetType": "PhaseSinglePara", "bindKey": "ParaSlot6" },
+        { "id": "Para5", "widgetType": "PhaseSinglePara", "bindKey": "Parameter6" },
+        { "id": "Para6", "widgetType": "PhaseSinglePara", "bindKey": "Parameter7" },
         { "id": "Para7", "widgetType": "PhaseSinglePara", "bindKey": "ParaSlot7" },
         { "id": "Para8", "widgetType": "PhaseSinglePara", "bindKey": "ParaSlot8" },
         { "id": "Para9", "widgetType": "PhaseSinglePara", "bindKey": "ParaSlot9" }

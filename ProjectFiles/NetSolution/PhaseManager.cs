@@ -226,6 +226,40 @@ public class PhaseManager : BaseNetLogic
             ParaPanel3.Get("VL/HL").Add(ValveSingle);
         }
         WireLegacyPhaseInputObservers();
+        if (Owner is IUAObject ownerObj)
+            AttachLegacyPhaseBufferDynamicLinks(ownerObj);
+    }
+
+    /// <summary>Legacy 构建路径无 JSON 布局时的绑定；与 phase_ui_layout.sample.json 中 Para0..9、Valve0..11 的 bindKey 一致。</summary>
+    private void AttachLegacyPhaseBufferDynamicLinks(IUAObject owner)
+    {
+        if (owner == null) return;
+        IUAObject buffer;
+        try { buffer = Project.Current?.GetObject(PhaseBufferObjectPath); }
+        catch { buffer = null; }
+        if (buffer == null) return;
+
+        string[] paraKeys =
+        {
+            "Parameter1", "Parameter2", "Parameter3", "Parameter4", "Parameter5",
+            "Parameter6", "ParaSlot6", "ParaSlot7", "ParaSlot8", "ParaSlot9"
+        };
+        for (int i = 0; i < paraKeys.Length; i++)
+        {
+            var modelVar = buffer.GetVariable(paraKeys[i]);
+            if (modelVar == null) continue;
+            var widget = owner.GetObject("ScrollView1/Rows/ParaPanel1/VL/HL/Para" + i) as IUAObject;
+            if (widget != null)
+                TryDynamicLinkSingleParaText(widget, modelVar);
+        }
+        for (int i = 0; i < 12; i++)
+        {
+            var modelVar = buffer.GetVariable("Valve" + i);
+            if (modelVar == null) continue;
+            var widget = owner.GetObject("ScrollView1/Rows/ParaPanel3/VL/HL/ValveSetting" + i) as IUAObject;
+            if (widget != null)
+                TryDynamicLinkValveSwitch(widget, modelVar);
+        }
     }
 
     #region Phase JSON 构建
