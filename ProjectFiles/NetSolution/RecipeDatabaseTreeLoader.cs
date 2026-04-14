@@ -12,6 +12,8 @@ using FTOptix.Store;
 using FTOptix.HMIProject;
 using FTOptix.EventLogger;
 using FTOptix.RecipeX;
+using FTOptix.RAEtherNetIP;
+using FTOptix.CommunicationDriver;
 #endregion
 
 /// <summary>从配方数据库读取全部数据并保存到本地 dict 树（Receipt → Operation → Phase）。</summary>

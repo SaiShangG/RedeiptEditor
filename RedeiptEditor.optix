@@ -82,16 +82,32 @@ Project:
    Uri: 'urn:FTOptix:EventLogger:Net'
    Module: FTOptix.EventLogger.Net
    Version: 1.0
+  21:
+   Uri: 'urn:FTOptix:RAEtherNetIP'
+   Module: FTOptix.RAEtherNetIP
+   Version: 7.0
+  22:
+   Uri: 'urn:FTOptix:RAEtherNetIP:Net'
+   Module: FTOptix.RAEtherNetIP.Net
+   Version: 3.2
+  23:
+   Uri: 'urn:FTOptix:CommunicationDriver'
+   Module: FTOptix.CommunicationDriver
+   Version: 3.0
+  24:
+   Uri: 'urn:FTOptix:CommunicationDriver:Net'
+   Module: FTOptix.CommunicationDriver.Net
+   Version: 4.0
  Statistics:
-  TotalNodeCount: 7914
-  Objects: 1585
+  TotalNodeCount: 7944
+  Objects: 1592
   ObjectTypes: 62
-  Variables: 6211
+  Variables: 6234
   VariableTypes: 0
   DataTypes: 5
   Methods: 51
-  References: 133
+  References: 139
   ReferenceTypes: 0
-  Files: 39
+  Files: 44
  Nodes:
  - File: Nodes/RedeiptEditor.yaml

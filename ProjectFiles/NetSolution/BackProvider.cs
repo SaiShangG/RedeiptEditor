@@ -12,6 +12,8 @@ using FTOptix.RecipeX;
 using FTOptix.SQLiteStore;
 using FTOptix.Store;
 using FTOptix.EventLogger;
+using FTOptix.RAEtherNetIP;
+using FTOptix.CommunicationDriver;
 #endregion
 
 public class BackProvider : BaseNetLogic

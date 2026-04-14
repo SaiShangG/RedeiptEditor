@@ -13,6 +13,8 @@ using FTOptix.CoreBase;
 using FTOptix.Core;
 using FTOptix.EventLogger;
 using FTOptix.RecipeX;
+using FTOptix.RAEtherNetIP;
+using FTOptix.CommunicationDriver;
 #endregion
 
 public class MiddlePanelManager : BaseNetLogic

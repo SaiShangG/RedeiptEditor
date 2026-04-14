@@ -10,6 +10,8 @@ using FTOptix.CoreBase;
 using FTOptix.Core;
 using FTOptix.Store;
 using FTOptix.RecipeX;
+using FTOptix.RAEtherNetIP;
+using FTOptix.CommunicationDriver;
 #endregion
 
 public class RecipeDatabaseManager : BaseNetLogic

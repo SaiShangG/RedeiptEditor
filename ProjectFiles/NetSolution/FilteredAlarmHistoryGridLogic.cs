@@ -14,6 +14,8 @@ using FTOptix.SQLiteStore;
 using FTOptix.System;
 using FTOptix.SerialPort;
 using FTOptix.RecipeX;
+using FTOptix.RAEtherNetIP;
+using FTOptix.CommunicationDriver;
 #endregion
 
 public class FilteredAlarmHistoryGridLogic : BaseNetLogic

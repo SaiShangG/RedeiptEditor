@@ -11,6 +11,8 @@ using FTOptix.NetLogic;
 using FTOptix.CoreBase;
 using FTOptix.Core;
 using FTOptix.RecipeX;
+using FTOptix.RAEtherNetIP;
+using FTOptix.CommunicationDriver;
 #endregion
 
 /// <summary>
