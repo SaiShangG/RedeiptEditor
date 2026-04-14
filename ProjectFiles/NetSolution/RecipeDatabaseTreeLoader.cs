@@ -93,6 +93,17 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         "Valve0", "Valve1", "Valve2", "Valve3", "Valve4", "Valve5",
         "Valve6", "Valve7", "Valve8", "Valve9", "Valve10", "Valve11"
     };
+    /// <summary>与 phase_ui_layout.sample.json ParaPanel2 的 bindKeySwitch 一致（无 JSON 时仍创建 Boolean 变量）。</summary>
+    private static readonly string[] DefaultPhaseUiEndConditionBoolKeys =
+    {
+        "EcUserAckEnabled", "EcAndOr1", "EcRunTimeEnabled",
+        "EcCp1Enabled", "EcCp2Enabled", "EcAndOr2", "EcCp3Enabled", "EcCp4Enabled"
+    };
+    /// <summary>与 ParaPanel2 的 bindKeyText / bindKeyCombo 一致。</summary>
+    private static readonly string[] DefaultPhaseUiEndConditionStringKeys =
+    {
+        "EcRunTimeHms", "EcCp1Level", "EcCp2Level", "EcCp2Op", "EcCp3Level", "EcCp3Op", "EcCp4Level"
+    };
     /// <summary>PhaseType1 中非业务数据列（不参与 SELECT/UPDATE 业务字段）。</summary>
     private static readonly HashSet<string> PhaseType1ReservedColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
@@ -1721,26 +1732,47 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         return true;
     }
 
-    private static List<string> TryGetPhaseLayoutBindKeys()
+    /// <summary>从布局 JSON 收集缓冲变量名：bindKeySwitch → Boolean，其余 BindKey* → String（与 PhaseType1 列名一致即可落库）。</summary>
+    private static void CollectPhaseLayoutKeysFromJson(out HashSet<string> booleanBufferKeys, out List<string> allBufferKeyNames)
     {
-        var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        booleanBufferKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        allBufferKeyNames = new List<string>();
         try
         {
             string jp = PhaseUILayoutJson.ResolveLayoutPath(PhaseLayoutJsonFileName);
             var layout = PhaseUILayoutJson.TryLoadFromFile(jp);
-            if (layout?.Sections == null) return new List<string>();
+            if (layout?.Sections == null) return;
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (var sec in layout.Sections)
             {
                 if (sec?.Items == null) continue;
                 foreach (var it in sec.Items)
                 {
-                    if (!string.IsNullOrEmpty(it.BindKey) && IsSafeSqlIdentifier(it.BindKey))
-                        set.Add(it.BindKey);
+                    foreach (var pair in new[] {
+                        (it.BindKey, false),
+                        (it.BindKeySwitch, true),
+                        (it.BindKeyText, false),
+                        (it.BindKeyCombo, false)
+                    })
+                    {
+                        string k = pair.Item1;
+                        bool asBool = pair.Item2;
+                        if (string.IsNullOrEmpty(k) || !IsSafeSqlIdentifier(k)) continue;
+                        if (seen.Add(k))
+                            allBufferKeyNames.Add(k);
+                        if (asBool)
+                            booleanBufferKeys.Add(k);
+                    }
                 }
             }
         }
         catch { }
-        return set.ToList();
+    }
+
+    private static List<string> TryGetPhaseLayoutBindKeys()
+    {
+        CollectPhaseLayoutKeysFromJson(out _, out var all);
+        return all;
     }
 
     private static object GetInitialType1InsertCell(PhaseNode ph, string col)
@@ -1926,13 +1958,17 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         return tail.Length > 0 && tail.All(char.IsDigit);
     }
 
-    private static NodeId ResolveAutoBufferVariableDataType(string name)
+    private static NodeId ResolveAutoBufferVariableDataType(string name, HashSet<string> layoutBooleanBufferKeys)
     {
+        if (layoutBooleanBufferKeys != null && layoutBooleanBufferKeys.Contains(name))
+            return OpcUa.DataTypes.Boolean;
         return IsValveBufferBrowseName(name) ? OpcUa.DataTypes.Boolean : OpcUa.DataTypes.String;
     }
 
-    private static UAValue InitialUaValueForAutoBufferVariable(string name)
+    private static UAValue InitialUaValueForAutoBufferVariable(string name, HashSet<string> layoutBooleanBufferKeys)
     {
+        if (layoutBooleanBufferKeys != null && layoutBooleanBufferKeys.Contains(name))
+            return new UAValue(false);
         return IsValveBufferBrowseName(name) ? new UAValue(false) : new UAValue("0");
     }
     /// <summary>按表模型列读取 PhaseType1 一行（仅业务数据列）；列名变更后仍与 Studio 表定义一致。</summary>
@@ -2024,7 +2060,15 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
         try
         {
             UAValue ua;
-            if (IsValveBufferBrowseName(name))
+            if (v.DataType == OpcUa.DataTypes.Boolean)
+            {
+                bool b = value == "1" || string.Equals(value, "true", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(value, "True", StringComparison.Ordinal);
+                if (!b && int.TryParse((value ?? "").Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int iv))
+                    b = iv != 0;
+                ua = new UAValue(b);
+            }
+            else if (IsValveBufferBrowseName(name))
             {
                 bool b = value == "1" || string.Equals(value, "true", StringComparison.OrdinalIgnoreCase)
                     || string.Equals(value, "True", StringComparison.Ordinal);
@@ -2077,10 +2121,25 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
             names.Add("Parameter3");
         }
 
-        foreach (var k in TryGetPhaseLayoutBindKeys())
+        CollectPhaseLayoutKeysFromJson(out var layoutBoolKeys, out var layoutAllKeys);
+        foreach (var k in layoutAllKeys)
             names.Add(k);
         foreach (var k in DefaultPhaseUiLayoutBindKeys)
             names.Add(k);
+        foreach (var k in DefaultPhaseUiEndConditionStringKeys)
+        {
+            if (IsSafeSqlIdentifier(k)) names.Add(k);
+        }
+        foreach (var k in DefaultPhaseUiEndConditionBoolKeys)
+        {
+            if (IsSafeSqlIdentifier(k)) names.Add(k);
+        }
+
+        var effectiveBoolKeys = new HashSet<string>(layoutBoolKeys, StringComparer.OrdinalIgnoreCase);
+        foreach (var k in DefaultPhaseUiEndConditionBoolKeys)
+        {
+            if (IsSafeSqlIdentifier(k)) effectiveBoolKeys.Add(k);
+        }
 
         bool added = false;
         foreach (string name in names.Distinct(StringComparer.OrdinalIgnoreCase))
@@ -2088,9 +2147,9 @@ public class RecipeDatabaseTreeLoader : BaseNetLogic
             if (string.IsNullOrEmpty(name) || buffer.GetVariable(name) != null) continue;
             try
             {
-                NodeId dt = ResolveAutoBufferVariableDataType(name);
+                NodeId dt = ResolveAutoBufferVariableDataType(name, effectiveBoolKeys);
                 var nv = InformationModel.MakeVariable(name, dt);
-                nv.Value = InitialUaValueForAutoBufferVariable(name);
+                nv.Value = InitialUaValueForAutoBufferVariable(name, effectiveBoolKeys);
                 buffer.Add(nv);
                 added = true;
             }

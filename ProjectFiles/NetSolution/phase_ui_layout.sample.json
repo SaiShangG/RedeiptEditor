@@ -15,7 +15,7 @@
         { "id": "Para4", "widgetType": "PhaseSinglePara", "bindKey": "Parameter5" },
         { "id": "Para5", "widgetType": "PhaseSinglePara", "bindKey": "Parameter6" },
         { "id": "Para6", "widgetType": "PhaseSinglePara", "bindKey": "Parameter7" },
-        { "id": "Para7", "widgetType": "PhaseSinglePara", "bindKey": "ParaSlot7" },
+        { "id": "Para7", "widgetType": "PhaseSinglePara", "bindKey": "Parameter8" },
         { "id": "Para8", "widgetType": "PhaseSinglePara", "bindKey": "ParaSlot8" },
         { "id": "Para9", "widgetType": "PhaseSinglePara", "bindKey": "ParaSlot9" }
       ]
@@ -27,14 +27,14 @@
       "rowLayoutPath": "VL/HL",
       "rowLayoutHorizontalGap": 0,
       "items": [
-        { "id": "ParaUserAck", "widgetType": "PhaseUserAck" },
-        { "id": "ParaAndandOr1", "widgetType": "PhaseAndorOr", "width": 80 },
-        { "id": "ParaRunningTIme", "widgetType": "PhaseRunningTime" },
-        { "id": "ParaCP1", "widgetType": "PhaseParaCompare1" },
-        { "id": "ParaCP2", "widgetType": "PhaseParaCompare2" },
-        { "id": "ParaAndandOr2", "widgetType": "PhaseAndorOr", "width": 80 },
-        { "id": "ParaCP3", "widgetType": "PhaseParaCompare2" },
-        { "id": "ParaCP4", "widgetType": "PhaseParaCompare1" }
+        { "id": "ParaUserAck", "widgetType": "PhaseUserAck", "bindKeySwitch": "EcUserAckEnabled" },
+        { "id": "ParaAndandOr1", "widgetType": "PhaseAndorOr", "width": 80, "bindKeySwitch": "EcAndOr1" },
+        { "id": "ParaRunningTIme", "widgetType": "PhaseRunningTime", "bindKeySwitch": "EcRunTimeEnabled", "bindKeyText": "EcRunTimeHms" },
+        { "id": "ParaCP1", "widgetType": "PhaseParaCompare1", "bindKeySwitch": "EcCp1Enabled", "bindKeyText": "EcCp1Level" },
+        { "id": "ParaCP2", "widgetType": "PhaseParaCompare2", "bindKeySwitch": "EcCp2Enabled", "bindKeyText": "EcCp2Level", "bindKeyCombo": "EcCp2Op" },
+        { "id": "ParaAndandOr2", "widgetType": "PhaseAndorOr", "width": 80, "bindKeySwitch": "EcAndOr2" },
+        { "id": "ParaCP3", "widgetType": "PhaseParaCompare2", "bindKeySwitch": "EcCp3Enabled", "bindKeyText": "EcCp3Level", "bindKeyCombo": "EcCp3Op" },
+        { "id": "ParaCP4", "widgetType": "PhaseParaCompare1", "bindKeySwitch": "EcCp4Enabled", "bindKeyText": "EcCp4Level" }
       ]
     },
     {

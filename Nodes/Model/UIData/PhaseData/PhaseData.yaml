@@ -5,19 +5,6 @@ Children:
   Type: BaseObjectType
 - Name: PhaseUIBufferData
   Type: BaseObjectType
-  Children:
-  - Name: Parameter1
-    Type: StoreColumn
-    DataType: String
-    Value: "0"
-  - Name: Parameter2
-    Type: StoreColumn
-    DataType: String
-    Value: "0"
-  - Name: Parameter3
-    Type: StoreColumn
-    DataType: String
-    Value: "0"
 - Name: OperationData
   Type: BaseObjectType
   Children:

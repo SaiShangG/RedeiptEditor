@@ -26,7 +26,14 @@ public class PhaseUILayoutItem
 {
     public string Id { get; set; }
     public string WidgetType { get; set; }
+    /// <summary>PhaseSinglePara 数值、PhaseValvePanel 阀门等单一绑定。</summary>
     public string BindKey { get; set; }
+    /// <summary>PhaseUserAck / PhaseAndorOr / PhaseRunningTime / PhaseParaCompare* 的开关 → Buffer Boolean。</summary>
+    public string BindKeySwitch { get; set; }
+    /// <summary>PhaseRunningTime / PhaseParaCompare* 的数值框 → Buffer String。</summary>
+    public string BindKeyText { get; set; }
+    /// <summary>PhaseParaCompare2 的比较符下拉 → Buffer String（存 SelectedValue 字符串形式）。</summary>
+    public string BindKeyCombo { get; set; }
     public int? Width { get; set; }
     public string ValveLabel { get; set; }
 }
