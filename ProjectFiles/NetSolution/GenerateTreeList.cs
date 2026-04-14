@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.Linq;
 using FTOptix.EventLogger;
 using FTOptix.RecipeX;
+using FTOptix.RAEtherNetIP;
+using FTOptix.CommunicationDriver;
 
 #endregion
 

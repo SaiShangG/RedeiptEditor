@@ -17,6 +17,8 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using FTOptix.RecipeX;
+using FTOptix.RAEtherNetIP;
+using FTOptix.CommunicationDriver;
 #endregion
 
 public class EventsDispatcher : BaseNetLogic

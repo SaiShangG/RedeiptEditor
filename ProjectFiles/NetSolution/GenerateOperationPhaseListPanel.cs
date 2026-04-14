@@ -11,6 +11,8 @@ using FTOptix.Core;
 using FTOptix.CoreBase;
 using FTOptix.EventLogger;
 using FTOptix.RecipeX;
+using FTOptix.RAEtherNetIP;
+using FTOptix.CommunicationDriver;
 #endregion
 
 public class GenerateOperationPhaseListPanel : BaseNetLogic

@@ -13,6 +13,8 @@ using FTOptix.Retentivity;
 using FTOptix.CoreBase;
 using FTOptix.Core;
 using FTOptix.RecipeX;
+using FTOptix.RAEtherNetIP;
+using FTOptix.CommunicationDriver;
 #endregion
 
 public class LoginChangePasswordButtonLogic : BaseNetLogic
