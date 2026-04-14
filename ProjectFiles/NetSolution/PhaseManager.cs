@@ -262,6 +262,50 @@ public class PhaseManager : BaseNetLogic
             if (widget != null)
                 TryDynamicLinkValveSwitch(widget, modelVar);
         }
+        AttachLegacyPanel2EndConditionLinks(owner, buffer);
+    }
+
+    /// <summary>Legacy 路径下 ParaPanel2 与 sample JSON 相同的 bindKey*。</summary>
+    private void AttachLegacyPanel2EndConditionLinks(IUAObject owner, IUAObject buffer)
+    {
+        if (owner == null || buffer == null) return;
+        const string p2 = "ScrollView1/Rows/ParaPanel2/VL/HL/";
+        void Sw(string itemId, string key)
+        {
+            if (string.IsNullOrEmpty(key)) return;
+            var mv = buffer.GetVariable(key);
+            var w = owner.GetObject(p2 + itemId) as IUAObject;
+            if (mv != null && w != null) TryDynamicLinkValveSwitch(w, mv);
+        }
+        void Tx(string itemId, string key)
+        {
+            if (string.IsNullOrEmpty(key)) return;
+            var mv = buffer.GetVariable(key);
+            var w = owner.GetObject(p2 + itemId) as IUAObject;
+            if (mv != null && w != null) TryDynamicLinkSingleParaText(w, mv);
+        }
+        void Cb(string itemId, string key)
+        {
+            if (string.IsNullOrEmpty(key)) return;
+            var mv = buffer.GetVariable(key);
+            var w = owner.GetObject(p2 + itemId) as IUAObject;
+            if (mv != null && w != null) TryDynamicLinkComboSelectedValue(w, mv);
+        }
+        Sw("ParaUserAck", "EcUserAckEnabled");
+        Sw("ParaAndandOr1", "EcAndOr1");
+        Sw("ParaRunningTIme", "EcRunTimeEnabled");
+        Tx("ParaRunningTIme", "EcRunTimeHms");
+        Sw("ParaCP1", "EcCp1Enabled");
+        Tx("ParaCP1", "EcCp1Level");
+        Sw("ParaCP2", "EcCp2Enabled");
+        Tx("ParaCP2", "EcCp2Level");
+        Cb("ParaCP2", "EcCp2Op");
+        Sw("ParaAndandOr2", "EcAndOr2");
+        Sw("ParaCP3", "EcCp3Enabled");
+        Tx("ParaCP3", "EcCp3Level");
+        Cb("ParaCP3", "EcCp3Op");
+        Sw("ParaCP4", "EcCp4Enabled");
+        Tx("ParaCP4", "EcCp4Level");
     }
 
     #region Phase JSON 构建
@@ -304,7 +348,7 @@ public class PhaseManager : BaseNetLogic
         WireLayoutPhaseInputObservers(owner, root);
     }
 
-    #region Buffer DynamicLink（bindKey ↔ PhaseUIBufferData，模型为 String 时绑 TextBox.Text）
+    #region Buffer DynamicLink（bindKey* ↔ PhaseUIBufferData）
     private void AttachPhaseBufferDynamicLinks(IUAObject owner, PhaseUILayoutRoot root)
     {
         if (owner == null || root?.Sections == null) return;
@@ -319,16 +363,81 @@ public class PhaseManager : BaseNetLogic
             string rp = string.IsNullOrEmpty(sec.RowLayoutPath) ? "VL/HL" : sec.RowLayoutPath;
             foreach (var item in sec.Items)
             {
-                if (string.IsNullOrEmpty(item?.BindKey)) continue;
-                var modelVar = buffer.GetVariable(item.BindKey);
-                if (modelVar == null) continue;
+                if (string.IsNullOrEmpty(item?.Id)) continue;
                 var n = owner.GetObject("ScrollView1/Rows/" + sec.Id + "/" + rp + "/" + item.Id);
                 if (!(n is IUAObject widget)) continue;
                 string wt = item.WidgetType?.Trim() ?? "";
+
                 if (string.Equals(wt, "PhaseSinglePara", StringComparison.OrdinalIgnoreCase))
-                    TryDynamicLinkSingleParaText(widget, modelVar);
-                else if (string.Equals(wt, "PhaseValvePanel", StringComparison.OrdinalIgnoreCase))
-                    TryDynamicLinkValveSwitch(widget, modelVar);
+                {
+                    if (string.IsNullOrEmpty(item.BindKey)) continue;
+                    var mv = buffer.GetVariable(item.BindKey);
+                    if (mv != null) TryDynamicLinkSingleParaText(widget, mv);
+                    continue;
+                }
+                if (string.Equals(wt, "PhaseValvePanel", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (string.IsNullOrEmpty(item.BindKey)) continue;
+                    var mv = buffer.GetVariable(item.BindKey);
+                    if (mv != null) TryDynamicLinkValveSwitch(widget, mv);
+                    continue;
+                }
+                if (string.Equals(wt, "PhaseUserAck", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(wt, "PhaseAndorOr", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!string.IsNullOrEmpty(item.BindKeySwitch))
+                    {
+                        var mv = buffer.GetVariable(item.BindKeySwitch);
+                        if (mv != null) TryDynamicLinkValveSwitch(widget, mv);
+                    }
+                    continue;
+                }
+                if (string.Equals(wt, "PhaseRunningTime", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!string.IsNullOrEmpty(item.BindKeySwitch))
+                    {
+                        var mv = buffer.GetVariable(item.BindKeySwitch);
+                        if (mv != null) TryDynamicLinkValveSwitch(widget, mv);
+                    }
+                    if (!string.IsNullOrEmpty(item.BindKeyText))
+                    {
+                        var mv = buffer.GetVariable(item.BindKeyText);
+                        if (mv != null) TryDynamicLinkSingleParaText(widget, mv);
+                    }
+                    continue;
+                }
+                if (string.Equals(wt, "PhaseParaCompare1", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!string.IsNullOrEmpty(item.BindKeySwitch))
+                    {
+                        var mv = buffer.GetVariable(item.BindKeySwitch);
+                        if (mv != null) TryDynamicLinkValveSwitch(widget, mv);
+                    }
+                    if (!string.IsNullOrEmpty(item.BindKeyText))
+                    {
+                        var mv = buffer.GetVariable(item.BindKeyText);
+                        if (mv != null) TryDynamicLinkSingleParaText(widget, mv);
+                    }
+                    continue;
+                }
+                if (string.Equals(wt, "PhaseParaCompare2", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!string.IsNullOrEmpty(item.BindKeySwitch))
+                    {
+                        var mv = buffer.GetVariable(item.BindKeySwitch);
+                        if (mv != null) TryDynamicLinkValveSwitch(widget, mv);
+                    }
+                    if (!string.IsNullOrEmpty(item.BindKeyText))
+                    {
+                        var mv = buffer.GetVariable(item.BindKeyText);
+                        if (mv != null) TryDynamicLinkSingleParaText(widget, mv);
+                    }
+                    if (!string.IsNullOrEmpty(item.BindKeyCombo))
+                    {
+                        var mv = buffer.GetVariable(item.BindKeyCombo);
+                        if (mv != null) TryDynamicLinkComboSelectedValue(widget, mv);
+                    }
+                }
             }
         }
     }
@@ -421,6 +530,22 @@ public class PhaseManager : BaseNetLogic
         }
     }
     #endregion
+
+    private void TryDynamicLinkComboSelectedValue(IUAObject panel, IUAVariable modelVar)
+    {
+        var cb = panel.Get<ComboBox>("VerticalLayout1/ParaValue/ComboBox1");
+        var uiVar = cb?.GetVariable("SelectedValue");
+        if (uiVar == null) return;
+        try
+        {
+            uiVar.ResetDynamicLink();
+            uiVar.SetDynamicLink(modelVar, DynamicLinkMode.ReadWrite);
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(nameof(PhaseManager), "DynamicLink Combo SelectedValue: " + modelVar.BrowseName + " " + ex.Message);
+        }
+    }
 
     public override void Stop()
     {
