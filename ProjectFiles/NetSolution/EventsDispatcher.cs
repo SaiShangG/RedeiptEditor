@@ -76,7 +76,7 @@ public class EventsDispatcher : BaseNetLogic
     {
         string baseString = nodeId.ToString() + DateTime.UtcNow.Ticks.ToString();
         using SHA256 sha256 = SHA256.Create();
-        byte[] hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(baseString));
+        byte[] hashBytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(baseString));
         return new ByteString(hashBytes);
     }
 }
