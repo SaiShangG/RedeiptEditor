@@ -504,6 +504,9 @@ Children:
         - Name: EcAndOr1
           Type: StoreColumn
           DataType: Boolean
+        - Name: EcRunTimeEnabled
+          Type: StoreColumn
+          DataType: Boolean
     - Name: PhaseType2
       Type: SQLiteStoreTable
       Children:
