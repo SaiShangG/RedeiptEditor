@@ -2171,6 +2171,9 @@ Children:
                     - Class: Reference
                       Target: g=bd1504b3fed4b5f9ed6812751298eceb
                       Direction: Forward
+                    - Class: Reference
+                      Target: g=379fa020b5817ddc6b90a19572ac29cc
+                      Direction: Forward
                   - Name: Model
                     Type: BaseDataVariableType
                     DataType: NodeId
