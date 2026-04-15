@@ -33,10 +33,10 @@ Project:
    Module: FTOptix.RAEtherNetIPTagImporter
    Version: 1.0
  Statistics:
-  TotalNodeCount: 3
+  TotalNodeCount: 4
   Objects: 1
   ObjectTypes: 0
-  Variables: 2
+  Variables: 3
   VariableTypes: 0
   DataTypes: 0
   Methods: 0

@@ -2,3 +2,4 @@ Name: Model
 Type: ModelCategoryFolder
 Children:
 - File: UIData/UIData.yaml
+- File: PhaseConfigureData/PhaseConfigureData.yaml

@@ -1,7 +1,26 @@
 {
   "version": 1,
   "description": "Mirrors PhaseManager Start(): ScrollView1/Rows -> ParaPanel1..3",
-  "sections": [
+  "sections": [  {
+    "id": "ParaPanel3",
+    "panelType": "PhaseParasPanel",
+    "title": "This is the Valve Setting Area",
+    "rowLayoutPath": "VL/HL",
+    "items": [
+      { "id": "ValveSetting0", "widgetType": "PhaseValvePanel", "valveLabel": "Valve0", "bindKey": "Valve0" },
+      { "id": "ValveSetting1", "widgetType": "PhaseValvePanel", "valveLabel": "Valve1", "bindKey": "Valve1" },
+      { "id": "ValveSetting2", "widgetType": "PhaseValvePanel", "valveLabel": "Valve2", "bindKey": "Valve2" },
+      { "id": "ValveSetting3", "widgetType": "PhaseValvePanel", "valveLabel": "Valve3", "bindKey": "Valve3" },
+      { "id": "ValveSetting4", "widgetType": "PhaseValvePanel", "valveLabel": "Valve4", "bindKey": "Valve4" },
+      { "id": "ValveSetting5", "widgetType": "PhaseValvePanel", "valveLabel": "Valve5", "bindKey": "Valve5" },
+      { "id": "ValveSetting6", "widgetType": "PhaseValvePanel", "valveLabel": "Valve6", "bindKey": "Valve6" },
+      { "id": "ValveSetting7", "widgetType": "PhaseValvePanel", "valveLabel": "Valve7", "bindKey": "Valve7" },
+      { "id": "ValveSetting8", "widgetType": "PhaseValvePanel", "valveLabel": "Valve8", "bindKey": "Valve8" },
+      { "id": "ValveSetting9", "widgetType": "PhaseValvePanel", "valveLabel": "Valve9", "bindKey": "Valve9" },
+      { "id": "ValveSetting10", "widgetType": "PhaseValvePanel", "valveLabel": "Valve10", "bindKey": "Valve10" },
+      { "id": "ValveSetting11", "widgetType": "PhaseValvePanel", "valveLabel": "Valve11", "bindKey": "Valve11" }
+    ]
+  },
     {
       "id": "ParaPanel1",
       "panelType": "PhaseParasPanel",
@@ -36,26 +55,7 @@
         { "id": "ParaCP3", "widgetType": "PhaseParaCompare2", "bindKeySwitch": "EcCp3Enabled", "bindKeyText": "EcCp3Level", "bindKeyCombo": "EcCp3Op" },
         { "id": "ParaCP4", "widgetType": "PhaseParaCompare1", "bindKeySwitch": "EcCp4Enabled", "bindKeyText": "EcCp4Level" }
       ]
-    },
-    {
-      "id": "ParaPanel3",
-      "panelType": "PhaseParasPanel",
-      "title": "This is the Valve Setting Area",
-      "rowLayoutPath": "VL/HL",
-      "items": [
-        { "id": "ValveSetting0", "widgetType": "PhaseValvePanel", "valveLabel": "Valve0", "bindKey": "Valve0" },
-        { "id": "ValveSetting1", "widgetType": "PhaseValvePanel", "valveLabel": "Valve1", "bindKey": "Valve1" },
-        { "id": "ValveSetting2", "widgetType": "PhaseValvePanel", "valveLabel": "Valve2", "bindKey": "Valve2" },
-        { "id": "ValveSetting3", "widgetType": "PhaseValvePanel", "valveLabel": "Valve3", "bindKey": "Valve3" },
-        { "id": "ValveSetting4", "widgetType": "PhaseValvePanel", "valveLabel": "Valve4", "bindKey": "Valve4" },
-        { "id": "ValveSetting5", "widgetType": "PhaseValvePanel", "valveLabel": "Valve5", "bindKey": "Valve5" },
-        { "id": "ValveSetting6", "widgetType": "PhaseValvePanel", "valveLabel": "Valve6", "bindKey": "Valve6" },
-        { "id": "ValveSetting7", "widgetType": "PhaseValvePanel", "valveLabel": "Valve7", "bindKey": "Valve7" },
-        { "id": "ValveSetting8", "widgetType": "PhaseValvePanel", "valveLabel": "Valve8", "bindKey": "Valve8" },
-        { "id": "ValveSetting9", "widgetType": "PhaseValvePanel", "valveLabel": "Valve9", "bindKey": "Valve9" },
-        { "id": "ValveSetting10", "widgetType": "PhaseValvePanel", "valveLabel": "Valve10", "bindKey": "Valve10" },
-        { "id": "ValveSetting11", "widgetType": "PhaseValvePanel", "valveLabel": "Valve11", "bindKey": "Valve11" }
-      ]
     }
+  
   ]
 }

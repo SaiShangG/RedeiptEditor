@@ -474,36 +474,90 @@ Children:
         - Name: PhaseParameterInfoID
           Type: StoreColumn
           DataType: Int32
-        - Name: Parameter1
-          Type: StoreColumn
-          DataType: Int32
-        - Name: Parameter2
-          Type: StoreColumn
-          DataType: Int32
-        - Name: Parameter3
-          Type: StoreColumn
-          DataType: Int32
-        - Name: Parameter4
-          Type: StoreColumn
-          DataType: Int32
-        - Name: Parameter5
-          Type: StoreColumn
-          DataType: Int32
-        - Name: Parameter6
-          Type: StoreColumn
-          DataType: Int32
-        - Name: Parameter7
-          Type: StoreColumn
-          DataType: Int32
-        - Name: Parameter8
-          Type: StoreColumn
-          DataType: Int32
-        - Name: EcUserAckEnabled
+        - Name: Valve
           Type: StoreColumn
           DataType: Boolean
-        - Name: EcAndOr1
+          ValueRank: OneDimension
+          ArrayDimensions: [32]
+        - Name: Pump
           Type: StoreColumn
           DataType: Boolean
+          ValueRank: OneDimension
+          ArrayDimensions: [32]
+        - Name: FixedSetPointEbl
+          Type: StoreColumn
+          DataType: Boolean
+          ValueRank: OneDimension
+          ArrayDimensions: [32]
+        - Name: FixedSetPointValue
+          Type: StoreColumn
+          DataType: Float
+          ValueRank: OneDimension
+          ArrayDimensions: [10]
+        - Name: ControllerEbl
+          Type: StoreColumn
+          DataType: Boolean
+          ValueRank: OneDimension
+          ArrayDimensions: [32]
+        - Name: ControllerSetPointValue
+          Type: StoreColumn
+          DataType: Float
+          ValueRank: OneDimension
+          ArrayDimensions: [10]
+        - Name: EC1Selected
+          Type: StoreColumn
+          DataType: Int32
+        - Name: EC2Selected
+          Type: StoreColumn
+          DataType: Int32
+        - Name: EC3Selected
+          Type: StoreColumn
+          DataType: Int32
+        - Name: LogicOperator1
+          Type: StoreColumn
+          DataType: Int32
+        - Name: LogicOperator2
+          Type: StoreColumn
+          DataType: Int32
+        - Name: EC1Operator
+          Type: StoreColumn
+          DataType: Int32
+        - Name: EC2Operator
+          Type: StoreColumn
+          DataType: Int32
+        - Name: EC3Operator
+          Type: StoreColumn
+          DataType: Int32
+        - Name: EC1Enable
+          Type: StoreColumn
+          DataType: Int32
+        - Name: EC2Enable
+          Type: StoreColumn
+          DataType: Int32
+        - Name: EC3Enable
+          Type: StoreColumn
+          DataType: Int32
+        - Name: RunningTimeHr
+          Type: StoreColumn
+          DataType: Int32
+        - Name: RunningTimeMin
+          Type: StoreColumn
+          DataType: Int32
+        - Name: RunningTimeSec
+          Type: StoreColumn
+          DataType: Int32
+        - Name: EC1SP
+          Type: StoreColumn
+          DataType: Float
+        - Name: EC2SP
+          Type: StoreColumn
+          DataType: Float
+        - Name: EC3SP
+          Type: StoreColumn
+          DataType: Float
+      - Name: RecordLimit
+        Type: BaseDataVariableType
+        DataType: UInt32
     - Name: PhaseType2
       Type: SQLiteStoreTable
       Children:
@@ -529,6 +583,9 @@ Children:
         - Name: PhaseParameterInfoID
           Type: StoreColumn
           DataType: Int32
+      - Name: RecordLimit
+        Type: BaseDataVariableType
+        DataType: UInt32
   - Class: Reference
     Target: ns=9;i=30
     Direction: Forward
@@ -594,3 +651,12 @@ Children:
     Type: BaseDataVariableType
     DataType: String
     Value: "PhaseParametersDB"
+  - Name: GeneratePhaseColumns
+    Type: NetLogic
+    Children:
+    - Name: BehaviourStartPriority
+      Type: BehaviourStartPriorityVariableType
+      DataType: Byte
+      Value: 180
+    - Class: Method
+      Name: GenerateColumns
