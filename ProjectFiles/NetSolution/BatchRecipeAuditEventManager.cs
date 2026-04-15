@@ -299,11 +299,99 @@ public static class RecipeAuditLogHelper
 
 public class BatchRecipeAuditEventManager : BaseNetLogic
 {
+    private const string AuditTableName = "BatchRecipeAuditTable";
+
     public override void Start()
     {
     }
 
     public override void Stop()
     {
+    }
+
+    /// <summary>
+    /// Audit 顶部搜索框调用：仅按 Action 列模糊查询（不影响 More Filter 对话框逻辑）。
+    /// 为空时恢复全表查询。
+    /// </summary>
+    [ExportMethod]
+    public void RefreshAuditGridByActionSearchText(string searchText)
+    {
+        ApplyAuditActionSearch(searchText, NodeId.Empty);
+    }
+
+    /// <summary>支持在事件里传入 Audit DataGrid 的 NodeId（NodeId Link），优先对该 Grid 的 Query 生效。</summary>
+    [ExportMethod]
+    public void RefreshAuditGridByActionSearchTextWithGridNodeId(string searchText, NodeId auditGridNodeId)
+    {
+        ApplyAuditActionSearch(searchText, auditGridNodeId);
+    }
+
+    private void ApplyAuditActionSearch(string searchText, NodeId auditGridNodeId)
+    {
+        var queryVar = ResolveAuditQueryVariable(auditGridNodeId);
+        if (queryVar == null)
+        {
+            Log.Warning(nameof(BatchRecipeAuditEventManager), "未找到 Audit DataGrid Query 变量。");
+            return;
+        }
+
+        string text = searchText?.Trim() ?? "";
+        if (string.IsNullOrEmpty(text))
+        {
+            queryVar.Value = $"SELECT * FROM {AuditTableName}";
+            return;
+        }
+
+        string escaped = EscapeSqlLikeLiteral(text);
+        queryVar.Value = $"SELECT * FROM {AuditTableName} WHERE Action LIKE '%{escaped}%' ESCAPE '\\'";
+    }
+
+    private static string EscapeSqlLikeLiteral(string value)
+    {
+        if (string.IsNullOrEmpty(value)) return "";
+        return value
+            .Replace("\\", "\\\\")
+            .Replace("'", "''")
+            .Replace("%", "\\%")
+            .Replace("_", "\\_");
+    }
+
+    private static IUAVariable ResolveAuditQueryVariable(NodeId auditGridNodeId)
+    {
+        if (auditGridNodeId != null && !auditGridNodeId.IsEmpty)
+        {
+            var gridNode = InformationModel.Get(auditGridNodeId);
+            var directQuery = FindAuditQueryVariable(gridNode);
+            if (directQuery != null) return directQuery;
+        }
+
+        var project = Project.Current;
+        if (project == null) return null;
+
+        // Fast path for current known panel structure.
+        var direct = project.GetVariable("UI/Panels/AuditPanel/Rectangle3/VerticalLayout1/DataGrid2/Query");
+        if (direct != null) return direct;
+
+        // Fallback: locate AuditPanel then search any DataGrid-like object with Query variable.
+        var panel = project.GetObject("UI/Panels/AuditPanel");
+        if (panel == null) return null;
+        return FindAuditQueryVariable(panel);
+    }
+
+    private static IUAVariable FindAuditQueryVariable(IUANode node)
+    {
+        if (node == null) return null;
+        if (node.BrowseName == "DataGrid2")
+        {
+            var q = node.GetVariable("Query");
+            if (q != null) return q;
+        }
+
+        foreach (var child in node.Children)
+        {
+            var found = FindAuditQueryVariable(child);
+            if (found != null) return found;
+        }
+        return null;
     }
 }

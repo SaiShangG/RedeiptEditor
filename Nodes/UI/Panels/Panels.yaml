@@ -9401,6 +9401,81 @@ Children:
                       Type: BaseDataVariableType
                       DataType: Color
                       ModellingRule: Optional
+                    - Name: ModifiedTextHandler1
+                      Type: EventHandler
+                      Children:
+                      - Name: ListenEventType
+                        Type: PropertyType
+                        DataType: NodeId
+                        Value: "/Types/EventTypes/BaseEventType/UserTextChanged"
+                      - Name: MethodsToCall
+                        Type: BaseObjectType
+                        Children:
+                        - Name: MethodContainer1
+                          Type: BaseObjectType
+                          Children:
+                          - Name: ns=2;ObjectPointer
+                            Type: NodePointer
+                            DataType: NodeId
+                            Value: "/Objects/RedeiptEditor/NetLogic/BatchRecipeAuditEventManager"
+                            Children:
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Types/ObjectTypes/BaseObjectType"
+                          - Name: ns=2;Method
+                            Type: BaseDataVariableType
+                            DataType: String
+                            Value: "RefreshAuditGridByActionSearchTextWithGridNodeId"
+                          - Name: InputArguments
+                            Type: BaseObjectType
+                            Children:
+                            - Name: searchText
+                              Type: BaseDataVariableType
+                              DataType: String
+                              Children:
+                              - Name: DynamicLink
+                                Type: DynamicLink
+                                DataType: NodePath
+                                Value: "../../../../../Text"
+                            - Name: auditGridNodeId
+                              Type: BaseDataVariableType
+                              DataType: NodeId
+                              Children:
+                              - Name: DynamicLink
+                                Type: DynamicLink
+                                DataType: NodePath
+                                Value: "../../../../../../../../../HorizontalLayout2/DataGrid2@NodeId"
+                      - Name: EventArguments
+                        Type: UserTextChanged
+                        Children:
+                        - Name: NewText
+                          Type: BaseDataVariableType
+                          DataType: LocalizedText
+                        - Name: EventId
+                          Type: PropertyType
+                          DataType: ByteString
+                        - Name: EventType
+                          Type: PropertyType
+                          DataType: NodeId
+                        - Name: SourceNode
+                          Type: PropertyType
+                          DataType: NodeId
+                        - Name: SourceName
+                          Type: PropertyType
+                          DataType: String
+                        - Name: Time
+                          Type: PropertyType
+                          DataType: UtcTime
+                        - Name: ReceiveTime
+                          Type: PropertyType
+                          DataType: UtcTime
+                        - Name: Message
+                          Type: PropertyType
+                          DataType: LocalizedText
+                        - Name: Severity
+                          Type: PropertyType
+                          DataType: UInt16
                   - Name: LeftMargin
                     Type: BaseVariableType
                     DataType: Size

@@ -112,7 +112,7 @@ public partial class RecipeDatabaseTreeLoader
                         var insVals = new List<object> { op.OperationID, op.Name, op.Description ?? "", phsCsv };
                         if (HasOperationColumn("CreatedBy")) { insCols.Add("CreatedBy"); insVals.Add(op.CreatedBy ?? ""); }
                         if (HasOperationColumn("CreatedDateTime")) { insCols.Add("CreatedDateTime"); insVals.Add(op.CreatedDateTime ?? ""); }
-                        if (HasOperationColumn("LastModifiedBY")) { insCols.Add("LastModifiedBY"); insVals.Add(GetLastModifiedByForOperation(op)); }
+                        if (HasOperationColumn("LastModifiedBY")) { insCols.Add("LastModifiedBY"); insVals.Add(op.CreatedBy ?? ""); }
                         if (HasOperationColumn("LastModifiedDateTime")) { insCols.Add("LastModifiedDateTime"); insVals.Add(op.CreatedDateTime ?? FormatStoredCreatedDateTimeNow()); }
                         var row = new object[1, insVals.Count];
                         for (int c = 0; c < insVals.Count; c++) row[0, c] = insVals[c];

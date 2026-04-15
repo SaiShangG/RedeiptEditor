@@ -934,6 +934,8 @@ public partial class RecipeDatabaseTreeLoader
             var insVals = new List<object> { newId, name ?? "", description ?? "", "" };
             if (HasOperationColumn("CreatedBy")) { insCols.Add("CreatedBy"); insVals.Add(user); }
             if (HasOperationColumn("CreatedDateTime")) { insCols.Add("CreatedDateTime"); insVals.Add(dt); }
+            if (HasOperationColumn("LastModifiedBY")) { insCols.Add("LastModifiedBY"); insVals.Add(user); }
+            if (HasOperationColumn("LastModifiedDateTime")) { insCols.Add("LastModifiedDateTime"); insVals.Add(dt); }
             var row = new object[1, insVals.Count];
             for (int c = 0; c < insVals.Count; c++) row[0, c] = insVals[c];
             _opTable.Insert(insCols.ToArray(), row);
