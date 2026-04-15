@@ -4872,6 +4872,7 @@ Children:
             Type: BaseVariableType
             DataType: Size
             ModellingRule: Optional
+            Value: -208.0
       - Name: HorizontalAlignment
         Type: BaseVariableType
         DataType: HorizontalAlignment
