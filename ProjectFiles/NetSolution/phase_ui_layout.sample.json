@@ -1,61 +1,111 @@
 {
-  "version": 1,
-  "description": "Mirrors PhaseManager Start(): ScrollView1/Rows -> ParaPanel1..3",
-  "sections": [  {
-    "id": "ParaPanel3",
-    "panelType": "PhaseParasPanel",
-    "title": "This is the Valve Setting Area",
-    "rowLayoutPath": "VL/HL",
-    "items": [
-      { "id": "ValveSetting0", "widgetType": "PhaseValvePanel", "valveLabel": "Valve0", "bindKey": "Valve0" },
-      { "id": "ValveSetting1", "widgetType": "PhaseValvePanel", "valveLabel": "Valve1", "bindKey": "Valve1" },
-      { "id": "ValveSetting2", "widgetType": "PhaseValvePanel", "valveLabel": "Valve2", "bindKey": "Valve2" },
-      { "id": "ValveSetting3", "widgetType": "PhaseValvePanel", "valveLabel": "Valve3", "bindKey": "Valve3" },
-      { "id": "ValveSetting4", "widgetType": "PhaseValvePanel", "valveLabel": "Valve4", "bindKey": "Valve4" },
-      { "id": "ValveSetting5", "widgetType": "PhaseValvePanel", "valveLabel": "Valve5", "bindKey": "Valve5" },
-      { "id": "ValveSetting6", "widgetType": "PhaseValvePanel", "valveLabel": "Valve6", "bindKey": "Valve6" },
-      { "id": "ValveSetting7", "widgetType": "PhaseValvePanel", "valveLabel": "Valve7", "bindKey": "Valve7" },
-      { "id": "ValveSetting8", "widgetType": "PhaseValvePanel", "valveLabel": "Valve8", "bindKey": "Valve8" },
-      { "id": "ValveSetting9", "widgetType": "PhaseValvePanel", "valveLabel": "Valve9", "bindKey": "Valve9" },
-      { "id": "ValveSetting10", "widgetType": "PhaseValvePanel", "valveLabel": "Valve10", "bindKey": "Valve10" },
-      { "id": "ValveSetting11", "widgetType": "PhaseValvePanel", "valveLabel": "Valve11", "bindKey": "Valve11" }
-    ]
-  },
+  "version": 3,
+  "description": "Single-template test layout aligned to UDT_Phase. Two test configs per area.",
+  "sections": [
     {
       "id": "ParaPanel1",
       "panelType": "PhaseParasPanel",
-      "title": "This is the Phase Parameter Area",
+      "title": "Phase Parameters Area (Test x2)",
       "rowLayoutPath": "VL/HL",
       "items": [
-        { "id": "Para0", "widgetType": "PhaseSinglePara", "bindKey": "Parameter1" },
-        { "id": "Para1", "widgetType": "PhaseSinglePara", "bindKey": "Parameter2" },
-        { "id": "Para2", "widgetType": "PhaseSinglePara", "bindKey": "Parameter3" },
-        { "id": "Para3", "widgetType": "PhaseSinglePara", "bindKey": "Parameter4" },
-        { "id": "Para4", "widgetType": "PhaseSinglePara", "bindKey": "Parameter5" },
-        { "id": "Para5", "widgetType": "PhaseSinglePara", "bindKey": "Parameter6" },
-        { "id": "Para6", "widgetType": "PhaseSinglePara", "bindKey": "Parameter7" },
-        { "id": "Para7", "widgetType": "PhaseSinglePara", "bindKey": "Parameter8" },
-        { "id": "Para8", "widgetType": "PhaseSinglePara", "bindKey": "ParaSlot8" },
-        { "id": "Para9", "widgetType": "PhaseSinglePara", "bindKey": "ParaSlot9" }
+        {
+          "id": "Para0",
+          "widgetType": "PhaseSinglePara",
+          "bindKey": "Parameter1",
+          "bind": {
+            "bufferField": "PP.FixedSetPointValue",
+            "valueRank": "OneDimension",
+            "index": 0,
+            "uiProperty": "Text",
+            "sourceTagPath": "PP.FixedSetPointValue[0]"
+          }
+        },
+        {
+          "id": "Para1",
+          "widgetType": "PhaseSinglePara",
+          "bindKey": "Parameter2",
+          "bind": {
+            "bufferField": "PP.ControllerSetPointValue",
+            "valueRank": "OneDimension",
+            "index": 0,
+            "uiProperty": "Text",
+            "sourceTagPath": "PP.ControllerSetPointValue[0]"
+          }
+        }
       ]
     },
     {
       "id": "ParaPanel2",
       "panelType": "PhaseParasPanel",
-      "title": "This is the End Conditions Area",
+      "title": "End Conditions Area (Test x2)",
       "rowLayoutPath": "VL/HL",
       "rowLayoutHorizontalGap": 0,
       "items": [
-        { "id": "ParaUserAck", "widgetType": "PhaseUserAck", "bindKeySwitch": "EcUserAckEnabled" },
-        { "id": "ParaAndandOr1", "widgetType": "PhaseAndorOr", "width": 80, "bindKeySwitch": "EcAndOr1" },
-        { "id": "ParaRunningTIme", "widgetType": "PhaseRunningTime", "bindKeySwitch": "EcRunTimeEnabled", "bindKeyText": "EcRunTimeHms" },
-        { "id": "ParaCP1", "widgetType": "PhaseParaCompare1", "bindKeySwitch": "EcCp1Enabled", "bindKeyText": "EcCp1Level" },
-        { "id": "ParaCP2", "widgetType": "PhaseParaCompare2", "bindKeySwitch": "EcCp2Enabled", "bindKeyText": "EcCp2Level", "bindKeyCombo": "EcCp2Op" },
-        { "id": "ParaAndandOr2", "widgetType": "PhaseAndorOr", "width": 80, "bindKeySwitch": "EcAndOr2" },
-        { "id": "ParaCP3", "widgetType": "PhaseParaCompare2", "bindKeySwitch": "EcCp3Enabled", "bindKeyText": "EcCp3Level", "bindKeyCombo": "EcCp3Op" },
-        { "id": "ParaCP4", "widgetType": "PhaseParaCompare1", "bindKeySwitch": "EcCp4Enabled", "bindKeyText": "EcCp4Level" }
+        {
+          "id": "ParaRunningTIme",
+          "widgetType": "PhaseRunningTime",
+          "bindKeySwitch": "EcRunTimeEnabled",
+          "bindKeyText": "EcRunTimeHms",
+          "bind": {
+            "switchField": "EC.EC1Enable",
+            "textFields": [
+              "EC.RunningTimeHr",
+              "EC.RunningTimeMin",
+              "EC.RunningTimeSec"
+            ],
+            "uiPropertySwitch": "Checked",
+            "uiPropertyText": "Text"
+          }
+        },
+        {
+          "id": "ParaCP1",
+          "widgetType": "PhaseParaCompare1",
+          "bindKeySwitch": "EcCp1Enabled",
+          "bindKeyText": "EcCp1Level",
+          "bind": {
+            "switchField": "EC.EC1Enable",
+            "valueField": "EC.EC1SP",
+            "selectorField": "EC.EC1Selected",
+            "operatorField": "EC.EC1Operator",
+            "uiPropertySwitch": "Checked",
+            "uiPropertyText": "Text"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ParaPanel3",
+      "panelType": "PhaseParasPanel",
+      "title": "Valve/Pump Area (Test x2)",
+      "rowLayoutPath": "VL/HL",
+      "items": [
+        {
+          "id": "ValveSetting0",
+          "widgetType": "PhaseValvePanel",
+          "valveLabel": "Valve[0]",
+          "bindKey": "Valve0",
+          "bind": {
+            "bufferField": "PP.Valve",
+            "valueRank": "OneDimension",
+            "index": 0,
+            "uiProperty": "Checked",
+            "sourceTagPath": "PP.Valve[0]"
+          }
+        },
+        {
+          "id": "ValveSetting1",
+          "widgetType": "PhaseValvePanel",
+          "valveLabel": "Pump[0]",
+          "bindKey": "Pump0",
+          "bind": {
+            "bufferField": "PP.Pump",
+            "valueRank": "OneDimension",
+            "index": 0,
+            "uiProperty": "Checked",
+            "sourceTagPath": "PP.Pump[0]"
+          }
+        }
       ]
     }
-  
   ]
 }

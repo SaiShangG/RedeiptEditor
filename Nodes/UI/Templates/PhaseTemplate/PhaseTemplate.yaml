@@ -1,2 +1,103 @@
 Name: PhaseTemplate
 Type: FolderType
+Children:
+- Name: PhaseTemplate1
+  Id: g=e8e50c22ca31c78601f0cf87585fa07e
+  Supertype: Panel
+  ReferenceType: HasComponent
+  Children:
+  - Name: Width
+    Type: BaseVariableType
+    DataType: Size
+    ModellingRule: Optional
+    Value: 300.0
+  - Name: Height
+    Type: BaseVariableType
+    DataType: Size
+    ModellingRule: Optional
+    Value: 300.0
+  - Name: ScrollView1
+    Type: ScrollView
+    Children:
+    - Name: ContentWidth
+      Type: BaseDataVariableType
+      DataType: Size
+      AccessLevel: Read
+    - Name: ContentHeight
+      Type: BaseDataVariableType
+      DataType: Size
+      AccessLevel: Read
+    - Name: ViewWidth
+      Type: BaseDataVariableType
+      DataType: Size
+      AccessLevel: Read
+    - Name: ViewHeight
+      Type: BaseDataVariableType
+      DataType: Size
+      AccessLevel: Read
+    - Name: ContentX
+      Type: BaseDataVariableType
+      DataType: Size
+    - Name: ContentY
+      Type: BaseDataVariableType
+      DataType: Size
+    - Class: Reference
+      Target: ns=3;i=1394
+      Direction: Forward
+    - Name: Rows
+      Type: ColumnLayout
+  - Name: PhaseManager
+    Type: NetLogic
+  - Name: HorizontalAlignment
+    Type: BaseVariableType
+    DataType: HorizontalAlignment
+    ModellingRule: Optional
+    Value: 3
+  - Name: VerticalAlignment
+    Type: BaseVariableType
+    DataType: VerticalAlignment
+    ModellingRule: Optional
+    Value: 3
+  - Name: BuildPhaseTemplate
+    Type: NetLogic
+    Children:
+    - Name: BehaviourStartPriority
+      Type: BehaviourStartPriorityVariableType
+      DataType: Byte
+      Value: 180
+    - Name: TemplateJsonFile
+      Type: BaseDataVariableType
+      DataType: ResourceUri
+      Value: "ns=7;%PROJECTDIR%/NetSolution/phase_ui_layout.sample.json"
+    - Class: Method
+      Name: BuildSingleTemplateDesignTime
+    - Name: TargetUIModelBufferLink
+      Type: BaseDataVariableType
+      DataType: UDT_Phase
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "/Objects/RedeiptEditor/Model/UIData/PhaseData/UDT_PhaseTemplateUIBuffer1"
+        Children:
+        - Name: Mode
+          Type: BaseVariableType
+          DataType: DynamicLinkMode
+          ModellingRule: Optional
+          Value: 2
+    - Class: Method
+      Name: BuildTemplateUI
+    - Name: TargetPanel
+      Type: BaseDataVariableType
+      DataType: NodeId
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../..@NodeId"
+        Children:
+        - Name: Mode
+          Type: BaseVariableType
+          DataType: DynamicLinkMode
+          ModellingRule: Optional
+          Value: 2

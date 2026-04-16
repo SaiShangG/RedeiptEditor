@@ -4034,41 +4034,55 @@ Children:
                   Type: BaseDataVariableType
                   DataType: Boolean
                   Value: true
-                - Name: PhaseParasWindow1
-                  Type: PhaseParasWindow
+                - Name: PanelLoader3
+                  Type: PanelLoader
                   Children:
-                  - Name: ScrollView1
-                    Type: ScrollView
+                  - Name: Panel
+                    Type: NodePointer
+                    DataType: NodeId
+                    Value: "/Objects/RedeiptEditor/UI/Templates/PhaseTemplate/PhaseTemplate1"
                     Children:
-                    - Name: ContentWidth
-                      Type: BaseDataVariableType
-                      DataType: Size
-                      AccessLevel: Read
-                    - Name: ContentHeight
-                      Type: BaseDataVariableType
-                      DataType: Size
-                      AccessLevel: Read
-                    - Name: ViewWidth
-                      Type: BaseDataVariableType
-                      DataType: Size
-                      AccessLevel: Read
-                    - Name: ViewHeight
-                      Type: BaseDataVariableType
-                      DataType: Size
-                      AccessLevel: Read
-                    - Name: ContentX
-                      Type: BaseDataVariableType
-                      DataType: Size
-                    - Name: ContentY
-                      Type: BaseDataVariableType
-                      DataType: Size
-                    - Class: Reference
-                      Target: ns=3;i=1394
-                      Direction: Forward
-                    - Name: Rows
-                      Type: ColumnLayout
-                  - Name: PhaseManager
-                    Type: NetLogic
+                    - Name: Kind
+                      Type: PropertyType
+                      DataType: NodeId
+                      Value: "/Types/ObjectTypes/BaseObjectType/BaseUIObject/Item/Container"
+                  - Name: CurrentPanel
+                    Type: NodePointer
+                    DataType: NodeId
+                    AccessLevel: Read
+                    Children:
+                    - Name: Kind
+                      Type: PropertyType
+                      DataType: NodeId
+                      Value: "/Types/ObjectTypes/BaseObjectType/BaseUIObject/Item"
+                  - Class: Reference
+                    Target: ns=3;i=478
+                    Direction: Forward
+                  - Name: Width
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 300.0
+                  - Name: Height
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 300.0
+                  - Name: HorizontalAlignment
+                    Type: BaseVariableType
+                    DataType: HorizontalAlignment
+                    ModellingRule: Optional
+                    Value: 3
+                  - Name: VerticalAlignment
+                    Type: BaseVariableType
+                    DataType: VerticalAlignment
+                    ModellingRule: Optional
+                    Value: 3
+                  - Name: TopMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 16.0
                   - Name: Visible
                     Type: BaseDataVariableType
                     DataType: Boolean
@@ -4111,11 +4125,6 @@ Children:
                         DataType: Boolean
                         ReferenceType: HasParameter
                         ModellingRule: Optional
-                  - Name: TopMargin
-                    Type: BaseVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                    Value: 16.0
           - Name: MouseDownEventHandler1
             Type: EventHandler
             Children:
