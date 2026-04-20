@@ -12,3 +12,7 @@ Children:
   DataType: NodeId
   ValueRank: OneDimension
   ArrayDimensions: [0]
+- Name: Mode
+  Type: BaseDataVariableType
+  DataType: FetchModes
+  Value: 1

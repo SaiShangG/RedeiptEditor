@@ -22,6 +22,15 @@ public class RecipeDatabaseManager : BaseNetLogic
 
     public static RecipeDatabaseManager Instance { get; private set; }
 
+    /// <summary>
+    /// Modifiable Status：主面板写入 <c>TreeListData/SelectedTreeData/SelectedReceiptCurrentStatus</c>；
+    /// 部分模板写入 <c>UIData/ReceiptStatusSet</c>。订阅变更以在配方树上标 *。
+    /// </summary>
+    private uint _modifiableReceiptStatusAffinityId;
+    private IEventRegistration _modifiableReceiptStatusRegSelectedTree;
+    private IEventRegistration _modifiableReceiptStatusRegReceiptStatusSet;
+    private int _modifiableReceiptStatusSuppressDepth;
+
     /// <summary>供 <see cref="RecipeDatabaseTreeLoader"/> 等在 Save 时读取当前登录用户（Manager 常绑定到带会话的 UI）。</summary>
     public static string TryGetInstanceUserBrowseName()
     {
@@ -53,10 +62,12 @@ public class RecipeDatabaseManager : BaseNetLogic
     {
         Instance = this;
         if (EnableLog) Log.Info(LogCategory, "RecipeDatabaseManager 已启动");
+        EnsureModifiableReceiptStatusObservers();
     }
 
     public override void Stop()
     {
+        DetachModifiableReceiptStatusObservers();
         Instance = null;
         if (EnableLog) Log.Info(LogCategory, "RecipeDatabaseManager 已停止");
     }
@@ -813,7 +824,7 @@ public class RecipeDatabaseManager : BaseNetLogic
         RefreshTreeList();
     }
 
-    /// <summary>Phase 面板输入变更：Buffer→内存树、<see cref="RecipeDatabaseTreeLoader.MarkDirtyPhase"/>（树名 *）；autosave 时立即 <see cref="RecipeDatabaseTreeLoader.Save"/>。</summary>
+    /// <summary>Phase 面板输入变更：模板 UDT→内存树、<see cref="RecipeDatabaseTreeLoader.MarkDirtyPhase"/>（树名 *）；autosave 时立即 <see cref="RecipeDatabaseTreeLoader.Save"/>。</summary>
     [ExportMethod]
     public void NotifyPhaseParameterBufferEdited()
     {
@@ -823,7 +834,7 @@ public class RecipeDatabaseManager : BaseNetLogic
         try
         {
             bool wasDirty = Loader.IsDirtyPhase(pId);
-            Loader.MergePhaseUiBufferIntoPhaseNode(pId);
+            Loader.MergeUdtPhaseTemplateBufferIntoPhaseNode(pId);
             Loader.MarkDirtyPhase(pId);
             Loader.MarkModified();
             if (GetAutosave())
@@ -878,6 +889,114 @@ public class RecipeDatabaseManager : BaseNetLogic
         if (rId <= 0) return;
         string status = gt.ReadSelectedReceiptCurrentStatusFromModel();
         Loader.UpdateReceiptStatus(rId, status);
+    }
+
+    /// <summary>在工程就绪后补订阅（<c>Start</c> 时 <c>Project.Current</c> 可能尚未可用）。</summary>
+    public void EnsureModifiableReceiptStatusObservers()
+    {
+        try
+        {
+            if (_modifiableReceiptStatusAffinityId == 0)
+                _modifiableReceiptStatusAffinityId = LogicObject.Context.AssignAffinityId();
+            TryAttachModifiableReceiptObserver(ref _modifiableReceiptStatusRegSelectedTree, TryGetSelectedReceiptCurrentStatusVariable());
+            TryAttachModifiableReceiptObserver(ref _modifiableReceiptStatusRegReceiptStatusSet, TryGetUidataReceiptStatusSetVariable());
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Warning(LogCategory, $"Modifiable status 订阅: {ex.Message}");
+        }
+    }
+
+    /// <summary>切换树选中配方/工序/阶段时，将 <c>ReceiptStatusSet</c> 与内存树 Status 对齐（抑制订阅，避免误标脏）。</summary>
+    public void PushReceiptStatusSetFromSelectedReceipt()
+    {
+        if (Loader == null || GenerateTreeList.Instance == null) return;
+        var v = TryGetUidataReceiptStatusSetVariable();
+        if (v == null) return;
+        int rId = GenerateTreeList.Instance.SelectedReceiptId;
+        string status;
+        if (rId <= 0 || !Loader.ReceiptById.TryGetValue(rId, out var rNode))
+            status = RecipeDatabaseTreeLoader.DefaultReceiptStatus;
+        else
+            status = string.IsNullOrWhiteSpace(rNode.Status)
+                ? RecipeDatabaseTreeLoader.DefaultReceiptStatus
+                : rNode.Status.Trim();
+        string cur = GetPlainStringFromVariableValue(v);
+        if (string.Equals(cur, status, StringComparison.OrdinalIgnoreCase)) return;
+        _modifiableReceiptStatusSuppressDepth++;
+        try { v.Value = status; }
+        finally { _modifiableReceiptStatusSuppressDepth--; }
+    }
+
+    private IUAVariable TryGetSelectedReceiptCurrentStatusVariable()
+    {
+        try
+        {
+            var v = Project.Current?.GetObject("Model/UIData/TreeListData/SelectedTreeData")?.GetVariable("SelectedReceiptCurrentStatus");
+            if (v != null) return v;
+            return GetRedeiptEditorRoot(LogicObject)?.GetObject("Model")?.GetObject("UIData")?.GetObject("TreeListData")?.GetObject("SelectedTreeData")?.GetVariable("SelectedReceiptCurrentStatus");
+        }
+        catch { return null; }
+    }
+
+    private IUAVariable TryGetUidataReceiptStatusSetVariable()
+    {
+        try
+        {
+            var v = Project.Current?.GetObject("Model/UIData")?.GetVariable("ReceiptStatusSet");
+            if (v != null) return v;
+            return GetRedeiptEditorRoot(LogicObject)?.GetObject("Model")?.GetObject("UIData")?.GetVariable("ReceiptStatusSet");
+        }
+        catch { return null; }
+    }
+
+    private void TryAttachModifiableReceiptObserver(ref IEventRegistration slot, IUAVariable v)
+    {
+        if (v == null || slot != null) return;
+        var obs = new CallbackVariableChangeObserver((iv, nv, ov, accessPaths, sender) =>
+            OnModifiableReceiptStatusModelChanged(iv));
+        slot = v.RegisterEventObserver(obs, EventType.VariableValueChanged, _modifiableReceiptStatusAffinityId);
+    }
+
+    private void DetachModifiableReceiptStatusObservers()
+    {
+        try { _modifiableReceiptStatusRegSelectedTree?.Dispose(); }
+        catch { }
+        _modifiableReceiptStatusRegSelectedTree = null;
+        try { _modifiableReceiptStatusRegReceiptStatusSet?.Dispose(); }
+        catch { }
+        _modifiableReceiptStatusRegReceiptStatusSet = null;
+    }
+
+    private void OnModifiableReceiptStatusModelChanged(IUAVariable iv)
+    {
+        if (_modifiableReceiptStatusSuppressDepth > 0) return;
+        if (iv == null || Loader == null || GenerateTreeList.Instance == null) return;
+        var tree = GenerateTreeList.Instance;
+        int rId = tree.SelectedReceiptId;
+        if (rId <= 0) return;
+        string status = GetPlainStringFromVariableValue(iv);
+        if (string.IsNullOrWhiteSpace(status) || status == "0")
+            status = RecipeDatabaseTreeLoader.DefaultReceiptStatus;
+        else
+            status = status.Trim();
+        if (!Loader.ReceiptById.TryGetValue(rId, out var node)) return;
+        string cur = string.IsNullOrWhiteSpace(node.Status)
+            ? RecipeDatabaseTreeLoader.DefaultReceiptStatus
+            : node.Status.Trim();
+        if (string.Equals(cur, status, StringComparison.OrdinalIgnoreCase)) return;
+        Loader.UpdateReceiptStatus(rId, status);
+        if (GetAutosave())
+        {
+            Loader.Save();
+            AfterReceiptDatabasePersisted();
+            tree.RefreshAndKeepReceiptSelection(rId, status);
+        }
+        else
+        {
+            tree.RefreshAndKeepReceiptSelection(rId, status);
+            GenerateOperationPhaseListPanel.Instance?.Generate();
+        }
     }
 
     #endregion

@@ -1,2 +1,357 @@
 Name: DataTypes
 Type: FolderType
+Children:
+- Class: DataType
+  Name: UDT_Operation
+  Id: g=5039186152a13e2c43157dd6823420e7
+  Supertype: Structure
+  StructDefinition: 
+   {
+    "Name": "UDT_Operation",
+    "DataType": {
+     "IdType": 2,
+     "Id": "5039186152a13e2c43157dd6823420e7",
+     "Namespace": 7
+    },
+    "Fields": [{
+      "Name": "Name",
+      "DataType": {
+       "Id": 12
+      }
+     },{
+      "Name": "ID",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "NoOfPhases",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "RunningPhase",
+      "DataType": {
+       "IdType": 2,
+       "Id": "04440f024acdd3cb7fed520fd002b371",
+       "Namespace": 7
+      }
+     }]
+   }
+  DisplayName: {"LocaleId":"","Text":"UDT_Operation"}
+  Children:
+  - Name: ns=0;Default Binary
+    Type: DataTypeEncodingType
+    ModellingRule: None
+    DisplayName: {"LocaleId":"","Text":"Default Binary"}
+    ReferenceType: HasEncoding
+- Class: DataType
+  Name: UDT_EndConditions
+  Id: g=52c136c61bb6b2955657d6b83ebc49d4
+  Supertype: Structure
+  StructDefinition: 
+   {
+    "Name": "UDT_EndConditions",
+    "DataType": {
+     "IdType": 2,
+     "Id": "52c136c61bb6b2955657d6b83ebc49d4",
+     "Namespace": 7
+    },
+    "Fields": [{
+      "Name": "EC1Selected",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "EC2Selected",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "EC3Selected",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "LogicOperator1",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "LogicOperator2",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "EC1Operator",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "EC2Operator",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "EC3Operator",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "EC1Enable",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "EC2Enable",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "EC3Enable",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "RunningTimeHr",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "RunningTimeMin",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "RunningTimeSec",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "EC1SP",
+      "DataType": {
+       "Id": 10
+      }
+     },{
+      "Name": "EC2SP",
+      "DataType": {
+       "Id": 10
+      }
+     },{
+      "Name": "EC3SP",
+      "DataType": {
+       "Id": 10
+      }
+     }]
+   }
+  DisplayName: {"LocaleId":"","Text":"UDT_EndConditions"}
+  Children:
+  - Name: ns=0;Default Binary
+    Type: DataTypeEncodingType
+    ModellingRule: None
+    DisplayName: {"LocaleId":"","Text":"Default Binary"}
+    ReferenceType: HasEncoding
+- Class: DataType
+  Name: UDT_RecipeHandshake
+  Id: g=6ff18e73f5d078a426e0c633a4c05c88
+  Supertype: Structure
+  StructDefinition: 
+   {
+    "Name": "UDT_RecipeHandshake",
+    "DataType": {
+     "IdType": 2,
+     "Id": "6ff18e73f5d078a426e0c633a4c05c88",
+     "Namespace": 7
+    },
+    "Fields": [{
+      "Name": "EvtDone",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "StsLoadAckSeq",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "EvtFault",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "CmdLoad",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "CmdSeq",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "CmdStart",
+      "DataType": {
+       "Id": 1
+      }
+     }]
+   }
+  DisplayName: {"LocaleId":"","Text":"UDT_RecipeHandshake"}
+  Children:
+  - Name: ns=0;Default Binary
+    Type: DataTypeEncodingType
+    ModellingRule: None
+    DisplayName: {"LocaleId":"","Text":"Default Binary"}
+    ReferenceType: HasEncoding
+- Class: DataType
+  Name: UDT_Batch
+  Id: g=6240dd2ca601f63484025417f5bc67b0
+  Supertype: Structure
+  StructDefinition: 
+   {
+    "Name": "UDT_Batch",
+    "DataType": {
+     "IdType": 2,
+     "Id": "6240dd2ca601f63484025417f5bc67b0",
+     "Namespace": 7
+    },
+    "Fields": [{
+      "Name": "BatchID",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "BatchStatus",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "EvtBatchDone",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "BatchName",
+      "DataType": {
+       "Id": 12
+      }
+     },{
+      "Name": "RunningPhaseName",
+      "DataType": {
+       "Id": 12
+      }
+     },{
+      "Name": "BatchStart",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "RecipeName",
+      "DataType": {
+       "Id": 12
+      }
+     }]
+   }
+  DisplayName: {"LocaleId":"","Text":"UDT_Batch"}
+  Children:
+  - Name: ns=0;Default Binary
+    Type: DataTypeEncodingType
+    ModellingRule: None
+    DisplayName: {"LocaleId":"","Text":"Default Binary"}
+    ReferenceType: HasEncoding
+- Class: DataType
+  Name: UDT_Phase
+  Id: g=04440f024acdd3cb7fed520fd002b371
+  Supertype: Structure
+  StructDefinition: 
+   {
+    "Name": "UDT_Phase",
+    "DataType": {
+     "IdType": 2,
+     "Id": "04440f024acdd3cb7fed520fd002b371",
+     "Namespace": 7
+    },
+    "Fields": [{
+      "Name": "PP",
+      "DataType": {
+       "IdType": 2,
+       "Id": "11fd0520c5654d52bd14cc940a7c76ad",
+       "Namespace": 7
+      }
+     },{
+      "Name": "EC",
+      "DataType": {
+       "IdType": 2,
+       "Id": "52c136c61bb6b2955657d6b83ebc49d4",
+       "Namespace": 7
+      }
+     }]
+   }
+  DisplayName: {"LocaleId":"","Text":"UDT_Phase"}
+  Children:
+  - Name: ns=0;Default Binary
+    Type: DataTypeEncodingType
+    ModellingRule: None
+    DisplayName: {"LocaleId":"","Text":"Default Binary"}
+    ReferenceType: HasEncoding
+- Class: DataType
+  Name: UDT_PhaseParameters
+  Id: g=11fd0520c5654d52bd14cc940a7c76ad
+  Supertype: Structure
+  StructDefinition: 
+   {
+    "Name": "UDT_PhaseParameters",
+    "DataType": {
+     "IdType": 2,
+     "Id": "11fd0520c5654d52bd14cc940a7c76ad",
+     "Namespace": 7
+    },
+    "Fields": [{
+      "Name": "Valve",
+      "DataType": {
+       "Id": 1
+      },
+      "ValueRank": "OneDimension",
+      "ArrayDimensions": [32]
+     },{
+      "Name": "Pump",
+      "DataType": {
+       "Id": 1
+      },
+      "ValueRank": "OneDimension",
+      "ArrayDimensions": [32]
+     },{
+      "Name": "FixedSetPointEbl",
+      "DataType": {
+       "Id": 1
+      },
+      "ValueRank": "OneDimension",
+      "ArrayDimensions": [32]
+     },{
+      "Name": "FixedSetPointValue",
+      "DataType": {
+       "Id": 10
+      },
+      "ValueRank": "OneDimension",
+      "ArrayDimensions": [10]
+     },{
+      "Name": "ControllerEbl",
+      "DataType": {
+       "Id": 1
+      },
+      "ValueRank": "OneDimension",
+      "ArrayDimensions": [32]
+     },{
+      "Name": "ControllerSetPointValue",
+      "DataType": {
+       "Id": 10
+      },
+      "ValueRank": "OneDimension",
+      "ArrayDimensions": [10]
+     }]
+   }
+  DisplayName: {"LocaleId":"","Text":"UDT_PhaseParameters"}
+  Children:
+  - Name: ns=0;Default Binary
+    Type: DataTypeEncodingType
+    ModellingRule: None
+    DisplayName: {"LocaleId":"","Text":"Default Binary"}
+    ReferenceType: HasEncoding

@@ -3,3 +3,4 @@ Type: FolderType
 Children:
 - File: LoginForm/LoginForm.yaml
 - File: UserEditor/UserEditor.yaml
+- File: PhaseTemplate/PhaseTemplate.yaml

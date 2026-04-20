@@ -469,41 +469,89 @@ Children:
         Children:
         - Name: PhaseTemplateTypeID
           Type: StoreColumn
-          DataType: Int16
+          DataType: Int32
           Value: 1
         - Name: PhaseParameterInfoID
           Type: StoreColumn
           DataType: Int32
-        - Name: Parameter1
+        - Name: Valve
+          Type: StoreColumn
+          DataType: String
+          Value: "0"
+        - Name: Pump
+          Type: StoreColumn
+          DataType: String
+          Value: "0"
+        - Name: FixedSetPointEbl
+          Type: StoreColumn
+          DataType: String
+          Value: "0"
+        - Name: FixedSetPointValue
+          Type: StoreColumn
+          DataType: String
+          Value: "0"
+        - Name: ControllerEbl
+          Type: StoreColumn
+          DataType: String
+          Value: "0"
+        - Name: ControllerSetPointValue
+          Type: StoreColumn
+          DataType: String
+          Value: "0"
+        - Name: EC1Selected
           Type: StoreColumn
           DataType: Int32
-        - Name: Parameter2
+        - Name: EC2Selected
           Type: StoreColumn
           DataType: Int32
-        - Name: Parameter3
+        - Name: EC3Selected
           Type: StoreColumn
           DataType: Int32
-        - Name: Parameter4
+        - Name: LogicOperator1
           Type: StoreColumn
           DataType: Int32
-        - Name: Parameter5
+        - Name: LogicOperator2
           Type: StoreColumn
           DataType: Int32
-        - Name: Parameter6
+        - Name: EC1Operator
           Type: StoreColumn
           DataType: Int32
-        - Name: Parameter7
+        - Name: EC2Operator
           Type: StoreColumn
           DataType: Int32
-        - Name: Parameter8
+        - Name: EC3Operator
           Type: StoreColumn
           DataType: Int32
-        - Name: EcUserAckEnabled
+        - Name: EC1Enable
           Type: StoreColumn
-          DataType: Boolean
-        - Name: EcAndOr1
+          DataType: Int32
+        - Name: EC2Enable
           Type: StoreColumn
-          DataType: Boolean
+          DataType: Int32
+        - Name: EC3Enable
+          Type: StoreColumn
+          DataType: Int32
+        - Name: RunningTimeHr
+          Type: StoreColumn
+          DataType: Int32
+        - Name: RunningTimeMin
+          Type: StoreColumn
+          DataType: Int32
+        - Name: RunningTimeSec
+          Type: StoreColumn
+          DataType: Int32
+        - Name: EC1SP
+          Type: StoreColumn
+          DataType: Float
+        - Name: EC2SP
+          Type: StoreColumn
+          DataType: Float
+        - Name: EC3SP
+          Type: StoreColumn
+          DataType: Float
+      - Name: RecordLimit
+        Type: BaseDataVariableType
+        DataType: UInt32
     - Name: PhaseType2
       Type: SQLiteStoreTable
       Children:
@@ -529,6 +577,9 @@ Children:
         - Name: PhaseParameterInfoID
           Type: StoreColumn
           DataType: Int32
+      - Name: RecordLimit
+        Type: BaseDataVariableType
+        DataType: UInt32
   - Class: Reference
     Target: ns=9;i=30
     Direction: Forward
@@ -594,3 +645,12 @@ Children:
     Type: BaseDataVariableType
     DataType: String
     Value: "PhaseParametersDB"
+  - Name: GeneratePhaseColumns
+    Type: NetLogic
+    Children:
+    - Name: BehaviourStartPriority
+      Type: BehaviourStartPriorityVariableType
+      DataType: Byte
+      Value: 180
+    - Class: Method
+      Name: GenerateColumns

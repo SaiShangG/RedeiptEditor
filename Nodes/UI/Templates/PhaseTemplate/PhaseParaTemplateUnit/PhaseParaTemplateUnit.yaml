@@ -1,8 +1,8 @@
-Name: PhaseParaTemplate
+Name: PhaseParaTemplateUnit
 Type: FolderType
 Children:
-- Name: PhaseParasWindow
-  Id: g=98a399205af88ff82c0df49b0cd63eb3
+- Name: PhaseParasWindow1
+  Id: g=7357972ee656644e82e18a03a588a320
   Supertype: Panel
   ReferenceType: HasComponent
   Children:
@@ -102,8 +102,11 @@ Children:
       Value: 3
   - Name: PhaseManager
     Type: NetLogic
-- Name: PhaseParasPanel
-  Id: g=e42476b2e3641d59fcbf19b3480c05ac
+    Children:
+    - Class: Method
+      Name: RedrawPhaseParameterUI
+- Name: PhaseParasPanel1
+  Id: g=655a175a74e09b83ce5e7471ef7da970
   Supertype: Panel
   ReferenceType: HasComponent
   Children:
@@ -327,8 +330,8 @@ Children:
       DataType: Size
       ModellingRule: Optional
       Value: 32.0
-- Name: PhaseSinglePara
-  Id: g=b5c33206a9c19c54026df42f1a7e482a
+- Name: PhaseSinglePara1
+  Id: g=59b1d86cf7ddb50384ef0c38ce6d2595
   Supertype: Panel
   ReferenceType: HasComponent
   Children:
@@ -600,8 +603,8 @@ Children:
       DataType: ContentVerticalAlignment
       ModellingRule: Optional
       Value: 1
-- Name: PhaseUserAck
-  Id: g=14051cbb2485b76dc709f066d8cd4b49
+- Name: PhaseUserAck1
+  Id: g=c9bdff29c18053c0ff8b9586217d9048
   Supertype: Panel
   ReferenceType: HasComponent
   Children:
@@ -867,8 +870,8 @@ Children:
           DataType: LocalizedText
           ModellingRule: Optional
           Value: {"LocaleId":"en-US","Text":"Disable"}
-- Name: PhaseAndorOr
-  Id: g=649601de5e23399e460707e9182e868d
+- Name: PhaseAndorOr1
+  Id: g=72b3250b58964a8b15172943306c4e42
   Supertype: Panel
   ReferenceType: HasComponent
   Children:
@@ -1151,8 +1154,8 @@ Children:
           DataType: Size
           ModellingRule: Optional
           Value: 10.0
-- Name: PhaseRunningTime
-  Id: g=55478c97378298dec70940ea94e20106
+- Name: PhaseRunningTime1
+  Id: g=5ea6ae4cc921e33d33e1b1563b0fb324
   Supertype: Panel
   ReferenceType: HasComponent
   Children:
@@ -1582,8 +1585,8 @@ Children:
           Type: BaseVariableType
           DataType: VerticalAlignment
           ModellingRule: Optional
-- Name: PhaseParaCompare1
-  Id: g=0389f1f0cd7cd015cd49db84c6318e3b
+- Name: PhaseParaCompare3
+  Id: g=bd6355e690f6fb1a34df2e6e775aa45b
   Supertype: Panel
   ReferenceType: HasComponent
   Children:
@@ -1895,8 +1898,8 @@ Children:
           DataType: TextVerticalAlignment
           ModellingRule: Optional
           Value: 1
-- Name: PhaseParaCompare2
-  Id: g=0abded7cf681e64e0c90720723162b75
+- Name: PhaseParaCompare4
+  Id: g=4a883e868df22e904db30cdef116838a
   Supertype: Panel
   ReferenceType: HasComponent
   Children:
@@ -2289,8 +2292,8 @@ Children:
           Type: BaseDataVariableType
           DataType: String
           Value: ">="
-- Name: PhaseValvePanel
-  Id: g=5774513c4021cc8f4a42d748125969ff
+- Name: PhaseValvePanel1
+  Id: g=05194114e6be0c178b95225e1b4458c5
   Supertype: Panel
   ReferenceType: HasComponent
   Children:
