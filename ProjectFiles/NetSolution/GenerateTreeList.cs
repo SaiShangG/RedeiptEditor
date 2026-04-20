@@ -584,8 +584,7 @@ public class GenerateTreeList : BaseNetLogic
     /// <summary>遍历 TreeContainer 内所有配方项。选中 Operation/Phase 时不高亮 Receipt；仅选中 Receipt 时高亮该 Receipt。</summary>
     private void ApplyReceiptHighlight()
     {
-        var treeContainer = LogicObject.Owner.Get<Container>("TreeContainer")
-            ?? LogicObject.Owner.Get("ScrollView1")?.Get<Container>("TreeContainer");
+        var treeContainer = ResolveTreeContainer();
         if (treeContainer == null) return;
         bool highlightReceipt = (_selectedOperationId == 0 && _selectedPhaseId == 0);
         foreach (var col in treeContainer.Children.OfType<ColumnLayout>())
@@ -668,8 +667,7 @@ public class GenerateTreeList : BaseNetLogic
     /// <summary>遍历树中所有 Operation 项：先全部恢复默认，再仅当未选 Phase 时将当前选中的 Operation 高亮。</summary>
     private void ApplyOperationHighlight()
     {
-        var treeContainer = LogicObject.Owner.Get<Container>("TreeContainer")
-            ?? LogicObject.Owner.Get("ScrollView1")?.Get<Container>("TreeContainer");
+        var treeContainer = ResolveTreeContainer();
         if (treeContainer == null) return;
         foreach (var col in treeContainer.Children.OfType<ColumnLayout>())
         {
@@ -707,8 +705,7 @@ public class GenerateTreeList : BaseNetLogic
     /// <summary>遍历树中所有 Phase 项：先全部恢复默认，再仅将当前选中的 Phase 高亮。</summary>
     private void ApplyPhaseHighlight()
     {
-        var treeContainer = LogicObject.Owner.Get<Container>("TreeContainer")
-            ?? LogicObject.Owner.Get("ScrollView1")?.Get<Container>("TreeContainer");
+        var treeContainer = ResolveTreeContainer();
         if (treeContainer == null) return;
         foreach (var col in treeContainer.Children.OfType<ColumnLayout>())
         {
@@ -859,7 +856,7 @@ public class GenerateTreeList : BaseNetLogic
     private Container ResolveTreeContainer()
     {
         return LogicObject.Owner?.Get<Container>("TreeContainer")
-            ?? LogicObject.Owner?.Get("ScrollView1")?.Get<Container>("TreeContainer");
+            ?? LogicObject.Owner?.Get("Background/ScrollView1")?.Get<Container>("TreeContainer");
     }
 
     private static bool TryReadVariableInt(IUAVariable v, out int id)

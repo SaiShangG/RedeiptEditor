@@ -16,64 +16,19 @@ Children:
     DataType: Size
     ModellingRule: Optional
     Value: 300.0
-  - Name: ScrollView1
-    Type: ScrollView
+  - Name: Background
+    Type: Rectangle
     Children:
-    - Name: ContentWidth
-      Type: BaseDataVariableType
+    - Name: Width
+      Type: BaseVariableType
       DataType: Size
-      AccessLevel: Read
-    - Name: ContentHeight
-      Type: BaseDataVariableType
+      ModellingRule: Optional
+      Value: 50.0
+    - Name: Height
+      Type: BaseVariableType
       DataType: Size
-      AccessLevel: Read
-    - Name: ViewWidth
-      Type: BaseDataVariableType
-      DataType: Size
-      AccessLevel: Read
-    - Name: ViewHeight
-      Type: BaseDataVariableType
-      DataType: Size
-      AccessLevel: Read
-    - Name: ContentX
-      Type: BaseDataVariableType
-      DataType: Size
-    - Name: ContentY
-      Type: BaseDataVariableType
-      DataType: Size
-    - Class: Reference
-      Target: ns=3;i=1394
-      Direction: Forward
-    - Name: Rows
-      Type: ColumnLayout
-      Children:
-      - Name: PhaseParasPanel1
-        Type: PhaseParasPanel1
-        Children:
-        - Name: BG
-          Type: Rectangle
-          Children:
-          - Name: PolyLine1
-            Type: PolyLine
-          - Name: Rectangle1
-            Type: Rectangle
-            Children:
-            - Name: Title
-              Type: Label
-        - Name: VL
-          Type: ColumnLayout
-          Children:
-          - Name: HL
-            Type: RowLayout
-      - Name: HorizontalAlignment
-        Type: BaseVariableType
-        DataType: HorizontalAlignment
-        ModellingRule: Optional
-        Value: 3
-      - Name: VerticalAlignment
-        Type: BaseVariableType
-        DataType: VerticalAlignment
-        ModellingRule: Optional
+      ModellingRule: Optional
+      Value: 50.0
     - Name: HorizontalAlignment
       Type: BaseVariableType
       DataType: HorizontalAlignment
@@ -84,11 +39,89 @@ Children:
       DataType: VerticalAlignment
       ModellingRule: Optional
       Value: 3
-    - Name: Height
-      Type: BaseVariableType
-      DataType: Size
+    - Name: ScrollView1
+      Type: ScrollView
+      Children:
+      - Name: ContentWidth
+        Type: BaseDataVariableType
+        DataType: Size
+        AccessLevel: Read
+      - Name: ContentHeight
+        Type: BaseDataVariableType
+        DataType: Size
+        AccessLevel: Read
+      - Name: ViewWidth
+        Type: BaseDataVariableType
+        DataType: Size
+        AccessLevel: Read
+      - Name: ViewHeight
+        Type: BaseDataVariableType
+        DataType: Size
+        AccessLevel: Read
+      - Name: ContentX
+        Type: BaseDataVariableType
+        DataType: Size
+      - Name: ContentY
+        Type: BaseDataVariableType
+        DataType: Size
+      - Class: Reference
+        Target: ns=3;i=1394
+        Direction: Forward
+      - Name: Rows
+        Type: ColumnLayout
+        Children:
+        - Name: PhaseParasPanel1
+          Type: PhaseParasPanel1
+          Children:
+          - Name: BG
+            Type: Rectangle
+            Children:
+            - Name: PolyLine1
+              Type: PolyLine
+            - Name: Rectangle1
+              Type: Rectangle
+              Children:
+              - Name: Title
+                Type: Label
+          - Name: VL
+            Type: ColumnLayout
+            Children:
+            - Name: HL
+              Type: RowLayout
+        - Name: HorizontalAlignment
+          Type: BaseVariableType
+          DataType: HorizontalAlignment
+          ModellingRule: Optional
+          Value: 3
+        - Name: VerticalAlignment
+          Type: BaseVariableType
+          DataType: VerticalAlignment
+          ModellingRule: Optional
+      - Name: HorizontalAlignment
+        Type: BaseVariableType
+        DataType: HorizontalAlignment
+        ModellingRule: Optional
+        Value: 3
+      - Name: VerticalAlignment
+        Type: BaseVariableType
+        DataType: VerticalAlignment
+        ModellingRule: Optional
+        Value: 3
+      - Name: Height
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+        Value: 200.0
+    - Name: FillColor
+      Type: BaseDataVariableType
+      DataType: Color
       ModellingRule: Optional
-      Value: 200.0
+      Value: "#e0eff895"
+    - Name: BorderColor
+      Type: BaseDataVariableType
+      DataType: Color
+      ModellingRule: Optional
+      Value: "#0000001d"
   - Name: PhaseManager
     Type: NetLogic
     Children:

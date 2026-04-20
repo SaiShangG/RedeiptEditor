@@ -7,6 +7,8 @@
       "panelType": "PhaseParasPanel",
       "title": "Phase Parameters Area (Test x2)",
       "rowLayoutPath": "VL/HL",
+      "rowLayoutHorizontalGap": 32,
+      "sectionVerticalGap": 16,
       "items": [
         {
           "id": "Para0",
@@ -62,8 +64,11 @@
     {
       "id": "ParaPanel3",
       "panelType": "PhaseParasPanel",
-      "title": "Pump Area (Test x2)",
+      "title": "Flow Path",
       "rowLayoutPath": "VL/HL",
+      "rowLayoutHorizontalGap": 32,
+      "sectionVerticalGap": 16,
+      
       "items": [
     
         {
@@ -101,15 +106,7 @@
             "uiProperty": "Checked",
             "sourceTagPath": "PP.Pump[2]"
           }
-        }
-      ]
-    },
-    {
-      "id": "ParaPanel4",
-      "panelType": "PhaseParasPanel",
-      "title": "Valve Area (Test x2)",
-      "rowLayoutPath": "VL/HL",
-      "items": [
+        },
         {
           "id": "ValveSetting0",
           "widgetType": "PhaseValvePanel",
@@ -146,14 +143,16 @@
             "sourceTagPath": "PP.Valve[2]"
           }
         }
-     
       ]
     },
+   
     {
       "id": "ParaPanel5",
       "panelType": "PhaseParasPanel",
       "title": "Phase End Conditions Area",
       "rowLayoutPath": "VL/HL",
+      "rowLayoutHorizontalGap": 32,
+      "sectionVerticalGap": 16,
       "items": [
         {
           "id": "PanelEndConditions",

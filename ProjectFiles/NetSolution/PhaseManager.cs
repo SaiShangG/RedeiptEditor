@@ -22,6 +22,7 @@ public class PhaseManager : BaseNetLogic
     public static PhaseManager Instance { get; private set; }
      private const string UdtPhaseTemplateUiBufferRootPath = "Model/UIData/PhaseData/UDT_PhaseTemplateUIBuffer1";
      private const string TestTextTargetVariablePath = UdtPhaseTemplateUiBufferRootPath + "/PP/FixedSetPointValue";
+    private const string ScrollRowsPath = "Background/ScrollView1/Rows";
 
     public override void Start()
     {
@@ -120,6 +121,7 @@ public class PhaseManager : BaseNetLogic
     private void WireLayoutPhaseInputObservers(IUAObject owner, PhaseUILayoutRoot root)
     {
         if (owner == null || root?.Sections == null || _phaseInputAffinityId == 0) return;
+        if (owner.Get(ScrollRowsPath) == null) return;
         foreach (var sec in root.Sections)
         {
             if (sec?.Items == null) continue;
@@ -127,7 +129,7 @@ public class PhaseManager : BaseNetLogic
             foreach (var item in sec.Items)
             {
                 if (string.IsNullOrEmpty(item?.Id)) continue;
-                var w = owner.GetObject("ScrollView1/Rows/" + sec.Id + "/" + rp + "/" + item.Id) as IUAObject;
+                var w = owner.GetObject(ScrollRowsPath + "/" + sec.Id + "/" + rp + "/" + item.Id) as IUAObject;
                 RegisterPhaseParaValueEditors(w, sec.Id + "/" + item.Id);
             }
         }
@@ -192,7 +194,7 @@ public class PhaseManager : BaseNetLogic
     {
         if (owner == null || root?.Sections == null) return;
         ValidateUniqueItemIdsOrThrow(root);
-        var rows = owner.Get("ScrollView1/Rows");
+        var rows = owner.Get(ScrollRowsPath);
         if (rows == null) return;
         if (rows is ColumnLayout rowsLayout)
             rowsLayout.VerticalAlignment = VerticalAlignment.Top;
@@ -208,6 +210,9 @@ public class PhaseManager : BaseNetLogic
 
             var panel = InformationModel.Make<PhaseParasPanel1>(sec.Id);
             panel.VerticalAlignment = VerticalAlignment.Top;
+            // 分区级垂直间距：由 JSON sectionVerticalGap 控制
+            if (sec.SectionVerticalGap.HasValue)
+                panel.TopMargin = sec.SectionVerticalGap.Value;
             var titleLabel = panel.Get<Label>("BG/Rectangle1/Title");
             if (titleLabel != null && !string.IsNullOrEmpty(sec.Title))
                 titleLabel.Text = sec.Title;
@@ -215,8 +220,9 @@ public class PhaseManager : BaseNetLogic
             string rowPath = string.IsNullOrEmpty(sec.RowLayoutPath) ? "VL/HL" : sec.RowLayoutPath;
             var rowLayout = panel.Get<RowLayout>(rowPath);
             if (rowLayout == null) continue;
-            if (sec.RowLayoutHorizontalGap.HasValue)
-                rowLayout.HorizontalGap = sec.RowLayoutHorizontalGap.Value;
+            float? rowGap = ResolveSectionRowHorizontalGap(sec);
+            if (rowGap.HasValue)
+                rowLayout.HorizontalGap = rowGap.Value;
 
             if (sec.Items != null)
             {
@@ -304,6 +310,7 @@ public class PhaseManager : BaseNetLogic
     private void AttachUdtPhaseBufferBinds(IUAObject owner, PhaseUILayoutRoot root)
     {
         if (owner == null || root?.Sections == null) return;
+        if (owner.Get(ScrollRowsPath) == null) return;
          
         foreach (var sec in root.Sections)
         {
@@ -315,7 +322,7 @@ public class PhaseManager : BaseNetLogic
                 if (string.IsNullOrWhiteSpace(item.Bind.SourceTagPath))
                     throw new InvalidOperationException($"绑定失败 {sec.Id}/{item.Id}: bind.sourceTagPath 为空。");
 
-                var widget = owner.GetObject("ScrollView1/Rows/" + sec.Id + "/" + rp + "/" + item.Id) as IUAObject;
+                var widget = owner.GetObject(ScrollRowsPath + "/" + sec.Id + "/" + rp + "/" + item.Id) as IUAObject;
                 if (widget == null)
                     throw new InvalidOperationException($"绑定失败 {sec.Id}/{item.Id}: 未找到 UI 控件节点。");
 
@@ -391,6 +398,15 @@ public class PhaseManager : BaseNetLogic
         var copy = new System.Collections.Generic.List<IUANode>();
         foreach (var c in container.Children) copy.Add(c);
         foreach (var c in copy) c.Delete();
+    }
+
+    /// <summary>兼容 rowLayoutHorizontalGap / rowHorizontalGap 两种 JSON 写法。</summary>
+    private static float? ResolveSectionRowHorizontalGap(PhaseUILayoutSection sec)
+    {
+        if (sec == null) return null;
+        if (sec.RowLayoutHorizontalGap.HasValue) return sec.RowLayoutHorizontalGap.Value;
+        if (sec.RowHorizontalGap.HasValue) return sec.RowHorizontalGap.Value;
+        return null;
     }
 
     /// <summary>JSON 中可写 PhaseParasPanel 或 PhaseParasPanel1。</summary>
