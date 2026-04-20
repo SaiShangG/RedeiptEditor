@@ -253,6 +253,93 @@ Children:
   Name: End Conditions
   Id: g=7d38271a56794ae702e5f5d5d07d0a53
   Supertype: Enumeration
+  EnumDefinition: 
+   {
+    "Name": "End Conditions",
+    "DataType": {
+     "IdType": 2,
+     "Id": "7d38271a56794ae702e5f5d5d07d0a53",
+     "Namespace": 7
+    },
+    "Fields": [{
+      "Name": "Value0",
+      "Value": 0,
+      "DisplayName": {
+       "LocaleId": "en-IN",
+       "Text": "Select"
+      },
+      "Description": {
+       "LocaleId": "en-IN",
+       "Text": "Select Condition"
+      }
+     },{
+      "Name": "Value1",
+      "Value": 1,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "User Ack. Text"
+      },
+      "Description": {
+       "LocaleId": "en-IN",
+       "Text": "User Ack. Text"
+      }
+     },{
+      "Name": "Value2",
+      "Value": 2,
+      "DisplayName": {
+       "LocaleId": "en-IN",
+       "Text": "Phase Running Time"
+      },
+      "Description": {
+       "LocaleId": "en-IN",
+       "Text": "Phase Running Time"
+      }
+     },{
+      "Name": "Value3",
+      "Value": 3,
+      "DisplayName": {
+       "LocaleId": "en-IN",
+       "Text": "Tank Weight"
+      },
+      "Description": {
+       "LocaleId": "en-IN",
+       "Text": "Tank Weight"
+      }
+     },{
+      "Name": "Value4",
+      "Value": 4,
+      "DisplayName": {
+       "LocaleId": "en-IN",
+       "Text": "pH"
+      },
+      "Description": {
+       "LocaleId": "en-IN",
+       "Text": "pH"
+      }
+     },{
+      "Name": "Value5",
+      "Value": 5,
+      "DisplayName": {
+       "LocaleId": "en-US",
+       "Text": "Dissolved Oxygen"
+      },
+      "Description": {
+       "LocaleId": "en-IN",
+       "Text": "Dissolved Oxygen"
+      }
+     },{
+      "Name": "Value6",
+      "Value": 6,
+      "DisplayName": {
+       "LocaleId": "en-IN",
+       "Text": "Tank Temperature"
+      },
+      "Description": {
+       "LocaleId": "en-IN",
+       "Text": "Tank Temperature"
+      }
+     }]
+   }
   Children:
   - Name: ns=0;EnumValues
     Type: BaseDataVariableType
@@ -260,4 +347,4 @@ Children:
     ModellingRule: None
     ValueRank: OneDimension
     ArrayDimensions: [0]
-    Value: [{"TypeId":{"Id":7594},"Body":{"Value":0,"DisplayName":{"LocaleId":"en-IN","Text":"Select"},"Description":{"LocaleId":"en-IN","Text":"Select Condition"}}},{"TypeId":{"Id":7594},"Body":{"Value":1,"DisplayName":{"LocaleId":"en-IN","Text":"User Ack. Text"},"Description":{"LocaleId":"en-IN","Text":"User Ack. Text"}}},{"TypeId":{"Id":7594},"Body":{"Value":2,"DisplayName":{"LocaleId":"en-IN","Text":"Phase Running Time"},"Description":{"LocaleId":"en-IN","Text":"Phase Running Time"}}},{"TypeId":{"Id":7594},"Body":{"Value":3,"DisplayName":{"LocaleId":"en-IN","Text":"Tank Weight"},"Description":{"LocaleId":"en-IN","Text":"Tank Weight"}}},{"TypeId":{"Id":7594},"Body":{"Value":4,"DisplayName":{"LocaleId":"en-IN","Text":"pH"},"Description":{"LocaleId":"en-IN","Text":"pH"}}},{"TypeId":{"Id":7594},"Body":{"Value":5,"DisplayName":{"LocaleId":"en-IN","Text":"Dissolved Oxygen"},"Description":{"LocaleId":"en-IN","Text":"Dissolved Oxygen"}}},{"TypeId":{"Id":7594},"Body":{"Value":6,"DisplayName":{"LocaleId":"en-IN","Text":"Tank Temperature"},"Description":{"LocaleId":"en-IN","Text":"Tank Temperature"}}}]
+    Value: [{"TypeId":{"Id":7594},"Body":{"Value":0,"DisplayName":{"LocaleId":"en-IN","Text":"Select"},"Description":{"LocaleId":"en-IN","Text":"Select Condition"}}},{"TypeId":{"Id":7594},"Body":{"Value":1,"DisplayName":{"LocaleId":"en-US","Text":"User Ack. Text"},"Description":{"LocaleId":"en-IN","Text":"User Ack. Text"}}},{"TypeId":{"Id":7594},"Body":{"Value":2,"DisplayName":{"LocaleId":"en-IN","Text":"Phase Running Time"},"Description":{"LocaleId":"en-IN","Text":"Phase Running Time"}}},{"TypeId":{"Id":7594},"Body":{"Value":3,"DisplayName":{"LocaleId":"en-IN","Text":"Tank Weight"},"Description":{"LocaleId":"en-IN","Text":"Tank Weight"}}},{"TypeId":{"Id":7594},"Body":{"Value":4,"DisplayName":{"LocaleId":"en-IN","Text":"pH"},"Description":{"LocaleId":"en-IN","Text":"pH"}}},{"TypeId":{"Id":7594},"Body":{"Value":5,"DisplayName":{"LocaleId":"en-US","Text":"Dissolved Oxygen"},"Description":{"LocaleId":"en-IN","Text":"Dissolved Oxygen"}}},{"TypeId":{"Id":7594},"Body":{"Value":6,"DisplayName":{"LocaleId":"en-IN","Text":"Tank Temperature"},"Description":{"LocaleId":"en-IN","Text":"Tank Temperature"}}}]

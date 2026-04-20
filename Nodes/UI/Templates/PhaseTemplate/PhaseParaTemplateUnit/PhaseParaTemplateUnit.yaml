@@ -3750,6 +3750,7 @@ Children:
               Type: BaseVariableType
               DataType: Size
               ModellingRule: Optional
+              Value: 10.0
             - Name: ShowButtons
               Type: BaseDataVariableType
               DataType: Boolean
@@ -3774,7 +3775,7 @@ Children:
               Type: BaseVariableType
               DataType: Size
               ModellingRule: Optional
-              Value: 145.0
+              Value: 211.0
             - Name: BottomMargin
               Type: BaseVariableType
               DataType: Size
