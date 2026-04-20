@@ -32,12 +32,10 @@ Children:
       DataType: String
       Value: "NoOfPhases"
   - Name: RunningPhase
-    Id: g=7ff91ff7192c28514a9e488690aa7d4e
     Type: UDT_Phase
     DataType: UDT_Phase
     Children:
     - Name: PP
-      Id: g=bbd58ea7222a736733aca95477dbe374
       Type: UDT_PhaseParameters
       DataType: UDT_PhaseParameters
       Children:
@@ -102,7 +100,6 @@ Children:
           DataType: String
           Value: "ControllerSetPointValue"
     - Name: EC
-      Id: g=add308902c26c9524e3d6121b9466983
       Type: UDT_EndConditions
       DataType: UDT_EndConditions
       Children:
@@ -507,7 +504,6 @@ Children:
   ValueRank: Any
   Children:
   - Name: PP
-    Id: g=4d562716992d52ba40f08f8bf4844674
     Type: UDT_PhaseParameters
     DataType: UDT_PhaseParameters
     Children:
@@ -572,7 +568,6 @@ Children:
         DataType: String
         Value: "ControllerSetPointValue"
   - Name: EC
-    Id: g=bf7b12c3d8493df3af1191d4d5ebd6ea
     Type: UDT_EndConditions
     DataType: UDT_EndConditions
     Children:
