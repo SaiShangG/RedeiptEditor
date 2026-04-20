@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 #endregion
 
 #region JSON 配置（与 phase_ui_layout.sample.json 一致）
@@ -19,7 +20,10 @@ public class PhaseUILayoutSection
     public string PanelType { get; set; }
     public string Title { get; set; }
     public string RowLayoutPath { get; set; }
-    public int? RowLayoutHorizontalGap { get; set; }
+    public float? RowLayoutHorizontalGap { get; set; }
+    [JsonPropertyName("rowHorizontalGap")]
+    public float? RowHorizontalGap { get; set; }
+    public int? SectionVerticalGap { get; set; }
     public List<PhaseUILayoutItem> Items { get; set; }
 }
 
