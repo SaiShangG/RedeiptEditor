@@ -5610,6 +5610,7 @@ Children:
             DataType: String
             Value: "Phases[9].EC.EC3SP.@Description"
   - Name: PP
+    Id: g=07aceda0343182c6a9a20c122f5281d8
     Type: UDT_PhaseParameters
     DataType: UDT_PhaseParameters
     Children:
@@ -5674,6 +5675,7 @@ Children:
         DataType: String
         Value: "ControllerSetPointValue"
   - Name: EC
+    Id: g=15e384f3a4bc87ed10ee6e9d5f0cbd92
     Type: UDT_EndConditions
     DataType: UDT_EndConditions
     Children:
@@ -5843,22 +5845,6 @@ Children:
       Type: BaseDataVariableType
       DataType: String
       Value: "OperationHandshake.EvtDone"
-  - Name: EvtDoneSeq
-    Type: RAEtherNetIPTag
-    DataType: Int32
-    Children:
-    - Name: SymbolName
-      Type: BaseDataVariableType
-      DataType: String
-      Value: "OperationHandshake.EvtDoneSeq"
-  - Name: EvtFaultCode
-    Type: RAEtherNetIPTag
-    DataType: Int32
-    Children:
-    - Name: SymbolName
-      Type: BaseDataVariableType
-      DataType: String
-      Value: "OperationHandshake.EvtFaultCode"
   - Name: StsLoadAckSeq
     Type: RAEtherNetIPTag
     DataType: Int32

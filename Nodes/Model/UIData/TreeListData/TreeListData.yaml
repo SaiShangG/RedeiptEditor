@@ -41,17 +41,3 @@ Children:
     Type: BaseDataVariableType
     DataType: Boolean
     Value: true
-- Name: InteractionTexts
-  Type: BaseObjectType
-  Children:
-  - Name: ReceiptUP
-    Type: BaseDataVariableType
-    DataType: String
-    Value: "Receipt UP"
-  - Name: OperationUp
-    Type: BaseDataVariableType
-    DataType: String
-    Value: "Operation Up"
-- Name: TreeItemNameRepeated
-  Type: BaseDataVariableType
-  DataType: Boolean
