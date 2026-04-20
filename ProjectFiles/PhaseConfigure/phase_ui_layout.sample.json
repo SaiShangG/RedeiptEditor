@@ -148,6 +148,21 @@
         }
      
       ]
+    },
+    {
+      "id": "ParaPanel5",
+      "panelType": "PhaseParasPanel",
+      "title": "Phase End Conditions Area",
+      "rowLayoutPath": "VL/HL",
+      "items": [
+        {
+          "id": "PanelEndConditions",
+          "widgetType": "PanelEndConditions",
+          "label": "PanelEndConditions"
+        }
+       
+     
+      ]
     }
   ]
 }

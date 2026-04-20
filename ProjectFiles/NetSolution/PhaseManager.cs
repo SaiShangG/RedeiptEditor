@@ -194,6 +194,8 @@ public class PhaseManager : BaseNetLogic
         ValidateUniqueItemIdsOrThrow(root);
         var rows = owner.Get("ScrollView1/Rows");
         if (rows == null) return;
+        if (rows is ColumnLayout rowsLayout)
+            rowsLayout.VerticalAlignment = VerticalAlignment.Top;
         ClearPhaseInputRegs();
         ClearScrollRows(rows);
 
@@ -205,9 +207,10 @@ public class PhaseManager : BaseNetLogic
                 continue;
 
             var panel = InformationModel.Make<PhaseParasPanel1>(sec.Id);
-            var titleBox = panel.Get<TextBox>("BG/Title");
-            if (titleBox != null && !string.IsNullOrEmpty(sec.Title))
-                titleBox.Text = sec.Title;
+            panel.VerticalAlignment = VerticalAlignment.Top;
+            var titleLabel = panel.Get<Label>("BG/Rectangle1/Title");
+            if (titleLabel != null && !string.IsNullOrEmpty(sec.Title))
+                titleLabel.Text = sec.Title;
 
             string rowPath = string.IsNullOrEmpty(sec.RowLayoutPath) ? "VL/HL" : sec.RowLayoutPath;
             var rowLayout = panel.Get<RowLayout>(rowPath);
@@ -456,6 +459,11 @@ public class PhaseManager : BaseNetLogic
         if (WidgetTypeIsParaCompare(t, 2))
         {
             rowLayout.Add(InformationModel.Make<PhaseParaCompare4>(item.Id));
+            return;
+        }
+        if (WidgetTypeIs(t, "PanelEndConditions"))
+        {
+            rowLayout.Add(InformationModel.Make<PanelEndConditions>(item.Id));
             return;
         }
         if (WidgetTypeIs(t, "PhaseValvePanel"))

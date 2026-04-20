@@ -813,6 +813,12 @@ public class BatchInforToPLC : BaseNetLogic
 
         try
         {
+            if (TryGetRankOneTemplateArray(v, out var template))
+            {
+                converted = CoerceRawToRankOneArray(raw, template);
+                return converted != null;
+            }
+
             if (raw is LocalizedText lt)
             {
                 converted = lt.Text ?? "";
@@ -831,6 +837,169 @@ public class BatchInforToPLC : BaseNetLogic
         {
             return TryParseJsonArray(raw, out converted);
         }
+    }
+
+    private static bool TryGetRankOneTemplateArray(IUAVariable v, out Array template)
+    {
+        template = null;
+        if (v == null)
+            return false;
+        try
+        {
+            object current = v.Value?.Value;
+            if (current is Array arr && arr.Rank == 1 && arr.Length > 0)
+            {
+                template = arr;
+                return true;
+            }
+        }
+        catch
+        {
+        }
+        return false;
+    }
+
+    private static Array CoerceRawToRankOneArray(object raw, Array template)
+    {
+        if (raw == null || raw == DBNull.Value || template == null || template.Length <= 0)
+            return null;
+
+        int len = template.Length;
+        Type elementType = template.GetValue(0)?.GetType() ?? typeof(string);
+
+        // 若源值本身就是一维数组，按目标长度与元素类型拷贝/补齐。
+        if (raw is Array srcArr && srcArr.Rank == 1)
+        {
+            Array result = Array.CreateInstance(elementType, len);
+            int copy = Math.Min(len, srcArr.Length);
+            for (int i = 0; i < copy; i++)
+                result.SetValue(ConvertArrayElement(srcArr.GetValue(i), elementType), i);
+            for (int i = copy; i < len; i++)
+                result.SetValue(ConvertArrayElement("0", elementType), i);
+            return result;
+        }
+
+        string s = raw.ToString()?.Trim() ?? "";
+        if (s.Length == 0)
+            s = "0";
+
+        if (s.StartsWith("[", StringComparison.Ordinal))
+        {
+            try
+            {
+                if (elementType == typeof(bool))
+                {
+                    var parsed = JsonSerializer.Deserialize<bool[]>(s);
+                    return parsed == null ? null : PadOrTrimBoolArray(parsed, len);
+                }
+                if (elementType == typeof(float))
+                {
+                    var parsed = JsonSerializer.Deserialize<double[]>(s);
+                    return parsed == null ? null : PadOrTrimFloatArray(parsed, len);
+                }
+                if (elementType == typeof(double))
+                {
+                    var parsed = JsonSerializer.Deserialize<double[]>(s);
+                    return parsed == null ? null : PadOrTrimDoubleArray(parsed, len);
+                }
+                if (elementType == typeof(int))
+                {
+                    var parsed = JsonSerializer.Deserialize<int[]>(s);
+                    return parsed == null ? null : PadOrTrimIntArray(parsed, len);
+                }
+                if (elementType == typeof(long))
+                {
+                    var parsed = JsonSerializer.Deserialize<long[]>(s);
+                    return parsed == null ? null : PadOrTrimLongArray(parsed, len);
+                }
+                if (elementType == typeof(string))
+                {
+                    var parsed = JsonSerializer.Deserialize<string[]>(s);
+                    return parsed == null ? null : PadOrTrimStringArray(parsed, len);
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        // 兼容历史格式：以 ';' 分隔，未提供位数则按 0 补齐。
+        var parts = s.Split(';');
+        Array fallback = Array.CreateInstance(elementType, len);
+        for (int i = 0; i < len; i++)
+        {
+            string p = i < parts.Length ? parts[i].Trim() : "0";
+            fallback.SetValue(ConvertArrayElement(p, elementType), i);
+        }
+        return fallback;
+    }
+
+    private static object ConvertArrayElement(object raw, Type elementType)
+    {
+        string s = raw?.ToString()?.Trim() ?? "0";
+        if (elementType == typeof(bool))
+            return s == "1" || string.Equals(s, "true", StringComparison.OrdinalIgnoreCase);
+        if (elementType == typeof(float))
+            return float.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out var f) ? f : 0f;
+        if (elementType == typeof(double))
+            return double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out var d) ? d : 0.0;
+        if (elementType == typeof(int))
+            return int.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out var i) ? i : 0;
+        if (elementType == typeof(long))
+            return long.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out var l) ? l : 0L;
+        if (elementType == typeof(uint))
+            return uint.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out var u) ? u : 0u;
+        if (elementType == typeof(string))
+            return raw?.ToString() ?? "";
+        return Convert.ChangeType(0, elementType, CultureInfo.InvariantCulture);
+    }
+
+    private static Array PadOrTrimBoolArray(bool[] src, int len)
+    {
+        var result = new bool[len];
+        for (int i = 0; i < len; i++)
+            result[i] = i < src.Length && src[i];
+        return result;
+    }
+
+    private static Array PadOrTrimFloatArray(double[] src, int len)
+    {
+        var result = new float[len];
+        for (int i = 0; i < len; i++)
+            result[i] = i < src.Length ? (float)src[i] : 0f;
+        return result;
+    }
+
+    private static Array PadOrTrimDoubleArray(double[] src, int len)
+    {
+        var result = new double[len];
+        for (int i = 0; i < len; i++)
+            result[i] = i < src.Length ? src[i] : 0.0;
+        return result;
+    }
+
+    private static Array PadOrTrimIntArray(int[] src, int len)
+    {
+        var result = new int[len];
+        for (int i = 0; i < len; i++)
+            result[i] = i < src.Length ? src[i] : 0;
+        return result;
+    }
+
+    private static Array PadOrTrimLongArray(long[] src, int len)
+    {
+        var result = new long[len];
+        for (int i = 0; i < len; i++)
+            result[i] = i < src.Length ? src[i] : 0L;
+        return result;
+    }
+
+    private static Array PadOrTrimStringArray(string[] src, int len)
+    {
+        var result = new string[len];
+        for (int i = 0; i < len; i++)
+            result[i] = i < src.Length ? (src[i] ?? "") : "";
+        return result;
     }
 
     private static object ConvertScalarByDataType(IUAVariable v, object raw)

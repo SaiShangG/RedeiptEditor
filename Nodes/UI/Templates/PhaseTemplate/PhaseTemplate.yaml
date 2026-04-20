@@ -55,13 +55,11 @@ Children:
           Children:
           - Name: PolyLine1
             Type: PolyLine
-          - Name: Title
-            Type: TextBox
+          - Name: Rectangle1
+            Type: Rectangle
             Children:
-            - Name: Text
-              Type: BaseDataVariableType
-              DataType: LocalizedText
-              Value: {"LocaleId":"en-US","Text":"New Title"}
+            - Name: Title
+              Type: Label
         - Name: VL
           Type: ColumnLayout
           Children:
@@ -76,7 +74,6 @@ Children:
         Type: BaseVariableType
         DataType: VerticalAlignment
         ModellingRule: Optional
-        Value: 3
     - Name: HorizontalAlignment
       Type: BaseVariableType
       DataType: HorizontalAlignment
@@ -87,6 +84,11 @@ Children:
       DataType: VerticalAlignment
       ModellingRule: Optional
       Value: 3
+    - Name: Height
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 200.0
   - Name: PhaseManager
     Type: NetLogic
     Children:
