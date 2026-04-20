@@ -477,9 +477,9 @@ public class PhaseManager : BaseNetLogic
             rowLayout.Add(InformationModel.Make<PhaseParaCompare4>(item.Id));
             return;
         }
-        if (WidgetTypeIs(t, "PanelEndConditions"))
+        if (WidgetTypeIs(t, "PanelEndConditionsOperator"))
         {
-            rowLayout.Add(InformationModel.Make<PanelEndConditions>(item.Id));
+            rowLayout.Add(InformationModel.Make<PanelEndConditionsOperator>(item.Id));
             return;
         }
         if (WidgetTypeIs(t, "PhaseValvePanel"))
