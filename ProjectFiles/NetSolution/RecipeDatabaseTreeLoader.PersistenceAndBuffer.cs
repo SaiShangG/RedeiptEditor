@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.Json;
 using OpcUa = UAManagedCore.OpcUa;
 using UAManagedCore;
 using FTOptix.CoreBase;
@@ -173,14 +174,14 @@ public partial class RecipeDatabaseTreeLoader
     }
 
     /// <summary>
-    /// 写库前将当前选中 Phase 的 <see cref="DefaultPhaseBufferObjectPath"/> 变量并入 <see cref="PhaseNode.Columns"/> 并标脏。
-    /// 否则 <see cref="TryPersistPhaseType1FromPhaseNode"/> 因未标脏被跳过，或 Buffer 未合并导致新列（如 Parameter6）不落库。
+    /// 写库前将当前选中 Phase 的模板 UDT 并入 <see cref="PhaseNode.Columns"/> 并标脏。
+    /// 否则 <see cref="TryPersistPhaseType1FromPhaseNode"/> 因未标脏被跳过，或缓冲未合并导致新列不落库。
     /// </summary>
     public void FlushSelectedPhaseUiBufferToTreeForPersist()
     {
         int pId = GenerateTreeList.Instance?.SelectedPhaseId ?? 0;
         if (pId <= 0) return;
-        MergePhaseUiBufferIntoPhaseNode(pId);
+        MergeUdtPhaseTemplateBufferIntoPhaseNode(pId);
         MarkDirtyPhase(pId);
     }
 
@@ -300,7 +301,7 @@ public partial class RecipeDatabaseTreeLoader
         return true;
     }
 
-    /// <summary>从布局 JSON 收集缓冲变量名：bindKeySwitch → Boolean，其余 BindKey* → String（与 PhaseType1 列名一致即可落库）。</summary>
+    /// <summary>从布局 JSON 收集扁平缓冲变量名：<c>bind.uiProperty==Checked</c> → Boolean，否则 String；键为 <c>bufferField</c> 将 «.» 换为 «_»。</summary>
     private static void CollectPhaseLayoutKeysFromJson(out HashSet<string> booleanBufferKeys, out List<string> allBufferKeyNames)
     {
         booleanBufferKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -316,21 +317,15 @@ public partial class RecipeDatabaseTreeLoader
                 if (sec?.Items == null) continue;
                 foreach (var it in sec.Items)
                 {
-                    foreach (var pair in new[] {
-                        (it.BindKey, false),
-                        (it.BindKeySwitch, true),
-                        (it.BindKeyText, false),
-                        (it.BindKeyCombo, false)
-                    })
-                    {
-                        string k = pair.Item1;
-                        bool asBool = pair.Item2;
-                        if (string.IsNullOrEmpty(k) || !IsSafeSqlIdentifier(k)) continue;
-                        if (seen.Add(k))
-                            allBufferKeyNames.Add(k);
-                        if (asBool)
-                            booleanBufferKeys.Add(k);
-                    }
+                    if (it?.Bind == null || string.IsNullOrWhiteSpace(it.Bind.BufferField)) continue;
+                    // 扁平缓冲键：PP.Valve → PP_Valve（与 UDT 路径对应，供 Type1 列名扩展时对齐）
+                    string k = it.Bind.BufferField.Trim().Replace('.', '_');
+                    bool asBool = string.Equals(it.Bind.UiProperty, "Checked", StringComparison.OrdinalIgnoreCase);
+                    if (string.IsNullOrEmpty(k) || !IsSafeSqlIdentifier(k)) continue;
+                    if (seen.Add(k))
+                        allBufferKeyNames.Add(k);
+                    if (asBool)
+                        booleanBufferKeys.Add(k);
                 }
             }
         }
@@ -518,27 +513,7 @@ public partial class RecipeDatabaseTreeLoader
         }
     }
 
-    #region PhaseUIBufferData（PhaseType1 动态列 ↔ PhaseUIBufferData 同名变量）
-    private static bool IsValveBufferBrowseName(string name)
-    {
-        if (string.IsNullOrEmpty(name) || !name.StartsWith("Valve", StringComparison.OrdinalIgnoreCase)) return false;
-        string tail = name.Length > 5 ? name.Substring(5) : "";
-        return tail.Length > 0 && tail.All(char.IsDigit);
-    }
-
-    private static NodeId ResolveAutoBufferVariableDataType(string name, HashSet<string> layoutBooleanBufferKeys)
-    {
-        if (layoutBooleanBufferKeys != null && layoutBooleanBufferKeys.Contains(name))
-            return OpcUa.DataTypes.Boolean;
-        return IsValveBufferBrowseName(name) ? OpcUa.DataTypes.Boolean : OpcUa.DataTypes.String;
-    }
-
-    private static UAValue InitialUaValueForAutoBufferVariable(string name, HashSet<string> layoutBooleanBufferKeys)
-    {
-        if (layoutBooleanBufferKeys != null && layoutBooleanBufferKeys.Contains(name))
-            return new UAValue(false);
-        return IsValveBufferBrowseName(name) ? new UAValue(false) : new UAValue("0");
-    }
+    #region PhaseTemplateUdt 与 PhaseType1
     /// <summary>按表模型列读取 PhaseType1 一行（仅业务数据列）；列名变更后仍与 Studio 表定义一致。</summary>
     private bool TrySelectPhaseType1DataRow(int phaseParameterInfoId, out Dictionary<string, object> row)
     {
@@ -580,7 +555,7 @@ public partial class RecipeDatabaseTreeLoader
         return int.TryParse(s.Trim(), out int v) ? v : 0;
     }
 
-    /// <summary>与 LoadPhaseParametersToPhaseUIBuffer 一致：按 PhaseType1 表业务列合并 Phases 与 Type1；无 Type1 表时仅处理 Parameter1..3。</summary>
+    /// <summary>按 PhaseType1 表业务列合并 Phases 与 Type1；无 Type1 表时仅处理 Parameter1..3。</summary>
     public void ApplyResolvedParameter123ToColumnCopy(PhaseNode src, Dictionary<string, object> target)
     {
         if (src == null || target == null) return;
@@ -620,155 +595,74 @@ public partial class RecipeDatabaseTreeLoader
         }
     }
 
-    private void WritePhaseBufferStringVar(IUAObject buffer, string name, string value)
+    private void AttachUdtTemplateBufferDirtyObservers()
     {
-        if (buffer == null) return;
-        var v = buffer.GetVariable(name);
-        if (v == null) return;
-        try
-        {
-            UAValue ua;
-            if (v.DataType == OpcUa.DataTypes.Boolean)
-            {
-                bool b = value == "1" || string.Equals(value, "true", StringComparison.OrdinalIgnoreCase)
-                    || string.Equals(value, "True", StringComparison.Ordinal);
-                if (!b && int.TryParse((value ?? "").Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int iv))
-                    b = iv != 0;
-                ua = new UAValue(b);
-            }
-            else if (IsValveBufferBrowseName(name))
-            {
-                bool b = value == "1" || string.Equals(value, "true", StringComparison.OrdinalIgnoreCase)
-                    || string.Equals(value, "True", StringComparison.Ordinal);
-                ua = new UAValue(b);
-            }
-            else
-                ua = new UAValue(value ?? "0");
-            if (_phaseBufferProgSenderId != 0)
-            {
-                using (LogicObject.Context.SetCurrentThreadSenderId(_phaseBufferProgSenderId))
-                    v.Value = ua;
-            }
-            else
-                v.Value = ua;
-        }
-        catch { }
-    }
-
-    /// <summary>按 PhaseType1 业务列在缓冲下自动创建缺失的 String 变量；无表时创建 Parameter1..3。</summary>
-    public static bool EnsurePhaseUiBufferModelVariables(string bufferObjectPath = DefaultPhaseBufferObjectPath)
-    {
-        IUAObject buffer = null;
-        try { buffer = Project.Current?.GetObject(bufferObjectPath); }
-        catch { buffer = null; }
-        if (buffer == null) return false;
-
-        Instance?.ClearPhaseType1TableCache();
-
-        Table t1 = null;
-        try
-        {
-            var ds = Project.Current?.GetObject("DataStores");
-            var ps = ds?.Get<Store>(PhaseParametersDbName);
-            t1 = ps?.Tables.Get<Table>(PhaseType1TableName);
-        }
-        catch { t1 = null; }
-
-        var names = new List<string>();
-        if (t1 != null)
-        {
-            foreach (string col in GetPhaseType1DataColumnNames(t1))
-            {
-                if (IsSafeSqlIdentifier(col)) names.Add(col);
-            }
-        }
-        if (names.Count == 0)
-        {
-            names.Add("Parameter1");
-            names.Add("Parameter2");
-            names.Add("Parameter3");
-        }
-
-        CollectPhaseLayoutKeysFromJson(out var layoutBoolKeys, out var layoutAllKeys);
-        foreach (var k in layoutAllKeys)
-            names.Add(k);
-        foreach (var k in DefaultPhaseUiLayoutBindKeys)
-            names.Add(k);
-        foreach (var k in DefaultPhaseUiEndConditionStringKeys)
-        {
-            if (IsSafeSqlIdentifier(k)) names.Add(k);
-        }
-        foreach (var k in DefaultPhaseUiEndConditionBoolKeys)
-        {
-            if (IsSafeSqlIdentifier(k)) names.Add(k);
-        }
-
-        var effectiveBoolKeys = new HashSet<string>(layoutBoolKeys, StringComparer.OrdinalIgnoreCase);
-        foreach (var k in DefaultPhaseUiEndConditionBoolKeys)
-        {
-            if (IsSafeSqlIdentifier(k)) effectiveBoolKeys.Add(k);
-        }
-
-        bool added = false;
-        foreach (string name in names.Distinct(StringComparer.OrdinalIgnoreCase))
-        {
-            if (string.IsNullOrEmpty(name) || buffer.GetVariable(name) != null) continue;
-            try
-            {
-                NodeId dt = ResolveAutoBufferVariableDataType(name, effectiveBoolKeys);
-                var nv = InformationModel.MakeVariable(name, dt);
-                nv.Value = InitialUaValueForAutoBufferVariable(name, effectiveBoolKeys);
-                buffer.Add(nv);
-                added = true;
-            }
-            catch (Exception ex)
-            {
-                if (EnableLog) Log.Warning(LogCategory, $"EnsurePhaseUiBufferModelVariables Add '{name}': {ex.Message}");
-            }
-        }
-
-        if (added && Instance != null)
-        {
-            Instance.DetachPhaseBufferDirtyObservers();
-            Instance.AttachPhaseBufferDirtyObservers();
-        }
-        return added;
-    }
-
-    /// <summary>与 <see cref="EnsurePhaseUiBufferModelVariables"/> 相同；供实例侧显式调用。</summary>
-    public void EnsurePhaseUiBufferVariables(string bufferObjectPath = DefaultPhaseBufferObjectPath)
-    {
-        EnsurePhaseUiBufferModelVariables(bufferObjectPath);
-    }
-
-    private void AttachPhaseBufferDirtyObservers()
-    {
-        DetachPhaseBufferDirtyObservers();
+        DetachUdtTemplateBufferDirtyObservers();
         if (_phaseBufferDirtyAffinityId == 0) return;
-        IUAObject buffer = null;
-        try { buffer = Project.Current?.GetObject(DefaultPhaseBufferObjectPath); }
-        catch { buffer = null; }
-        if (buffer?.Children == null) return;
-        foreach (var n in buffer.Children)
+        IUAObject root = null;
+        try { root = Project.Current?.GetObject(DefaultUdtPhaseTemplateBufferObjectPath); }
+        catch { root = null; }
+        if (root == null) return;
+        AttachUdtTemplateBufferDirtyObserversRecursive(root);
+    }
+
+    private void DetachUdtTemplateBufferDirtyObservers()
+    {
+        foreach (var r in _udtTemplateBufferDirtyRegs)
+            r?.Dispose();
+        _udtTemplateBufferDirtyRegs.Clear();
+    }
+
+    private void AttachUdtTemplateBufferDirtyObserversRecursive(IUANode node)
+    {
+        if (node == null) return;
+        if (node is IUAVariable v && IsUdtTemplateTagLevelVariable(v))
         {
-            if (!(n is IUAVariable v)) continue;
             try
             {
-                var obs = new CallbackVariableChangeObserver(OnPhaseBufferVariableChanged);
-                _phaseBufferDirtyRegs.Add(v.RegisterEventObserver(obs, EventType.VariableValueChanged, _phaseBufferDirtyAffinityId));
+                var obs = new CallbackVariableChangeObserver(OnUdtTemplateBufferVariableChanged);
+                _udtTemplateBufferDirtyRegs.Add(v.RegisterEventObserver(obs, EventType.VariableValueChanged, _phaseBufferDirtyAffinityId));
             }
             catch { }
+            return;
+        }
+        if (node.Children == null) return;
+        foreach (var child in node.Children)
+        {
+            if (child == null) continue;
+            if (ShouldSkipUdtTemplateTreeChildBrowseName(child.BrowseName)) continue;
+            AttachUdtTemplateBufferDirtyObserversRecursive(child);
         }
     }
 
-    private void DetachPhaseBufferDirtyObservers()
+    private static bool ShouldSkipUdtTemplateTreeChildBrowseName(string browseName)
     {
-        foreach (var r in _phaseBufferDirtyRegs)
-            r?.Dispose();
-        _phaseBufferDirtyRegs.Clear();
+        if (string.IsNullOrEmpty(browseName)) return false;
+        return string.Equals(browseName, "SymbolName", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(browseName, "EnableBlockRead", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(browseName, "ArrayUpdateRate", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(browseName, "SamplingMode", StringComparison.OrdinalIgnoreCase);
     }
 
-    private void OnPhaseBufferVariableChanged(
+    /// <summary>与 <see cref="GeneratePhaseColumns"/> 中标签叶节点判定一致：RAEtherNetIPTag 等仅含 SymbolName 子项时为叶。</summary>
+    private static bool IsUdtTemplateTagLevelVariable(IUAVariable variable)
+    {
+        if (variable == null) return false;
+        if (string.Equals(variable.BrowseName, "SymbolName", StringComparison.OrdinalIgnoreCase)) return false;
+        if (string.Equals(variable.BrowseName, "EnableBlockRead", StringComparison.OrdinalIgnoreCase)) return false;
+        if (string.Equals(variable.BrowseName, "ArrayUpdateRate", StringComparison.OrdinalIgnoreCase)) return false;
+        if (string.Equals(variable.BrowseName, "SamplingMode", StringComparison.OrdinalIgnoreCase)) return false;
+        if (variable.Children == null) return true;
+        foreach (var child in variable.Children)
+        {
+            if (child == null) continue;
+            if (string.Equals(child.BrowseName, "SymbolName", StringComparison.OrdinalIgnoreCase)) continue;
+            return false;
+        }
+        return true;
+    }
+
+    private void OnUdtTemplateBufferVariableChanged(
         IUAVariable variable,
         UAValue newValue,
         UAValue oldValue,
@@ -795,31 +689,98 @@ public partial class RecipeDatabaseTreeLoader
         return string.Equals(CellToString(av).Trim(), CellToString(bv).Trim(), StringComparison.Ordinal);
     }
 
-    /// <summary>将 PhaseUIBufferData 各变量写回内存中的 Phase 节点（供 Save 与 * 逻辑）；不直接写主库。</summary>
-    public void MergePhaseUiBufferIntoPhaseNode(int phaseId, string bufferObjectPath = DefaultPhaseBufferObjectPath)
+    /// <summary>
+    /// 将模板 UDT（如 <see cref="DefaultUdtPhaseTemplateBufferObjectPath"/>）中各标签变量写入内存 <see cref="PhaseNode.Columns"/>；
+    /// 一维数组序列化为 JSON 字符串，便于 SQLite TEXT 存储。
+    /// 按变量树读取：仅使用 GetVariable(path) 解析根节点。
+    /// </summary>
+    public void MergeUdtPhaseTemplateBufferIntoPhaseNode(int phaseId, string udtRootPath = null)
     {
-        if (phaseId <= 0 || !PhaseById.TryGetValue(phaseId, out var ph)) return;
-        IUAObject buffer = null;
-        try { buffer = Project.Current?.GetObject(bufferObjectPath); }
-        catch { buffer = null; }
-        if (buffer?.Children == null) return;
-        if (ph.Columns == null) return;
-        foreach (var n in buffer.Children)
+        if (phaseId <= 0 || !PhaseById.TryGetValue(phaseId, out var ph) || ph?.Columns == null) return;
+        string path = string.IsNullOrEmpty(udtRootPath) ? DefaultUdtPhaseTemplateBufferObjectPath : udtRootPath;
+        IUAVariable root = null;
+        try { root = Project.Current?.GetVariable(path); } catch { root = null; }
+        if (root == null)
         {
-            if (!(n is IUAVariable v)) continue;
-            string key = n.BrowseName;
-            if (string.IsNullOrEmpty(key)) continue;
-            object val = null;
-            try { val = v.Value?.Value; } catch { continue; }
-            if (val == null)
-                ph.Columns[key] = "";
-            else if (val is LocalizedText lt)
-                ph.Columns[key] = lt.Text ?? "";
-            else if (val is bool b)
-                ph.Columns[key] = b;
-            else
-                ph.Columns[key] = val;
+            if (EnableLog) Log.Warning(LogCategory, $"MergeUdtPhaseTemplateBufferIntoPhaseNode: 无法解析 UDT 根节点，path={path}");
+            return;
         }
+        MergeUdtTemplateTagVariablesIntoPhaseColumns(root, ph);
+    }
+
+    private static void MergeUdtTemplateTagVariablesIntoPhaseColumns(IUANode node, PhaseNode ph)
+    {
+        if (node == null || ph?.Columns == null) return;
+        if (node is IUAVariable v && IsUdtTemplateTagLevelVariable(v))
+        {
+            string col = v.BrowseName;
+            if (string.IsNullOrEmpty(col) || PhaseType1ReservedColumns.Contains(col)) return;
+            ph.Columns[col] = ConvertUdtTagVariableToPhaseColumnCell(v);
+            return;
+        }
+        if (node.Children == null) return;
+        foreach (var child in node.Children)
+        {
+            if (child == null) continue;
+            if (ShouldSkipUdtTemplateTreeChildBrowseName(child.BrowseName)) continue;
+            MergeUdtTemplateTagVariablesIntoPhaseColumns(child, ph);
+        }
+    }
+
+    private static object ConvertUdtTagVariableToPhaseColumnCell(IUAVariable v)
+    {
+        if (v == null) return "";
+        try
+        {
+            object val = v.Value?.Value;
+            if (val == null) return "";
+            if (val is Array arr && arr.Rank == 1)
+                return SerializeRankOneArrayAsJson(arr);
+            if (val is LocalizedText lt)
+                return lt.Text ?? "";
+            if (val is bool b) return b;
+            if (val is int i) return i;
+            if (val is long l) return l;
+            if (val is short s) return (int)s;
+            if (val is byte by) return (int)by;
+            if (val is uint ui) return ui;
+            if (val is float f) return f;
+            if (val is double d) return d;
+            if (val is decimal m) return m;
+            return CellToString(val);
+        }
+        catch
+        {
+            return "";
+        }
+    }
+
+    private static string SerializeRankOneArrayAsJson(Array arr)
+    {
+        int n = arr.Length;
+        if (n == 0) return "[]";
+        object o0 = arr.GetValue(0);
+        if (o0 is bool)
+        {
+            var list = new bool[n];
+            for (int i = 0; i < n; i++) list[i] = (bool)arr.GetValue(i);
+            return JsonSerializer.Serialize(list);
+        }
+        if (o0 is float || o0 is double)
+        {
+            var list = new double[n];
+            for (int i = 0; i < n; i++) list[i] = Convert.ToDouble(arr.GetValue(i), CultureInfo.InvariantCulture);
+            return JsonSerializer.Serialize(list);
+        }
+        if (o0 is int || o0 is long || o0 is short || o0 is byte || o0 is uint)
+        {
+            var list = new long[n];
+            for (int i = 0; i < n; i++) list[i] = Convert.ToInt64(arr.GetValue(i), CultureInfo.InvariantCulture);
+            return JsonSerializer.Serialize(list);
+        }
+        var fallback = new object[n];
+        for (int i = 0; i < n; i++) fallback[i] = arr.GetValue(i);
+        return JsonSerializer.Serialize(fallback);
     }
 
     private void TryPersistPhaseType1FromPhaseNode(PhaseNode ph)
@@ -847,66 +808,47 @@ public partial class RecipeDatabaseTreeLoader
         }
     }
 
-    /// <summary>将 PhaseType1 业务列写入 PhaseUIBufferData 同名变量（Studio 中变量 BrowseName 与列名一致）；无表时仅 Parameter1..3。</summary>
-    public void LoadPhaseParametersToPhaseUIBuffer(int phaseId, string bufferObjectPath = DefaultPhaseBufferObjectPath)
+    /// <summary>
+    /// 将 PhaseType1 行与内存 <see cref="PhaseNode.Columns"/> 按 BrowseName 写入模板 UDT；
+    /// 无匹配列时将该标签复位为默认。若当前 Phase 为 dirty，则优先使用内存列（未保存编辑）回填。
+    /// </summary>
+    public void LoadPhaseParametersToUdtTemplateBuffer(int phaseId)
     {
-        IUAObject buffer;
-        try { buffer = Project.Current?.GetObject(bufferObjectPath); }
-        catch { buffer = null; }
-        if (buffer == null) return;
-        EnsurePhaseUiBufferModelVariables(bufferObjectPath);
+        IUAVariable root = null;
+        try { root = Project.Current?.GetVariable(DefaultUdtPhaseTemplateBufferObjectPath); }
+        catch { root = null; }
+        if (root == null) return;
 
         _phaseBufferLoadDepth++;
         try
         {
-            if (!TryGetPhaseType1Table(out var t1))
-            {
-                LoadPhaseParametersToBufferLegacyTriple(buffer, phaseId);
-                return;
-            }
-            var dataCols = GetPhaseType1DataColumnNames(t1);
-            if (dataCols.Count == 0)
-            {
-                LoadPhaseParametersToBufferLegacyTriple(buffer, phaseId);
-                return;
-            }
-            var layoutBindKeys = TryGetPhaseLayoutBindKeys();
-            var dataColSet = new HashSet<string>(dataCols, StringComparer.OrdinalIgnoreCase);
-            var toLoad = new List<string>(dataCols);
-            foreach (var k in layoutBindKeys)
-            {
-                if (!dataColSet.Contains(k)) toLoad.Add(k);
-            }
-
-            if (phaseId <= 0 || !PhaseById.TryGetValue(phaseId, out var ph))
-            {
-                foreach (string col in toLoad)
-                    WritePhaseBufferStringVar(buffer, col, "0");
-                return;
-            }
-
-            int infoId = GetPhaseColumnIntOrDefault(ph, "PhaseParameterInfoID", 0);
-            if (infoId <= 0) infoId = QueryPhaseParameterInfoIdFromDb(phaseId);
             Dictionary<string, object> row = null;
-            if (infoId > 0) TrySelectPhaseType1DataRow(infoId, out row);
-            var phCols = ph.Columns;
-            foreach (string col in toLoad)
+            Dictionary<string, object> phCols = null;
+            bool phaseDirty = false;
+            if (phaseId > 0 && PhaseById.TryGetValue(phaseId, out var ph))
             {
-                string s = "0";
-                if (dataColSet.Contains(col))
-                {
-                    object t = null, a = null;
-                    bool hasT1 = row != null && row.TryGetValue(col, out t) && t != null && t != DBNull.Value;
-                    bool hasPh = phCols != null && phCols.TryGetValue(col, out a) && a != null && a != DBNull.Value;
-                    if (hasT1)
-                        s = ParamToBufferString(t);
-                    else if (hasPh)
-                        s = ParamToBufferString(a);
-                }
-                else if (phCols != null && phCols.TryGetValue(col, out var a2) && a2 != null && a2 != DBNull.Value)
-                    s = ParamToBufferString(a2);
-                WritePhaseBufferStringVar(buffer, col, s);
+                phCols = ph.Columns;
+                phaseDirty = IsDirtyPhase(phaseId);
+                int infoId = GetPhaseColumnIntOrDefault(ph, "PhaseParameterInfoID", 0);
+                if (infoId <= 0) infoId = QueryPhaseParameterInfoIdFromDb(phaseId);
+                if (infoId > 0) TrySelectPhaseType1DataRow(infoId, out row);
             }
+            if (phaseDirty)
+            {
+                // dirty 优先：有未保存改动时，用内存列覆盖同名 DB 列，避免切换 phase 后显示被旧 DB 值回滚。
+                if (row == null)
+                    row = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+                if (phCols != null)
+                {
+                    foreach (var kv in phCols)
+                    {
+                        if (string.IsNullOrEmpty(kv.Key)) continue;
+                        if (kv.Value == null || kv.Value == DBNull.Value) continue;
+                        row[kv.Key] = kv.Value;
+                    }
+                }
+            }
+            ApplyPhaseDataToUdtTemplateTree(root, row, phCols);
         }
         finally
         {
@@ -914,36 +856,258 @@ public partial class RecipeDatabaseTreeLoader
         }
     }
 
-    /// <summary>无 PhaseType1 表或无任何业务列时：仅同步 Parameter1..3（与旧版兼容）。</summary>
-    private void LoadPhaseParametersToBufferLegacyTriple(IUAObject buffer, int phaseId)
+    private void ApplyPhaseDataToUdtTemplateTree(IUANode root, Dictionary<string, object> row, Dictionary<string, object> phCols)
     {
-        if (phaseId <= 0 || !PhaseById.TryGetValue(phaseId, out var ph))
-        {
-            WritePhaseBufferStringVar(buffer, "Parameter1", "0");
-            WritePhaseBufferStringVar(buffer, "Parameter2", "0");
-            WritePhaseBufferStringVar(buffer, "Parameter3", "0");
-            return;
-        }
-        int infoId = GetPhaseColumnIntOrDefault(ph, "PhaseParameterInfoID", 0);
-        if (infoId <= 0) infoId = QueryPhaseParameterInfoIdFromDb(phaseId);
-        string s1 = "0", s2 = "0", s3 = "0";
-        if (ph.Columns != null)
-        {
-            if (ph.Columns.TryGetValue("Parameter1", out var a1) && a1 != null && a1 != DBNull.Value) s1 = ParamToBufferString(a1);
-            if (ph.Columns.TryGetValue("Parameter2", out var a2) && a2 != null && a2 != DBNull.Value) s2 = ParamToBufferString(a2);
-            if (ph.Columns.TryGetValue("Parameter3", out var a3) && a3 != null && a3 != DBNull.Value) s3 = ParamToBufferString(a3);
-        }
-        WritePhaseBufferStringVar(buffer, "Parameter1", s1);
-        WritePhaseBufferStringVar(buffer, "Parameter2", s2);
-        WritePhaseBufferStringVar(buffer, "Parameter3", s3);
+        if (root == null) return;
+        ApplyPhaseDataToUdtTemplateTreeRecursive(root, row, phCols);
     }
 
-    /// <summary>供按钮/事件：按当前树选中 Phase 刷新 Buffer。</summary>
+    private void ApplyPhaseDataToUdtTemplateTreeRecursive(IUANode node, Dictionary<string, object> row, Dictionary<string, object> phCols)
+    {
+        if (node is IUAVariable v && IsUdtTemplateTagLevelVariable(v))
+        {
+            string col = v.BrowseName;
+            if (string.IsNullOrEmpty(col) || PhaseType1ReservedColumns.Contains(col)) return;
+            object raw = null;
+            bool has = false;
+            if (row != null && row.TryGetValue(col, out var t) && t != null && t != DBNull.Value)
+            {
+                raw = t;
+                has = true;
+            }
+            else if (phCols != null && phCols.TryGetValue(col, out var a) && a != null && a != DBNull.Value)
+            {
+                raw = a;
+                has = true;
+            }
+            if (has)
+                WriteUdtTagVariableFromPhaseColumn(v, raw);
+            else
+                ResetUdtTagVariableToDefault(v);
+            return;
+        }
+        if (node?.Children == null) return;
+        foreach (var child in node.Children)
+        {
+            if (child == null) continue;
+            if (ShouldSkipUdtTemplateTreeChildBrowseName(child.BrowseName)) continue;
+            ApplyPhaseDataToUdtTemplateTreeRecursive(child, row, phCols);
+        }
+    }
+
+    private void SetUdtVariableUaValue(IUAVariable v, UAValue ua)
+    {
+        if (v == null || ua == null) return;
+        try
+        {
+            if (_phaseBufferProgSenderId != 0)
+            {
+                using (LogicObject.Context.SetCurrentThreadSenderId(_phaseBufferProgSenderId))
+                    v.Value = ua;
+            }
+            else
+                v.Value = ua;
+        }
+        catch { }
+    }
+
+    private void ResetUdtTagVariableToDefault(IUAVariable v)
+    {
+        if (v == null) return;
+        try
+        {
+            object curVal = null;
+            try { curVal = v.Value?.Value; } catch { }
+            if (curVal is Array arr && arr.Rank == 1 && arr.Length > 0)
+            {
+                Type et = arr.GetValue(0).GetType();
+                Array z = Array.CreateInstance(et, arr.Length);
+                for (int i = 0; i < z.Length; i++)
+                {
+                    if (et == typeof(bool)) z.SetValue(false, i);
+                    else if (et == typeof(float)) z.SetValue(0f, i);
+                    else if (et == typeof(double)) z.SetValue(0.0, i);
+                    else if (et == typeof(int)) z.SetValue(0, i);
+                    else if (et == typeof(long)) z.SetValue(0L, i);
+                    else if (et == typeof(uint)) z.SetValue(0u, i);
+                    else
+                        z.SetValue(Convert.ChangeType(0, et, CultureInfo.InvariantCulture), i);
+                }
+                SetUdtVariableUaValue(v, new UAValue(z));
+                return;
+            }
+            if (v.DataType == OpcUa.DataTypes.Boolean)
+                SetUdtVariableUaValue(v, new UAValue(false));
+            else if (v.DataType == OpcUa.DataTypes.Float || v.DataType == OpcUa.DataTypes.Double)
+                SetUdtVariableUaValue(v, new UAValue(0.0f));
+            else
+                SetUdtVariableUaValue(v, new UAValue(0));
+        }
+        catch { }
+    }
+
+    private void WriteUdtTagVariableFromPhaseColumn(IUAVariable v, object raw)
+    {
+        if (v == null || raw == null || raw == DBNull.Value) return;
+        try
+        {
+            object curVal = null;
+            try { curVal = v.Value?.Value; } catch { }
+            if (curVal is Array template && template.Rank == 1 && template.Length > 0)
+            {
+                Array filled = CoerceRawToRankOneArray(raw, template);
+                if (filled != null)
+                    SetUdtVariableUaValue(v, new UAValue(filled));
+                return;
+            }
+            UAValue ua = CoerceScalarRawToUaValue(v, raw);
+            if (ua != null)
+                SetUdtVariableUaValue(v, ua);
+        }
+        catch { }
+    }
+
+    private static UAValue CoerceScalarRawToUaValue(IUAVariable v, object raw)
+    {
+        if (raw is bool b0) return new UAValue(b0);
+        if (raw is int i) return new UAValue(i);
+        if (raw is long l) return new UAValue((int)l);
+        if (raw is short sh) return new UAValue((int)sh);
+        if (raw is byte by) return new UAValue((int)by);
+        if (raw is uint ui) return new UAValue((int)ui);
+        if (raw is float f) return new UAValue(f);
+        if (raw is double d0) return new UAValue(d0);
+        string str = ParamToBufferString(raw);
+        if (v.DataType == OpcUa.DataTypes.Boolean)
+        {
+            bool bv = str == "1" || string.Equals(str, "true", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(str, "True", StringComparison.Ordinal);
+            if (!bv && int.TryParse(str.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int iv))
+                bv = iv != 0;
+            return new UAValue(bv);
+        }
+        if (v.DataType == OpcUa.DataTypes.Float || v.DataType == OpcUa.DataTypes.Double)
+        {
+            if (double.TryParse(str.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out double dbl))
+                return new UAValue(dbl);
+            return new UAValue(0.0);
+        }
+        return new UAValue(ParsePhaseParamIntString(str));
+    }
+
+    private static Array CoerceRawToRankOneArray(object raw, Array template)
+    {
+        int len = template.Length;
+        if (len <= 0) return null;
+        Type et = template.GetValue(0).GetType();
+        string s = ParamToBufferString(raw).Trim();
+
+        if (s.StartsWith("[", StringComparison.Ordinal))
+        {
+            try
+            {
+                if (et == typeof(bool))
+                {
+                    var parsed = JsonSerializer.Deserialize<bool[]>(s);
+                    return parsed == null ? null : PadOrTrimBoolArray(parsed, len);
+                }
+                if (et == typeof(float))
+                {
+                    var parsed = JsonSerializer.Deserialize<double[]>(s);
+                    return parsed == null ? null : PadOrTrimFloatArrayFromDouble(parsed, len);
+                }
+                if (et == typeof(double))
+                {
+                    var parsed = JsonSerializer.Deserialize<double[]>(s);
+                    return parsed == null ? null : PadOrTrimDoubleArray(parsed, len);
+                }
+                if (et == typeof(int))
+                {
+                    var parsed = JsonSerializer.Deserialize<int[]>(s);
+                    return parsed == null ? null : PadOrTrimIntArray(parsed, len);
+                }
+                if (et == typeof(long))
+                {
+                    var parsed = JsonSerializer.Deserialize<long[]>(s);
+                    return parsed == null ? null : PadOrTrimLongArray(parsed, len);
+                }
+            }
+            catch { }
+        }
+
+        var parts = s.Split(';');
+        Array result = Array.CreateInstance(et, len);
+        for (int i = 0; i < len; i++)
+        {
+            string p = i < parts.Length ? parts[i].Trim() : "0";
+            result.SetValue(ParseArrayElementString(p, et), i);
+        }
+        return result;
+    }
+
+    private static object ParseArrayElementString(string p, Type et)
+    {
+        if (et == typeof(bool))
+            return p == "1" || string.Equals(p, "true", StringComparison.OrdinalIgnoreCase);
+        if (et == typeof(float))
+            return float.TryParse(p, NumberStyles.Float, CultureInfo.InvariantCulture, out float f) ? f : 0f;
+        if (et == typeof(double))
+            return double.TryParse(p, NumberStyles.Float, CultureInfo.InvariantCulture, out double d) ? d : 0.0;
+        if (et == typeof(int))
+            return int.TryParse(p, NumberStyles.Integer, CultureInfo.InvariantCulture, out int i) ? i : 0;
+        if (et == typeof(long))
+            return long.TryParse(p, NumberStyles.Integer, CultureInfo.InvariantCulture, out long l) ? l : 0L;
+        if (et == typeof(uint))
+            return uint.TryParse(p, NumberStyles.Integer, CultureInfo.InvariantCulture, out uint u) ? u : 0u;
+        return 0;
+    }
+
+    private static Array PadOrTrimBoolArray(bool[] parsed, int len)
+    {
+        var result = new bool[len];
+        for (int i = 0; i < len; i++)
+            result[i] = i < parsed.Length ? parsed[i] : false;
+        return result;
+    }
+
+    private static Array PadOrTrimFloatArrayFromDouble(double[] parsed, int len)
+    {
+        var result = new float[len];
+        for (int i = 0; i < len; i++)
+            result[i] = i < parsed.Length ? (float)parsed[i] : 0f;
+        return result;
+    }
+
+    private static Array PadOrTrimDoubleArray(double[] parsed, int len)
+    {
+        var result = new double[len];
+        for (int i = 0; i < len; i++)
+            result[i] = i < parsed.Length ? parsed[i] : 0.0;
+        return result;
+    }
+
+    private static Array PadOrTrimIntArray(int[] parsed, int len)
+    {
+        var result = new int[len];
+        for (int i = 0; i < len; i++)
+            result[i] = i < parsed.Length ? parsed[i] : 0;
+        return result;
+    }
+
+    private static Array PadOrTrimLongArray(long[] parsed, int len)
+    {
+        var result = new long[len];
+        for (int i = 0; i < len; i++)
+            result[i] = i < parsed.Length ? parsed[i] : 0L;
+        return result;
+    }
+
+    /// <summary>供按钮/事件：按当前树选中 Phase 刷新模板 UDT。</summary>
     [ExportMethod]
-    public void Export_LoadSelectedPhaseToPhaseUIBuffer()
+    public void Export_LoadSelectedPhaseToUdtTemplateBuffer()
     {
         int pid = GenerateTreeList.Instance?.SelectedPhaseId ?? 0;
-        LoadPhaseParametersToPhaseUIBuffer(pid);
+        LoadPhaseParametersToUdtTemplateBuffer(pid);
     }
     #endregion
     #endregion

@@ -469,41 +469,35 @@ Children:
         Children:
         - Name: PhaseTemplateTypeID
           Type: StoreColumn
-          DataType: Int16
+          DataType: Int32
           Value: 1
         - Name: PhaseParameterInfoID
           Type: StoreColumn
           DataType: Int32
         - Name: Valve
           Type: StoreColumn
-          DataType: Boolean
-          ValueRank: OneDimension
-          ArrayDimensions: [32]
+          DataType: String
+          Value: "0"
         - Name: Pump
           Type: StoreColumn
-          DataType: Boolean
-          ValueRank: OneDimension
-          ArrayDimensions: [32]
+          DataType: String
+          Value: "0"
         - Name: FixedSetPointEbl
           Type: StoreColumn
-          DataType: Boolean
-          ValueRank: OneDimension
-          ArrayDimensions: [32]
+          DataType: String
+          Value: "0"
         - Name: FixedSetPointValue
           Type: StoreColumn
-          DataType: Float
-          ValueRank: OneDimension
-          ArrayDimensions: [10]
+          DataType: String
+          Value: "0"
         - Name: ControllerEbl
           Type: StoreColumn
-          DataType: Boolean
-          ValueRank: OneDimension
-          ArrayDimensions: [32]
+          DataType: String
+          Value: "0"
         - Name: ControllerSetPointValue
           Type: StoreColumn
-          DataType: Float
-          ValueRank: OneDimension
-          ArrayDimensions: [10]
+          DataType: String
+          Value: "0"
         - Name: EC1Selected
           Type: StoreColumn
           DataType: Int32

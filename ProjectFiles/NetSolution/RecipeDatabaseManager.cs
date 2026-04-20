@@ -824,7 +824,7 @@ public class RecipeDatabaseManager : BaseNetLogic
         RefreshTreeList();
     }
 
-    /// <summary>Phase 面板输入变更：Buffer→内存树、<see cref="RecipeDatabaseTreeLoader.MarkDirtyPhase"/>（树名 *）；autosave 时立即 <see cref="RecipeDatabaseTreeLoader.Save"/>。</summary>
+    /// <summary>Phase 面板输入变更：模板 UDT→内存树、<see cref="RecipeDatabaseTreeLoader.MarkDirtyPhase"/>（树名 *）；autosave 时立即 <see cref="RecipeDatabaseTreeLoader.Save"/>。</summary>
     [ExportMethod]
     public void NotifyPhaseParameterBufferEdited()
     {
@@ -834,7 +834,7 @@ public class RecipeDatabaseManager : BaseNetLogic
         try
         {
             bool wasDirty = Loader.IsDirtyPhase(pId);
-            Loader.MergePhaseUiBufferIntoPhaseNode(pId);
+            Loader.MergeUdtPhaseTemplateBufferIntoPhaseNode(pId);
             Loader.MarkDirtyPhase(pId);
             Loader.MarkModified();
             if (GetAutosave())

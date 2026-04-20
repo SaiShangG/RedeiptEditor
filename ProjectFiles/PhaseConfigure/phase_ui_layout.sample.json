@@ -1,0 +1,153 @@
+{
+  "version": 3,
+  "description": "Single-template test layout aligned to UDT_Phase. Two test configs per area.",
+  "sections": [
+    {
+      "id": "ParaPanel1",
+      "panelType": "PhaseParasPanel",
+      "title": "Phase Parameters Area (Test x2)",
+      "rowLayoutPath": "VL/HL",
+      "items": [
+        {
+          "id": "Para0",
+          "widgetType": "PhaseSinglePara",
+          "label": "Para1",
+          "bind": {
+            "bufferField": "PP.FixedSetPointValue",
+            "valueRank": "OneDimension",
+            "index": 0,
+            "uiProperty": "Text",
+            "sourceTagPath": "PP.FixedSetPointValue[0]"
+          }
+        },
+        {
+          "id": "Para1",
+          "widgetType": "PhaseSinglePara",
+          "label": "Para2",
+          "bind": {
+            "bufferField": "PP.ControllerSetPointValue",
+            "valueRank": "OneDimension",
+            "index": 0,
+            "uiProperty": "Text",
+            "sourceTagPath": "PP.ControllerSetPointValue[0]"
+          }
+        },
+        {
+          "id": "Para2",
+          "widgetType": "PhaseSinglePara",
+          "label": "Para3",
+          "bind": {
+            "bufferField": "EC.EC1Selected",
+            "valueRank": "OneDimension",
+            "index": 0,
+            "uiProperty": "Text",
+            "sourceTagPath": "EC.EC1Selected"
+          }
+        },
+        {
+          "id": "Para3",
+          "widgetType": "PhaseSinglePara",
+          "label": "Para4",
+          "bind": {
+            "bufferField": "EC.EC2Selected",
+            "valueRank": "OneDimension",
+            "index": 0,
+            "uiProperty": "Text",
+            "sourceTagPath": "EC.EC2Selected"
+          }
+        }
+      ]
+    },
+  
+    {
+      "id": "ParaPanel3",
+      "panelType": "PhaseParasPanel",
+      "title": "Pump Area (Test x2)",
+      "rowLayoutPath": "VL/HL",
+      "items": [
+    
+        {
+          "id": "PumpSetting0",
+          "widgetType": "PhaseValvePanel",
+          "label": "Pump101",
+          "bind": {
+            "bufferField": "PP.Pump",
+            "valueRank": "OneDimension",
+            "index": 0,
+            "uiProperty": "Checked",
+            "sourceTagPath": "PP.Pump[0]"
+          }
+        },
+        {
+          "id": "PumpSetting1",
+          "widgetType": "PhaseValvePanel",
+          "label": "Pump102",
+          "bind": {
+            "bufferField": "PP.Pump",
+            "valueRank": "OneDimension",
+            "index": 1,
+            "uiProperty": "Checked",
+            "sourceTagPath": "PP.Pump[1]"
+          }
+        },
+        {
+          "id": "PumpSetting2",
+          "widgetType": "PhaseValvePanel",
+          "label": "Pump103",
+          "bind": {
+            "bufferField": "PP.Pump",
+            "valueRank": "OneDimension",
+            "index": 1,
+            "uiProperty": "Checked",
+            "sourceTagPath": "PP.Pump[2]"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ParaPanel4",
+      "panelType": "PhaseParasPanel",
+      "title": "Valve Area (Test x2)",
+      "rowLayoutPath": "VL/HL",
+      "items": [
+        {
+          "id": "ValveSetting0",
+          "widgetType": "PhaseValvePanel",
+          "label": "Valve0",
+          "bind": {
+            "bufferField": "PP.Valve",
+            "valueRank": "OneDimension",
+            "index": 0,
+            "uiProperty": "Checked",
+            "sourceTagPath": "PP.Valve[0]"
+          }
+        },
+        {
+          "id": "ValveSetting1",
+          "widgetType": "PhaseValvePanel",
+          "label": "Valve1",
+          "bind": {
+            "bufferField": "PP.Valve",
+            "valueRank": "OneDimension",
+            "index": 1,
+            "uiProperty": "Checked",
+            "sourceTagPath": "PP.Valve[1]"
+          }
+        },
+        {
+          "id": "ValveSetting2",
+          "widgetType": "PhaseValvePanel",
+          "label": "Valve2",
+          "bind": {
+            "bufferField": "PP.Valve",
+            "valueRank": "OneDimension",
+            "index": 2,
+            "uiProperty": "Checked",
+            "sourceTagPath": "PP.Valve[2]"
+          }
+        }
+     
+      ]
+    }
+  ]
+}

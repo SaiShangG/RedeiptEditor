@@ -3,8 +3,23 @@ Type: FolderType
 Children:
 - Name: OperationToPLC
   Type: BaseObjectType
-- Name: PhaseUIBufferData
-  Type: BaseObjectType
+  Children:
+  - Name: Operation
+    Type: BaseDataVariableType
+    DataType: NodeId
+    Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OP1"
+  - Name: Phases
+    Type: BaseDataVariableType
+    DataType: NodeId
+    Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Phases"
+  - Name: Batch
+    Type: BaseDataVariableType
+    DataType: NodeId
+    Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch"
+  - Name: OperationHandshake
+    Type: BaseDataVariableType
+    DataType: NodeId
+    Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OperationHandshake"
 - Name: OperationData
   Type: BaseObjectType
   Children:
@@ -19,6 +34,7 @@ Children:
 - Name: UDT_PhaseTemplateUIBuffer1
   Type: UDT_Phase
   DataType: UDT_Phase
+  ValueRank: Any
   Children:
   - Name: PP
     Type: UDT_PhaseParameters
@@ -84,6 +100,9 @@ Children:
         Type: BaseDataVariableType
         DataType: String
         Value: "ControllerSetPointValue"
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
   - Name: EC
     Type: UDT_EndConditions
     DataType: UDT_EndConditions
@@ -224,6 +243,9 @@ Children:
         Type: BaseDataVariableType
         DataType: String
         Value: "EC3SP"
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
   - Name: SymbolName
     Type: BaseDataVariableType
     DataType: String

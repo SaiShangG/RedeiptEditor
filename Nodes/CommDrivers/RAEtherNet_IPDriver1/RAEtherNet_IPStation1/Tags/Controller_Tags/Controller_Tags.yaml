@@ -2,6 +2,7 @@ Name: Controller Tags
 Type: FolderType
 Children:
 - Name: OP1
+  Id: g=69f90b145df23dfd304617593ef4715e
   Type: UDT_Operation
   DataType: UDT_Operation
   Children:
@@ -1024,6 +1025,7 @@ Children:
             DataType: String
             Value: "OP2.RunningPhase.EC.EC3SP.@Description"
 - Name: Phases
+  Id: g=66b9d1da9630c73024dfd35d49ab999f
   Type: UDT_Phase
   DataType: UDT_Phase
   ValueRank: OneDimension
@@ -5607,3 +5609,158 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[9].EC.EC3SP.@Description"
+- Name: OperationHandshake
+  Id: g=2f8451e1ac88b0ac7b9329072f7c6070
+  Type: UDT_RecipeHandshake
+  DataType: UDT_RecipeHandshake
+  Children:
+  - Name: SymbolName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "OperationHandshake"
+  - Name: BlockRead
+    Type: BaseDataVariableType
+    DataType: Boolean
+    Value: true
+  - Name: Description
+    Type: RAEtherNetIPMetaTag
+    DataType: String
+    Value: "Each  Operation handshake"
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "OperationHandshake.@Description"
+  - Name: EvtDone
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "OperationHandshake.EvtDone"
+  - Name: EvtDoneSeq
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "OperationHandshake.EvtDoneSeq"
+  - Name: EvtFaultCode
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "OperationHandshake.EvtFaultCode"
+  - Name: StsLoadAckSeq
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "OperationHandshake.StsLoadAckSeq"
+  - Name: EvtFault
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "OperationHandshake.EvtFault"
+  - Name: CmdLoad
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "OperationHandshake.CmdLoad"
+  - Name: CmdSeq
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "OperationHandshake.CmdSeq"
+  - Name: CmdStart
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "OperationHandshake.CmdStart"
+- Name: Batch
+  Id: g=ff0803734c73fe6f31a8e07c92872635
+  Type: UDT_Batch
+  DataType: UDT_Batch
+  Children:
+  - Name: SymbolName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Batch"
+  - Name: BlockRead
+    Type: BaseDataVariableType
+    DataType: Boolean
+    Value: true
+  - Name: BatchID
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch.BatchID"
+  - Name: BatchStatus
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch.BatchStatus"
+  - Name: EvtBatchDone
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch.EvtBatchDone"
+  - Name: BatchName
+    Type: RAEtherNetIPTag
+    DataType: String
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch.BatchName"
+  - Name: RunningPhaseName
+    Type: RAEtherNetIPTag
+    DataType: String
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch.RunningPhaseName"
+  - Name: BatchStart
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch.BatchStart"
+  - Name: RecipeName
+    Type: RAEtherNetIPTag
+    DataType: String
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch.RecipeName"

@@ -381,6 +381,122 @@ Children:
       Type: BaseDataVariableType
       DataType: String
       Value: "EC3SP"
+- Name: UDT_RecipeHandshake
+  Id: g=206a01a5c7151122bf65077cfcc014b4
+  Supertype: RAEtherNetIPTagStructure
+  DataType: UDT_RecipeHandshake
+  ValueRank: Any
+  Children:
+  - Name: EvtDone
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "EvtDone"
+  - Name: StsLoadAckSeq
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "StsLoadAckSeq"
+  - Name: EvtFault
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "EvtFault"
+  - Name: CmdLoad
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "CmdLoad"
+  - Name: CmdSeq
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "CmdSeq"
+  - Name: CmdStart
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "CmdStart"
+- Name: UDT_Batch
+  Id: g=0261fe6f65e144d3b03fcbdf2d9ef33e
+  Supertype: RAEtherNetIPTagStructure
+  DataType: UDT_Batch
+  ValueRank: Any
+  Children:
+  - Name: BatchID
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "BatchID"
+  - Name: BatchStatus
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "BatchStatus"
+  - Name: EvtBatchDone
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "EvtBatchDone"
+  - Name: BatchName
+    Type: RAEtherNetIPTag
+    DataType: String
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "BatchName"
+  - Name: RunningPhaseName
+    Type: RAEtherNetIPTag
+    DataType: String
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "RunningPhaseName"
+  - Name: BatchStart
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "BatchStart"
+  - Name: RecipeName
+    Type: RAEtherNetIPTag
+    DataType: String
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "RecipeName"
 - Name: UDT_Phase
   Id: g=172d0f6ebfa97f808a45757c45046d74
   Supertype: RAEtherNetIPTagStructure

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using UAManagedCore;
-using OpcUa = UAManagedCore.OpcUa;
 using FTOptix.UI;
 using FTOptix.HMIProject;
 using FTOptix.EventLogger;
@@ -20,8 +19,14 @@ using FTOptix.CommunicationDriver;
 
 public class PhaseManager : BaseNetLogic
 {
-    private const string LayoutJsonFileName = "phase_ui_layout.sample.json";
-    private const string PhaseBufferObjectPath = "Model/UIData/PhaseData/PhaseUIBufferData";
+    public static PhaseManager Instance { get; private set; }
+     private const string UdtPhaseTemplateUiBufferRootPath = "Model/UIData/PhaseData/UDT_PhaseTemplateUIBuffer1";
+     private const string TestTextTargetVariablePath = UdtPhaseTemplateUiBufferRootPath + "/PP/FixedSetPointValue";
+
+    public override void Start()
+    {
+        Instance = this;
+    }
 
     #region 输入变更订阅
     private uint _phaseInputAffinityId;
@@ -54,7 +59,12 @@ public class PhaseManager : BaseNetLogic
             try
             {
                 var obs = new CallbackVariableChangeObserver((iv, nv, ov, access, sender) =>
-                    LogPhaseInputFirstChar(logTag, nv));
+                {
+                    LogPhaseInputFirstChar(logTag, nv);
+                    if (RecipeDatabaseTreeLoader.Instance != null && RecipeDatabaseTreeLoader.Instance.IsPhaseUdtTemplateLoading)
+                        return;
+                    RecipeDatabaseManager.Instance?.NotifyPhaseParameterBufferEdited();
+                });
                 _phaseInputRegs.Add(v.RegisterEventObserver(obs, EventType.VariableValueChanged, _phaseInputAffinityId));
             }
             catch (Exception ex)
@@ -122,197 +132,66 @@ public class PhaseManager : BaseNetLogic
             }
         }
     }
-
-    private void WireLegacyPhaseInputObservers()
-    {
-        if (_phaseInputAffinityId == 0 || Owner == null) return;
-        var rows = Owner.GetObject("ScrollView1/Rows") as IUAObject;
-        if (rows?.Children == null) return;
-        foreach (var pn in rows.Children)
-        {
-            if (!(pn is IUAObject panel)) continue;
-            var hl = panel.GetObject("VL/HL") as IUAObject;
-            if (hl?.Children == null) continue;
-            foreach (var it in hl.Children)
-            {
-                if (it is IUAObject io)
-                    RegisterPhaseParaValueEditors(io, panel.BrowseName + "/" + it.BrowseName);
-            }
-        }
-    }
     #endregion
-
-    public override void Start()
+    [ExportMethod]
+    public void RedrawPhaseParameterUI()
     {
+        int selectedPhaseId = GenerateTreeList.Instance?.SelectedPhaseId ?? 0;
+        if (selectedPhaseId > 0)
+            RecipeDatabaseTreeLoader.Instance?.LoadPhaseParametersToUdtTemplateBuffer(selectedPhaseId);
+
         EnsurePhaseInputAffinity();
-        if (Owner is IUAObject ownerObj)
+        if (!(Owner is IUAObject ownerObj)) return;
+
+        var jsonVar = LogicObject.GetVariable("JsonFile");
+        string jsonPath = PhaseUILayoutJson.ResolveJsonFilePathFromVariable(jsonVar);
+        var layout = !string.IsNullOrEmpty(jsonPath) ? PhaseUILayoutJson.TryLoadFromFile(jsonPath) : null;
+        if (layout == null)
         {
-            string path = PhaseUILayoutJson.ResolveLayoutPath(LayoutJsonFileName);
-            var layout = path != null ? PhaseUILayoutJson.TryLoadFromFile(path) : null;
-            if (layout != null)
-            {
-                try
-                {
-                    BuildPhaseUiFromLayout(ownerObj, layout);
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    Log.Warning("PhaseManager", $"JSON 布局失败，回退硬编码: {ex.Message}");
-                }
-            }
+            string hint = DescribeJsonFileVariableForLog(jsonVar);
+            Log.Warning(nameof(PhaseManager),
+                "无法加载相位 UI 布局 JSON（JsonFile 路径无效或文件不存在）。详情: " + hint);
+            return;
         }
 
-        BuildPhaseUiLegacy();
+        try
+        {
+            // 当前阶段仅按 JSON 生成 UI，不依赖 UDT 缓冲；DynamicLink 绑定后续再接。
+            BuildPhaseUiFromLayout(ownerObj, layout);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(nameof(PhaseManager), "构建相位 UI 失败: " + ex.Message);
+        }
     }
 
-    private void BuildPhaseUiLegacy()
+   
+    /// <summary>记录 JsonFile 变量当前值类型与摘要，便于排查路径解析失败。</summary>
+    private static string DescribeJsonFileVariableForLog(IUAVariable jsonVar)
     {
-        RecipeDatabaseTreeLoader.EnsurePhaseUiBufferModelVariables(PhaseBufferObjectPath);
-        var ParaPanel1 = InformationModel.Make<PhaseParasPanel>("ParaPanel1");
-        var ParaPanel2 = InformationModel.Make<PhaseParasPanel>("ParaPanel2");
-        var ParaPanel3 = InformationModel.Make<PhaseParasPanel>("ParaPanel3");
-
-        ParaPanel1.Get<TextBox>("BG/Title").Text = "This is the Phase Parameter Area";
-        ParaPanel2.Get<TextBox>("BG/Title").Text = "This is the End Conditions Area";
-        ParaPanel2.Get<RowLayout>("VL/HL").HorizontalGap = 0;
-
-
-        ParaPanel3.Get<TextBox>("BG/Title").Text = "This is the Valve Setting Area";
-
-
-
-        Owner.Get("ScrollView1/Rows").Add(ParaPanel1);
-        Owner.Get("ScrollView1/Rows").Add(ParaPanel2);
-        Owner.Get("ScrollView1/Rows").Add(ParaPanel3);
-
-
-        // Phase Single Parameter -  - ParaPanel1
-        for (int i = 0; i < 10; i++) {
-            var ParaSingle = InformationModel.Make<PhaseSinglePara>("Para" + i.ToString());
-            Owner.Get("ScrollView1/Rows/ParaPanel1/VL/HL").Add(ParaSingle);
-        }
-
-        // Phase End Conditions  - ParaPanel2
-        var ParaEC = InformationModel.Make<PhaseUserAck>("Para" + "UserAck");
-        ParaPanel2.Get("VL/HL").Add(ParaEC);
-
-        var ParaAAO1 = InformationModel.Make<PhaseAndorOr>("Para" + "AndandOr1");
-        ParaAAO1.Width = 80;
-        ParaPanel2.Get("VL/HL").Add(ParaAAO1);
-
-        var ParaRT = InformationModel.Make<PhaseRunningTime>("Para" + "RunningTIme");
-        ParaPanel2.Get("VL/HL").Add(ParaRT);
-
-        var ParaCP1 = InformationModel.Make<PhaseParaCompare1>("Para" + "CP1");
-        ParaPanel2.Get("VL/HL").Add(ParaCP1);
-
-        var ParaCP2 = InformationModel.Make<PhaseParaCompare2>("Para" + "CP2");
-        ParaPanel2.Get("VL/HL").Add(ParaCP2);
-
-        var ParaAAO2 = InformationModel.Make<PhaseAndorOr>("Para" + "AndandOr2");
-        ParaAAO2.Width = 80;
-        ParaPanel2.Get("VL/HL").Add(ParaAAO2);
-
-        var ParaCP3 = InformationModel.Make<PhaseParaCompare2>("Para" + "CP3");
-        ParaPanel2.Get("VL/HL").Add(ParaCP3);
-
-        var ParaCP4 = InformationModel.Make<PhaseParaCompare1>("Para" + "CP4");
-        ParaPanel2.Get("VL/HL").Add(ParaCP4);
-
-        // Phase Valve Setting - ParaPanel3
-        for (int i = 0; i < 12; i++)
+        if (jsonVar == null) return "JsonFile 变量不存在";
+        try
         {
-            var ValveSingle = InformationModel.Make<PhaseValvePanel>("ValveSetting" + i.ToString());
-            ValveSingle.Get<Label>("VerticalLayout1/ParaName/Label1").Text = "Valve" + i.ToString();
-            ParaPanel3.Get("VL/HL").Add(ValveSingle);
+            if (jsonVar.Value == null || jsonVar.Value.Value == null)
+                return "JsonFile 值为空";
+            object v = jsonVar.Value.Value;
+            string typeName = v.GetType().FullName ?? v.GetType().Name;
+            string sample = Convert.ToString(v);
+            if (!string.IsNullOrEmpty(sample) && sample.Length > 120)
+                sample = sample.Substring(0, 120) + "…";
+            return typeName + " → " + sample;
         }
-        WireLegacyPhaseInputObservers();
-        if (Owner is IUAObject ownerObj)
-            AttachLegacyPhaseBufferDynamicLinks(ownerObj);
-    }
+        catch (Exception ex)
+        {
+            return ex.Message;
+        }
+    }   
 
-    /// <summary>Legacy 构建路径无 JSON 布局时的绑定；与 phase_ui_layout.sample.json 中 Para0..9、Valve0..11 的 bindKey 一致。</summary>
-    private void AttachLegacyPhaseBufferDynamicLinks(IUAObject owner)
-    {
-        if (owner == null) return;
-        IUAObject buffer;
-        try { buffer = Project.Current?.GetObject(PhaseBufferObjectPath); }
-        catch { buffer = null; }
-        if (buffer == null) return;
-
-        string[] paraKeys =
-        {
-            "Parameter1", "Parameter2", "Parameter3", "Parameter4", "Parameter5",
-            "Parameter6", "ParaSlot6", "ParaSlot7", "ParaSlot8", "ParaSlot9"
-        };
-        for (int i = 0; i < paraKeys.Length; i++)
-        {
-            var modelVar = buffer.GetVariable(paraKeys[i]);
-            if (modelVar == null) continue;
-            var widget = owner.GetObject("ScrollView1/Rows/ParaPanel1/VL/HL/Para" + i) as IUAObject;
-            if (widget != null)
-                TryDynamicLinkSingleParaText(widget, modelVar);
-        }
-        for (int i = 0; i < 12; i++)
-        {
-            var modelVar = buffer.GetVariable("Valve" + i);
-            if (modelVar == null) continue;
-            var widget = owner.GetObject("ScrollView1/Rows/ParaPanel3/VL/HL/ValveSetting" + i) as IUAObject;
-            if (widget != null)
-                TryDynamicLinkValveSwitch(widget, modelVar);
-        }
-        AttachLegacyPanel2EndConditionLinks(owner, buffer);
-    }
-
-    /// <summary>Legacy 路径下 ParaPanel2 与 sample JSON 相同的 bindKey*。</summary>
-    private void AttachLegacyPanel2EndConditionLinks(IUAObject owner, IUAObject buffer)
-    {
-        if (owner == null || buffer == null) return;
-        const string p2 = "ScrollView1/Rows/ParaPanel2/VL/HL/";
-        void Sw(string itemId, string key)
-        {
-            if (string.IsNullOrEmpty(key)) return;
-            var mv = buffer.GetVariable(key);
-            var w = owner.GetObject(p2 + itemId) as IUAObject;
-            if (mv != null && w != null) TryDynamicLinkValveSwitch(w, mv);
-        }
-        void Tx(string itemId, string key)
-        {
-            if (string.IsNullOrEmpty(key)) return;
-            var mv = buffer.GetVariable(key);
-            var w = owner.GetObject(p2 + itemId) as IUAObject;
-            if (mv != null && w != null) TryDynamicLinkSingleParaText(w, mv);
-        }
-        void Cb(string itemId, string key)
-        {
-            if (string.IsNullOrEmpty(key)) return;
-            var mv = buffer.GetVariable(key);
-            var w = owner.GetObject(p2 + itemId) as IUAObject;
-            if (mv != null && w != null) TryDynamicLinkComboSelectedValue(w, mv);
-        }
-        Sw("ParaUserAck", "EcUserAckEnabled");
-        Sw("ParaAndandOr1", "EcAndOr1");
-        Sw("ParaRunningTIme", "EcRunTimeEnabled");
-        Tx("ParaRunningTIme", "EcRunTimeHms");
-        Sw("ParaCP1", "EcCp1Enabled");
-        Tx("ParaCP1", "EcCp1Level");
-        Sw("ParaCP2", "EcCp2Enabled");
-        Tx("ParaCP2", "EcCp2Level");
-        Cb("ParaCP2", "EcCp2Op");
-        Sw("ParaAndandOr2", "EcAndOr2");
-        Sw("ParaCP3", "EcCp3Enabled");
-        Tx("ParaCP3", "EcCp3Level");
-        Cb("ParaCP3", "EcCp3Op");
-        Sw("ParaCP4", "EcCp4Enabled");
-        Tx("ParaCP4", "EcCp4Level");
-    }
-
-    #region Phase JSON 构建
+    #region Phase JSON 构建与 UDT_Phase 绑定
     private void BuildPhaseUiFromLayout(IUAObject owner, PhaseUILayoutRoot root)
     {
         if (owner == null || root?.Sections == null) return;
-        RecipeDatabaseTreeLoader.EnsurePhaseUiBufferModelVariables(PhaseBufferObjectPath);
+        ValidateUniqueItemIdsOrThrow(root);
         var rows = owner.Get("ScrollView1/Rows");
         if (rows == null) return;
         ClearPhaseInputRegs();
@@ -321,10 +200,11 @@ public class PhaseManager : BaseNetLogic
         foreach (var sec in root.Sections)
         {
             if (string.IsNullOrEmpty(sec?.Id)) continue;
-            if (!string.Equals(sec.PanelType, "PhaseParasPanel", StringComparison.OrdinalIgnoreCase))
+            // 与 PhaseParaTemplateUnit 中对象类型名一致（如 PhaseParasPanel1）
+            if (!PanelTypeIsPhaseParas(sec.PanelType))
                 continue;
 
-            var panel = InformationModel.Make<PhaseParasPanel>(sec.Id);
+            var panel = InformationModel.Make<PhaseParasPanel1>(sec.Id);
             var titleBox = panel.Get<TextBox>("BG/Title");
             if (titleBox != null && !string.IsNullOrEmpty(sec.Title))
                 titleBox.Text = sec.Title;
@@ -344,137 +224,164 @@ public class PhaseManager : BaseNetLogic
             rows.Add(panel);
         }
 
-        AttachPhaseBufferDynamicLinks(owner, root);
+        AttachUdtPhaseBufferBinds(owner, root);
         WireLayoutPhaseInputObservers(owner, root);
     }
 
-    #region Buffer DynamicLink（bindKey* ↔ PhaseUIBufferData）
-    private void AttachPhaseBufferDynamicLinks(IUAObject owner, PhaseUILayoutRoot root)
+    /// <summary>校验每个 Section 内 item.id 唯一，重复时抛异常，避免运行时节点寻址冲突。</summary>
+    private static void ValidateUniqueItemIdsOrThrow(PhaseUILayoutRoot root)
+    {
+        if (root?.Sections == null) return;
+        foreach (var sec in root.Sections)
+        {
+            if (sec == null || string.IsNullOrEmpty(sec.Id) || sec.Items == null) continue;
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var item in sec.Items)
+            {
+                if (item == null) continue;
+                string itemId = item.Id?.Trim();
+                if (string.IsNullOrEmpty(itemId))
+                    throw new InvalidOperationException($"布局错误：section={sec.Id} 存在空 item.id。");
+                if (!seen.Add(itemId))
+                    throw new InvalidOperationException($"布局错误：section={sec.Id} 内 item.id 重复：{itemId}。");
+            }
+        }
+    }
+ 
+    /// <summary>解析 sourceTagPath（如 PP.FixedSetPointValue[0]）为字段路径与可选数组索引。</summary>
+    private static bool TryParseSourceTagPath(string sourceTagPath, out string bufferFieldPath, out int? arrayIndex, out string error)
+    {
+        bufferFieldPath = null;
+        arrayIndex = null;
+        error = null;
+
+        if (string.IsNullOrWhiteSpace(sourceTagPath))
+        {
+            error = "sourceTagPath 为空。";
+            return false;
+        }
+
+        string raw = sourceTagPath.Trim();
+        int lb = raw.LastIndexOf('[');
+        int rb = raw.LastIndexOf(']');
+
+        if (lb < 0 && rb < 0)
+        {
+            bufferFieldPath = raw;
+            return true;
+        }
+
+        if (lb < 0 || rb < 0 || rb <= lb || rb != raw.Length - 1)
+        {
+            error = "sourceTagPath 索引格式非法: " + raw;
+            return false;
+        }
+
+        string idxText = raw.Substring(lb + 1, rb - lb - 1).Trim();
+        if (!int.TryParse(idxText, out int idx) || idx < 0)
+        {
+            error = "sourceTagPath 索引不是非负整数: " + raw;
+            return false;
+        }
+
+        string path = raw.Substring(0, lb).Trim();
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            error = "sourceTagPath 字段路径为空: " + raw;
+            return false;
+        }
+
+        bufferFieldPath = path;
+        arrayIndex = idx;
+        return true;
+    }
+ 
+
+    /// <summary>按 JSON <c>bind.sourceTagPath</c> 将控件绑定到 UDT_Phase 成员；带 [index] 时绑定数组元素。</summary>
+    private void AttachUdtPhaseBufferBinds(IUAObject owner, PhaseUILayoutRoot root)
     {
         if (owner == null || root?.Sections == null) return;
-        IUAObject buffer;
-        try { buffer = Project.Current?.GetObject(PhaseBufferObjectPath); }
-        catch { buffer = null; }
-        if (buffer == null) return;
-
+         
         foreach (var sec in root.Sections)
         {
             if (sec?.Items == null) continue;
             string rp = string.IsNullOrEmpty(sec.RowLayoutPath) ? "VL/HL" : sec.RowLayoutPath;
             foreach (var item in sec.Items)
             {
-                if (string.IsNullOrEmpty(item?.Id)) continue;
-                var n = owner.GetObject("ScrollView1/Rows/" + sec.Id + "/" + rp + "/" + item.Id);
-                if (!(n is IUAObject widget)) continue;
-                string wt = item.WidgetType?.Trim() ?? "";
+                if (string.IsNullOrEmpty(item?.Id) || item.Bind == null) continue;
+                if (string.IsNullOrWhiteSpace(item.Bind.SourceTagPath))
+                    throw new InvalidOperationException($"绑定失败 {sec.Id}/{item.Id}: bind.sourceTagPath 为空。");
 
-                if (string.Equals(wt, "PhaseSinglePara", StringComparison.OrdinalIgnoreCase))
+                var widget = owner.GetObject("ScrollView1/Rows/" + sec.Id + "/" + rp + "/" + item.Id) as IUAObject;
+                if (widget == null)
+                    throw new InvalidOperationException($"绑定失败 {sec.Id}/{item.Id}: 未找到 UI 控件节点。");
+
+                if (!TryParseSourceTagPath(item.Bind.SourceTagPath, out string bufferFieldPath, out int? parsedIndex, out string parseError))
+                    throw new InvalidOperationException($"绑定失败，index解析失败 {sec.Id}/{item.Id}: {parseError}");
+
+                string modelVarPath = UdtPhaseTemplateUiBufferRootPath + "/" + bufferFieldPath.Replace('.', '/');
+                IUAVariable modelVar = Project.Current.GetVariable(modelVarPath);
+                if (modelVar == null && parsedIndex.HasValue)
                 {
-                    if (string.IsNullOrEmpty(item.BindKey)) continue;
-                    var mv = buffer.GetVariable(item.BindKey);
-                    if (mv != null) TryDynamicLinkSingleParaText(widget, mv);
-                    continue;
+                    modelVar = Project.Current.GetVariable(modelVarPath + "[" + parsedIndex.Value + "]");
+                    if (modelVar == null)
+                        modelVar = Project.Current.GetVariable(modelVarPath + "/" + parsedIndex.Value);
                 }
-                if (string.Equals(wt, "PhaseValvePanel", StringComparison.OrdinalIgnoreCase))
+                if (modelVar == null)
+                    throw new InvalidOperationException($"绑定失败 {sec.Id}/{item.Id}: 未找到模型变量 {modelVarPath}" + (parsedIndex.HasValue ? $"（index={parsedIndex.Value}）" : "") + "。");
+
+                string uiProperty = item.Bind.UiProperty?.Trim();
+                if (string.IsNullOrEmpty(uiProperty))
+                    throw new InvalidOperationException($"绑定失败 {sec.Id}/{item.Id}: bind.uiProperty 为空。");
+
+                IUAVariable uiVar = null;
+                if (string.Equals(uiProperty, "Text", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (string.IsNullOrEmpty(item.BindKey)) continue;
-                    var mv = buffer.GetVariable(item.BindKey);
-                    if (mv != null) TryDynamicLinkValveSwitch(widget, mv);
-                    continue;
+                    var targetTextBox = FindFirstDescendant<TextBox>(widget);
+                    if (targetTextBox == null)
+                        throw new InvalidOperationException($"绑定失败 {sec.Id}/{item.Id}: uiProperty=Text，但在控件及其子节点中未找到 TextBox。");
+                    uiVar = targetTextBox.GetVariable("Text");
                 }
-                if (string.Equals(wt, "PhaseUserAck", StringComparison.OrdinalIgnoreCase)
-                    || string.Equals(wt, "PhaseAndorOr", StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(uiProperty, "Checked", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (!string.IsNullOrEmpty(item.BindKeySwitch))
-                    {
-                        var mv = buffer.GetVariable(item.BindKeySwitch);
-                        if (mv != null) TryDynamicLinkValveSwitch(widget, mv);
-                    }
-                    continue;
+                    var targetSwitch = FindFirstDescendant<Switch>(widget);
+                    if (targetSwitch == null)
+                        throw new InvalidOperationException($"绑定失败 {sec.Id}/{item.Id}: uiProperty=Checked，但在控件及其子节点中未找到 Switch。");
+                    uiVar = targetSwitch.GetVariable("Checked");
                 }
-                if (string.Equals(wt, "PhaseRunningTime", StringComparison.OrdinalIgnoreCase))
+                else
                 {
-                    if (!string.IsNullOrEmpty(item.BindKeySwitch))
-                    {
-                        var mv = buffer.GetVariable(item.BindKeySwitch);
-                        if (mv != null) TryDynamicLinkValveSwitch(widget, mv);
-                    }
-                    if (!string.IsNullOrEmpty(item.BindKeyText))
-                    {
-                        var mv = buffer.GetVariable(item.BindKeyText);
-                        if (mv != null) TryDynamicLinkSingleParaText(widget, mv);
-                    }
-                    continue;
+                    uiVar = widget.GetVariable(uiProperty);
                 }
-                if (string.Equals(wt, "PhaseParaCompare1", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (!string.IsNullOrEmpty(item.BindKeySwitch))
-                    {
-                        var mv = buffer.GetVariable(item.BindKeySwitch);
-                        if (mv != null) TryDynamicLinkValveSwitch(widget, mv);
-                    }
-                    if (!string.IsNullOrEmpty(item.BindKeyText))
-                    {
-                        var mv = buffer.GetVariable(item.BindKeyText);
-                        if (mv != null) TryDynamicLinkSingleParaText(widget, mv);
-                    }
-                    continue;
-                }
-                if (string.Equals(wt, "PhaseParaCompare2", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (!string.IsNullOrEmpty(item.BindKeySwitch))
-                    {
-                        var mv = buffer.GetVariable(item.BindKeySwitch);
-                        if (mv != null) TryDynamicLinkValveSwitch(widget, mv);
-                    }
-                    if (!string.IsNullOrEmpty(item.BindKeyText))
-                    {
-                        var mv = buffer.GetVariable(item.BindKeyText);
-                        if (mv != null) TryDynamicLinkSingleParaText(widget, mv);
-                    }
-                    if (!string.IsNullOrEmpty(item.BindKeyCombo))
-                    {
-                        var mv = buffer.GetVariable(item.BindKeyCombo);
-                        if (mv != null) TryDynamicLinkComboSelectedValue(widget, mv);
-                    }
-                }
-            }
+
+                if (uiVar == null)
+                    throw new InvalidOperationException($"绑定失败 {sec.Id}/{item.Id}: 未找到 UI 属性变量 {uiProperty}。");
+
+                uiVar.ResetDynamicLink();
+                if (parsedIndex.HasValue)
+                    uiVar.SetDynamicLink(modelVar, (uint)parsedIndex.Value, DynamicLinkMode.ReadWrite);
+                else
+                    uiVar.SetDynamicLink(modelVar, DynamicLinkMode.ReadWrite);
+             }
         }
     }
 
-    private void TryDynamicLinkSingleParaText(IUAObject panel, IUAVariable modelVar)
+    /// <summary>深度优先遍历节点树，返回第一个匹配类型的节点。</summary>
+    private static T FindFirstDescendant<T>(IUANode node) where T : class, IUANode
     {
-        var tb = panel.Get<TextBox>("VerticalLayout1/ParaValue/TextBox1");
-        var uiVar = tb?.GetVariable("Text");
-        if (uiVar == null) return;
-        try
+        if (node == null) return null;
+        if (node is T match) return match;
+        if (node.Children == null) return null;
+
+        foreach (var child in node.Children)
         {
-            uiVar.ResetDynamicLink();
-            uiVar.SetDynamicLink(modelVar, DynamicLinkMode.ReadWrite);
+            var found = FindFirstDescendant<T>(child);
+            if (found != null) return found;
         }
-        catch (Exception ex)
-        {
-            Log.Warning(nameof(PhaseManager), $"DynamicLink Text↔{modelVar.BrowseName}: {ex.Message}");
-        }
+        return null;
     }
 
-    private void TryDynamicLinkValveSwitch(IUAObject panel, IUAVariable modelVar)
-    {
-        var sw = panel.Get<Switch>("VerticalLayout1/ParaValue/Switch1");
-        var uiVar = sw?.GetVariable("Checked");
-        if (uiVar == null) return;
-        try
-        {
-            uiVar.ResetDynamicLink();
-            uiVar.SetDynamicLink(modelVar, DynamicLinkMode.ReadWrite);
-        }
-        catch (Exception ex)
-        {
-            Log.Warning(nameof(PhaseManager), $"DynamicLink Checked↔{modelVar.BrowseName}: {ex.Message}");
-        }
-    }
-    #endregion
-
+     
     private static void ClearScrollRows(IUANode container)
     {
         if (container?.Children == null) return;
@@ -483,47 +390,78 @@ public class PhaseManager : BaseNetLogic
         foreach (var c in copy) c.Delete();
     }
 
+    /// <summary>JSON 中可写 PhaseParasPanel 或 PhaseParasPanel1。</summary>
+    private static bool PanelTypeIsPhaseParas(string panelType)
+    {
+        if (string.IsNullOrEmpty(panelType)) return false;
+        return string.Equals(panelType, "PhaseParasPanel", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(panelType, "PhaseParasPanel1", StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>JSON 中可写 PhaseSinglePara 或 PhaseSinglePara1（与 Optix 类型后缀一致）。</summary>
+    private static bool WidgetTypeIs(string t, string logicalName)
+    {
+        if (string.IsNullOrEmpty(t)) return false;
+        return string.Equals(t, logicalName, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(t, logicalName + "1", StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>比较控件：JSON 中 PhaseParaCompare1/2 对应模板类型 PhaseParaCompare3/4。</summary>
+    private static bool WidgetTypeIsParaCompare(string t, int oneOrTwo)
+    {
+        if (string.IsNullOrEmpty(t)) return false;
+        if (oneOrTwo == 1)
+            return string.Equals(t, "PhaseParaCompare1", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(t, "PhaseParaCompare3", StringComparison.OrdinalIgnoreCase);
+        return string.Equals(t, "PhaseParaCompare2", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(t, "PhaseParaCompare4", StringComparison.OrdinalIgnoreCase);
+    }
+
     private static void AddLayoutWidget(RowLayout rowLayout, PhaseUILayoutItem item)
     {
         if (item == null || string.IsNullOrEmpty(item.Id) || string.IsNullOrEmpty(item.WidgetType)) return;
         string t = item.WidgetType.Trim();
 
-        if (string.Equals(t, "PhaseSinglePara", StringComparison.OrdinalIgnoreCase))
+        if (WidgetTypeIs(t, "PhaseSinglePara"))
         {
-            rowLayout.Add(InformationModel.Make<PhaseSinglePara>(item.Id));
+            var w = InformationModel.Make<PhaseSinglePara1>(item.Id);
+            string lbl = !string.IsNullOrEmpty(item.label) ? item.label : item.Id;
+            var label = w.Get<Label>("VerticalLayout1/ParaName/Label1");
+            if (label != null) label.Text = lbl;
+            rowLayout.Add(w);
             return;
         }
-        if (string.Equals(t, "PhaseUserAck", StringComparison.OrdinalIgnoreCase))
+        if (WidgetTypeIs(t, "PhaseUserAck"))
         {
-            rowLayout.Add(InformationModel.Make<PhaseUserAck>(item.Id));
+            rowLayout.Add(InformationModel.Make<PhaseUserAck1>(item.Id));
             return;
         }
-        if (string.Equals(t, "PhaseAndorOr", StringComparison.OrdinalIgnoreCase))
+        if (WidgetTypeIs(t, "PhaseAndorOr"))
         {
-            var w = InformationModel.Make<PhaseAndorOr>(item.Id);
+            var w = InformationModel.Make<PhaseAndorOr1>(item.Id);
             if (item.Width.HasValue) w.Width = item.Width.Value;
             rowLayout.Add(w);
             return;
         }
-        if (string.Equals(t, "PhaseRunningTime", StringComparison.OrdinalIgnoreCase))
+        if (WidgetTypeIs(t, "PhaseRunningTime"))
         {
-            rowLayout.Add(InformationModel.Make<PhaseRunningTime>(item.Id));
+            rowLayout.Add(InformationModel.Make<PhaseRunningTime1>(item.Id));
             return;
         }
-        if (string.Equals(t, "PhaseParaCompare1", StringComparison.OrdinalIgnoreCase))
+        if (WidgetTypeIsParaCompare(t, 1))
         {
-            rowLayout.Add(InformationModel.Make<PhaseParaCompare1>(item.Id));
+            rowLayout.Add(InformationModel.Make<PhaseParaCompare3>(item.Id));
             return;
         }
-        if (string.Equals(t, "PhaseParaCompare2", StringComparison.OrdinalIgnoreCase))
+        if (WidgetTypeIsParaCompare(t, 2))
         {
-            rowLayout.Add(InformationModel.Make<PhaseParaCompare2>(item.Id));
+            rowLayout.Add(InformationModel.Make<PhaseParaCompare4>(item.Id));
             return;
         }
-        if (string.Equals(t, "PhaseValvePanel", StringComparison.OrdinalIgnoreCase))
+        if (WidgetTypeIs(t, "PhaseValvePanel"))
         {
-            var w = InformationModel.Make<PhaseValvePanel>(item.Id);
-            string lbl = !string.IsNullOrEmpty(item.ValveLabel) ? item.ValveLabel : item.Id;
+            var w = InformationModel.Make<PhaseValvePanel1>(item.Id);
+            string lbl = !string.IsNullOrEmpty(item.label) ? item.label : item.Id;
             var label = w.Get<Label>("VerticalLayout1/ParaName/Label1");
             if (label != null) label.Text = lbl;
             rowLayout.Add(w);
@@ -531,24 +469,10 @@ public class PhaseManager : BaseNetLogic
     }
     #endregion
 
-    private void TryDynamicLinkComboSelectedValue(IUAObject panel, IUAVariable modelVar)
-    {
-        var cb = panel.Get<ComboBox>("VerticalLayout1/ParaValue/ComboBox1");
-        var uiVar = cb?.GetVariable("SelectedValue");
-        if (uiVar == null) return;
-        try
-        {
-            uiVar.ResetDynamicLink();
-            uiVar.SetDynamicLink(modelVar, DynamicLinkMode.ReadWrite);
-        }
-        catch (Exception ex)
-        {
-            Log.Warning(nameof(PhaseManager), "DynamicLink Combo SelectedValue: " + modelVar.BrowseName + " " + ex.Message);
-        }
-    }
-
     public override void Stop()
     {
+        if (ReferenceEquals(Instance, this))
+            Instance = null;
         ClearPhaseInputRegs();
         _phaseInputAffinityId = 0;
     }

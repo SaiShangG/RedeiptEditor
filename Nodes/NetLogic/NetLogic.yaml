@@ -129,7 +129,7 @@ Children:
   - Class: Method
     Name: Save
   - Class: Method
-    Name: Export_LoadSelectedPhaseToPhaseUIBuffer
+    Name: Export_LoadSelectedPhaseToUdtTemplateBuffer
 - Name: AddDialog
   Id: g=0f49e0cfd1cd305ad7c425a47802d960
   Type: NetLogic
@@ -242,3 +242,31 @@ Children:
     Type: BehaviourStartPriorityVariableType
     DataType: Byte
     Value: 180
+- Name: BatchInforToPLC
+  Id: g=3219d21239698653cb853c177d306833
+  Type: NetLogic
+  Children:
+  - Name: Operation
+    Type: BaseDataVariableType
+    DataType: NodeId
+    Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OP1"
+  - Name: Phases
+    Type: BaseDataVariableType
+    DataType: NodeId
+    Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Phases"
+  - Name: Batch
+    Type: BaseDataVariableType
+    DataType: NodeId
+    Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch"
+  - Name: OperationHandshake
+    Type: BaseDataVariableType
+    DataType: NodeId
+    Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OperationHandshake"
+  - Class: Method
+    Name: DownloadBatchToPlc
+  - Name: StatusText
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "0"
+  - Class: Method
+    Name: StartRunFlow

@@ -69,11 +69,13 @@ public partial class RecipeDatabaseTreeLoader : BaseNetLogic
 
     public static RecipeDatabaseTreeLoader Instance { get; private set; }
 
-    #region PhaseUIBuffer 标脏（仅监听模型变量；程序化写入用 SenderId 排除）
+    #region Phase 模板 UDT 缓冲（监听与加载深度；程序化写入用 SenderId 排除）
     private ulong _phaseBufferProgSenderId;
     private uint _phaseBufferDirtyAffinityId;
-    private readonly List<IEventRegistration> _phaseBufferDirtyRegs = new List<IEventRegistration>();
+    private readonly List<IEventRegistration> _udtTemplateBufferDirtyRegs = new List<IEventRegistration>();
     private int _phaseBufferLoadDepth;
+    /// <summary>为 true 时表示正从 PhaseType1/内存树灌入模板 UDT，此时 UI 联动变更不应标脏。</summary>
+    public bool IsPhaseUdtTemplateLoading => _phaseBufferLoadDepth > 0;
     #endregion
 
     private Store _store;
@@ -84,28 +86,9 @@ public partial class RecipeDatabaseTreeLoader : BaseNetLogic
     private Table _phaseType1Table;
     private const string PhaseParametersDbName = "PhaseParametersDB";
     private const string PhaseType1TableName = "PhaseType1";
-    /// <summary>Phase 参数缓冲对象路径（与 PhaseManager 一致）。</summary>
-    public const string DefaultPhaseBufferObjectPath = "Model/UIData/PhaseData/PhaseUIBufferData";
+    /// <summary>模板相位 UDT 根路径（与 PhaseManager 中 DynamicLink 根一致）。</summary>
+    public const string DefaultUdtPhaseTemplateBufferObjectPath = "Model/UIData/PhaseData/UDT_PhaseTemplateUIBuffer1";
     private const string PhaseLayoutJsonFileName = "phase_ui_layout.sample.json";
-    /// <summary>与 phase_ui_layout.sample.json 中 bindKey 一致；JSON 未随 DLL 部署时仍保证缓冲变量存在。</summary>
-    private static readonly string[] DefaultPhaseUiLayoutBindKeys =
-    {
-        "Parameter1", "Parameter2", "Parameter3", "Parameter4", "Parameter5",
-        "Parameter6", "ParaSlot6", "ParaSlot7", "ParaSlot8", "ParaSlot9",
-        "Valve0", "Valve1", "Valve2", "Valve3", "Valve4", "Valve5",
-        "Valve6", "Valve7", "Valve8", "Valve9", "Valve10", "Valve11"
-    };
-    /// <summary>与 phase_ui_layout.sample.json ParaPanel2 的 bindKeySwitch 一致（无 JSON 时仍创建 Boolean 变量）。</summary>
-    private static readonly string[] DefaultPhaseUiEndConditionBoolKeys =
-    {
-        "EcUserAckEnabled", "EcAndOr1", "EcRunTimeEnabled",
-        "EcCp1Enabled", "EcCp2Enabled", "EcAndOr2", "EcCp3Enabled", "EcCp4Enabled"
-    };
-    /// <summary>与 ParaPanel2 的 bindKeyText / bindKeyCombo 一致。</summary>
-    private static readonly string[] DefaultPhaseUiEndConditionStringKeys =
-    {
-        "EcRunTimeHms", "EcCp1Level", "EcCp2Level", "EcCp2Op", "EcCp3Level", "EcCp3Op", "EcCp4Level"
-    };
     /// <summary>PhaseType1 中非业务数据列（不参与 SELECT/UPDATE 业务字段）。</summary>
     private static readonly HashSet<string> PhaseType1ReservedColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
@@ -220,13 +203,12 @@ public partial class RecipeDatabaseTreeLoader : BaseNetLogic
             _phaseBufferDirtyAffinityId = LogicObject.Context.AssignAffinityId();
         }
         catch { _phaseBufferProgSenderId = 0; _phaseBufferDirtyAffinityId = 0; }
-        EnsurePhaseUiBufferModelVariables(DefaultPhaseBufferObjectPath);
-        AttachPhaseBufferDirtyObservers();
+        AttachUdtTemplateBufferDirtyObservers();
     }
 
     public override void Stop()
     {
-        DetachPhaseBufferDirtyObservers();
+        DetachUdtTemplateBufferDirtyObservers();
         ClearTree();
         Instance = null;
         _store = null;

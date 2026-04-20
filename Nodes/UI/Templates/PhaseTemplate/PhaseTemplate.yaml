@@ -46,8 +46,70 @@ Children:
       Direction: Forward
     - Name: Rows
       Type: ColumnLayout
+      Children:
+      - Name: PhaseParasPanel1
+        Type: PhaseParasPanel1
+        Children:
+        - Name: BG
+          Type: Rectangle
+          Children:
+          - Name: PolyLine1
+            Type: PolyLine
+          - Name: Title
+            Type: TextBox
+            Children:
+            - Name: Text
+              Type: BaseDataVariableType
+              DataType: LocalizedText
+              Value: {"LocaleId":"en-US","Text":"New Title"}
+        - Name: VL
+          Type: ColumnLayout
+          Children:
+          - Name: HL
+            Type: RowLayout
+      - Name: HorizontalAlignment
+        Type: BaseVariableType
+        DataType: HorizontalAlignment
+        ModellingRule: Optional
+        Value: 3
+      - Name: VerticalAlignment
+        Type: BaseVariableType
+        DataType: VerticalAlignment
+        ModellingRule: Optional
+        Value: 3
+    - Name: HorizontalAlignment
+      Type: BaseVariableType
+      DataType: HorizontalAlignment
+      ModellingRule: Optional
+      Value: 3
+    - Name: VerticalAlignment
+      Type: BaseVariableType
+      DataType: VerticalAlignment
+      ModellingRule: Optional
+      Value: 3
   - Name: PhaseManager
     Type: NetLogic
+    Children:
+    - Name: JsonFile
+      Type: BaseDataVariableType
+      DataType: ResourceUri
+      Value: "ns=7;%PROJECTDIR%/PhaseConfigure/phase_ui_layout.sample.json"
+    - Name: PhasesUIBufferData
+      Type: BaseDataVariableType
+      DataType: NodeId
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "/Objects/RedeiptEditor/Model/UIData/PhaseData/UDT_PhaseTemplateUIBuffer1@NodeId"
+        Children:
+        - Name: Mode
+          Type: BaseVariableType
+          DataType: DynamicLinkMode
+          ModellingRule: Optional
+          Value: 2
+    - Class: Method
+      Name: RedrawPhaseParameterUI
   - Name: HorizontalAlignment
     Type: BaseVariableType
     DataType: HorizontalAlignment
@@ -58,46 +120,4 @@ Children:
     DataType: VerticalAlignment
     ModellingRule: Optional
     Value: 3
-  - Name: BuildPhaseTemplate
-    Type: NetLogic
-    Children:
-    - Name: BehaviourStartPriority
-      Type: BehaviourStartPriorityVariableType
-      DataType: Byte
-      Value: 180
-    - Name: TemplateJsonFile
-      Type: BaseDataVariableType
-      DataType: ResourceUri
-      Value: "ns=7;%PROJECTDIR%/NetSolution/phase_ui_layout.sample.json"
-    - Class: Method
-      Name: BuildSingleTemplateDesignTime
-    - Name: TargetUIModelBufferLink
-      Type: BaseDataVariableType
-      DataType: UDT_Phase
-      Children:
-      - Name: DynamicLink
-        Type: DynamicLink
-        DataType: NodePath
-        Value: "/Objects/RedeiptEditor/Model/UIData/PhaseData/UDT_PhaseTemplateUIBuffer1"
-        Children:
-        - Name: Mode
-          Type: BaseVariableType
-          DataType: DynamicLinkMode
-          ModellingRule: Optional
-          Value: 2
-    - Class: Method
-      Name: BuildTemplateUI
-    - Name: TargetPanel
-      Type: BaseDataVariableType
-      DataType: NodeId
-      Children:
-      - Name: DynamicLink
-        Type: DynamicLink
-        DataType: NodePath
-        Value: "../..@NodeId"
-        Children:
-        - Name: Mode
-          Type: BaseVariableType
-          DataType: DynamicLinkMode
-          ModellingRule: Optional
-          Value: 2
+- File: PhaseParaTemplateUnit/PhaseParaTemplateUnit.yaml

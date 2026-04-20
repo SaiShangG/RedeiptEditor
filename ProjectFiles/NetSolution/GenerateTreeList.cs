@@ -79,8 +79,8 @@ public class GenerateTreeList : BaseNetLogic
         RecipeDatabaseManager.Instance?.PushReceiptStatusSetFromSelectedReceipt();
         GenerateOperationPhaseListPanel.Instance?.RefreshIfModeChanged();
         RecipeDatabaseManager.Instance?.RefreshTreeMoveButtonsEnabled();
-        RecipeDatabaseTreeLoader.Instance?.LoadPhaseParametersToPhaseUIBuffer(0);
-        if (EnableLog) Log.Info(LogCategory, $"Receipt  点击，SelectedID = {receiptId}");
+        RecipeDatabaseTreeLoader.Instance?.LoadPhaseParametersToUdtTemplateBuffer(0);
+        if (EnableLog) Log.Info(LogCategory, $"Receipt   点击，SelectedID = {receiptId}");
     }
 
     /// <summary>Operation 按钮点击时调用，记录所属 Receipt 与当前 Operation，并刷新高亮。</summary>
@@ -98,7 +98,7 @@ public class GenerateTreeList : BaseNetLogic
         RecipeDatabaseManager.Instance?.PushReceiptStatusSetFromSelectedReceipt();
         GenerateOperationPhaseListPanel.Instance?.RefreshIfModeChanged();
         RecipeDatabaseManager.Instance?.RefreshTreeMoveButtonsEnabled();
-        RecipeDatabaseTreeLoader.Instance?.LoadPhaseParametersToPhaseUIBuffer(0);
+        RecipeDatabaseTreeLoader.Instance?.LoadPhaseParametersToUdtTemplateBuffer(0);
         if (EnableLog) Log.Info(LogCategory, $"Operation 按钮点击，Selected Receipt={receiptId}, Operation={operationId}");
     }
 
@@ -117,7 +117,8 @@ public class GenerateTreeList : BaseNetLogic
         RecipeDatabaseManager.Instance?.PushReceiptStatusSetFromSelectedReceipt();
         GenerateOperationPhaseListPanel.Instance?.RefreshIfModeChanged();
         RecipeDatabaseManager.Instance?.RefreshTreeMoveButtonsEnabled();
-        RecipeDatabaseTreeLoader.Instance?.LoadPhaseParametersToPhaseUIBuffer(phaseId);
+        RecipeDatabaseTreeLoader.Instance?.LoadPhaseParametersToUdtTemplateBuffer(phaseId);
+        PhaseManager.Instance?.RedrawPhaseParameterUI();
         if (EnableLog) Log.Info(LogCategory, $"Phase 按钮点击，Selected Receipt={receiptId}, Operation={operationId}, Phase={phaseId}");
     }
 
