@@ -9183,3 +9183,4 @@ Children:
       DataType: Size
       ModellingRule: Optional
       Value: 8.0
+- File: PhaseConfiguration/PhaseConfiguration.yaml

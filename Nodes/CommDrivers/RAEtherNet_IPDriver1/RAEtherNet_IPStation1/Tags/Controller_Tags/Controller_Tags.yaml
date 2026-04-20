@@ -5609,6 +5609,212 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[9].EC.EC3SP.@Description"
+  - Name: PP
+    Id: g=07aceda0343182c6a9a20c122f5281d8
+    Type: UDT_PhaseParameters
+    DataType: UDT_PhaseParameters
+    Children:
+    - Name: Valve
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      ValueRank: OneDimension
+      ArrayDimensions: [32]
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Valve"
+    - Name: Pump
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      ValueRank: OneDimension
+      ArrayDimensions: [32]
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Pump"
+    - Name: FixedSetPointEbl
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      ValueRank: OneDimension
+      ArrayDimensions: [32]
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "FixedSetPointEbl"
+    - Name: FixedSetPointValue
+      Type: RAEtherNetIPTag
+      DataType: Float
+      ValueRank: OneDimension
+      ArrayDimensions: [10]
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "FixedSetPointValue"
+    - Name: ControllerEbl
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      ValueRank: OneDimension
+      ArrayDimensions: [32]
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "ControllerEbl"
+    - Name: ControllerSetPointValue
+      Type: RAEtherNetIPTag
+      DataType: Float
+      ValueRank: OneDimension
+      ArrayDimensions: [10]
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "ControllerSetPointValue"
+  - Name: EC
+    Id: g=15e384f3a4bc87ed10ee6e9d5f0cbd92
+    Type: UDT_EndConditions
+    DataType: UDT_EndConditions
+    Children:
+    - Name: EC1Selected
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC1Selected"
+    - Name: EC2Selected
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC2Selected"
+    - Name: EC3Selected
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC3Selected"
+    - Name: LogicOperator1
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "LogicOperator1"
+    - Name: LogicOperator2
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "LogicOperator2"
+    - Name: EC1Operator
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC1Operator"
+    - Name: EC2Operator
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC2Operator"
+    - Name: EC3Operator
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC3Operator"
+    - Name: EC1Enable
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC1Enable"
+    - Name: EC2Enable
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC2Enable"
+    - Name: EC3Enable
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC3Enable"
+    - Name: RunningTimeHr
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "RunningTimeHr"
+    - Name: RunningTimeMin
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "RunningTimeMin"
+    - Name: RunningTimeSec
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "RunningTimeSec"
+    - Name: EC1SP
+      Type: RAEtherNetIPTag
+      DataType: Float
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC1SP"
+    - Name: EC2SP
+      Type: RAEtherNetIPTag
+      DataType: Float
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC2SP"
+    - Name: EC3SP
+      Type: RAEtherNetIPTag
+      DataType: Float
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC3SP"
 - Name: OperationHandshake
   Id: g=2f8451e1ac88b0ac7b9329072f7c6070
   Type: UDT_RecipeHandshake
