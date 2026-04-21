@@ -494,7 +494,7 @@ Children:
           Type: BaseDataVariableType
           DataType: Size
           ModellingRule: Optional
-          Value: 18.0
+          Value: 16.0
         - Name: TextVerticalAlignment
           Type: BaseVariableType
           DataType: TextVerticalAlignment
@@ -2468,7 +2468,7 @@ Children:
           Type: BaseDataVariableType
           DataType: Size
           ModellingRule: Optional
-          Value: 18.0
+          Value: 16.0
         - Name: TextVerticalAlignment
           Type: BaseVariableType
           DataType: TextVerticalAlignment

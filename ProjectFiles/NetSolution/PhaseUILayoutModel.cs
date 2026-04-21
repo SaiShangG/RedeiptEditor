@@ -33,6 +33,7 @@ public class PhaseUILayoutBindSpec
     public string BufferField { get; set; }
     public string ValueRank { get; set; }
     public int? Index { get; set; }
+    public string UiPath { get; set; }
     public string UiProperty { get; set; }
     public string SourceTagPath { get; set; }
 }
@@ -42,6 +43,7 @@ public class PhaseUILayoutItem
     public string Id { get; set; }
     public string WidgetType { get; set; }
     public PhaseUILayoutBindSpec Bind { get; set; }
+    public List<PhaseUILayoutBindSpec> Binds { get; set; }
     public int? Width { get; set; }
     public string label { get; set; }
 }

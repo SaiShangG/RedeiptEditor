@@ -207,7 +207,7 @@ Children:
       - Name: BackgroundColor
         Type: BaseDataVariableType
         DataType: Color
-        Value: "#ffffff00"
+        Value: "#ffffff"
   - Name: ToolTipStyles
     Type: BaseObjectType
     Children:

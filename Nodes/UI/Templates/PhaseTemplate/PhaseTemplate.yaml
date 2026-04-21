@@ -88,6 +88,17 @@ Children:
             Children:
             - Name: HL
               Type: RowLayout
+              Children:
+              - Name: HorizontalGap
+                Type: BaseDataVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 8.0
+              - Name: VerticalGap
+                Type: BaseDataVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 16.0
         - Name: HorizontalAlignment
           Type: BaseVariableType
           DataType: HorizontalAlignment
@@ -97,6 +108,11 @@ Children:
           Type: BaseVariableType
           DataType: VerticalAlignment
           ModellingRule: Optional
+        - Name: Height
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 1000.0
       - Name: HorizontalAlignment
         Type: BaseVariableType
         DataType: HorizontalAlignment
