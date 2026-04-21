@@ -318,62 +318,120 @@ public class PhaseManager : BaseNetLogic
             string rp = string.IsNullOrEmpty(sec.RowLayoutPath) ? "VL/HL" : sec.RowLayoutPath;
             foreach (var item in sec.Items)
             {
-                if (string.IsNullOrEmpty(item?.Id) || item.Bind == null) continue;
-                if (string.IsNullOrWhiteSpace(item.Bind.SourceTagPath))
-                    throw new InvalidOperationException($"绑定失败 {sec.Id}/{item.Id}: bind.sourceTagPath 为空。");
+                if (string.IsNullOrEmpty(item?.Id)) continue;
 
                 var widget = owner.GetObject(ScrollRowsPath + "/" + sec.Id + "/" + rp + "/" + item.Id) as IUAObject;
                 if (widget == null)
                     throw new InvalidOperationException($"绑定失败 {sec.Id}/{item.Id}: 未找到 UI 控件节点。");
 
-                if (!TryParseSourceTagPath(item.Bind.SourceTagPath, out string bufferFieldPath, out int? parsedIndex, out string parseError))
-                    throw new InvalidOperationException($"绑定失败，index解析失败 {sec.Id}/{item.Id}: {parseError}");
+                // EndCondition 组内联动：Enable 未勾选时隐藏下方选择区域。
+                if (WidgetTypeIs(item.WidgetType, "PanelEndConditionGroup"))
+                    WireEndConditionSelectionVisibility(widget);
 
-                string modelVarPath = UdtPhaseTemplateUiBufferRootPath + "/" + bufferFieldPath.Replace('.', '/');
-                IUAVariable modelVar = Project.Current.GetVariable(modelVarPath);
-                if (modelVar == null && parsedIndex.HasValue)
+                foreach (var bindSpec in EnumerateBindSpecs(item))
                 {
-                    modelVar = Project.Current.GetVariable(modelVarPath + "[" + parsedIndex.Value + "]");
+                    if (bindSpec == null) continue;
+                    if (string.IsNullOrWhiteSpace(bindSpec.SourceTagPath))
+                        throw new InvalidOperationException($"绑定失败 {sec.Id}/{item.Id}: bind.sourceTagPath 为空。");
+
+                    if (!TryParseSourceTagPath(bindSpec.SourceTagPath, out string bufferFieldPath, out int? parsedIndex, out string parseError))
+                        throw new InvalidOperationException($"绑定失败，index解析失败 {sec.Id}/{item.Id}: {parseError}");
+
+                    string modelVarPath = UdtPhaseTemplateUiBufferRootPath + "/" + bufferFieldPath.Replace('.', '/');
+                    IUAVariable modelVar = Project.Current.GetVariable(modelVarPath);
                     if (modelVar == null)
-                        modelVar = Project.Current.GetVariable(modelVarPath + "/" + parsedIndex.Value);
-                }
-                if (modelVar == null)
-                    throw new InvalidOperationException($"绑定失败 {sec.Id}/{item.Id}: 未找到模型变量 {modelVarPath}" + (parsedIndex.HasValue ? $"（index={parsedIndex.Value}）" : "") + "。");
+                    {
+                        if (parsedIndex.HasValue)
+                        {
+                            modelVar = Project.Current.GetVariable(modelVarPath + "[" + parsedIndex.Value + "]");
+                            if (modelVar == null)
+                                modelVar = Project.Current.GetVariable(modelVarPath + "/" + parsedIndex.Value);
+                        }
+                    }
+                    if (modelVar == null)
+                        throw new InvalidOperationException($"绑定失败 {sec.Id}/{item.Id}: 未找到模型变量 {modelVarPath}" + (parsedIndex.HasValue ? $"（index={parsedIndex.Value}）" : "") + "。");
 
-                string uiProperty = item.Bind.UiProperty?.Trim();
-                if (string.IsNullOrEmpty(uiProperty))
-                    throw new InvalidOperationException($"绑定失败 {sec.Id}/{item.Id}: bind.uiProperty 为空。");
+                    IUAVariable uiVar = ResolveUiVariable(widget, bindSpec, sec.Id, item.Id);
+                    if (uiVar == null)
+                        throw new InvalidOperationException($"绑定失败 {sec.Id}/{item.Id}: 未找到 UI 属性变量 {bindSpec.UiProperty}。");
 
-                IUAVariable uiVar = null;
-                if (string.Equals(uiProperty, "Text", StringComparison.OrdinalIgnoreCase))
-                {
-                    var targetTextBox = FindFirstDescendant<TextBox>(widget);
-                    if (targetTextBox == null)
-                        throw new InvalidOperationException($"绑定失败 {sec.Id}/{item.Id}: uiProperty=Text，但在控件及其子节点中未找到 TextBox。");
-                    uiVar = targetTextBox.GetVariable("Text");
+                    uiVar.ResetDynamicLink();
+                    if (parsedIndex.HasValue)
+                        uiVar.SetDynamicLink(modelVar, (uint)parsedIndex.Value, DynamicLinkMode.ReadWrite);
+                    else
+                        uiVar.SetDynamicLink(modelVar, DynamicLinkMode.ReadWrite);
                 }
-                else if (string.Equals(uiProperty, "Checked", StringComparison.OrdinalIgnoreCase))
-                {
-                    var targetSwitch = FindFirstDescendant<Switch>(widget);
-                    if (targetSwitch == null)
-                        throw new InvalidOperationException($"绑定失败 {sec.Id}/{item.Id}: uiProperty=Checked，但在控件及其子节点中未找到 Switch。");
-                    uiVar = targetSwitch.GetVariable("Checked");
-                }
-                else
-                {
-                    uiVar = widget.GetVariable(uiProperty);
-                }
-
-                if (uiVar == null)
-                    throw new InvalidOperationException($"绑定失败 {sec.Id}/{item.Id}: 未找到 UI 属性变量 {uiProperty}。");
-
-                uiVar.ResetDynamicLink();
-                if (parsedIndex.HasValue)
-                    uiVar.SetDynamicLink(modelVar, (uint)parsedIndex.Value, DynamicLinkMode.ReadWrite);
-                else
-                    uiVar.SetDynamicLink(modelVar, DynamicLinkMode.ReadWrite);
              }
         }
+    }
+
+    /// <summary>兼容旧版单 bind 与新版 binds[]。</summary>
+    private static IEnumerable<PhaseUILayoutBindSpec> EnumerateBindSpecs(PhaseUILayoutItem item)
+    {
+        if (item == null) yield break;
+        if (item.Bind != null) yield return item.Bind;
+        if (item.Binds == null) yield break;
+        foreach (var spec in item.Binds)
+            if (spec != null) yield return spec;
+    }
+
+    /// <summary>按 uiPath 与 uiProperty 解析目标 UI 变量；无 uiPath 时保持旧行为。</summary>
+    private static IUAVariable ResolveUiVariable(IUAObject widget, PhaseUILayoutBindSpec bindSpec, string sectionId, string itemId)
+    {
+        if (widget == null || bindSpec == null) return null;
+        string uiProperty = bindSpec.UiProperty?.Trim();
+        if (string.IsNullOrEmpty(uiProperty))
+            throw new InvalidOperationException($"绑定失败 {sectionId}/{itemId}: bind.uiProperty 为空。");
+
+        IUAObject scopeObject = widget;
+        if (!string.IsNullOrWhiteSpace(bindSpec.UiPath))
+        {
+            var scopeNode = widget.Get(bindSpec.UiPath);
+            if (scopeNode == null)
+                throw new InvalidOperationException($"绑定失败 {sectionId}/{itemId}: 未找到 uiPath={bindSpec.UiPath}。");
+            if (scopeNode is IUAVariable scopeVar)
+            {
+                if (string.IsNullOrEmpty(uiProperty) || string.Equals(uiProperty, scopeVar.BrowseName, StringComparison.OrdinalIgnoreCase))
+                    return scopeVar;
+                throw new InvalidOperationException($"绑定失败 {sectionId}/{itemId}: uiPath 指向变量，但 uiProperty={uiProperty} 不匹配。");
+            }
+            scopeObject = scopeNode as IUAObject;
+            if (scopeObject == null)
+                throw new InvalidOperationException($"绑定失败 {sectionId}/{itemId}: uiPath 目标不是对象节点。");
+        }
+
+        if (string.IsNullOrWhiteSpace(bindSpec.UiPath))
+        {
+            if (string.Equals(uiProperty, "Text", StringComparison.OrdinalIgnoreCase))
+            {
+                var targetTextBox = FindFirstDescendant<TextBox>(scopeObject);
+                if (targetTextBox == null)
+                    throw new InvalidOperationException($"绑定失败 {sectionId}/{itemId}: uiProperty=Text，但在控件及其子节点中未找到 TextBox。");
+                return targetTextBox.GetVariable("Text");
+            }
+            if (string.Equals(uiProperty, "Checked", StringComparison.OrdinalIgnoreCase))
+            {
+                var targetSwitch = FindFirstDescendant<Switch>(scopeObject);
+                if (targetSwitch == null)
+                    throw new InvalidOperationException($"绑定失败 {sectionId}/{itemId}: uiProperty=Checked，但在控件及其子节点中未找到 Switch。");
+                return targetSwitch.GetVariable("Checked");
+            }
+        }
+
+        return scopeObject.GetVariable(uiProperty);
+    }
+
+    /// <summary>将 PanelEndConditionSelection1.Visible 绑定到组内 Enable 开关 Checked。</summary>
+    private static void WireEndConditionSelectionVisibility(IUAObject groupWidget)
+    {
+        if (groupWidget == null) return;
+        var enableSwitch = groupWidget.GetObject("VerticalLayout1/PanelEndConditionsEnable1/Rectangle_Border/HorizontalLayout1/Switch_Vlv1") as Switch;
+        var selectionPanel = groupWidget.GetObject("VerticalLayout1/PanelEndConditionSelection1") as IUAObject;
+        var checkedVar = enableSwitch?.GetVariable("Checked");
+        var visibleVar = selectionPanel?.GetVariable("Visible");
+        if (checkedVar == null || visibleVar == null) return;
+        visibleVar.ResetDynamicLink();
+        visibleVar.SetDynamicLink(checkedVar, DynamicLinkMode.ReadWrite);
     }
 
     /// <summary>深度优先遍历节点树，返回第一个匹配类型的节点。</summary>
@@ -480,6 +538,13 @@ public class PhaseManager : BaseNetLogic
         if (WidgetTypeIs(t, "PanelEndConditionsOperator"))
         {
             rowLayout.Add(InformationModel.Make<PanelEndConditionsOperator>(item.Id));
+            return;
+        }
+        if (WidgetTypeIs(t, "PanelEndConditionGroup"))
+        {
+            var w = InformationModel.Make<PanelEndConditionGroup>(item.Id);
+            if (item.Width.HasValue) w.Width = item.Width.Value;
+            rowLayout.Add(w);
             return;
         }
         if (WidgetTypeIs(t, "PhaseValvePanel"))

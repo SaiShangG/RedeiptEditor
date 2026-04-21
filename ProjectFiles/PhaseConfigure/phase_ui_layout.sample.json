@@ -7,7 +7,7 @@
       "panelType": "PhaseParasPanel",
       "title": "Phase Parameters Area (Test x2)",
       "rowLayoutPath": "VL/HL",
-      "rowLayoutHorizontalGap": 32,
+      "rowLayoutHorizontalGap": 16,
       "sectionVerticalGap": 16,
       "items": [
         {
@@ -66,7 +66,7 @@
       "panelType": "PhaseParasPanel",
       "title": "Flow Path",
       "rowLayoutPath": "VL/HL",
-      "rowLayoutHorizontalGap": 32,
+      "rowLayoutHorizontalGap": 16,
       "sectionVerticalGap": 16,
       
       "items": [
@@ -149,18 +149,245 @@
     {
       "id": "ParaPanel5",
       "panelType": "PhaseParasPanel",
-      "title": "Phase End Conditions Area",
+      "title": "End Conditions",
       "rowLayoutPath": "VL/HL",
-      "rowLayoutHorizontalGap": 32,
+      "rowLayoutHorizontalGap": 16,
       "sectionVerticalGap": 16,
       "items": [
         {
-          "id": "PanelEndConditions",
-          "widgetType": "PanelEndConditions",
-          "label": "PanelEndConditions"
+          "id": "ECGroup1",
+          "widgetType": "PanelEndConditionGroup",
+          "label": "EC1",
+          "binds": [
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionsEnable1/Rectangle_Border/HorizontalLayout1/Switch_Vlv1",
+              "uiProperty": "Checked",
+              "sourceTagPath": "EC.EC1Enable"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/ComboBox1",
+              "uiProperty": "SelectedValue",
+              "sourceTagPath": "EC.EC1Selected"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/TimeContainer/SpinBox_Hr",
+              "uiProperty": "Value",
+              "sourceTagPath": "EC.RunningTimeHr"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/TimeContainer/SpinBox_Min",
+              "uiProperty": "Value",
+              "sourceTagPath": "EC.RunningTimeMin"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/TimeContainer/SpinBox_Sec",
+              "uiProperty": "Value",
+              "sourceTagPath": "EC.RunningTimeSec"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/WeightContainer/SpinBox_Weight",
+              "uiProperty": "Value",
+              "sourceTagPath": "EC.EC1SP"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/WeightContainer/Switch_Operator",
+              "uiProperty": "Checked",
+              "sourceTagPath": "EC.EC1Operator"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/PHContainer/SpinBox_pH",
+              "uiProperty": "Value",
+              "sourceTagPath": "EC.EC1SP"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/PHContainer/Switch_Operator",
+              "uiProperty": "Checked",
+              "sourceTagPath": "EC.EC1Operator"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/OxygenContainer/SpinBox_Oxygen",
+              "uiProperty": "Value",
+              "sourceTagPath": "EC.EC1SP"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/OxygenContainer/Switch_Operator",
+              "uiProperty": "Checked",
+              "sourceTagPath": "EC.EC1Operator"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/TempContainer/SpinBox_Temp",
+              "uiProperty": "Value",
+              "sourceTagPath": "EC.EC1SP"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/TempContainer/Switch_Operator",
+              "uiProperty": "Checked",
+              "sourceTagPath": "EC.EC1Operator"
+            }
+          ]
+        },
+        {
+          "id": "ECLogicOperator1",
+          "widgetType": "PanelEndConditionsOperator",
+          "bind": {
+            "uiPath": "Rectangle_Border/Switch_AndOr",
+            "uiProperty": "Checked",
+            "sourceTagPath": "EC.LogicOperator1"
+          }
+        },
+        {
+          "id": "ECGroup2",
+          "widgetType": "PanelEndConditionGroup",
+          "label": "EC2",
+          "binds": [
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionsEnable1/Rectangle_Border/HorizontalLayout1/Switch_Vlv1",
+              "uiProperty": "Checked",
+              "sourceTagPath": "EC.EC2Enable"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/ComboBox1",
+              "uiProperty": "SelectedValue",
+              "sourceTagPath": "EC.EC2Selected"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/TimeContainer/SpinBox_Hr",
+              "uiProperty": "Value",
+              "sourceTagPath": "EC.RunningTimeHr"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/TimeContainer/SpinBox_Min",
+              "uiProperty": "Value",
+              "sourceTagPath": "EC.RunningTimeMin"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/TimeContainer/SpinBox_Sec",
+              "uiProperty": "Value",
+              "sourceTagPath": "EC.RunningTimeSec"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/WeightContainer/SpinBox_Weight",
+              "uiProperty": "Value",
+              "sourceTagPath": "EC.EC2SP"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/WeightContainer/Switch_Operator",
+              "uiProperty": "Checked",
+              "sourceTagPath": "EC.EC2Operator"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/PHContainer/SpinBox_pH",
+              "uiProperty": "Value",
+              "sourceTagPath": "EC.EC2SP"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/PHContainer/Switch_Operator",
+              "uiProperty": "Checked",
+              "sourceTagPath": "EC.EC2Operator"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/OxygenContainer/SpinBox_Oxygen",
+              "uiProperty": "Value",
+              "sourceTagPath": "EC.EC2SP"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/OxygenContainer/Switch_Operator",
+              "uiProperty": "Checked",
+              "sourceTagPath": "EC.EC2Operator"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/TempContainer/SpinBox_Temp",
+              "uiProperty": "Value",
+              "sourceTagPath": "EC.EC2SP"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/TempContainer/Switch_Operator",
+              "uiProperty": "Checked",
+              "sourceTagPath": "EC.EC2Operator"
+            }
+          ]
+        },
+        {
+          "id": "ECLogicOperator2",
+          "widgetType": "PanelEndConditionsOperator",
+          "bind": {
+            "uiPath": "Rectangle_Border/Switch_AndOr",
+            "uiProperty": "Checked",
+            "sourceTagPath": "EC.LogicOperator2"
+          }
+        },
+        {
+          "id": "ECGroup3",
+          "widgetType": "PanelEndConditionGroup",
+          "label": "EC3",
+          "binds": [
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionsEnable1/Rectangle_Border/HorizontalLayout1/Switch_Vlv1",
+              "uiProperty": "Checked",
+              "sourceTagPath": "EC.EC3Enable"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/ComboBox1",
+              "uiProperty": "SelectedValue",
+              "sourceTagPath": "EC.EC3Selected"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/TimeContainer/SpinBox_Hr",
+              "uiProperty": "Value",
+              "sourceTagPath": "EC.RunningTimeHr"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/TimeContainer/SpinBox_Min",
+              "uiProperty": "Value",
+              "sourceTagPath": "EC.RunningTimeMin"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/TimeContainer/SpinBox_Sec",
+              "uiProperty": "Value",
+              "sourceTagPath": "EC.RunningTimeSec"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/WeightContainer/SpinBox_Weight",
+              "uiProperty": "Value",
+              "sourceTagPath": "EC.EC3SP"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/WeightContainer/Switch_Operator",
+              "uiProperty": "Checked",
+              "sourceTagPath": "EC.EC3Operator"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/PHContainer/SpinBox_pH",
+              "uiProperty": "Value",
+              "sourceTagPath": "EC.EC3SP"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/PHContainer/Switch_Operator",
+              "uiProperty": "Checked",
+              "sourceTagPath": "EC.EC3Operator"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/OxygenContainer/SpinBox_Oxygen",
+              "uiProperty": "Value",
+              "sourceTagPath": "EC.EC3SP"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/OxygenContainer/Switch_Operator",
+              "uiProperty": "Checked",
+              "sourceTagPath": "EC.EC3Operator"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/TempContainer/SpinBox_Temp",
+              "uiProperty": "Value",
+              "sourceTagPath": "EC.EC3SP"
+            },
+            {
+              "uiPath": "VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/TempContainer/Switch_Operator",
+              "uiProperty": "Checked",
+              "sourceTagPath": "EC.EC3Operator"
+            }
+          ]
         }
-       
-     
       ]
     }
   ]
