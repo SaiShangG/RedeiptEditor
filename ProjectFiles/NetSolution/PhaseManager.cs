@@ -544,6 +544,11 @@ public class PhaseManager : BaseNetLogic
         {
             var w = InformationModel.Make<PanelEndConditionGroup>(item.Id);
             if (item.Width.HasValue) w.Width = item.Width.Value;
+            int groupNo = ExtractTrailingNumberOrDefault(item.Id, 1);
+            var enableLabel = w.Get<Label>("VerticalLayout1/PanelEndConditionsEnable1/Rectangle_Border/HorizontalLayout1/Label Valve1");
+            if (enableLabel != null) enableLabel.Text = "EC" + groupNo;
+            var titleLabel = w.Get<Label>("VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/Label1");
+            if (titleLabel != null) titleLabel.Text = $"End Condition {groupNo} ( EC {groupNo} )";
             rowLayout.Add(w);
             return;
         }
@@ -555,6 +560,17 @@ public class PhaseManager : BaseNetLogic
             if (label != null) label.Text = lbl;
             rowLayout.Add(w);
         }
+    }
+
+    /// <summary>从节点名尾部提取正整数序号；失败时返回默认值。</summary>
+    private static int ExtractTrailingNumberOrDefault(string text, int fallback)
+    {
+        if (string.IsNullOrEmpty(text)) return fallback;
+        int i = text.Length - 1;
+        while (i >= 0 && char.IsDigit(text[i])) i--;
+        if (i == text.Length - 1) return fallback;
+        string n = text.Substring(i + 1);
+        return int.TryParse(n, out int v) && v > 0 ? v : fallback;
     }
     #endregion
 
