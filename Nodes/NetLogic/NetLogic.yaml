@@ -249,7 +249,7 @@ Children:
   - Name: Operation
     Type: BaseDataVariableType
     DataType: NodeId
-    Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OP1"
+    Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OP"
   - Name: Phases
     Type: BaseDataVariableType
     DataType: NodeId
@@ -270,3 +270,7 @@ Children:
     Value: "0"
   - Class: Method
     Name: StartRunFlow
+  - Name: Recipe
+    Type: BaseDataVariableType
+    DataType: NodeId
+    Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Recipe"

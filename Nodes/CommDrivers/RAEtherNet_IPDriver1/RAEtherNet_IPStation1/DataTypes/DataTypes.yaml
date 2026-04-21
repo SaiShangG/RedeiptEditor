@@ -2,6 +2,54 @@ Name: DataTypes
 Type: FolderType
 Children:
 - Class: DataType
+  Name: UDT_Recipe
+  Id: g=9c850dd677f88c11d7a03adef2166826
+  Supertype: Structure
+  StructDefinition: 
+   {
+    "Name": "UDT_Recipe",
+    "DataType": {
+     "IdType": 2,
+     "Id": "9c850dd677f88c11d7a03adef2166826",
+     "Namespace": 7
+    },
+    "Fields": [{
+      "Name": "Name",
+      "DataType": {
+       "Id": 12
+      }
+     },{
+      "Name": "ID",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "NoOfOperations",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "RunningOperation",
+      "DataType": {
+       "IdType": 2,
+       "Id": "5039186152a13e2c43157dd6823420e7",
+       "Namespace": 7
+      }
+     },{
+      "Name": "RecipeComplete",
+      "DataType": {
+       "Id": 1
+      }
+     }]
+   }
+  DisplayName: {"LocaleId":"","Text":"UDT_Recipe"}
+  Children:
+  - Name: ns=0;Default Binary
+    Type: DataTypeEncodingType
+    ModellingRule: None
+    DisplayName: {"LocaleId":"","Text":"Default Binary"}
+    ReferenceType: HasEncoding
+- Class: DataType
   Name: UDT_Operation
   Id: g=5039186152a13e2c43157dd6823420e7
   Supertype: Structure
@@ -35,9 +83,95 @@ Children:
        "Id": "04440f024acdd3cb7fed520fd002b371",
        "Namespace": 7
       }
+     },{
+      "Name": "OperationComplete",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "PhaseComplete",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "Idle",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "Running",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "Held",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "Oper",
+      "DataType": {
+       "Id": 1
+      }
      }]
    }
   DisplayName: {"LocaleId":"","Text":"UDT_Operation"}
+  Children:
+  - Name: ns=0;Default Binary
+    Type: DataTypeEncodingType
+    ModellingRule: None
+    DisplayName: {"LocaleId":"","Text":"Default Binary"}
+    ReferenceType: HasEncoding
+- Class: DataType
+  Name: UDT_Batch
+  Id: g=6240dd2ca601f63484025417f5bc67b0
+  Supertype: Structure
+  StructDefinition: 
+   {
+    "Name": "UDT_Batch",
+    "DataType": {
+     "IdType": 2,
+     "Id": "6240dd2ca601f63484025417f5bc67b0",
+     "Namespace": 7
+    },
+    "Fields": [{
+      "Name": "BatchID",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "BatchStatus",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "EvtBatchDone",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "BatchName",
+      "DataType": {
+       "Id": 12
+      }
+     },{
+      "Name": "RunningPhaseName",
+      "DataType": {
+       "Id": 12
+      }
+     },{
+      "Name": "BatchStart",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "RecipeName",
+      "DataType": {
+       "Id": 12
+      }
+     }]
+   }
+  DisplayName: {"LocaleId":"","Text":"UDT_Batch"}
   Children:
   - Name: ns=0;Default Binary
     Type: DataTypeEncodingType
@@ -57,6 +191,46 @@ Children:
      "Namespace": 7
     },
     "Fields": [{
+      "Name": "LogicOperator1",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "LogicOperator2",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "EC1Operator",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "EC2Operator",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "EC3Operator",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "EC1Enable",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "EC2Enable",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "EC3Enable",
+      "DataType": {
+       "Id": 1
+      }
+     },{
       "Name": "EC1Selected",
       "DataType": {
        "Id": 6
@@ -68,46 +242,6 @@ Children:
       }
      },{
       "Name": "EC3Selected",
-      "DataType": {
-       "Id": 6
-      }
-     },{
-      "Name": "LogicOperator1",
-      "DataType": {
-       "Id": 6
-      }
-     },{
-      "Name": "LogicOperator2",
-      "DataType": {
-       "Id": 6
-      }
-     },{
-      "Name": "EC1Operator",
-      "DataType": {
-       "Id": 6
-      }
-     },{
-      "Name": "EC2Operator",
-      "DataType": {
-       "Id": 6
-      }
-     },{
-      "Name": "EC3Operator",
-      "DataType": {
-       "Id": 6
-      }
-     },{
-      "Name": "EC1Enable",
-      "DataType": {
-       "Id": 6
-      }
-     },{
-      "Name": "EC2Enable",
-      "DataType": {
-       "Id": 6
-      }
-     },{
-      "Name": "EC3Enable",
       "DataType": {
        "Id": 6
       }
@@ -195,62 +329,6 @@ Children:
      }]
    }
   DisplayName: {"LocaleId":"","Text":"UDT_RecipeHandshake"}
-  Children:
-  - Name: ns=0;Default Binary
-    Type: DataTypeEncodingType
-    ModellingRule: None
-    DisplayName: {"LocaleId":"","Text":"Default Binary"}
-    ReferenceType: HasEncoding
-- Class: DataType
-  Name: UDT_Batch
-  Id: g=6240dd2ca601f63484025417f5bc67b0
-  Supertype: Structure
-  StructDefinition: 
-   {
-    "Name": "UDT_Batch",
-    "DataType": {
-     "IdType": 2,
-     "Id": "6240dd2ca601f63484025417f5bc67b0",
-     "Namespace": 7
-    },
-    "Fields": [{
-      "Name": "BatchID",
-      "DataType": {
-       "Id": 6
-      }
-     },{
-      "Name": "BatchStatus",
-      "DataType": {
-       "Id": 6
-      }
-     },{
-      "Name": "EvtBatchDone",
-      "DataType": {
-       "Id": 1
-      }
-     },{
-      "Name": "BatchName",
-      "DataType": {
-       "Id": 12
-      }
-     },{
-      "Name": "RunningPhaseName",
-      "DataType": {
-       "Id": 12
-      }
-     },{
-      "Name": "BatchStart",
-      "DataType": {
-       "Id": 1
-      }
-     },{
-      "Name": "RecipeName",
-      "DataType": {
-       "Id": 12
-      }
-     }]
-   }
-  DisplayName: {"LocaleId":"","Text":"UDT_Batch"}
   Children:
   - Name: ns=0;Default Binary
     Type: DataTypeEncodingType

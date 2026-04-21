@@ -48,7 +48,12 @@ public class BatchInforToPLC : BaseNetLogic
     private IUAVariable _plcBatchName;
     private IUAVariable _plcRunningPhaseName;
     private IUAVariable _plcBatchStart;
+    private IUAVariable _plcBatchRecipeName;
+
+    private IUANode _recipeRoot;
     private IUAVariable _plcRecipeName;
+    private IUAVariable _plcRecipeId;
+    private IUAVariable _plcRecipeNoOfOperations;
 
     private IUANode _op1Root;
     private IUAVariable _plcOp1Id;
@@ -110,7 +115,12 @@ public class BatchInforToPLC : BaseNetLogic
         _plcBatchName = null;
         _plcRunningPhaseName = null;
         _plcBatchStart = null;
+        _plcBatchRecipeName = null;
+
+        _recipeRoot = null;
         _plcRecipeName = null;
+        _plcRecipeId = null;
+        _plcRecipeNoOfOperations = null;
 
         _op1Root = null;
         _plcOp1Id = null;
@@ -179,6 +189,13 @@ public class BatchInforToPLC : BaseNetLogic
             TryTransitionTo(_stIdle);
             return;
         }
+        if (!TryEnsureRecipeTagReferences())
+        {
+            Log.Error(LogCategory, "DownloadBatchToPlc：无法解析 Recipe NodeId 或子标签。");
+            SetStatus("下载失败：Recipe 引用无效");
+            TryTransitionTo(_stIdle);
+            return;
+        }
 
         var editor = GetBatchEditorDataNode();
         if (editor == null)
@@ -203,15 +220,24 @@ public class BatchInforToPLC : BaseNetLogic
         long rawId = ReadRawBatchId(batchName);
         int batchId = ToPlcDintId(rawId);
 
+        var recipeNode = FindReceiptByName(recipeName);
+        int recipeId = recipeNode?.ReceiptID ?? batchId;
+        int noOfOperations = recipeNode?.Operations?.Count ?? 0;
+
         TrySetInt32(_plcBatchId, batchId);
         TrySetInt32(_plcBatchStatus, PlcBatchStatusReady);
         TrySetBoolean(_plcEvtBatchDone, false);
         TrySetString(_plcBatchName, batchName);
         TrySetString(_plcRunningPhaseName, "");
         TrySetBoolean(_plcBatchStart, false);
-        TrySetString(_plcRecipeName, recipeName ?? "");
+        TrySetString(_plcBatchRecipeName, recipeName ?? "");
 
-        Log.Info(LogCategory, $"DownloadBatchToPlc：已写入 BatchName='{batchName}', RecipeName='{recipeName}', BatchID={batchId}, BatchStatus={PlcBatchStatusReady}.");
+        // 仅写入 Recipe 结构的目标字段：Name/ID/NoOfOperations（不写 RunningOperation / RecipeComplete）。
+        TrySetString(_plcRecipeName, recipeName ?? "");
+        TrySetInt32(_plcRecipeId, recipeId);
+        TrySetInt32(_plcRecipeNoOfOperations, noOfOperations);
+
+        Log.Info(LogCategory, $"DownloadBatchToPlc：已写入 BatchName='{batchName}', RecipeName='{recipeName}', BatchID={batchId}, Recipe.ID={recipeId}, Recipe.NoOfOperations={noOfOperations}.");
         SetStatus("下载成功");
         TryTransitionTo(_stIdle);
     }
@@ -241,7 +267,7 @@ public class BatchInforToPLC : BaseNetLogic
             return false;
         }
 
-        string recipeName = ReadStringVariableValue(_plcRecipeName);
+        string recipeName = ReadStringVariableValue(_plcBatchRecipeName);
         if (string.IsNullOrWhiteSpace(recipeName))
         {
             errorStatus = "启动失败：PLC RecipeName 为空";
@@ -457,7 +483,7 @@ public class BatchInforToPLC : BaseNetLogic
         _plcBatchName = node.GetVariable("BatchName");
         _plcRunningPhaseName = node.GetVariable("RunningPhaseName");
         _plcBatchStart = node.GetVariable("BatchStart");
-        _plcRecipeName = node.GetVariable("RecipeName");
+        _plcBatchRecipeName = node.GetVariable("RecipeName");
 
         if (_plcBatchName == null || _plcBatchId == null)
         {
@@ -527,6 +553,45 @@ public class BatchInforToPLC : BaseNetLogic
         }
 
         _phasesRoot = node;
+        return true;
+    }
+
+    /// <summary>
+    /// 从脚本对象读取 <c>Recipe</c> 指针并缓存下载时需要写入的子标签。
+    /// </summary>
+    private bool TryEnsureRecipeTagReferences()
+    {
+        if (_recipeRoot != null
+            && _plcRecipeName != null
+            && _plcRecipeId != null
+            && _plcRecipeNoOfOperations != null)
+            return true;
+
+        var recipePtr = LogicObject.GetVariable("Recipe");
+        if (recipePtr == null)
+        {
+            Log.Error(LogCategory, "未找到脚本变量 Recipe。");
+            return false;
+        }
+
+        var node = InformationModel.Get(recipePtr.Value);
+        if (node == null)
+        {
+            Log.Error(LogCategory, "Recipe 指针解析失败（InformationModel.Get 返回 null）。");
+            return false;
+        }
+
+        _recipeRoot = node;
+        _plcRecipeName = node.GetVariable("Name");
+        _plcRecipeId = node.GetVariable("ID");
+        _plcRecipeNoOfOperations = node.GetVariable("NoOfOperations");
+
+        if (_plcRecipeName == null || _plcRecipeId == null || _plcRecipeNoOfOperations == null)
+        {
+            Log.Error(LogCategory, "Recipe 根节点下缺少 Name/ID/NoOfOperations 子变量，请核对 Controller Tags 结构。");
+            return false;
+        }
+
         return true;
     }
 
@@ -754,6 +819,22 @@ public class BatchInforToPLC : BaseNetLogic
         if (val is LocalizedText lt)
             return lt.Text ?? "";
         return val.ToString() ?? "";
+    }
+
+    private static RecipeDatabaseTreeLoader.ReceiptNode FindReceiptByName(string recipeName)
+    {
+        if (string.IsNullOrWhiteSpace(recipeName))
+            return null;
+        var loader = RecipeDatabaseTreeLoader.Instance;
+        if (loader?.Tree == null)
+            return null;
+
+        foreach (var r in loader.Tree)
+        {
+            if (string.Equals(r?.Name, recipeName, StringComparison.OrdinalIgnoreCase))
+                return r;
+        }
+        return null;
     }
 
     private int WritePhaseColumnsToPlcPhaseNode(IUANode phaseNode, Dictionary<string, object> cols)
