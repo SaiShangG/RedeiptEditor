@@ -2614,6 +2614,3 @@ Children:
 - Class: Reference
   Type: HasComponent
   Target: g=f26114586dc2dde8e83dd59c7cecc6e7
-- Class: Reference
-  Type: HasComponent
-  Target: g=f26114586dc2dde8e83dd59c7cecc6e7
