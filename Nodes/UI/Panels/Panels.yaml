@@ -9570,7 +9570,7 @@ Children:
                       - Name: DynamicLink
                         Type: DynamicLink
                         DataType: NodePath
-                        Value: "/Objects/RedeiptEditor/Model/UIData/PhaseData/OperationToPLC/Operation/NoOfPhases"
+                        Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OP/NoOfPhases"
                 - Name: Width
                   Type: BaseVariableType
                   DataType: Size
@@ -9697,6 +9697,11 @@ Children:
                   DataType: Size
                   ModellingRule: Optional
                   Value: 16.0
+                - Name: RightMargin
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                  Value: -74.0
               - Name: Label6
                 Type: Label
                 Children:
@@ -9752,6 +9757,11 @@ Children:
                   DataType: Size
                   ModellingRule: Optional
                   Value: 16.0
+                - Name: LeftMargin
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                  Value: 104.0
           - Name: HorizontalAlignment
             Type: BaseVariableType
             DataType: HorizontalAlignment
