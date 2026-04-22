@@ -111,6 +111,17 @@ Children:
       - Name: BorderWidth
         Type: BaseDataVariableType
         DataType: Size
+    - Name: Default1
+      Type: ButtonStyle
+      Children:
+      - Name: BorderColor
+        Type: BaseDataVariableType
+        DataType: Color
+        Value: "#075982"
+      - Name: Color
+        Type: BaseDataVariableType
+        DataType: Color
+        Value: "#e4e4e4"
   - Name: InputBoxStyles
     Type: BaseObjectType
     Children:
@@ -222,7 +233,9 @@ Children:
       - Name: Size
         Type: BaseDataVariableType
         DataType: Size
-        Value: 10.0
+      - Name: AutoHide
+        Type: BaseDataVariableType
+        DataType: Boolean
   - Name: AccordionStyles
     Type: BaseObjectType
     Children:

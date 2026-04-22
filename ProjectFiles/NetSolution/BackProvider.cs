@@ -14,6 +14,7 @@ using FTOptix.Store;
 using FTOptix.EventLogger;
 using FTOptix.RAEtherNetIP;
 using FTOptix.CommunicationDriver;
+using FTOptix.WebUI;
 #endregion
 
 public class BackProvider : BaseNetLogic

@@ -1,0 +1,17 @@
+Name: SystemData
+Type: FolderType
+Children:
+- Name: SystemData
+  Type: BaseObjectType
+  Children:
+  - Name: SystemMode
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Auto Mode"
+  - Name: DateTime
+    Type: BaseDataVariableType
+    DataType: DateTime
+  - Name: DateTimeText
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Jan 1, 1601, 12:00:00 AM"

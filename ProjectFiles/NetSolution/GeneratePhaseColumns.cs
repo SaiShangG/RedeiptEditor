@@ -15,6 +15,7 @@ using FTOptix.Retentivity;
 using FTOptix.CoreBase;
 using FTOptix.CommunicationDriver;
 using FTOptix.Core;
+using FTOptix.WebUI;
 #endregion
 
 public class GeneratePhaseColumns : BaseNetLogic

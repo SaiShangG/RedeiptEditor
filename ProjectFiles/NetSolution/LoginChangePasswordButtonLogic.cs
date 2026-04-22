@@ -2,30 +2,52 @@
 using System;
 using UAManagedCore;
 using OpcUa = UAManagedCore.OpcUa;
-using FTOptix.UI;
-using FTOptix.HMIProject;
-using FTOptix.EventLogger;
 using FTOptix.NetLogic;
 using FTOptix.NativeUI;
-using FTOptix.SQLiteStore;
-using FTOptix.Store;
-using FTOptix.Retentivity;
+using FTOptix.HMIProject;
+using FTOptix.UI;
 using FTOptix.CoreBase;
 using FTOptix.Core;
-using FTOptix.RecipeX;
-using FTOptix.RAEtherNetIP;
-using FTOptix.CommunicationDriver;
+using FTOptix.Retentivity;
+using FTOptix.WebUI;
 #endregion
 
 public class LoginChangePasswordButtonLogic : BaseNetLogic
 {
-    public override void Start()
+    [ExportMethod]
+    public void PerformChangePassword(string oldPassword, string newPassword, string confirmPassword)
     {
-        // Insert code to be executed when the user-defined logic is started
-    }
+        var outputMessageLabel = Owner.Owner.GetObject("ChangePasswordFormOutputMessage");
+        var outputMessageLogic = outputMessageLabel.GetObject("LoginChangePasswordFormOutputMessageLogic");
 
-    public override void Stop()
-    {
-        // Insert code to be executed when the user-defined logic is stopped
+        if (newPassword != confirmPassword)
+        {
+            outputMessageLogic.ExecuteMethod("SetOutputMessage", new object[] { 7 });
+        }
+        else
+        {
+            var username = Session.User.BrowseName;
+            try
+            {
+                var userWithExpiredPassword = Owner.GetAlias("UserWithExpiredPassword");
+                if (userWithExpiredPassword != null)
+                    username = userWithExpiredPassword.BrowseName;
+            }
+            catch
+            {
+            }
+
+            var result = Session.ChangePassword(username, newPassword, oldPassword);
+            if (result.ResultCode == ChangePasswordResultCode.Success)
+            {
+                var parentDialog = Owner.Owner?.Owner?.Owner as Dialog;
+                if (parentDialog != null && result.Success)
+                    parentDialog.Close();
+            }
+            else
+            {
+                outputMessageLogic.ExecuteMethod("SetOutputMessage", new object[] { (int)result.ResultCode });
+            }
+        }
     }
 }

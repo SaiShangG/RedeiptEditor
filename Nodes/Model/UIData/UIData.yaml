@@ -134,3 +134,5 @@ Children:
   - Name: <
     Type: BaseObjectType
 - File: PhaseData/PhaseData.yaml
+- File: UserInfo/UserInfo.yaml
+- File: SystemData/SystemData.yaml

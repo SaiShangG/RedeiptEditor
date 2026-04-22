@@ -12,6 +12,7 @@ using FTOptix.Store;
 using FTOptix.RecipeX;
 using FTOptix.RAEtherNetIP;
 using FTOptix.CommunicationDriver;
+using FTOptix.WebUI;
 #endregion
 
 public class RecipeDatabaseManager : BaseNetLogic
@@ -34,6 +35,9 @@ public class RecipeDatabaseManager : BaseNetLogic
     /// <summary>供 <see cref="RecipeDatabaseTreeLoader"/> 等在 Save 时读取当前登录用户（Manager 常绑定到带会话的 UI）。</summary>
     public static string TryGetInstanceUserBrowseName()
     {
+        string fromLogin = LoginButtonLogic.CurrentLoginUserBrowseName;
+        if (!string.IsNullOrWhiteSpace(fromLogin))
+            return fromLogin.Trim();
         try
         {
             var u = Instance?.Session?.User;
@@ -46,14 +50,7 @@ public class RecipeDatabaseManager : BaseNetLogic
 
     private void Audit(string actionTpl, Dictionary<string, string> vars, string oldVal = "", string newVal = "", string status = "ok")
     {
-        string user = "";
-        try
-        {
-            var u = Session?.User;
-            if (u != null && !string.IsNullOrEmpty(u.BrowseName))
-                user = u.BrowseName.Trim();
-        }
-        catch { }
+        string user = TryGetInstanceUserBrowseName();
         RecipeAuditLogHelper.Append(LogicObject, user, EvtButton, actionTpl, vars, oldVal, newVal, status);
     }
 
@@ -127,7 +124,7 @@ public class RecipeDatabaseManager : BaseNetLogic
     #region 通过 TreeLoader 写入：配方（Receipt）
     /// <summary>新增配方：从 nameNodeId、descriptNodeId 读取名称与描述，插入内存树并刷新 UI，最后持久化。名称末尾无版本号时自动补 _000。</summary>
     [ExportMethod]
-    public void AddNewReceipt(string name, string descript)
+    public void AddNewReceipt(string name, string descript, string createdBy = "")
     {
         if (Loader == null) { if (EnableLog) Log.Error(LogCategory, "TreeLoader 未就绪"); return; }
         if (string.IsNullOrWhiteSpace(name)) { if (EnableLog) Log.Warning(LogCategory, "名称为空，未执行插入"); return; }
@@ -135,7 +132,7 @@ public class RecipeDatabaseManager : BaseNetLogic
         name = EnsureNameWithVersion(name, Loader.Tree, n => n.Name);
         if (EnableLog) Log.Info(LogCategory, $"AddNewReceipt: Name='{name}', Descript='{descript ?? ""}'");
 
-        int newId = Loader.AddReceipt(name, descript ?? "");
+        int newId = Loader.AddReceipt(name, descript ?? "", createdBy ?? "");
         if (EnableLog) Log.Info(LogCategory, $"配方已加入内存树: ReceiptID={newId}, Name='{name}'");
         Audit("Act_Create", new Dictionary<string, string> { ["name"] = name, ["type"] = "Receipt" });
         SaveOrMarkDirtyAndRefresh(receiptId: newId);

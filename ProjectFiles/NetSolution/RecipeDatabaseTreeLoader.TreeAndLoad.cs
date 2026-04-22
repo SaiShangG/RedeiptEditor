@@ -12,6 +12,7 @@ using FTOptix.Store;
 using FTOptix.HMIProject;
 using FTOptix.EventLogger;
 using FTOptix.RecipeX;
+using FTOptix.WebUI;
 #endregion
 
 public partial class RecipeDatabaseTreeLoader
@@ -399,6 +400,9 @@ public partial class RecipeDatabaseTreeLoader
     /// <summary>与 RecipeDatabaseManager 一致：当前会话用户 BrowseName。</summary>
     private string GetSessionUserBrowseName()
     {
+        string fromLogin = LoginButtonLogic.CurrentLoginUserBrowseName;
+        if (!string.IsNullOrWhiteSpace(fromLogin))
+            return fromLogin.Trim();
         try
         {
             var u = Session?.User;

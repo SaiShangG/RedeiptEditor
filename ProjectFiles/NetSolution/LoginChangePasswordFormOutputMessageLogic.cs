@@ -2,30 +2,70 @@
 using System;
 using UAManagedCore;
 using OpcUa = UAManagedCore.OpcUa;
-using FTOptix.UI;
-using FTOptix.HMIProject;
-using FTOptix.EventLogger;
 using FTOptix.NetLogic;
 using FTOptix.NativeUI;
-using FTOptix.SQLiteStore;
-using FTOptix.Store;
-using FTOptix.Retentivity;
+using FTOptix.HMIProject;
+using FTOptix.UI;
 using FTOptix.CoreBase;
 using FTOptix.Core;
-using FTOptix.RecipeX;
-using FTOptix.RAEtherNetIP;
-using FTOptix.CommunicationDriver;
+using FTOptix.Retentivity;
+using FTOptix.WebUI;
 #endregion
 
 public class LoginChangePasswordFormOutputMessageLogic : BaseNetLogic
 {
     public override void Start()
     {
-        // Insert code to be executed when the user-defined logic is started
+        HideMessageLabel();
+        changePasswordResultCodeVariable = Owner.GetVariable("ChangePasswordResultCode");
+
+        task = new DelayedTask(() =>
+        {
+            HideMessageLabel();
+            taskStarted = false;
+        }, 10000, LogicObject);
     }
 
     public override void Stop()
     {
-        // Insert code to be executed when the user-defined logic is stopped
+        task?.Dispose();
     }
+
+    [ExportMethod]
+    public void SetOutputMessage(int resultCode)
+    {
+        if (changePasswordResultCodeVariable == null)
+        {
+            Log.Error("ChangePasswordFormOutputMessageLogic", "Unable to find ChangePasswordResultCode variable in ChangePasswordFormOutputMessage label");
+            return;
+        }
+
+        changePasswordResultCodeVariable.Value = resultCode;
+        ShowMessageLabel();
+
+        if (taskStarted)
+        {
+            task?.Cancel();
+            taskStarted = false;
+        }
+
+        task.Start();
+        taskStarted = true;
+    }
+
+    private void ShowMessageLabel()
+    {
+        var messageLabel = (Label)Owner;
+        messageLabel.Visible = true;
+    }
+
+    private void HideMessageLabel()
+    {
+        var messageLabel = (Label)Owner;
+        messageLabel.Visible = false;
+    }
+
+    private DelayedTask task;
+    private bool taskStarted = false;
+    private IUAVariable changePasswordResultCodeVariable;
 }

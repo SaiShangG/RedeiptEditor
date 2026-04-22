@@ -13,6 +13,7 @@ using FTOptix.EventLogger;
 using FTOptix.RecipeX;
 using FTOptix.RAEtherNetIP;
 using FTOptix.CommunicationDriver;
+using FTOptix.WebUI;
 #endregion
 
 public class GenerateOperationPhaseListPanel : BaseNetLogic
@@ -138,7 +139,17 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
         SyncTypeVariable();
         UpdateCreateNewButtonVisibility();
         var listContainer = GetListContainer();
-        if (listContainer == null) { if (EnableLog) Log.Error(LogCategory, "未找到 ListContainer！"); return; }
+        if (listContainer == null)
+        {
+            if (EnableLog)
+            {
+                var owner = LogicObject.Owner;
+                string ownerName = owner?.BrowseName ?? "<null>";
+                string childNames = owner == null ? "<null>" : string.Join(", ", owner.Children.Select(c => c.BrowseName));
+                Log.Error(LogCategory, $"未找到 ListContainer（期望路径: ScrollView1/ColumnsCards）。Owner={ownerName}，Owner.Children=[{childNames}]");
+            }
+            return;
+        }
         bool wasVisible = listContainer.Visible;
         try
         {
@@ -150,7 +161,7 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     #endregion
 
     #region 核心生成
-    private void GenerateCore(Container listContainer)
+    private void GenerateCore(ColumnLayout listContainer)
     {
         // 左侧树选中 Phase 时 DerivedMode 为 Empty；不删除、不重建最右侧 Phase 模板列表，保持上次内容
         if (DerivedMode == "Empty" && (GenerateTreeList.Instance?.SelectedPhaseId ?? 0) != 0)
@@ -190,7 +201,7 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
         finally { _suppressVersionComboNotify = false; }
     }
 
-    private void BuildOperationItems(Container listContainer, RecipeDatabaseTreeLoader loader, NodeId itemTypeId)
+    private void BuildOperationItems(ColumnLayout listContainer, RecipeDatabaseTreeLoader loader, NodeId itemTypeId)
     {
         int rId = GenerateTreeList.Instance?.SelectedReceiptId ?? 0;
         if (rId <= 0)
@@ -221,7 +232,7 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
         if (EnableLog) Log.Info(LogCategory, $"Operation 列表生成完毕，共 {count} 项");
     }
 
-    private void BuildPhaseItems(Container listContainer, RecipeDatabaseTreeLoader loader, NodeId itemTypeId)
+    private void BuildPhaseItems(ColumnLayout listContainer, RecipeDatabaseTreeLoader loader, NodeId itemTypeId)
     {
         int oId = GenerateTreeList.Instance?.SelectedOperationId ?? 0;
         int rId = GenerateTreeList.Instance?.SelectedReceiptId ?? 0;
@@ -336,7 +347,15 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     }
 
     #region 辅助：UI 控件设置
-    private Container GetListContainer() => LogicObject.Owner?.Get<Container>("ColumnsCards");
+    /// <summary>
+    /// 列表容器路径：仅支持新结构 <c>ScrollView1/ColumnsCards</c>。
+    /// </summary>
+    private ColumnLayout GetListContainer()
+    {
+        var owner = LogicObject.Owner;
+        if (owner == null) return null;
+        return owner.Get<ColumnLayout>("ScrollView1/ColumnsCards");
+    }
 
     private void UpdateTitle()
     {
@@ -373,7 +392,7 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     }
 
     /// <summary>根据记录的选中模板刷新各卡片标题按钮背景色（与左侧树选中行一致）。</summary>
-    private void ApplyTemplateTitleSelectionHighlights(Container listContainer)
+    private void ApplyTemplateTitleSelectionHighlights(ColumnLayout listContainer)
     {
         if (listContainer == null) return;
         string modeNow = DerivedMode;

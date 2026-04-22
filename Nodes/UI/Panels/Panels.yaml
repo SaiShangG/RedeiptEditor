@@ -134,6 +134,81 @@ Children:
                 DataType: Color
                 ModellingRule: Optional
                 Value: "#3b3b3b"
+              - Name: MouseClickEventHandler1
+                Type: EventHandler
+                Children:
+                - Name: ListenEventType
+                  Type: PropertyType
+                  DataType: NodeId
+                  Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
+                - Name: MethodsToCall
+                  Type: BaseObjectType
+                  Children:
+                  - Name: MethodContainer1
+                    Type: BaseObjectType
+                    Children:
+                    - Name: ns=2;ObjectPointer
+                      Type: NodePointer
+                      DataType: NodeId
+                      Children:
+                      - Name: Kind
+                        Type: PropertyType
+                        DataType: NodeId
+                        Value: "/Types/ObjectTypes/BaseObjectType"
+                      - Name: DynamicLink
+                        Type: DynamicLink
+                        DataType: NodePath
+                        Value: "{PanelLoader2}@NodeId"
+                        Children:
+                        - Name: Mode
+                          Type: BaseVariableType
+                          DataType: DynamicLinkMode
+                          ModellingRule: Optional
+                          Value: 2
+                    - Name: ns=2;Method
+                      Type: BaseDataVariableType
+                      DataType: String
+                      Value: "ChangePanel"
+                    - Name: InputArguments
+                      Type: BaseObjectType
+                      Children:
+                      - Name: NewPanel
+                        Type: BaseDataVariableType
+                        DataType: NodeId
+                        Description: {"NamespaceIndex":3,"TextId":"ChangePanelNewPanelDescription"}
+                        Value: "/Objects/RedeiptEditor/UI/Panels/LoginPanel"
+                      - Name: AliasNode
+                        Type: BaseDataVariableType
+                        DataType: NodeId
+                        Description: {"NamespaceIndex":3,"TextId":"ChangePanelAliasNodeDescription"}
+                        ValueRank: ScalarOrOneDimension
+                - Name: EventArguments
+                  Type: MouseClickEvent
+                  Children:
+                  - Name: EventId
+                    Type: PropertyType
+                    DataType: ByteString
+                  - Name: EventType
+                    Type: PropertyType
+                    DataType: NodeId
+                  - Name: SourceNode
+                    Type: PropertyType
+                    DataType: NodeId
+                  - Name: SourceName
+                    Type: PropertyType
+                    DataType: String
+                  - Name: Time
+                    Type: PropertyType
+                    DataType: UtcTime
+                  - Name: ReceiveTime
+                    Type: PropertyType
+                    DataType: UtcTime
+                  - Name: Message
+                    Type: PropertyType
+                    DataType: LocalizedText
+                  - Name: Severity
+                    Type: PropertyType
+                    DataType: UInt16
           - Name: FillColor
             Type: BaseDataVariableType
             DataType: Color
@@ -1416,7 +1491,7 @@ Children:
                     - Name: OrderBy
                       Type: BaseDataVariableType
                       DataType: NodePath
-                      Value: "{Item}/LastModifiedBy"
+                      Value: "{Item}/LastModifiedBY"
                     - Name: DataItemTemplate
                       Type: DataGridLabelItemTemplate
                       Children:
@@ -1427,7 +1502,7 @@ Children:
                         - Name: DynamicLink
                           Type: DynamicLink
                           DataType: NodePath
-                          Value: "{Item}/LastModifiedBy"
+                          Value: "{Item}/LastModifiedBY"
                   - Name: Status
                     Type: DataGridColumn
                     Children:
@@ -1515,9 +1590,15 @@ Children:
                 - Name: SortColumn
                   Type: BaseDataVariableType
                   DataType: NodeId
+                  Children:
+                  - Name: DynamicLink
+                    Type: DynamicLink
+                    DataType: NodePath
+                    Value: "{Item}/CreatedDateTime@NodeId"
                 - Name: SortOrder
                   Type: BaseDataVariableType
                   DataType: SortOrderEnum
+                  Value: 1
                 - Class: Reference
                   Target: ns=3;i=504
                   Direction: Forward
@@ -1558,6 +1639,11 @@ Children:
                 DataType: VerticalAlignment
                 ModellingRule: Optional
                 Value: 3
+              - Name: BottomMargin
+                Type: BaseVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 16.0
             - Name: VerticalGap
               Type: BaseDataVariableType
               DataType: Size
@@ -1603,6 +1689,11 @@ Children:
       DataType: VerticalAlignment
       ModellingRule: Optional
       Value: 3
+    - Name: BorderColor
+      Type: BaseDataVariableType
+      DataType: Color
+      ModellingRule: Optional
+      Value: "#00000020"
 - Name: RecipeEditorPanel
   Id: g=435205c8868a2027f9e3200cc3ed418d
   Supertype: Panel
@@ -2491,6 +2582,11 @@ Children:
                                   Type: DynamicLink
                                   DataType: NodePath
                                   Value: "/Objects/RedeiptEditor/Model/UIData/TreeListData/SelectedTreeData/SelectedReceiptCurrentStatus"
+                            - Name: Width
+                              Type: BaseVariableType
+                              DataType: Size
+                              ModellingRule: Optional
+                              Value: 180.0
                       - Name: Panel2
                         Type: Panel
                         Children:
@@ -2504,7 +2600,12 @@ Children:
                               Type: BaseVariableType
                               DataType: Size
                               ModellingRule: Optional
-                              Value: 193.0
+                              Value: 240.0
+                            - Name: Text
+                              Type: BaseDataVariableType
+                              DataType: LocalizedText
+                              ModellingRule: Optional
+                              Value: {"LocaleId":"en-US","Text":"MODIFIABLE  STATUS:"}
                           - Name: ComboBox1
                             Type: ComboBox
                             Children:
@@ -2639,7 +2740,6 @@ Children:
                               Type: BaseVariableType
                               DataType: Size
                               ModellingRule: Optional
-                              Value: 16.0
                             - Name: LeftMargin
                               Type: BaseVariableType
                               DataType: Size
@@ -2705,7 +2805,7 @@ Children:
                                 Type: BaseVariableType
                                 DataType: Size
                                 ModellingRule: Optional
-                                Value: 8.0
+                                Value: 4.0
                           - Name: Value
                             Type: Label
                             Children:
@@ -2744,7 +2844,7 @@ Children:
                                 Type: BaseVariableType
                                 DataType: Size
                                 ModellingRule: Optional
-                                Value: 8.0
+                                Value: 4.0
                           - Name: Value
                             Type: Label
                             Children:
@@ -3132,7 +3232,7 @@ Children:
                               - Name: ObjectPointer
                                 Type: NodePointer
                                 DataType: NodeId
-                                Value: "/Objects/RedeiptEditor/NetLogic/RecipeDatabaseTreeLoader"
+                                Value: "/Objects/RedeiptEditor/NetLogic/RecipeDatabaseManager"
                                 Children:
                                 - Name: Kind
                                   Type: PropertyType
@@ -3141,7 +3241,7 @@ Children:
                               - Name: Method
                                 Type: BaseDataVariableType
                                 DataType: String
-                                Value: "Save"
+                                Value: "DoSaveToDatabase"
                           - Name: EventArguments
                             Type: MouseClickEvent
                             Children:
@@ -3169,6 +3269,11 @@ Children:
                             - Name: Severity
                               Type: PropertyType
                               DataType: UInt16
+                        - Name: Text
+                          Type: BaseDataVariableType
+                          DataType: LocalizedText
+                          ModellingRule: Optional
+                          Value: {"LocaleId":"en-US","Text":"Save"}
                     - Name: ButtonWithIcon4
                       Type: ButtonWithIcon
                       Children:
@@ -4611,191 +4716,223 @@ Children:
                     DataType: Size
                     ModellingRule: Optional
                     Value: 5.0
-              - Name: ColumnsCards
-                Type: ColumnLayout
+              - Name: ScrollView1
+                Type: ScrollView
                 Children:
-                - Name: OperationPhaseCard4
-                  Type: OperationPhaseCard
+                - Name: ContentWidth
+                  Type: BaseDataVariableType
+                  DataType: Size
+                  AccessLevel: Read
+                - Name: ContentHeight
+                  Type: BaseDataVariableType
+                  DataType: Size
+                  AccessLevel: Read
+                - Name: ViewWidth
+                  Type: BaseDataVariableType
+                  DataType: Size
+                  AccessLevel: Read
+                - Name: ViewHeight
+                  Type: BaseDataVariableType
+                  DataType: Size
+                  AccessLevel: Read
+                - Name: ContentX
+                  Type: BaseDataVariableType
+                  DataType: Size
+                - Name: ContentY
+                  Type: BaseDataVariableType
+                  DataType: Size
+                - Class: Reference
+                  Target: ns=3;i=1394
+                  Direction: Forward
+                - Name: ColumnsCards
+                  Type: ColumnLayout
                   Children:
-                  - Name: ItemId
-                    Type: BaseDataVariableType
-                    DataType: Int32
-                  - Name: ReceiptID
-                    Type: BaseDataVariableType
-                    DataType: Int32
-                  - Name: OperationID
-                    Type: BaseDataVariableType
-                    DataType: Int32
-                  - Name: Rectangle1
-                    Type: Rectangle
+                  - Name: OperationPhaseCard4
+                    Type: OperationPhaseCard
                     Children:
-                    - Name: VerticalLayout1
-                      Type: ColumnLayout
+                    - Name: ItemId
+                      Type: BaseDataVariableType
+                      DataType: Int32
+                    - Name: ReceiptID
+                      Type: BaseDataVariableType
+                      DataType: Int32
+                    - Name: OperationID
+                      Type: BaseDataVariableType
+                      DataType: Int32
+                    - Name: Rectangle1
+                      Type: Rectangle
                       Children:
-                      - Name: ButtonWithIcon1
-                        Type: ButtonWithIcon
+                      - Name: VerticalLayout1
+                        Type: ColumnLayout
                         Children:
-                        - Name: Button1
-                          Type: Button
-                        - Name: TopMargin
-                          Type: BaseVariableType
-                          DataType: Size
-                          ModellingRule: Optional
-                      - Name: Row
-                        Type: RowLayout
-                        Children:
-                        - Name: ComboBox1
-                          Type: ComboBox
-                          Children:
-                          - Class: Reference
-                            Target: ns=3;i=480
-                            Direction: Forward
-                          - Name: Text
-                            Type: BaseDataVariableType
-                            DataType: LocalizedText
-                          - Name: Model
-                            Type: NodePointer
-                            DataType: NodeId
-                            Value: {"IdType":2,"Id":"80e6a0f102f7e84d2bd4dccc2b773337","Namespace":7}
-                            Children:
-                            - Name: ItemKind
-                              Type: PropertyType
-                              DataType: NodeId
-                              Value: {"IdType":2,"Id":"4018da88bbae4856b74209924846bfaf","Namespace":7}
-                            - Name: Kind
-                              Type: PropertyType
-                              DataType: NodeId
-                          - Name: SelectedValue
-                            Type: BaseDataVariableType
-                            DataType: BaseDataType
-                          - Name: SelectedItem
-                            Type: NodePointer
-                            DataType: NodeId
-                            Children:
-                            - Name: Kind
-                              Type: PropertyType
-                              DataType: NodeId
-                              Value: {"IdType":2,"Id":"4018da88bbae4856b74209924846bfaf","Namespace":7}
-                          - Name: UISelectedItem
-                            Type: BaseDataVariableType
-                            DataType: NodeId
-                            AccessLevel: Read
-                          - Name: UISelectedValue
-                            Type: BaseDataVariableType
-                            DataType: BaseDataType
-                            AccessLevel: Read
-                          - Name: Item
-                            Type: Alias
-                            DataType: NodeId
-                            Children:
-                            - Name: Kind
-                              Type: PropertyType
-                              DataType: NodeId
-                              Value: {"IdType":2,"Id":"4018da88bbae4856b74209924846bfaf","Namespace":7}
                         - Name: ButtonWithIcon1
                           Type: ButtonWithIcon
                           Children:
                           - Name: Button1
                             Type: Button
+                          - Name: TopMargin
+                            Type: BaseVariableType
+                            DataType: Size
+                            ModellingRule: Optional
+                        - Name: Row
+                          Type: RowLayout
+                          Children:
+                          - Name: ComboBox1
+                            Type: ComboBox
                             Children:
+                            - Class: Reference
+                              Target: ns=3;i=480
+                              Direction: Forward
                             - Name: Text
                               Type: BaseDataVariableType
                               DataType: LocalizedText
-                              ModellingRule: Optional
-                              Value: {"LocaleId":"en-US","Text":"Insert"}
-                            - Name: BackgroundColor
+                            - Name: Model
+                              Type: NodePointer
+                              DataType: NodeId
+                              Value: {"IdType":2,"Id":"80e6a0f102f7e84d2bd4dccc2b773337","Namespace":7}
+                              Children:
+                              - Name: ItemKind
+                                Type: PropertyType
+                                DataType: NodeId
+                                Value: {"IdType":2,"Id":"4018da88bbae4856b74209924846bfaf","Namespace":7}
+                              - Name: Kind
+                                Type: PropertyType
+                                DataType: NodeId
+                            - Name: SelectedValue
                               Type: BaseDataVariableType
-                              DataType: Color
-                              ModellingRule: Optional
-                              Value: "#005b9f"
+                              DataType: BaseDataType
+                            - Name: SelectedItem
+                              Type: NodePointer
+                              DataType: NodeId
+                              Children:
+                              - Name: Kind
+                                Type: PropertyType
+                                DataType: NodeId
+                                Value: {"IdType":2,"Id":"4018da88bbae4856b74209924846bfaf","Namespace":7}
+                            - Name: UISelectedItem
+                              Type: BaseDataVariableType
+                              DataType: NodeId
+                              AccessLevel: Read
+                            - Name: UISelectedValue
+                              Type: BaseDataVariableType
+                              DataType: BaseDataType
+                              AccessLevel: Read
+                            - Name: Item
+                              Type: Alias
+                              DataType: NodeId
+                              Children:
+                              - Name: Kind
+                                Type: PropertyType
+                                DataType: NodeId
+                                Value: {"IdType":2,"Id":"4018da88bbae4856b74209924846bfaf","Namespace":7}
+                          - Name: ButtonWithIcon1
+                            Type: ButtonWithIcon
+                            Children:
+                            - Name: Button1
+                              Type: Button
+                              Children:
+                              - Name: Text
+                                Type: BaseDataVariableType
+                                DataType: LocalizedText
+                                ModellingRule: Optional
+                                Value: {"LocaleId":"en-US","Text":"Insert"}
+                              - Name: BackgroundColor
+                                Type: BaseDataVariableType
+                                DataType: Color
+                                ModellingRule: Optional
+                                Value: "#005b9f"
+                    - Name: TopMargin
+                      Type: BaseVariableType
+                      DataType: Size
+                      ModellingRule: Optional
+                  - Name: OperationPhaseCard5
+                    Type: OperationPhaseCard
+                    Children:
+                    - Name: ItemId
+                      Type: BaseDataVariableType
+                      DataType: Int32
+                    - Name: ReceiptID
+                      Type: BaseDataVariableType
+                      DataType: Int32
+                    - Name: OperationID
+                      Type: BaseDataVariableType
+                      DataType: Int32
+                    - Name: Rectangle1
+                      Type: Rectangle
+                      Children:
+                      - Name: VerticalLayout1
+                        Type: ColumnLayout
+                        Children:
+                        - Name: ButtonWithIcon1
+                          Type: ButtonWithIcon
+                          Children:
+                          - Name: Button1
+                            Type: Button
+                        - Name: Row
+                          Type: RowLayout
+                          Children:
+                          - Name: ComboBox1
+                            Type: ComboBox
+                            Children:
+                            - Class: Reference
+                              Target: ns=3;i=480
+                              Direction: Forward
+                            - Name: Text
+                              Type: BaseDataVariableType
+                              DataType: LocalizedText
+                            - Name: Model
+                              Type: NodePointer
+                              DataType: NodeId
+                              Value: {"IdType":2,"Id":"80e6a0f102f7e84d2bd4dccc2b773337","Namespace":7}
+                              Children:
+                              - Name: ItemKind
+                                Type: PropertyType
+                                DataType: NodeId
+                                Value: {"IdType":2,"Id":"4018da88bbae4856b74209924846bfaf","Namespace":7}
+                              - Name: Kind
+                                Type: PropertyType
+                                DataType: NodeId
+                            - Name: SelectedValue
+                              Type: BaseDataVariableType
+                              DataType: BaseDataType
+                            - Name: SelectedItem
+                              Type: NodePointer
+                              DataType: NodeId
+                              Children:
+                              - Name: Kind
+                                Type: PropertyType
+                                DataType: NodeId
+                                Value: {"IdType":2,"Id":"4018da88bbae4856b74209924846bfaf","Namespace":7}
+                            - Name: UISelectedItem
+                              Type: BaseDataVariableType
+                              DataType: NodeId
+                              AccessLevel: Read
+                            - Name: UISelectedValue
+                              Type: BaseDataVariableType
+                              DataType: BaseDataType
+                              AccessLevel: Read
+                            - Name: Item
+                              Type: Alias
+                              DataType: NodeId
+                              Children:
+                              - Name: Kind
+                                Type: PropertyType
+                                DataType: NodeId
+                                Value: {"IdType":2,"Id":"4018da88bbae4856b74209924846bfaf","Namespace":7}
+                          - Name: ButtonWithIcon1
+                            Type: ButtonWithIcon
+                            Children:
+                            - Name: Button1
+                              Type: Button
                   - Name: TopMargin
                     Type: BaseVariableType
                     DataType: Size
                     ModellingRule: Optional
-                - Name: OperationPhaseCard5
-                  Type: OperationPhaseCard
-                  Children:
-                  - Name: ItemId
-                    Type: BaseDataVariableType
-                    DataType: Int32
-                  - Name: ReceiptID
-                    Type: BaseDataVariableType
-                    DataType: Int32
-                  - Name: OperationID
-                    Type: BaseDataVariableType
-                    DataType: Int32
-                  - Name: Rectangle1
-                    Type: Rectangle
-                    Children:
-                    - Name: VerticalLayout1
-                      Type: ColumnLayout
-                      Children:
-                      - Name: ButtonWithIcon1
-                        Type: ButtonWithIcon
-                        Children:
-                        - Name: Button1
-                          Type: Button
-                      - Name: Row
-                        Type: RowLayout
-                        Children:
-                        - Name: ComboBox1
-                          Type: ComboBox
-                          Children:
-                          - Class: Reference
-                            Target: ns=3;i=480
-                            Direction: Forward
-                          - Name: Text
-                            Type: BaseDataVariableType
-                            DataType: LocalizedText
-                          - Name: Model
-                            Type: NodePointer
-                            DataType: NodeId
-                            Value: {"IdType":2,"Id":"80e6a0f102f7e84d2bd4dccc2b773337","Namespace":7}
-                            Children:
-                            - Name: ItemKind
-                              Type: PropertyType
-                              DataType: NodeId
-                              Value: {"IdType":2,"Id":"4018da88bbae4856b74209924846bfaf","Namespace":7}
-                            - Name: Kind
-                              Type: PropertyType
-                              DataType: NodeId
-                          - Name: SelectedValue
-                            Type: BaseDataVariableType
-                            DataType: BaseDataType
-                          - Name: SelectedItem
-                            Type: NodePointer
-                            DataType: NodeId
-                            Children:
-                            - Name: Kind
-                              Type: PropertyType
-                              DataType: NodeId
-                              Value: {"IdType":2,"Id":"4018da88bbae4856b74209924846bfaf","Namespace":7}
-                          - Name: UISelectedItem
-                            Type: BaseDataVariableType
-                            DataType: NodeId
-                            AccessLevel: Read
-                          - Name: UISelectedValue
-                            Type: BaseDataVariableType
-                            DataType: BaseDataType
-                            AccessLevel: Read
-                          - Name: Item
-                            Type: Alias
-                            DataType: NodeId
-                            Children:
-                            - Name: Kind
-                              Type: PropertyType
-                              DataType: NodeId
-                              Value: {"IdType":2,"Id":"4018da88bbae4856b74209924846bfaf","Namespace":7}
-                        - Name: ButtonWithIcon1
-                          Type: ButtonWithIcon
-                          Children:
-                          - Name: Button1
-                            Type: Button
                 - Name: TopMargin
                   Type: BaseVariableType
                   DataType: Size
                   ModellingRule: Optional
-                  Value: 218.0
+                  Value: 226.0
               - Name: GenerateOperationPhaseListPanel
                 Type: NetLogic
                 Children:
@@ -5364,6 +5501,16 @@ Children:
       DataType: VerticalAlignment
       ModellingRule: Optional
       Value: 3
+  - Name: HorizontalAlignment
+    Type: BaseVariableType
+    DataType: HorizontalAlignment
+    ModellingRule: Optional
+    Value: 3
+  - Name: VerticalAlignment
+    Type: BaseVariableType
+    DataType: VerticalAlignment
+    ModellingRule: Optional
+    Value: 3
 - Name: DiscardedRecipe
   Id: g=dfeeba663319033a842da0df99318ec9
   Supertype: Panel
@@ -5485,88 +5632,6 @@ Children:
               DataType: Color
               ModellingRule: Optional
               Value: "#3b3b3b"
-            - Name: MouseClickEventHandler1
-              Type: EventHandler
-              Children:
-              - Name: ListenEventType
-                Type: PropertyType
-                DataType: NodeId
-                Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
-              - Name: MethodsToCall
-                Type: BaseObjectType
-                Children:
-                - Name: MethodContainer1
-                  Type: BaseObjectType
-                  Children:
-                  - Name: ns=2;ObjectPointer
-                    Type: NodePointer
-                    DataType: NodeId
-                    Value: "/Objects/Commands/UICommands"
-                    Children:
-                    - Name: Kind
-                      Type: PropertyType
-                      DataType: NodeId
-                      Value: "/Types/ObjectTypes/BaseObjectType"
-                  - Name: ns=2;Method
-                    Type: BaseDataVariableType
-                    DataType: String
-                    Value: "OpenDialog"
-                  - Name: InputArguments
-                    Type: BaseObjectType
-                    Children:
-                    - Name: Dialog
-                      Type: BaseDataVariableType
-                      DataType: NodeId
-                      Description: {"NamespaceIndex":3,"TextId":"OpenDialogDialogDescription"}
-                      Value: "/Objects/RedeiptEditor/UI/Widgets/DeleteTipPanel"
-                    - Name: AliasNode
-                      Type: BaseDataVariableType
-                      DataType: NodeId
-                      Description: {"NamespaceIndex":3,"TextId":"OpenDialogAliasNodeDescription"}
-                      ValueRank: ScalarOrOneDimension
-                    - Name: ParentItem
-                      Type: BaseDataVariableType
-                      DataType: NodeId
-                      Description: {"NamespaceIndex":3,"TextId":"OpenDialogParentItemDescription"}
-                      Children:
-                      - Name: DynamicLink
-                        Type: DynamicLink
-                        DataType: NodePath
-                        Value: "../../../../..@NodeId"
-                  - Name: OutputArguments
-                    Type: BaseObjectType
-                    Children:
-                    - Name: DialogNodeId
-                      Type: BaseDataVariableType
-                      DataType: NodeId
-                      Description: {"NamespaceIndex":3,"TextId":"OpenDialogDialogNodeIdDescription"}
-              - Name: EventArguments
-                Type: MouseClickEvent
-                Children:
-                - Name: EventId
-                  Type: PropertyType
-                  DataType: ByteString
-                - Name: EventType
-                  Type: PropertyType
-                  DataType: NodeId
-                - Name: SourceNode
-                  Type: PropertyType
-                  DataType: NodeId
-                - Name: SourceName
-                  Type: PropertyType
-                  DataType: String
-                - Name: Time
-                  Type: PropertyType
-                  DataType: UtcTime
-                - Name: ReceiveTime
-                  Type: PropertyType
-                  DataType: UtcTime
-                - Name: Message
-                  Type: PropertyType
-                  DataType: LocalizedText
-                - Name: Severity
-                  Type: PropertyType
-                  DataType: UInt16
             - Name: LeftMargin
               Type: BaseVariableType
               DataType: Size
@@ -5653,6 +5718,36 @@ Children:
               - Name: MethodsToCall
                 Type: BaseObjectType
                 Children:
+                - Name: MethodContainer2
+                  Type: BaseObjectType
+                  Children:
+                  - Name: ns=2;ObjectPointer
+                    Type: NodePointer
+                    DataType: NodeId
+                    Value: "/Objects/RedeiptEditor/NetLogic/DeletePanelGeneralLogic"
+                    Children:
+                    - Name: Kind
+                      Type: PropertyType
+                      DataType: NodeId
+                      Value: "/Types/ObjectTypes/BaseObjectType"
+                  - Name: ns=2;Method
+                    Type: BaseDataVariableType
+                    DataType: String
+                    Value: "ConfigureDeleteAction"
+                  - Name: InputArguments
+                    Type: BaseObjectType
+                    Children:
+                    - Name: actionObjectNodeId
+                      Type: BaseDataVariableType
+                      DataType: NodeId
+                      Value: "/Objects/RedeiptEditor/NetLogic/RecipeDatabaseManager"
+                    - Name: actionMethodName
+                      Type: BaseDataVariableType
+                      DataType: String
+                      Value: "ConfirmDeleteDiscardedGridSelection"
+                    - Name: actionArg
+                      Type: BaseDataVariableType
+                      DataType: String
                 - Name: MethodContainer1
                   Type: BaseObjectType
                   Children:
@@ -7120,6 +7215,11 @@ Children:
                         DataType: Size
                         ModellingRule: Optional
                         Value: 24.0
+                      - Name: TopMargin
+                        Type: BaseVariableType
+                        DataType: Size
+                        ModellingRule: Optional
+                        Value: -4.0
                     - Name: TextBox1
                       Type: TextBox
                       Children:
@@ -7165,6 +7265,118 @@ Children:
                   - Name: VerticalLayout1
                     Type: ColumnLayout
                     Children:
+                    - Name: HorizontalLayout1
+                      Type: RowLayout
+                      Children:
+                      - Name: Width
+                        Type: BaseVariableType
+                        DataType: Size
+                        ModellingRule: Optional
+                        Value: 50.0
+                      - Name: Height
+                        Type: BaseVariableType
+                        DataType: Size
+                        ModellingRule: Optional
+                        Value: 50.0
+                      - Name: Label1
+                        Type: Label
+                        Children:
+                        - Name: Text
+                          Type: BaseDataVariableType
+                          DataType: LocalizedText
+                          ModellingRule: Optional
+                          Value: {"LocaleId":"en-US","Text":"RECIPE SET"}
+                        - Name: TextColor
+                          Type: BaseDataVariableType
+                          DataType: Color
+                          ModellingRule: Optional
+                          Value: "#3b3b3b"
+                        - Name: FontSize
+                          Type: BaseDataVariableType
+                          DataType: Size
+                          ModellingRule: Optional
+                          Value: 18.0
+                        - Name: FontWeight
+                          Type: BaseDataVariableType
+                          DataType: FontWeightEnum
+                          ModellingRule: Optional
+                          Value: 700
+                        - Name: TextVerticalAlignment
+                          Type: BaseVariableType
+                          DataType: TextVerticalAlignment
+                          ModellingRule: Optional
+                          Value: 1
+                        - Name: HorizontalAlignment
+                          Type: BaseVariableType
+                          DataType: HorizontalAlignment
+                          ModellingRule: Optional
+                          Value: 3
+                        - Name: VerticalAlignment
+                          Type: BaseVariableType
+                          DataType: VerticalAlignment
+                          ModellingRule: Optional
+                          Value: 3
+                        - Name: RightMargin
+                          Type: BaseVariableType
+                          DataType: Size
+                          ModellingRule: Optional
+                      - Name: Label2
+                        Type: Label
+                        Children:
+                        - Name: Text
+                          Type: BaseDataVariableType
+                          DataType: LocalizedText
+                          ModellingRule: Optional
+                          Value: {"LocaleId":"en-US","Text":"(Released)"}
+                        - Name: TextColor
+                          Type: BaseDataVariableType
+                          DataType: Color
+                          ModellingRule: Optional
+                          Value: "#058c51"
+                        - Name: FontWeight
+                          Type: BaseDataVariableType
+                          DataType: FontWeightEnum
+                          ModellingRule: Optional
+                          Value: 700
+                        - Name: FontSize
+                          Type: BaseDataVariableType
+                          DataType: Size
+                          ModellingRule: Optional
+                          Value: 14.0
+                        - Name: TextVerticalAlignment
+                          Type: BaseVariableType
+                          DataType: TextVerticalAlignment
+                          ModellingRule: Optional
+                          Value: 1
+                        - Name: VerticalAlignment
+                          Type: BaseVariableType
+                          DataType: VerticalAlignment
+                          ModellingRule: Optional
+                          Value: 3
+                        - Name: LeftMargin
+                          Type: BaseVariableType
+                          DataType: Size
+                          ModellingRule: Optional
+                          Value: -80.0
+                        - Name: Width
+                          Type: BaseVariableType
+                          DataType: Size
+                          ModellingRule: Optional
+                          Value: 111.0
+                      - Name: HorizontalAlignment
+                        Type: BaseVariableType
+                        DataType: HorizontalAlignment
+                        ModellingRule: Optional
+                        Value: 3
+                      - Name: VerticalAlignment
+                        Type: BaseVariableType
+                        DataType: VerticalAlignment
+                        ModellingRule: Optional
+                        Value: 3
+                      - Name: BottomMargin
+                        Type: BaseVariableType
+                        DataType: Size
+                        ModellingRule: Optional
                     - Name: Label1
                       Type: Label
                       Children:
@@ -7172,7 +7384,16 @@ Children:
                         Type: BaseDataVariableType
                         DataType: LocalizedText
                         ModellingRule: Optional
-                        Value: {"LocaleId":"en-US","Text":"RECIPE SET"}
+                        Value: {"LocaleId":"en-US","Text":"RECIPE SET(Released)"}
+                      - Name: Visible
+                        Type: BaseDataVariableType
+                        DataType: Boolean
+                        ModellingRule: Optional
+                      - Name: TextColor
+                        Type: BaseDataVariableType
+                        DataType: Color
+                        ModellingRule: Optional
+                        Value: "#3b3b3b"
                     - Name: ComboBox1
                       Type: ComboBox
                       Children:
@@ -7274,11 +7495,12 @@ Children:
                                 Type: BaseDataVariableType
                                 DataType: String
                                 Description: {"NamespaceIndex":2,"TextId":"SetValueDescription"}
+                                Value: "0"
                                 Children:
                                 - Name: DynamicLink
                                   Type: DynamicLink
                                   DataType: NodePath
-                                  Value: "../../../../../SelectedItem"
+                                  Value: "../../../../../SelectedValue@Value"
                               - Name: ArrayIndex
                                 Type: BaseDataVariableType
                                 DataType: UInt32
@@ -7331,6 +7553,10 @@ Children:
                         DataType: Boolean
                         ModellingRule: Optional
                         Value: true
+                      - Name: TopMargin
+                        Type: BaseVariableType
+                        DataType: Size
+                        ModellingRule: Optional
                     - Name: TextBox1
                       Type: TextBox
                       Children:
@@ -7379,6 +7605,17 @@ Children:
                       - Name: Text
                         Type: BaseDataVariableType
                         DataType: LocalizedText
+                        Children:
+                        - Name: DynamicLink
+                          Type: DynamicLink
+                          DataType: NodePath
+                          Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/BatchEditorData/Comments"
+                          Children:
+                          - Name: Mode
+                            Type: BaseVariableType
+                            DataType: DynamicLinkMode
+                            ModellingRule: Optional
+                            Value: 2
                       - Name: ModifiedTextHandler1
                         Type: EventHandler
                         Children:
@@ -7457,6 +7694,11 @@ Children:
                           - Name: Severity
                             Type: PropertyType
                             DataType: UInt16
+                      - Name: TextVerticalAlignment
+                        Type: BaseVariableType
+                        DataType: TextVerticalAlignment
+                        ModellingRule: Optional
+                        Value: 1
                   - Name: LeftMargin
                     Type: BaseVariableType
                     DataType: Size
@@ -7910,6 +8152,11 @@ Children:
                           - Name: Severity
                             Type: PropertyType
                             DataType: UInt16
+                      - Name: BackgroundColor
+                        Type: BaseDataVariableType
+                        DataType: Color
+                        ModellingRule: Optional
+                        Value: "#005b9f"
                   - Name: ButtonWithIcon2
                     Type: ButtonWithIcon
                     Children:
@@ -7957,7 +8204,7 @@ Children:
                             - Name: ns=2;ObjectPointer
                               Type: NodePointer
                               DataType: NodeId
-                              Value: "/Objects/RedeiptEditor/NetLogic/BatchEditorLogic"
+                              Value: "/Objects/RedeiptEditor/NetLogic/DeletePanelGeneralLogic"
                               Children:
                               - Name: Kind
                                 Type: PropertyType
@@ -7966,32 +8213,66 @@ Children:
                             - Name: ns=2;Method
                               Type: BaseDataVariableType
                               DataType: String
-                              Value: "DeleteSelectedBatch"
-                          - Name: MethodContainer3
+                              Value: "ConfigureDeleteAction"
+                            - Name: InputArguments
+                              Type: BaseObjectType
+                              Children:
+                              - Name: actionObjectNodeId
+                                Type: BaseDataVariableType
+                                DataType: NodeId
+                                Value: "/Objects/RedeiptEditor/NetLogic/BatchEditorLogic"
+                              - Name: actionMethodName
+                                Type: BaseDataVariableType
+                                DataType: String
+                                Value: "DeleteSelectedBatch"
+                              - Name: actionArg
+                                Type: BaseDataVariableType
+                                DataType: String
+                          - Name: MethodContainer2
                             Type: BaseObjectType
                             Children:
                             - Name: ns=2;ObjectPointer
                               Type: NodePointer
                               DataType: NodeId
+                              Value: "/Objects/Commands/UICommands"
                               Children:
                               - Name: Kind
                                 Type: PropertyType
                                 DataType: NodeId
                                 Value: "/Types/ObjectTypes/BaseObjectType"
-                              - Name: DynamicLink
-                                Type: DynamicLink
-                                DataType: NodePath
-                                Value: "../../../../../../../../../../../Rectangle3/VerticalLayout1/DataGrid2@NodeId"
-                                Children:
-                                - Name: Mode
-                                  Type: BaseVariableType
-                                  DataType: DynamicLinkMode
-                                  ModellingRule: Optional
-                                  Value: 2
                             - Name: ns=2;Method
                               Type: BaseDataVariableType
                               DataType: String
-                              Value: "Refresh"
+                              Value: "OpenDialog"
+                            - Name: InputArguments
+                              Type: BaseObjectType
+                              Children:
+                              - Name: Dialog
+                                Type: BaseDataVariableType
+                                DataType: NodeId
+                                Description: {"NamespaceIndex":3,"TextId":"OpenDialogDialogDescription"}
+                                Value: "/Objects/RedeiptEditor/UI/Widgets/DeleteTipPanel"
+                              - Name: AliasNode
+                                Type: BaseDataVariableType
+                                DataType: NodeId
+                                Description: {"NamespaceIndex":3,"TextId":"OpenDialogAliasNodeDescription"}
+                                ValueRank: ScalarOrOneDimension
+                              - Name: ParentItem
+                                Type: BaseDataVariableType
+                                DataType: NodeId
+                                Description: {"NamespaceIndex":3,"TextId":"OpenDialogParentItemDescription"}
+                                Children:
+                                - Name: DynamicLink
+                                  Type: DynamicLink
+                                  DataType: NodePath
+                                  Value: "../../../../..@NodeId"
+                            - Name: OutputArguments
+                              Type: BaseObjectType
+                              Children:
+                              - Name: DialogNodeId
+                                Type: BaseDataVariableType
+                                DataType: NodeId
+                                Description: {"NamespaceIndex":3,"TextId":"OpenDialogDialogNodeIdDescription"}
                         - Name: EventArguments
                           Type: MouseClickEvent
                           Children:
@@ -8104,7 +8385,7 @@ Children:
                               Type: BaseDataVariableType
                               DataType: String
                               Value: "SaveBatchEdits"
-                          - Name: MethodContainer3
+                          - Name: MethodContainer2
                             Type: BaseObjectType
                             Children:
                             - Name: ns=2;ObjectPointer
@@ -8297,8 +8578,8 @@ Children:
               DataType: Size
               ModellingRule: Optional
               Value: 50.0
-            - Name: HorizontalLayout1
-              Type: RowLayout
+            - Name: RowBackground
+              Type: Rectangle
               Children:
               - Name: Width
                 Type: BaseVariableType
@@ -8319,36 +8600,144 @@ Children:
                 Type: BaseVariableType
                 DataType: VerticalAlignment
                 ModellingRule: Optional
-              - Name: Rectangle1
-                Type: Rectangle
+              - Name: HorizontalLayout1
+                Type: RowLayout
                 Children:
                 - Name: Width
                   Type: BaseVariableType
                   DataType: Size
                   ModellingRule: Optional
-                  Value: 60.0
+                  Value: 50.0
                 - Name: Height
                   Type: BaseVariableType
                   DataType: Size
                   ModellingRule: Optional
-                  Value: 30.0
-                - Name: LeftMargin
+                  Value: 40.0
+                - Name: HorizontalAlignment
                   Type: BaseVariableType
-                  DataType: Size
+                  DataType: HorizontalAlignment
                   ModellingRule: Optional
-                - Name: TopMargin
+                  Value: 3
+                - Name: VerticalAlignment
                   Type: BaseVariableType
-                  DataType: Size
+                  DataType: VerticalAlignment
                   ModellingRule: Optional
-                - Name: Search1
-                  Type: Search
+                - Name: Rectangle1
+                  Type: Rectangle
                   Children:
-                  - Name: Search
-                    Type: TextBox
+                  - Name: Width
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 360.0
+                  - Name: Height
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 30.0
+                  - Name: LeftMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                  - Name: TopMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                  - Name: Search1
+                    Type: Search
                     Children:
-                    - Name: Text
-                      Type: BaseDataVariableType
-                      DataType: LocalizedText
+                    - Name: Search
+                      Type: TextBox
+                      Children:
+                      - Name: Text
+                        Type: BaseDataVariableType
+                        DataType: LocalizedText
+                      - Name: LeftMargin
+                        Type: BaseVariableType
+                        DataType: Size
+                        ModellingRule: Optional
+                        Value: 8.0
+                      - Name: RightMargin
+                        Type: BaseVariableType
+                        DataType: Size
+                        ModellingRule: Optional
+                        Value: 8.0
+                      - Name: TextColor
+                        Type: BaseDataVariableType
+                        DataType: Color
+                        ModellingRule: Optional
+                        Value: "#3b3b3b"
+                      - Name: BorderColor
+                        Type: BaseDataVariableType
+                        DataType: Color
+                        ModellingRule: Optional
+                      - Name: ModifiedTextHandler1
+                        Type: EventHandler
+                        Children:
+                        - Name: ListenEventType
+                          Type: PropertyType
+                          DataType: NodeId
+                          Value: "/Types/EventTypes/BaseEventType/UserTextChanged"
+                        - Name: MethodsToCall
+                          Type: BaseObjectType
+                          Children:
+                          - Name: MethodContainer1
+                            Type: BaseObjectType
+                            Children:
+                            - Name: ns=2;ObjectPointer
+                              Type: NodePointer
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/NetLogic/BatchEditorLogic"
+                              Children:
+                              - Name: Kind
+                                Type: PropertyType
+                                DataType: NodeId
+                                Value: "/Types/ObjectTypes/BaseObjectType"
+                            - Name: ns=2;Method
+                              Type: BaseDataVariableType
+                              DataType: String
+                              Value: "RefreshBatchGridBySearchText"
+                            - Name: InputArguments
+                              Type: BaseObjectType
+                              Children:
+                              - Name: filterText
+                                Type: BaseDataVariableType
+                                DataType: String
+                                Children:
+                                - Name: DynamicLink
+                                  Type: DynamicLink
+                                  DataType: NodePath
+                                  Value: "../../../../../Text"
+                        - Name: EventArguments
+                          Type: UserTextChanged
+                          Children:
+                          - Name: NewText
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                          - Name: EventId
+                            Type: PropertyType
+                            DataType: ByteString
+                          - Name: EventType
+                            Type: PropertyType
+                            DataType: NodeId
+                          - Name: SourceNode
+                            Type: PropertyType
+                            DataType: NodeId
+                          - Name: SourceName
+                            Type: PropertyType
+                            DataType: String
+                          - Name: Time
+                            Type: PropertyType
+                            DataType: UtcTime
+                          - Name: ReceiveTime
+                            Type: PropertyType
+                            DataType: UtcTime
+                          - Name: Message
+                            Type: PropertyType
+                            DataType: LocalizedText
+                          - Name: Severity
+                            Type: PropertyType
+                            DataType: UInt16
                     - Name: LeftMargin
                       Type: BaseVariableType
                       DataType: Size
@@ -8359,101 +8748,86 @@ Children:
                       DataType: Size
                       ModellingRule: Optional
                       Value: 8.0
-                    - Name: TextColor
+                    - Name: TopMargin
+                      Type: BaseVariableType
+                      DataType: Size
+                      ModellingRule: Optional
+                    - Name: FillColor
                       Type: BaseDataVariableType
                       DataType: Color
                       ModellingRule: Optional
-                      Value: "#3b3b3b"
+                      Value: "#f8fafc"
+                    - Name: HorizontalAlignment
+                      Type: BaseVariableType
+                      DataType: HorizontalAlignment
+                      ModellingRule: Optional
+                    - Name: VerticalAlignment
+                      Type: BaseVariableType
+                      DataType: VerticalAlignment
+                      ModellingRule: Optional
+                      Value: 2
+                    - Name: BottomMargin
+                      Type: BaseVariableType
+                      DataType: Size
+                      ModellingRule: Optional
+                    - Name: Height
+                      Type: BaseVariableType
+                      DataType: Size
+                      ModellingRule: Optional
+                      Value: 35.0
+                    - Name: CornerRadius
+                      Type: BaseDataVariableType
+                      DataType: Size
+                      ModellingRule: Optional
+                      Value: 5.0
                     - Name: BorderColor
                       Type: BaseDataVariableType
                       DataType: Color
                       ModellingRule: Optional
-                    - Name: ModifiedTextHandler1
-                      Type: EventHandler
-                      Children:
-                      - Name: ListenEventType
-                        Type: PropertyType
-                        DataType: NodeId
-                        Value: "/Types/EventTypes/BaseEventType/UserTextChanged"
-                      - Name: MethodsToCall
-                        Type: BaseObjectType
-                        Children:
-                        - Name: MethodContainer1
-                          Type: BaseObjectType
-                          Children:
-                          - Name: ns=2;ObjectPointer
-                            Type: NodePointer
-                            DataType: NodeId
-                            Value: "/Objects/RedeiptEditor/NetLogic/BatchEditorLogic"
-                            Children:
-                            - Name: Kind
-                              Type: PropertyType
-                              DataType: NodeId
-                              Value: "/Types/ObjectTypes/BaseObjectType"
-                          - Name: ns=2;Method
-                            Type: BaseDataVariableType
-                            DataType: String
-                            Value: "RefreshBatchGridBySearchText"
-                          - Name: InputArguments
-                            Type: BaseObjectType
-                            Children:
-                            - Name: filterText
-                              Type: BaseDataVariableType
-                              DataType: String
-                              Children:
-                              - Name: DynamicLink
-                                Type: DynamicLink
-                                DataType: NodePath
-                                Value: "../../../../../Text"
-                      - Name: EventArguments
-                        Type: UserTextChanged
-                        Children:
-                        - Name: NewText
-                          Type: BaseDataVariableType
-                          DataType: LocalizedText
-                        - Name: EventId
-                          Type: PropertyType
-                          DataType: ByteString
-                        - Name: EventType
-                          Type: PropertyType
-                          DataType: NodeId
-                        - Name: SourceNode
-                          Type: PropertyType
-                          DataType: NodeId
-                        - Name: SourceName
-                          Type: PropertyType
-                          DataType: String
-                        - Name: Time
-                          Type: PropertyType
-                          DataType: UtcTime
-                        - Name: ReceiveTime
-                          Type: PropertyType
-                          DataType: UtcTime
-                        - Name: Message
-                          Type: PropertyType
-                          DataType: LocalizedText
-                        - Name: Severity
-                          Type: PropertyType
-                          DataType: UInt16
-                  - Name: LeftMargin
+                      Value: "#00000072"
+                  - Name: HorizontalAlignment
                     Type: BaseVariableType
-                    DataType: Size
+                    DataType: HorizontalAlignment
                     ModellingRule: Optional
-                    Value: 8.0
-                  - Name: RightMargin
+                  - Name: VerticalAlignment
                     Type: BaseVariableType
-                    DataType: Size
+                    DataType: VerticalAlignment
                     ModellingRule: Optional
-                    Value: 8.0
-                  - Name: TopMargin
-                    Type: BaseVariableType
-                    DataType: Size
+                    Value: 3
+                  - Name: BorderColor
+                    Type: BaseDataVariableType
+                    DataType: Color
                     ModellingRule: Optional
                   - Name: FillColor
                     Type: BaseDataVariableType
                     DataType: Color
                     ModellingRule: Optional
-                    Value: "#f8fafc"
+                    Value: "#deeaf4"
+                  - Name: RightMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                - Name: Rectangle2
+                  Type: Rectangle
+                  Children:
+                  - Name: Width
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 120.0
+                  - Name: Height
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 30.0
+                  - Name: LeftMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                  - Name: TopMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
                   - Name: HorizontalAlignment
                     Type: BaseVariableType
                     DataType: HorizontalAlignment
@@ -8462,334 +8836,291 @@ Children:
                     Type: BaseVariableType
                     DataType: VerticalAlignment
                     ModellingRule: Optional
-                    Value: 2
-                  - Name: BottomMargin
-                    Type: BaseVariableType
-                    DataType: Size
+                    Value: 3
+                  - Name: BorderColor
+                    Type: BaseDataVariableType
+                    DataType: Color
                     ModellingRule: Optional
-                  - Name: Height
-                    Type: BaseVariableType
-                    DataType: Size
+                  - Name: FillColor
+                    Type: BaseDataVariableType
+                    DataType: Color
                     ModellingRule: Optional
-                    Value: 35.0
+                    Value: "#deeaf4"
+                  - Name: ButtonWithIcon1
+                    Type: ButtonWithIcon
+                    Children:
+                    - Name: Button1
+                      Type: Button
+                      Children:
+                      - Name: Text
+                        Type: BaseDataVariableType
+                        DataType: LocalizedText
+                        ModellingRule: Optional
+                        Value: {"LocaleId":"en-US","Text":"More Filter"}
+                      - Name: ImagePath
+                        Type: BaseDataVariableType
+                        DataType: ResourceUri
+                        ModellingRule: Optional
+                        Value: "ns=7;%PROJECTDIR%/Images/filter (1).svg"
+                      - Name: LeftMargin
+                        Type: BaseVariableType
+                        DataType: Size
+                        ModellingRule: Optional
+                      - Name: FontSize
+                        Type: BaseDataVariableType
+                        DataType: Size
+                        ModellingRule: Optional
+                        Value: 16.0
+                      - Name: MouseClickEventHandler1
+                        Type: EventHandler
+                        Children:
+                        - Name: ListenEventType
+                          Type: PropertyType
+                          DataType: NodeId
+                          Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
+                        - Name: MethodsToCall
+                          Type: BaseObjectType
+                          Children:
+                          - Name: MethodContainer1
+                            Type: BaseObjectType
+                            Children:
+                            - Name: ns=2;ObjectPointer
+                              Type: NodePointer
+                              DataType: NodeId
+                              Value: "/Objects/Commands/UICommands"
+                              Children:
+                              - Name: Kind
+                                Type: PropertyType
+                                DataType: NodeId
+                                Value: "/Types/ObjectTypes/BaseObjectType"
+                            - Name: ns=2;Method
+                              Type: BaseDataVariableType
+                              DataType: String
+                              Value: "OpenDialog"
+                            - Name: InputArguments
+                              Type: BaseObjectType
+                              Children:
+                              - Name: Dialog
+                                Type: BaseDataVariableType
+                                DataType: NodeId
+                                Description: {"NamespaceIndex":3,"TextId":"OpenDialogDialogDescription"}
+                                Value: "/Objects/RedeiptEditor/UI/Widgets/FilterDialog"
+                              - Name: AliasNode
+                                Type: BaseDataVariableType
+                                DataType: NodeId
+                                Description: {"NamespaceIndex":3,"TextId":"OpenDialogAliasNodeDescription"}
+                                ValueRank: ScalarOrOneDimension
+                                Value: "/Objects/RedeiptEditor/Model/UIData/FilterData/FilterContext/BatchFilterContext"
+                              - Name: ParentItem
+                                Type: BaseDataVariableType
+                                DataType: NodeId
+                                Description: {"NamespaceIndex":3,"TextId":"OpenDialogParentItemDescription"}
+                                Children:
+                                - Name: DynamicLink
+                                  Type: DynamicLink
+                                  DataType: NodePath
+                                  Value: "../../../../..@NodeId"
+                            - Name: OutputArguments
+                              Type: BaseObjectType
+                              Children:
+                              - Name: DialogNodeId
+                                Type: BaseDataVariableType
+                                DataType: NodeId
+                                Description: {"NamespaceIndex":3,"TextId":"OpenDialogDialogNodeIdDescription"}
+                          - Name: MethodContainer2
+                            Type: BaseObjectType
+                            Children:
+                            - Name: ns=2;ObjectPointer
+                              Type: NodePointer
+                              DataType: NodeId
+                              Value: "/Objects/Commands/VariableCommands"
+                              Children:
+                              - Name: Kind
+                                Type: PropertyType
+                                DataType: NodeId
+                                Value: "/Types/ObjectTypes/BaseObjectType"
+                            - Name: ns=2;Method
+                              Type: BaseDataVariableType
+                              DataType: String
+                              Value: "Set"
+                            - Name: InputArguments
+                              Type: BaseObjectType
+                              Children:
+                              - Name: VariableToModify
+                                Type: BaseDataVariableType
+                                DataType: VariablePointer
+                                Description: {"NamespaceIndex":2,"TextId":"SetVariableToModifyDescription"}
+                                Value: "/Objects/RedeiptEditor/Model/UIData/FilterData/FilterContext/FilterType"
+                              - Name: Value
+                                Type: BaseDataVariableType
+                                DataType: FilterType
+                                Description: {"NamespaceIndex":2,"TextId":"SetValueDescription"}
+                                Value: 1
+                              - Name: ArrayIndex
+                                Type: BaseDataVariableType
+                                DataType: UInt32
+                                Description: {"NamespaceIndex":2,"TextId":"SetArrayIndexDescription"}
+                                ValueRank: ScalarOrOneDimension
+                          - Name: MethodContainer3
+                            Type: BaseObjectType
+                            Children:
+                            - Name: ns=2;ObjectPointer
+                              Type: NodePointer
+                              DataType: NodeId
+                              Value: "/Objects/Commands/VariableCommands"
+                              Children:
+                              - Name: Kind
+                                Type: PropertyType
+                                DataType: NodeId
+                                Value: "/Types/ObjectTypes/BaseObjectType"
+                            - Name: ns=2;Method
+                              Type: BaseDataVariableType
+                              DataType: String
+                              Value: "Set"
+                            - Name: InputArguments
+                              Type: BaseObjectType
+                              Children:
+                              - Name: VariableToModify
+                                Type: BaseDataVariableType
+                                DataType: VariablePointer
+                                Description: {"NamespaceIndex":2,"TextId":"SetVariableToModifyDescription"}
+                                Value: "/Objects/RedeiptEditor/Model/UIData/FilterData/FilterConditions/FilteredTable"
+                              - Name: Value
+                                Type: BaseDataVariableType
+                                DataType: String
+                                Description: {"NamespaceIndex":2,"TextId":"SetValueDescription"}
+                                Value: "Batch"
+                              - Name: ArrayIndex
+                                Type: BaseDataVariableType
+                                DataType: UInt32
+                                Description: {"NamespaceIndex":2,"TextId":"SetArrayIndexDescription"}
+                                ValueRank: ScalarOrOneDimension
+                          - Name: MethodContainer4
+                            Type: BaseObjectType
+                            Children:
+                            - Name: ns=2;ObjectPointer
+                              Type: NodePointer
+                              DataType: NodeId
+                              Value: "/Objects/Commands/VariableCommands"
+                              Children:
+                              - Name: Kind
+                                Type: PropertyType
+                                DataType: NodeId
+                                Value: "/Types/ObjectTypes/BaseObjectType"
+                            - Name: ns=2;Method
+                              Type: BaseDataVariableType
+                              DataType: String
+                              Value: "Set"
+                            - Name: InputArguments
+                              Type: BaseObjectType
+                              Children:
+                              - Name: VariableToModify
+                                Type: BaseDataVariableType
+                                DataType: VariablePointer
+                                Description: {"NamespaceIndex":2,"TextId":"SetVariableToModifyDescription"}
+                                Value: "/Objects/RedeiptEditor/Model/UIData/FilterData/FilterConditions/FiltertedDBName"
+                              - Name: Value
+                                Type: BaseDataVariableType
+                                DataType: String
+                                Description: {"NamespaceIndex":2,"TextId":"SetValueDescription"}
+                                Value: "ReceiptDB"
+                              - Name: ArrayIndex
+                                Type: BaseDataVariableType
+                                DataType: UInt32
+                                Description: {"NamespaceIndex":2,"TextId":"SetArrayIndexDescription"}
+                                ValueRank: ScalarOrOneDimension
+                        - Name: EventArguments
+                          Type: MouseClickEvent
+                          Children:
+                          - Name: EventId
+                            Type: PropertyType
+                            DataType: ByteString
+                          - Name: EventType
+                            Type: PropertyType
+                            DataType: NodeId
+                          - Name: SourceNode
+                            Type: PropertyType
+                            DataType: NodeId
+                          - Name: SourceName
+                            Type: PropertyType
+                            DataType: String
+                          - Name: Time
+                            Type: PropertyType
+                            DataType: UtcTime
+                          - Name: ReceiveTime
+                            Type: PropertyType
+                            DataType: UtcTime
+                          - Name: Message
+                            Type: PropertyType
+                            DataType: LocalizedText
+                          - Name: Severity
+                            Type: PropertyType
+                            DataType: UInt16
+                      - Name: TopMargin
+                        Type: BaseVariableType
+                        DataType: Size
+                        ModellingRule: Optional
+                        Value: 4.0
+                      - Name: BottomMargin
+                        Type: BaseVariableType
+                        DataType: Size
+                        ModellingRule: Optional
+                        Value: 4.0
+                    - Name: HorizontalAlignment
+                      Type: BaseVariableType
+                      DataType: HorizontalAlignment
+                      ModellingRule: Optional
+                      Value: 3
+                    - Name: Width
+                      Type: BaseVariableType
+                      DataType: Size
+                      ModellingRule: Optional
+                      Value: 130.0
+                    - Name: RightMargin
+                      Type: BaseVariableType
+                      DataType: Size
+                      ModellingRule: Optional
+                    - Name: LeftMargin
+                      Type: BaseVariableType
+                      DataType: Size
+                      ModellingRule: Optional
+                    - Name: VerticalAlignment
+                      Type: BaseVariableType
+                      DataType: VerticalAlignment
+                      ModellingRule: Optional
+                      Value: 3
+                    - Name: Height
+                      Type: BaseVariableType
+                      DataType: Size
+                      ModellingRule: Optional
+                      Value: 40.0
+                    - Name: TopMargin
+                      Type: BaseVariableType
+                      DataType: Size
+                      ModellingRule: Optional
+                    - Name: BottomMargin
+                      Type: BaseVariableType
+                      DataType: Size
+                      ModellingRule: Optional
                   - Name: CornerRadius
                     Type: BaseDataVariableType
                     DataType: Size
                     ModellingRule: Optional
                     Value: 5.0
-                  - Name: BorderColor
-                    Type: BaseDataVariableType
-                    DataType: Color
-                    ModellingRule: Optional
-                    Value: "#00000072"
-                - Name: HorizontalAlignment
-                  Type: BaseVariableType
-                  DataType: HorizontalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: BorderColor
+                - Name: HorizontalGap
                   Type: BaseDataVariableType
-                  DataType: Color
-                  ModellingRule: Optional
-                - Name: FillColor
-                  Type: BaseDataVariableType
-                  DataType: Color
-                  ModellingRule: Optional
-                  Value: "#deeaf4"
-              - Name: Rectangle2
-                Type: Rectangle
-                Children:
-                - Name: Width
-                  Type: BaseVariableType
                   DataType: Size
                   ModellingRule: Optional
-                  Value: 60.0
-                - Name: Height
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 30.0
-                - Name: LeftMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                - Name: TopMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                - Name: HorizontalAlignment
-                  Type: BaseVariableType
-                  DataType: HorizontalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: BorderColor
-                  Type: BaseDataVariableType
-                  DataType: Color
-                  ModellingRule: Optional
-                - Name: FillColor
-                  Type: BaseDataVariableType
-                  DataType: Color
-                  ModellingRule: Optional
-                  Value: "#deeaf4"
-                - Name: ButtonWithIcon1
-                  Type: ButtonWithIcon
-                  Children:
-                  - Name: Button1
-                    Type: Button
-                    Children:
-                    - Name: Text
-                      Type: BaseDataVariableType
-                      DataType: LocalizedText
-                      ModellingRule: Optional
-                      Value: {"LocaleId":"en-US","Text":"More Filter"}
-                    - Name: ImagePath
-                      Type: BaseDataVariableType
-                      DataType: ResourceUri
-                      ModellingRule: Optional
-                      Value: "ns=7;%PROJECTDIR%/Images/filter (1).svg"
-                    - Name: LeftMargin
-                      Type: BaseVariableType
-                      DataType: Size
-                      ModellingRule: Optional
-                    - Name: FontSize
-                      Type: BaseDataVariableType
-                      DataType: Size
-                      ModellingRule: Optional
-                      Value: 16.0
-                    - Name: MouseClickEventHandler1
-                      Type: EventHandler
-                      Children:
-                      - Name: ListenEventType
-                        Type: PropertyType
-                        DataType: NodeId
-                        Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
-                      - Name: MethodsToCall
-                        Type: BaseObjectType
-                        Children:
-                        - Name: MethodContainer1
-                          Type: BaseObjectType
-                          Children:
-                          - Name: ns=2;ObjectPointer
-                            Type: NodePointer
-                            DataType: NodeId
-                            Value: "/Objects/Commands/UICommands"
-                            Children:
-                            - Name: Kind
-                              Type: PropertyType
-                              DataType: NodeId
-                              Value: "/Types/ObjectTypes/BaseObjectType"
-                          - Name: ns=2;Method
-                            Type: BaseDataVariableType
-                            DataType: String
-                            Value: "OpenDialog"
-                          - Name: InputArguments
-                            Type: BaseObjectType
-                            Children:
-                            - Name: Dialog
-                              Type: BaseDataVariableType
-                              DataType: NodeId
-                              Description: {"NamespaceIndex":3,"TextId":"OpenDialogDialogDescription"}
-                              Value: "/Objects/RedeiptEditor/UI/Widgets/FilterDialog"
-                            - Name: AliasNode
-                              Type: BaseDataVariableType
-                              DataType: NodeId
-                              Description: {"NamespaceIndex":3,"TextId":"OpenDialogAliasNodeDescription"}
-                              ValueRank: ScalarOrOneDimension
-                              Value: "/Objects/RedeiptEditor/Model/UIData/FilterData/FilterContext/BatchFilterContext"
-                            - Name: ParentItem
-                              Type: BaseDataVariableType
-                              DataType: NodeId
-                              Description: {"NamespaceIndex":3,"TextId":"OpenDialogParentItemDescription"}
-                              Children:
-                              - Name: DynamicLink
-                                Type: DynamicLink
-                                DataType: NodePath
-                                Value: "../../../../..@NodeId"
-                          - Name: OutputArguments
-                            Type: BaseObjectType
-                            Children:
-                            - Name: DialogNodeId
-                              Type: BaseDataVariableType
-                              DataType: NodeId
-                              Description: {"NamespaceIndex":3,"TextId":"OpenDialogDialogNodeIdDescription"}
-                        - Name: MethodContainer2
-                          Type: BaseObjectType
-                          Children:
-                          - Name: ns=2;ObjectPointer
-                            Type: NodePointer
-                            DataType: NodeId
-                            Value: "/Objects/Commands/VariableCommands"
-                            Children:
-                            - Name: Kind
-                              Type: PropertyType
-                              DataType: NodeId
-                              Value: "/Types/ObjectTypes/BaseObjectType"
-                          - Name: ns=2;Method
-                            Type: BaseDataVariableType
-                            DataType: String
-                            Value: "Set"
-                          - Name: InputArguments
-                            Type: BaseObjectType
-                            Children:
-                            - Name: VariableToModify
-                              Type: BaseDataVariableType
-                              DataType: VariablePointer
-                              Description: {"NamespaceIndex":2,"TextId":"SetVariableToModifyDescription"}
-                              Value: "/Objects/RedeiptEditor/Model/UIData/FilterData/FilterContext/FilterType"
-                            - Name: Value
-                              Type: BaseDataVariableType
-                              DataType: FilterType
-                              Description: {"NamespaceIndex":2,"TextId":"SetValueDescription"}
-                              Value: 1
-                            - Name: ArrayIndex
-                              Type: BaseDataVariableType
-                              DataType: UInt32
-                              Description: {"NamespaceIndex":2,"TextId":"SetArrayIndexDescription"}
-                              ValueRank: ScalarOrOneDimension
-                        - Name: MethodContainer3
-                          Type: BaseObjectType
-                          Children:
-                          - Name: ns=2;ObjectPointer
-                            Type: NodePointer
-                            DataType: NodeId
-                            Value: "/Objects/Commands/VariableCommands"
-                            Children:
-                            - Name: Kind
-                              Type: PropertyType
-                              DataType: NodeId
-                              Value: "/Types/ObjectTypes/BaseObjectType"
-                          - Name: ns=2;Method
-                            Type: BaseDataVariableType
-                            DataType: String
-                            Value: "Set"
-                          - Name: InputArguments
-                            Type: BaseObjectType
-                            Children:
-                            - Name: VariableToModify
-                              Type: BaseDataVariableType
-                              DataType: VariablePointer
-                              Description: {"NamespaceIndex":2,"TextId":"SetVariableToModifyDescription"}
-                              Value: "/Objects/RedeiptEditor/Model/UIData/FilterData/FilterConditions/FilteredTable"
-                            - Name: Value
-                              Type: BaseDataVariableType
-                              DataType: String
-                              Description: {"NamespaceIndex":2,"TextId":"SetValueDescription"}
-                              Value: "Batch"
-                            - Name: ArrayIndex
-                              Type: BaseDataVariableType
-                              DataType: UInt32
-                              Description: {"NamespaceIndex":2,"TextId":"SetArrayIndexDescription"}
-                              ValueRank: ScalarOrOneDimension
-                        - Name: MethodContainer4
-                          Type: BaseObjectType
-                          Children:
-                          - Name: ns=2;ObjectPointer
-                            Type: NodePointer
-                            DataType: NodeId
-                            Value: "/Objects/Commands/VariableCommands"
-                            Children:
-                            - Name: Kind
-                              Type: PropertyType
-                              DataType: NodeId
-                              Value: "/Types/ObjectTypes/BaseObjectType"
-                          - Name: ns=2;Method
-                            Type: BaseDataVariableType
-                            DataType: String
-                            Value: "Set"
-                          - Name: InputArguments
-                            Type: BaseObjectType
-                            Children:
-                            - Name: VariableToModify
-                              Type: BaseDataVariableType
-                              DataType: VariablePointer
-                              Description: {"NamespaceIndex":2,"TextId":"SetVariableToModifyDescription"}
-                              Value: "/Objects/RedeiptEditor/Model/UIData/FilterData/FilterConditions/FiltertedDBName"
-                            - Name: Value
-                              Type: BaseDataVariableType
-                              DataType: String
-                              Description: {"NamespaceIndex":2,"TextId":"SetValueDescription"}
-                              Value: "ReceiptDB"
-                            - Name: ArrayIndex
-                              Type: BaseDataVariableType
-                              DataType: UInt32
-                              Description: {"NamespaceIndex":2,"TextId":"SetArrayIndexDescription"}
-                              ValueRank: ScalarOrOneDimension
-                      - Name: EventArguments
-                        Type: MouseClickEvent
-                        Children:
-                        - Name: EventId
-                          Type: PropertyType
-                          DataType: ByteString
-                        - Name: EventType
-                          Type: PropertyType
-                          DataType: NodeId
-                        - Name: SourceNode
-                          Type: PropertyType
-                          DataType: NodeId
-                        - Name: SourceName
-                          Type: PropertyType
-                          DataType: String
-                        - Name: Time
-                          Type: PropertyType
-                          DataType: UtcTime
-                        - Name: ReceiveTime
-                          Type: PropertyType
-                          DataType: UtcTime
-                        - Name: Message
-                          Type: PropertyType
-                          DataType: LocalizedText
-                        - Name: Severity
-                          Type: PropertyType
-                          DataType: UInt16
-                    - Name: TopMargin
-                      Type: BaseVariableType
-                      DataType: Size
-                      ModellingRule: Optional
-                      Value: 4.0
-                    - Name: BottomMargin
-                      Type: BaseVariableType
-                      DataType: Size
-                      ModellingRule: Optional
-                      Value: 4.0
-                  - Name: HorizontalAlignment
-                    Type: BaseVariableType
-                    DataType: HorizontalAlignment
-                    ModellingRule: Optional
-                    Value: 1
-                  - Name: Width
-                    Type: BaseVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                    Value: 130.0
-                  - Name: RightMargin
-                    Type: BaseVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                    Value: 16.0
-                  - Name: LeftMargin
-                    Type: BaseVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                  - Name: VerticalAlignment
-                    Type: BaseVariableType
-                    DataType: VerticalAlignment
-                    ModellingRule: Optional
-                    Value: 2
-                  - Name: Height
-                    Type: BaseVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                    Value: 35.0
+                  Value: 16.0
+              - Name: FillColor
+                Type: BaseDataVariableType
+                DataType: Color
+                ModellingRule: Optional
+                Value: "#deeaf4"
+              - Name: BorderColor
+                Type: BaseDataVariableType
+                DataType: Color
+                ModellingRule: Optional
             - Name: DataGrid2
               Type: DataGrid
               Children:
@@ -9047,9 +9378,15 @@ Children:
               - Name: SortColumn
                 Type: BaseDataVariableType
                 DataType: NodeId
+                Children:
+                - Name: DynamicLink
+                  Type: DynamicLink
+                  DataType: NodePath
+                  Value: "{Item}/CreatedDateTime@NodeId"
               - Name: SortOrder
                 Type: BaseDataVariableType
                 DataType: SortOrderEnum
+                Value: 1
               - Class: Reference
                 Target: ns=3;i=504
                 Direction: Forward
@@ -9084,7 +9421,6 @@ Children:
                 Type: BaseDataVariableType
                 DataType: Duration
                 ModellingRule: Optional
-                Value: "0:00:00:01.0000000"
               - Name: UserSelectionChangedHandler1
                 Type: EventHandler
                 Children:
@@ -9242,6 +9578,10 @@ Children:
                   - Name: Severity
                     Type: PropertyType
                     DataType: UInt16
+              - Name: AllowDeselection
+                Type: BaseDataVariableType
+                DataType: Boolean
+                ModellingRule: Optional
             - Name: HorizontalAlignment
               Type: BaseVariableType
               DataType: HorizontalAlignment
@@ -9252,516 +9592,454 @@ Children:
               DataType: VerticalAlignment
               ModellingRule: Optional
               Value: 3
-            - Name: HorizontalLayout2
-              Type: RowLayout
+            - Name: BatchRecipeInfoPanel1
+              Type: BatchRecipeInfoPanel
               Children:
-              - Name: Width
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 50.0
-              - Name: Height
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 200.0
-              - Name: HorizontalAlignment
-                Type: BaseVariableType
-                DataType: HorizontalAlignment
-                ModellingRule: Optional
-                Value: 3
-              - Name: VerticalLayout3
-                Type: ColumnLayout
+              - Name: Rectangle1
+                Type: Rectangle
                 Children:
-                - Name: Width
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 150.0
-                - Name: Height
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 50.0
-                - Name: HorizontalAlignment
-                  Type: BaseVariableType
-                  DataType: HorizontalAlignment
-                  ModellingRule: Optional
-                  Value: 2
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 2
-                - Name: ButtonWithIcon2
-                  Type: ButtonWithIcon
+                - Name: Row
+                  Type: RowLayout
                   Children:
-                  - Name: Button1
-                    Type: Button
+                  - Name: Rectangle1
+                    Type: Rectangle
                     Children:
-                    - Name: Text
-                      Type: BaseDataVariableType
-                      DataType: LocalizedText
-                      ModellingRule: Optional
-                      Value: {"LocaleId":"en-US","Text":"Start"}
-                    - Name: ImagePath
-                      Type: BaseDataVariableType
-                      DataType: ResourceUri
-                      ModellingRule: Optional
-                      Value: "ns=7;%PROJECTDIR%/Images/download.svg"
-                    - Name: FontSize
-                      Type: BaseDataVariableType
-                      DataType: Size
-                      ModellingRule: Optional
-                      Value: 24.0
-                    - Name: BackgroundColor
-                      Type: BaseDataVariableType
-                      DataType: Color
-                      ModellingRule: Optional
-                      Value: "#0fafff"
-                    - Name: MouseClickEventHandler1
-                      Type: EventHandler
+                    - Name: VerticalLayout1
+                      Type: ColumnLayout
                       Children:
-                      - Name: ListenEventType
-                        Type: PropertyType
-                        DataType: NodeId
-                        Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
-                      - Name: MethodsToCall
-                        Type: BaseObjectType
+                      - Name: LabelValueHorizontal
+                        Type: Panel
                         Children:
-                        - Name: MethodContainer1
-                          Type: BaseObjectType
+                        - Name: HorizontalLayout1
+                          Type: RowLayout
                           Children:
-                          - Name: ns=2;ObjectPointer
-                            Type: NodePointer
-                            DataType: NodeId
-                            Value: "/Objects/RedeiptEditor/NetLogic/BatchInforToPLC"
+                          - Name: Label1
+                            Type: Label
+                          - Name: Rectangle1
+                            Type: Rectangle
                             Children:
-                            - Name: Kind
-                              Type: PropertyType
-                              DataType: NodeId
-                              Value: "/Types/ObjectTypes/BaseObjectType"
-                          - Name: ns=2;Method
-                            Type: BaseDataVariableType
-                            DataType: String
-                            Value: "StartRunFlow"
-                      - Name: EventArguments
-                        Type: MouseClickEvent
+                            - Name: Value
+                              Type: Label
+                              Children:
+                              - Name: Text
+                                Type: BaseDataVariableType
+                                DataType: LocalizedText
+                                Children:
+                                - Name: DynamicLink
+                                  Type: DynamicLink
+                                  DataType: NodePath
+                                  Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Recipe/Name"
+                      - Name: LabelValueHorizontal1
+                        Type: Panel
                         Children:
-                        - Name: EventId
-                          Type: PropertyType
-                          DataType: ByteString
-                        - Name: EventType
-                          Type: PropertyType
-                          DataType: NodeId
-                        - Name: SourceNode
-                          Type: PropertyType
-                          DataType: NodeId
-                        - Name: SourceName
-                          Type: PropertyType
-                          DataType: String
-                        - Name: Time
-                          Type: PropertyType
-                          DataType: UtcTime
-                        - Name: ReceiveTime
-                          Type: PropertyType
-                          DataType: UtcTime
-                        - Name: Message
-                          Type: PropertyType
-                          DataType: LocalizedText
-                        - Name: Severity
-                          Type: PropertyType
-                          DataType: UInt16
-                - Name: VerticalGap
-                  Type: BaseDataVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 8.0
-                - Name: RightMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-              - Name: Label2
-                Type: Label
-                Children:
-                - Name: Text
-                  Type: BaseDataVariableType
-                  DataType: LocalizedText
-                  Children:
-                  - Name: StringFormatter1
-                    Type: StringFormatter
+                        - Name: HorizontalLayout1
+                          Type: RowLayout
+                          Children:
+                          - Name: Label1
+                            Type: Label
+                          - Name: Rectangle1
+                            Type: Rectangle
+                            Children:
+                            - Name: Value
+                              Type: Label
+                              Children:
+                              - Name: Text
+                                Type: BaseDataVariableType
+                                DataType: LocalizedText
+                                Children:
+                                - Name: DynamicLink
+                                  Type: DynamicLink
+                                  DataType: NodePath
+                                  Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OP/Name"
+                      - Name: LabelValueHorizontal2
+                        Type: LabelValueHorizontal
+                        Children:
+                        - Name: HorizontalLayout1
+                          Type: RowLayout
+                          Children:
+                          - Name: Label1
+                            Type: Label
+                          - Name: Rectangle1
+                            Type: Rectangle
+                            Children:
+                            - Name: Value
+                              Type: Label
+                              Children:
+                              - Name: Text
+                                Type: BaseDataVariableType
+                                DataType: LocalizedText
+                  - Name: Rectangle2
+                    Type: Rectangle
                     Children:
-                    - Name: Format
-                      Type: BaseDataVariableType
-                      DataType: LocalizedText
-                      ReferenceType: HasParameter
-                      ModellingRule: Optional
-                      Value: {"LocaleId":"en-US","Text":"BatchName{0}"}
-                    - Name: ns=2;Source0
-                      Type: BaseDataVariableType
-                      DataType: BaseDataType
-                      ReferenceType: HasSource
+                    - Name: HorizontalLayout1
+                      Type: RowLayout
                       Children:
-                      - Name: DynamicLink
-                        Type: DynamicLink
-                        DataType: NodePath
-                        Value: "/Objects/RedeiptEditor/Model/UIData/PhaseData/OperationToPLC/Batch/BatchName"
-                - Name: Width
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 194.0
-                - Name: Height
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 88.0
-                - Name: HorizontalAlignment
-                  Type: BaseVariableType
-                  DataType: HorizontalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: TextVerticalAlignment
-                  Type: BaseVariableType
-                  DataType: TextVerticalAlignment
-                  ModellingRule: Optional
-                  Value: 1
-                - Name: FontSize
-                  Type: BaseDataVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 16.0
-              - Name: Label1
-                Type: Label
-                Children:
-                - Name: Text
-                  Type: BaseDataVariableType
-                  DataType: LocalizedText
-                  Children:
-                  - Name: StringFormatter1
-                    Type: StringFormatter
+                      - Name: ButtonWithIcon4
+                        Type: ButtonWithIcon
+                        Children:
+                        - Name: Rectangle1
+                          Type: Rectangle
+                          Children:
+                          - Name: Button1
+                            Type: Button
+                            Children:
+                            - Name: MouseClickEventHandler1
+                              Type: EventHandler
+                              Children:
+                              - Name: ListenEventType
+                                Type: PropertyType
+                                DataType: NodeId
+                                Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
+                              - Name: MethodsToCall
+                                Type: BaseObjectType
+                                Children:
+                                - Name: MethodContainer1
+                                  Type: BaseObjectType
+                                  Children:
+                                  - Name: ObjectPointer
+                                    Type: NodePointer
+                                    DataType: NodeId
+                                    Value: "/Objects/Commands/VariableCommands"
+                                    Children:
+                                    - Name: Kind
+                                      Type: PropertyType
+                                      DataType: NodeId
+                                      Value: "/Types/ObjectTypes/BaseObjectType"
+                                  - Name: Method
+                                    Type: BaseDataVariableType
+                                    DataType: String
+                                    Value: "Set"
+                                  - Name: InputArguments
+                                    Type: BaseObjectType
+                                    Children:
+                                    - Name: VariableToModify
+                                      Type: BaseDataVariableType
+                                      DataType: VariablePointer
+                                      Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchStart"
+                                    - Name: Value
+                                      Type: BaseDataVariableType
+                                      DataType: Boolean
+                                      Value: true
+                                    - Name: ArrayIndex
+                                      Type: BaseDataVariableType
+                                      DataType: UInt32
+                                      ValueRank: ScalarOrOneDimension
+                                - Name: MethodContainer2
+                                  Type: BaseObjectType
+                                  Children:
+                                  - Name: ObjectPointer
+                                    Type: NodePointer
+                                    DataType: NodeId
+                                    Value: "/Objects/RedeiptEditor/NetLogic/BatchInforToPLC"
+                                    Children:
+                                    - Name: Kind
+                                      Type: PropertyType
+                                      DataType: NodeId
+                                      Value: "/Types/ObjectTypes/BaseObjectType"
+                                  - Name: Method
+                                    Type: BaseDataVariableType
+                                    DataType: String
+                                    Value: "StartRunFlow"
+                              - Name: EventArguments
+                                Type: MouseClickEvent
+                                Children:
+                                - Name: EventId
+                                  Type: PropertyType
+                                  DataType: ByteString
+                                - Name: EventType
+                                  Type: PropertyType
+                                  DataType: NodeId
+                                - Name: SourceNode
+                                  Type: PropertyType
+                                  DataType: NodeId
+                                - Name: SourceName
+                                  Type: PropertyType
+                                  DataType: String
+                                - Name: Time
+                                  Type: PropertyType
+                                  DataType: UtcTime
+                                - Name: ReceiveTime
+                                  Type: PropertyType
+                                  DataType: UtcTime
+                                - Name: Message
+                                  Type: PropertyType
+                                  DataType: LocalizedText
+                                - Name: Severity
+                                  Type: PropertyType
+                                  DataType: UInt16
+                            - Name: Text
+                              Type: BaseDataVariableType
+                              DataType: LocalizedText
+                              ModellingRule: Optional
+                              Value: {"LocaleId":"en-US","Text":"Start"}
+                            - Name: ImagePath
+                              Type: BaseDataVariableType
+                              DataType: ResourceUri
+                              Value: "ns=7;%PROJECTDIR%/Images/start_blck.svg"
+                        - Name: Button1
+                          Type: Button
+                      - Name: ButtonWithIcon1
+                        Type: ButtonWithIcon
+                        Children:
+                        - Name: Rectangle1
+                          Type: Rectangle
+                          Children:
+                          - Name: Button1
+                            Type: Button
+                        - Name: Button1
+                          Type: Button
+                      - Name: ButtonWithIcon2
+                        Type: ButtonWithIcon
+                        Children:
+                        - Name: Rectangle1
+                          Type: Rectangle
+                          Children:
+                          - Name: Button1
+                            Type: Button
+                        - Name: Button1
+                          Type: Button
+                  - Name: Rectangle3
+                    Type: Rectangle
                     Children:
-                    - Name: Format
-                      Type: BaseDataVariableType
-                      DataType: LocalizedText
-                      ReferenceType: HasParameter
-                      ModellingRule: Optional
-                      Value: {"LocaleId":"en-US","Text":"BatchID{0}"}
-                    - Name: ns=2;Source0
-                      Type: BaseDataVariableType
-                      DataType: BaseDataType
-                      ReferenceType: HasSource
+                    - Name: VerticalLayout2
+                      Type: ColumnLayout
                       Children:
-                      - Name: DynamicLink
-                        Type: DynamicLink
-                        DataType: NodePath
-                        Value: "/Objects/RedeiptEditor/Model/UIData/PhaseData/OperationToPLC/Batch/BatchID"
-                - Name: Width
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 194.0
-                - Name: Height
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 88.0
-                - Name: HorizontalAlignment
-                  Type: BaseVariableType
-                  DataType: HorizontalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: TextVerticalAlignment
-                  Type: BaseVariableType
-                  DataType: TextVerticalAlignment
-                  ModellingRule: Optional
-                  Value: 1
-                - Name: FontSize
-                  Type: BaseDataVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 16.0
-              - Name: Label8
-                Type: Label
-                Children:
-                - Name: Text
-                  Type: BaseDataVariableType
-                  DataType: LocalizedText
-                  Children:
-                  - Name: StringFormatter1
-                    Type: StringFormatter
+                      - Name: LabelValueHorizontal1
+                        Type: LabelValueHorizontal
+                        Children:
+                        - Name: HorizontalLayout1
+                          Type: RowLayout
+                          Children:
+                          - Name: Label1
+                            Type: Label
+                          - Name: Rectangle1
+                            Type: Rectangle
+                            Children:
+                            - Name: Value
+                              Type: Label
+                              Children:
+                              - Name: Text
+                                Type: BaseDataVariableType
+                                DataType: LocalizedText
+                                Children:
+                                - Name: DynamicLink
+                                  Type: DynamicLink
+                                  DataType: NodePath
+                                  Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchName"
+                      - Name: LabelValueHorizontal2
+                        Type: LabelValueHorizontal
+                        Children:
+                        - Name: HorizontalLayout1
+                          Type: RowLayout
+                          Children:
+                          - Name: Label1
+                            Type: Label
+                          - Name: Rectangle1
+                            Type: Rectangle
+                            Children:
+                            - Name: Value
+                              Type: Label
+                              Children:
+                              - Name: Text
+                                Type: BaseDataVariableType
+                                DataType: LocalizedText
+                                Children:
+                                - Name: DynamicLink
+                                  Type: DynamicLink
+                                  DataType: NodePath
+                                  Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Recipe/RecipeComplete"
+                      - Name: LabelValueHorizontal3
+                        Type: LabelValueHorizontal
+                        Children:
+                        - Name: HorizontalLayout1
+                          Type: RowLayout
+                          Children:
+                          - Name: Label1
+                            Type: Label
+                          - Name: Rectangle1
+                            Type: Rectangle
+                            Children:
+                            - Name: Value
+                              Type: Label
+                              Children:
+                              - Name: Text
+                                Type: BaseDataVariableType
+                                DataType: LocalizedText
+                                Children:
+                                - Name: DynamicLink
+                                  Type: DynamicLink
+                                  DataType: NodePath
+                                  Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchName"
+                  - Name: Rectangle4
+                    Type: Rectangle
                     Children:
-                    - Name: Format
-                      Type: BaseDataVariableType
-                      DataType: LocalizedText
-                      ReferenceType: HasParameter
-                      ModellingRule: Optional
-                      Value: {"LocaleId":"en-US","Text":"RecipeName{0}"}
-                    - Name: ns=2;Source0
-                      Type: BaseDataVariableType
-                      DataType: BaseDataType
-                      ReferenceType: HasSource
+                    - Name: HorizontalLayout2
+                      Type: RowLayout
                       Children:
-                      - Name: DynamicLink
-                        Type: DynamicLink
-                        DataType: NodePath
-                        Value: "/Objects/RedeiptEditor/Model/UIData/PhaseData/OperationToPLC/Batch/RecipeName"
-                - Name: Width
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 194.0
-                - Name: Height
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 88.0
-                - Name: HorizontalAlignment
-                  Type: BaseVariableType
-                  DataType: HorizontalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: TextVerticalAlignment
-                  Type: BaseVariableType
-                  DataType: TextVerticalAlignment
-                  ModellingRule: Optional
-                  Value: 1
-                - Name: FontSize
-                  Type: BaseDataVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 16.0
-              - Name: Label3
-                Type: Label
-                Children:
-                - Name: Text
-                  Type: BaseDataVariableType
-                  DataType: LocalizedText
-                  Children:
-                  - Name: StringFormatter1
-                    Type: StringFormatter
+                      - Name: ButtonWithIcon4
+                        Type: ButtonWithIcon
+                        Children:
+                        - Name: Rectangle1
+                          Type: Rectangle
+                          Children:
+                          - Name: Button1
+                            Type: Button
+                        - Name: Button1
+                          Type: Button
+                      - Name: ButtonWithIcon1
+                        Type: ButtonWithIcon
+                        Children:
+                        - Name: Rectangle1
+                          Type: Rectangle
+                          Children:
+                          - Name: Button1
+                            Type: Button
+                            Children:
+                            - Name: MouseClickEventHandler1
+                              Type: EventHandler
+                              Children:
+                              - Name: ListenEventType
+                                Type: PropertyType
+                                DataType: NodeId
+                                Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
+                              - Name: MethodsToCall
+                                Type: BaseObjectType
+                                Children:
+                                - Name: MethodContainer1
+                                  Type: BaseObjectType
+                                  Children:
+                                  - Name: ObjectPointer
+                                    Type: NodePointer
+                                    DataType: NodeId
+                                    Value: "/Objects/Commands/VariableCommands"
+                                    Children:
+                                    - Name: Kind
+                                      Type: PropertyType
+                                      DataType: NodeId
+                                      Value: "/Types/ObjectTypes/BaseObjectType"
+                                  - Name: Method
+                                    Type: BaseDataVariableType
+                                    DataType: String
+                                    Value: "Set"
+                                  - Name: InputArguments
+                                    Type: BaseObjectType
+                                    Children:
+                                    - Name: VariableToModify
+                                      Type: BaseDataVariableType
+                                      DataType: VariablePointer
+                                      Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchStart"
+                                    - Name: Value
+                                      Type: BaseDataVariableType
+                                      DataType: Boolean
+                                    - Name: ArrayIndex
+                                      Type: BaseDataVariableType
+                                      DataType: UInt32
+                                      ValueRank: ScalarOrOneDimension
+                              - Name: EventArguments
+                                Type: MouseClickEvent
+                                Children:
+                                - Name: EventId
+                                  Type: PropertyType
+                                  DataType: ByteString
+                                - Name: EventType
+                                  Type: PropertyType
+                                  DataType: NodeId
+                                - Name: SourceNode
+                                  Type: PropertyType
+                                  DataType: NodeId
+                                - Name: SourceName
+                                  Type: PropertyType
+                                  DataType: String
+                                - Name: Time
+                                  Type: PropertyType
+                                  DataType: UtcTime
+                                - Name: ReceiveTime
+                                  Type: PropertyType
+                                  DataType: UtcTime
+                                - Name: Message
+                                  Type: PropertyType
+                                  DataType: LocalizedText
+                                - Name: Severity
+                                  Type: PropertyType
+                                  DataType: UInt16
+                        - Name: Button1
+                          Type: Button
+                  - Name: Rectangle5
+                    Type: Rectangle
                     Children:
-                    - Name: Format
-                      Type: BaseDataVariableType
-                      DataType: LocalizedText
-                      ReferenceType: HasParameter
-                      ModellingRule: Optional
-                      Value: {"LocaleId":"en-US","Text":"NumberOfPhases{0}"}
-                    - Name: ns=2;Source0
-                      Type: BaseDataVariableType
-                      DataType: BaseDataType
-                      ReferenceType: HasSource
+                    - Name: VerticalLayout4
+                      Type: ColumnLayout
                       Children:
-                      - Name: DynamicLink
-                        Type: DynamicLink
-                        DataType: NodePath
-                        Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OP/NoOfPhases"
-                - Name: Width
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 194.0
-                - Name: Height
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 88.0
-                - Name: HorizontalAlignment
-                  Type: BaseVariableType
-                  DataType: HorizontalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: TextVerticalAlignment
-                  Type: BaseVariableType
-                  DataType: TextVerticalAlignment
-                  ModellingRule: Optional
-                  Value: 1
-                - Name: FontSize
-                  Type: BaseDataVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 16.0
-              - Name: Label4
-                Type: Label
-                Children:
-                - Name: Text
-                  Type: BaseDataVariableType
-                  DataType: LocalizedText
-                  Children:
-                  - Name: StringFormatter1
-                    Type: StringFormatter
-                    Children:
-                    - Name: Format
-                      Type: BaseDataVariableType
-                      DataType: LocalizedText
-                      ReferenceType: HasParameter
-                      ModellingRule: Optional
-                      Value: {"LocaleId":"en-US","Text":"OperationName{0}"}
-                    - Name: ns=2;Source0
-                      Type: BaseDataVariableType
-                      DataType: BaseDataType
-                      ReferenceType: HasSource
-                      Children:
-                      - Name: DynamicLink
-                        Type: DynamicLink
-                        DataType: NodePath
-                        Value: "/Objects/RedeiptEditor/Model/UIData/PhaseData/OperationToPLC/Operation/Name"
-                - Name: Width
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 194.0
-                - Name: Height
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 88.0
-                - Name: HorizontalAlignment
-                  Type: BaseVariableType
-                  DataType: HorizontalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: TextVerticalAlignment
-                  Type: BaseVariableType
-                  DataType: TextVerticalAlignment
-                  ModellingRule: Optional
-                  Value: 1
-                - Name: FontSize
-                  Type: BaseDataVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 16.0
-              - Name: Label5
-                Type: Label
-                Children:
-                - Name: Text
-                  Type: BaseDataVariableType
-                  DataType: LocalizedText
-                  Children:
-                  - Name: DynamicLink
-                    Type: DynamicLink
-                    DataType: NodePath
-                    Value: "/Objects/RedeiptEditor/NetLogic/BatchInforToPLC/StatusText"
-                - Name: Width
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 194.0
-                - Name: Height
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 88.0
-                - Name: TextVerticalAlignment
-                  Type: BaseVariableType
-                  DataType: TextVerticalAlignment
-                  ModellingRule: Optional
-                  Value: 1
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: HorizontalAlignment
-                  Type: BaseVariableType
-                  DataType: HorizontalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: FontSize
-                  Type: BaseDataVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 16.0
-                - Name: RightMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: -74.0
-              - Name: Label6
-                Type: Label
-                Children:
-                - Name: Text
-                  Type: BaseDataVariableType
-                  DataType: LocalizedText
-                  Children:
-                  - Name: StringFormatter1
-                    Type: StringFormatter
-                    Children:
-                    - Name: Format
-                      Type: BaseDataVariableType
-                      DataType: LocalizedText
-                      ReferenceType: HasParameter
-                      ModellingRule: Optional
-                      Value: {"LocaleId":"en-US","Text":"OperationEvtDone{0}"}
-                    - Name: ns=2;Source0
-                      Type: BaseDataVariableType
-                      DataType: BaseDataType
-                      ReferenceType: HasSource
-                      Children:
-                      - Name: DynamicLink
-                        Type: DynamicLink
-                        DataType: NodePath
-                        Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OperationHandshake/EvtDone"
-                - Name: Width
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 194.0
-                - Name: Height
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 88.0
-                - Name: HorizontalAlignment
-                  Type: BaseVariableType
-                  DataType: HorizontalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: TextVerticalAlignment
-                  Type: BaseVariableType
-                  DataType: TextVerticalAlignment
-                  ModellingRule: Optional
-                  Value: 1
-                - Name: FontSize
-                  Type: BaseDataVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 16.0
-                - Name: LeftMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 104.0
+                      - Name: LabelValueHorizontal1
+                        Type: LabelValueHorizontal
+                        Children:
+                        - Name: HorizontalLayout1
+                          Type: RowLayout
+                          Children:
+                          - Name: Label1
+                            Type: Label
+                          - Name: Rectangle1
+                            Type: Rectangle
+                            Children:
+                            - Name: Value
+                              Type: Label
+                              Children:
+                              - Name: Text
+                                Type: BaseDataVariableType
+                                DataType: LocalizedText
+                                Children:
+                                - Name: DynamicLink
+                                  Type: DynamicLink
+                                  DataType: NodePath
+                                  Value: "{Session}/User@BrowseName"
+                      - Name: LabelValueHorizontal2
+                        Type: LabelValueHorizontal
+                        Children:
+                        - Name: HorizontalLayout1
+                          Type: RowLayout
+                          Children:
+                          - Name: Label1
+                            Type: Label
+                          - Name: Rectangle1
+                            Type: Rectangle
+                            Children:
+                            - Name: Value
+                              Type: Label
+                              Children:
+                              - Name: Text
+                                Type: BaseDataVariableType
+                                DataType: LocalizedText
+                                Children:
+                                - Name: DynamicLink
+                                  Type: DynamicLink
+                                  DataType: NodePath
+                                  Value: "/Objects/RedeiptEditor/Model/UIData/SystemData/SystemData/DateTimeText"
+                      - Name: LabelValueHorizontal3
+                        Type: LabelValueHorizontal
+                        Children:
+                        - Name: HorizontalLayout1
+                          Type: RowLayout
+                          Children:
+                          - Name: Label1
+                            Type: Label
+                          - Name: Rectangle1
+                            Type: Rectangle
+                            Children:
+                            - Name: Value
+                              Type: Label
+                              Children:
+                              - Name: Text
+                                Type: BaseDataVariableType
+                                DataType: LocalizedText
+                                Value: {"LocaleId":"en-US","Text":"Auto Mode"}
+              - Name: VerticalAlignment
+                Type: BaseVariableType
+                DataType: VerticalAlignment
+                ModellingRule: Optional
+            - Name: BottomMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
           - Name: HorizontalAlignment
             Type: BaseVariableType
             DataType: HorizontalAlignment
@@ -9797,6 +10075,16 @@ Children:
       DataType: VerticalAlignment
       ModellingRule: Optional
       Value: 3
+  - Name: HorizontalAlignment
+    Type: BaseVariableType
+    DataType: HorizontalAlignment
+    ModellingRule: Optional
+    Value: 3
+  - Name: VerticalAlignment
+    Type: BaseVariableType
+    DataType: VerticalAlignment
+    ModellingRule: Optional
+    Value: 3
 - Name: AuditPanel
   Id: g=71e14a575222bd87c5d70d36a602f850
   Supertype: Panel
@@ -10062,7 +10350,6 @@ Children:
             Type: BaseVariableType
             DataType: Size
             ModellingRule: Optional
-            Value: 16.0
           - Name: TopMargin
             Type: BaseVariableType
             DataType: Size
@@ -10080,19 +10367,38 @@ Children:
               DataType: Size
               ModellingRule: Optional
               Value: 50.0
-            - Name: HorizontalLayout1
-              Type: RowLayout
+            - Name: HorizontalAlignment
+              Type: BaseVariableType
+              DataType: HorizontalAlignment
+              ModellingRule: Optional
+              Value: 3
+            - Name: VerticalAlignment
+              Type: BaseVariableType
+              DataType: VerticalAlignment
+              ModellingRule: Optional
+              Value: 3
+            - Name: Rectangle1
+              Type: Rectangle
               Children:
               - Name: Width
                 Type: BaseVariableType
                 DataType: Size
                 ModellingRule: Optional
-                Value: 50.0
+                Value: 60.0
               - Name: Height
                 Type: BaseVariableType
                 DataType: Size
                 ModellingRule: Optional
                 Value: 60.0
+              - Name: LeftMargin
+                Type: BaseVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 16.0
+              - Name: TopMargin
+                Type: BaseVariableType
+                DataType: Size
+                ModellingRule: Optional
               - Name: HorizontalAlignment
                 Type: BaseVariableType
                 DataType: HorizontalAlignment
@@ -10102,27 +10408,39 @@ Children:
                 Type: BaseVariableType
                 DataType: VerticalAlignment
                 ModellingRule: Optional
-              - Name: Rectangle1
-                Type: Rectangle
+              - Name: BorderColor
+                Type: BaseDataVariableType
+                DataType: Color
+                ModellingRule: Optional
+                Value: "#00000027"
+              - Name: FillColor
+                Type: BaseDataVariableType
+                DataType: Color
+                ModellingRule: Optional
+                Value: "#deeaf4"
+              - Name: HorizontalLayout1
+                Type: RowLayout
                 Children:
                 - Name: Width
                   Type: BaseVariableType
                   DataType: Size
                   ModellingRule: Optional
-                  Value: 60.0
+                  Value: 50.0
                 - Name: Height
                   Type: BaseVariableType
                   DataType: Size
                   ModellingRule: Optional
-                  Value: 30.0
-                - Name: LeftMargin
+                  Value: 60.0
+                - Name: HorizontalAlignment
                   Type: BaseVariableType
-                  DataType: Size
+                  DataType: HorizontalAlignment
                   ModellingRule: Optional
-                - Name: TopMargin
+                  Value: 3
+                - Name: VerticalAlignment
                   Type: BaseVariableType
-                  DataType: Size
+                  DataType: VerticalAlignment
                   ModellingRule: Optional
+                  Value: 3
                 - Name: Search1
                   Type: Search
                   Children:
@@ -10230,12 +10548,10 @@ Children:
                     Type: BaseVariableType
                     DataType: Size
                     ModellingRule: Optional
-                    Value: 8.0
                   - Name: RightMargin
                     Type: BaseVariableType
                     DataType: Size
                     ModellingRule: Optional
-                    Value: 8.0
                   - Name: TopMargin
                     Type: BaseVariableType
                     DataType: Size
@@ -10259,7 +10575,6 @@ Children:
                     Type: BaseVariableType
                     DataType: Size
                     ModellingRule: Optional
-                    Value: 8.0
                   - Name: Height
                     Type: BaseVariableType
                     DataType: Size
@@ -10275,25 +10590,6 @@ Children:
                     DataType: Color
                     ModellingRule: Optional
                     Value: "#00000072"
-                - Name: HorizontalAlignment
-                  Type: BaseVariableType
-                  DataType: HorizontalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: BorderColor
-                  Type: BaseDataVariableType
-                  DataType: Color
-                  ModellingRule: Optional
-                - Name: FillColor
-                  Type: BaseDataVariableType
-                  DataType: Color
-                  ModellingRule: Optional
-                  Value: "#deeaf4"
                 - Name: ButtonWithIcon1
                   Type: ButtonWithIcon
                   Children:
@@ -10508,27 +10804,23 @@ Children:
                       Type: BaseVariableType
                       DataType: Size
                       ModellingRule: Optional
-                      Value: 4.0
                     - Name: BottomMargin
                       Type: BaseVariableType
                       DataType: Size
                       ModellingRule: Optional
-                      Value: 4.0
                   - Name: HorizontalAlignment
                     Type: BaseVariableType
                     DataType: HorizontalAlignment
                     ModellingRule: Optional
-                    Value: 1
                   - Name: Width
                     Type: BaseVariableType
                     DataType: Size
                     ModellingRule: Optional
-                    Value: 130.0
+                    Value: 120.0
                   - Name: RightMargin
                     Type: BaseVariableType
                     DataType: Size
                     ModellingRule: Optional
-                    Value: 16.0
                   - Name: LeftMargin
                     Type: BaseVariableType
                     DataType: Size
@@ -10537,22 +10829,40 @@ Children:
                     Type: BaseVariableType
                     DataType: VerticalAlignment
                     ModellingRule: Optional
-                    Value: 2
+                    Value: 3
                   - Name: Height
                     Type: BaseVariableType
                     DataType: Size
                     ModellingRule: Optional
                     Value: 35.0
-            - Name: HorizontalAlignment
-              Type: BaseVariableType
-              DataType: HorizontalAlignment
-              ModellingRule: Optional
-              Value: 3
-            - Name: VerticalAlignment
-              Type: BaseVariableType
-              DataType: VerticalAlignment
-              ModellingRule: Optional
-              Value: 3
+                  - Name: TopMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 10.0
+                  - Name: BottomMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 10.0
+                - Name: HorizontalGap
+                  Type: BaseDataVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                  Value: 16.0
+                - Name: LeftMargin
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+              - Name: BottomMargin
+                Type: BaseVariableType
+                DataType: Size
+                ModellingRule: Optional
+              - Name: RightMargin
+                Type: BaseVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 16.0
             - Name: HorizontalLayout2
               Type: RowLayout
               Children:
@@ -10648,7 +10958,7 @@ Children:
                     - Name: OrderBy
                       Type: BaseDataVariableType
                       DataType: NodePath
-                      Value: "{Item}/Time"
+                      Value: "{Item}/DateTime"
                     - Name: DataItemTemplate
                       Type: DataGridLabelItemTemplate
                       Children:
@@ -10685,7 +10995,7 @@ Children:
                     - Name: OrderBy
                       Type: BaseDataVariableType
                       DataType: NodePath
-                      Value: "{Item}/Time"
+                      Value: "{Item}/OperationMode"
                     - Name: DataItemTemplate
                       Type: DataGridLabelItemTemplate
                       Children:
@@ -10722,7 +11032,7 @@ Children:
                     - Name: OrderBy
                       Type: BaseDataVariableType
                       DataType: NodePath
-                      Value: "{Item}/Time"
+                      Value: "{Item}/EventItem"
                     - Name: DataItemTemplate
                       Type: DataGridLabelItemTemplate
                       Children:
@@ -10759,7 +11069,7 @@ Children:
                     - Name: OrderBy
                       Type: BaseDataVariableType
                       DataType: NodePath
-                      Value: "{Item}/Time"
+                      Value: "{Item}/OldValue"
                     - Name: DataItemTemplate
                       Type: DataGridLabelItemTemplate
                       Children:
@@ -10796,7 +11106,7 @@ Children:
                     - Name: OrderBy
                       Type: BaseDataVariableType
                       DataType: NodePath
-                      Value: "{Item}/Time"
+                      Value: "{Item}/NewValue"
                     - Name: DataItemTemplate
                       Type: DataGridLabelItemTemplate
                       Children:
@@ -10833,7 +11143,7 @@ Children:
                     - Name: OrderBy
                       Type: BaseDataVariableType
                       DataType: NodePath
-                      Value: "{Item}/Time"
+                      Value: "{Item}/UserName"
                     - Name: DataItemTemplate
                       Type: DataGridLabelItemTemplate
                       Children:
@@ -10907,7 +11217,7 @@ Children:
                     - Name: OrderBy
                       Type: BaseDataVariableType
                       DataType: NodePath
-                      Value: "{Item}/Time"
+                      Value: "{Item}/Action"
                     - Name: DataItemTemplate
                       Type: DataGridLabelItemTemplate
                       Children:
@@ -10934,9 +11244,15 @@ Children:
                 - Name: SortColumn
                   Type: BaseDataVariableType
                   DataType: NodeId
+                  Children:
+                  - Name: DynamicLink
+                    Type: DynamicLink
+                    DataType: NodePath
+                    Value: "{Item}/DateTime@NodeId"
                 - Name: SortOrder
                   Type: BaseDataVariableType
                   DataType: SortOrderEnum
+                  Value: 1
                 - Class: Reference
                   Target: ns=3;i=504
                   Direction: Forward
@@ -10982,6 +11298,29 @@ Children:
                 DataType: VerticalAlignment
                 ModellingRule: Optional
                 Value: 3
+              - Name: LeftMargin
+                Type: BaseVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 16.0
+              - Name: RightMargin
+                Type: BaseVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 16.0
+            - Name: LeftMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+            - Name: RightMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+            - Name: BottomMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 16.0
           - Name: HorizontalAlignment
             Type: BaseVariableType
             DataType: HorizontalAlignment
@@ -11001,12 +11340,15 @@ Children:
             Type: BaseVariableType
             DataType: Size
             ModellingRule: Optional
-            Value: 16.0
           - Name: BottomMargin
             Type: BaseVariableType
             DataType: Size
             ModellingRule: Optional
-            Value: 8.0
+          - Name: FillColor
+            Type: BaseDataVariableType
+            DataType: Color
+            ModellingRule: Optional
+            Value: "#deeaf4"
     - Name: HorizontalAlignment
       Type: BaseVariableType
       DataType: HorizontalAlignment
@@ -11408,3 +11750,713 @@ Children:
       DataType: VerticalAlignment
       ModellingRule: Optional
       Value: 3
+- Name: LoginPanel
+  Id: g=52ebed3f2585183ca8ce982cd1976103
+  Supertype: Panel
+  ReferenceType: HasComponent
+  Children:
+  - Name: Width
+    Type: BaseVariableType
+    DataType: Size
+    ModellingRule: Optional
+    Value: 300.0
+  - Name: Height
+    Type: BaseVariableType
+    DataType: Size
+    ModellingRule: Optional
+    Value: 300.0
+  - Name: Image1
+    Type: Image
+    Children:
+    - Name: Path
+      Type: BaseDataVariableType
+      DataType: ResourceUri
+      Value: "ns=7;%PROJECTDIR%/Images/0675.jpg_wh300.jpg"
+    - Name: Width
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 50.0
+    - Name: Height
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 50.0
+    - Name: LoginForm1
+      Type: LoginForm
+      Children:
+      - Name: Panel
+        Type: NodePointer
+        DataType: NodeId
+        Children:
+        - Name: Kind
+          Type: PropertyType
+          DataType: NodeId
+          Value: "/Types/ObjectTypes/BaseObjectType/BaseUIObject/Item/Container"
+        - Name: ConditionalConverter1
+          Type: ConditionalConverter
+          Children:
+          - Name: Condition
+            Type: BaseDataVariableType
+            DataType: Boolean
+            ReferenceType: HasSource
+            Children:
+            - Name: DynamicLink
+              Type: DynamicLink
+              DataType: NodePath
+              Value: "{Session}/LoggedIn"
+      - Name: CurrentPanel
+        Type: NodePointer
+        DataType: NodeId
+        AccessLevel: Read
+        Children:
+        - Name: Kind
+          Type: PropertyType
+          DataType: NodeId
+          Value: "/Types/ObjectTypes/BaseObjectType/BaseUIObject/Item"
+      - Class: Reference
+        Target: ns=3;i=478
+        Direction: Forward
+      - Name: Users
+        Type: NodePointer
+        DataType: NodeId
+        Value: "/Objects/RedeiptEditor/Security/Users"
+        Children:
+        - Name: Kind
+          Type: PropertyType
+          DataType: NodeId
+          Value: "/Types/ObjectTypes/BaseObjectType/FolderType"
+      - Name: PanelAliasNode
+        Type: BaseDataVariableType
+        DataType: NodeId
+        ValueRank: ScalarOrOneDimension
+        Children:
+        - Name: DynamicLink
+          Type: DynamicLink
+          DataType: NodePath
+          Value: "/Objects/RedeiptEditor/Security/Users@NodeId"
+      - Name: HorizontalAlignment
+        Type: BaseVariableType
+        DataType: HorizontalAlignment
+        ModellingRule: Optional
+        Value: 2
+      - Name: VerticalAlignment
+        Type: BaseVariableType
+        DataType: VerticalAlignment
+        ModellingRule: Optional
+        Value: 2
+      - Name: Width
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+        Value: 600.0
+    - Name: HorizontalAlignment
+      Type: BaseVariableType
+      DataType: HorizontalAlignment
+      ModellingRule: Optional
+      Value: 3
+    - Name: VerticalAlignment
+      Type: BaseVariableType
+      DataType: VerticalAlignment
+      ModellingRule: Optional
+      Value: 3
+    - Name: FillMode
+      Type: BaseDataVariableType
+      DataType: ImageFillModeEnum
+      ModellingRule: Optional
+      Value: 1
+    - Name: HitTestVisible
+      Type: BaseDataVariableType
+      DataType: Boolean
+      ModellingRule: Optional
+    - Name: ColorizationMode
+      Type: BaseDataVariableType
+      DataType: ColorizationModeEnum
+      ModellingRule: Optional
+  - Name: HorizontalAlignment
+    Type: BaseVariableType
+    DataType: HorizontalAlignment
+    ModellingRule: Optional
+    Value: 3
+  - Name: VerticalAlignment
+    Type: BaseVariableType
+    DataType: VerticalAlignment
+    ModellingRule: Optional
+    Value: 3
+- Name: HorizontalLayout2
+  Id: g=b65aebc960d6fa8717f5e25eab276a31
+  Supertype: RowLayout
+  ReferenceType: HasComponent
+  Children:
+  - Name: Width
+    Type: BaseVariableType
+    DataType: Size
+    ModellingRule: Optional
+    Value: 50.0
+  - Name: Height
+    Type: BaseVariableType
+    DataType: Size
+    ModellingRule: Optional
+    Value: 200.0
+  - Name: HorizontalAlignment
+    Type: BaseVariableType
+    DataType: HorizontalAlignment
+    ModellingRule: Optional
+    Value: 3
+  - Name: VerticalLayout3
+    Type: ColumnLayout
+    Children:
+    - Name: Width
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 150.0
+    - Name: Height
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 50.0
+    - Name: HorizontalAlignment
+      Type: BaseVariableType
+      DataType: HorizontalAlignment
+      ModellingRule: Optional
+      Value: 2
+    - Name: VerticalAlignment
+      Type: BaseVariableType
+      DataType: VerticalAlignment
+      ModellingRule: Optional
+      Value: 2
+    - Name: ButtonWithIcon2
+      Type: ButtonWithIcon
+      Children:
+      - Name: Button1
+        Type: Button
+        Children:
+        - Name: Text
+          Type: BaseDataVariableType
+          DataType: LocalizedText
+          ModellingRule: Optional
+          Value: {"LocaleId":"en-US","Text":"Start"}
+        - Name: ImagePath
+          Type: BaseDataVariableType
+          DataType: ResourceUri
+          ModellingRule: Optional
+          Value: "ns=7;%PROJECTDIR%/Images/download.svg"
+        - Name: FontSize
+          Type: BaseDataVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 24.0
+        - Name: BackgroundColor
+          Type: BaseDataVariableType
+          DataType: Color
+          ModellingRule: Optional
+          Value: "#0fafff"
+        - Name: MouseClickEventHandler1
+          Type: EventHandler
+          Children:
+          - Name: ListenEventType
+            Type: PropertyType
+            DataType: NodeId
+            Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
+          - Name: MethodsToCall
+            Type: BaseObjectType
+            Children:
+            - Name: MethodContainer1
+              Type: BaseObjectType
+              Children:
+              - Name: ns=2;ObjectPointer
+                Type: NodePointer
+                DataType: NodeId
+                Value: "/Objects/RedeiptEditor/NetLogic/BatchInforToPLC"
+                Children:
+                - Name: Kind
+                  Type: PropertyType
+                  DataType: NodeId
+                  Value: "/Types/ObjectTypes/BaseObjectType"
+              - Name: ns=2;Method
+                Type: BaseDataVariableType
+                DataType: String
+                Value: "StartRunFlow"
+          - Name: EventArguments
+            Type: MouseClickEvent
+            Children:
+            - Name: EventId
+              Type: PropertyType
+              DataType: ByteString
+            - Name: EventType
+              Type: PropertyType
+              DataType: NodeId
+            - Name: SourceNode
+              Type: PropertyType
+              DataType: NodeId
+            - Name: SourceName
+              Type: PropertyType
+              DataType: String
+            - Name: Time
+              Type: PropertyType
+              DataType: UtcTime
+            - Name: ReceiveTime
+              Type: PropertyType
+              DataType: UtcTime
+            - Name: Message
+              Type: PropertyType
+              DataType: LocalizedText
+            - Name: Severity
+              Type: PropertyType
+              DataType: UInt16
+    - Name: VerticalGap
+      Type: BaseDataVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 8.0
+    - Name: RightMargin
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+  - Name: Label2
+    Type: Label
+    Children:
+    - Name: Text
+      Type: BaseDataVariableType
+      DataType: LocalizedText
+      Children:
+      - Name: StringFormatter1
+        Type: StringFormatter
+        Children:
+        - Name: Format
+          Type: BaseDataVariableType
+          DataType: LocalizedText
+          ReferenceType: HasParameter
+          ModellingRule: Optional
+          Value: {"LocaleId":"en-US","Text":"BatchName{0}"}
+        - Name: ns=2;Source0
+          Type: BaseDataVariableType
+          DataType: BaseDataType
+          ReferenceType: HasSource
+          Children:
+          - Name: DynamicLink
+            Type: DynamicLink
+            DataType: NodePath
+            Value: "/Objects/RedeiptEditor/Model/UIData/PhaseData/OperationToPLC/Batch/BatchName"
+    - Name: Width
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 194.0
+    - Name: Height
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 88.0
+    - Name: HorizontalAlignment
+      Type: BaseVariableType
+      DataType: HorizontalAlignment
+      ModellingRule: Optional
+      Value: 3
+    - Name: VerticalAlignment
+      Type: BaseVariableType
+      DataType: VerticalAlignment
+      ModellingRule: Optional
+      Value: 3
+    - Name: TextVerticalAlignment
+      Type: BaseVariableType
+      DataType: TextVerticalAlignment
+      ModellingRule: Optional
+      Value: 1
+    - Name: FontSize
+      Type: BaseDataVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 16.0
+  - Name: Label1
+    Type: Label
+    Children:
+    - Name: Text
+      Type: BaseDataVariableType
+      DataType: LocalizedText
+      Children:
+      - Name: StringFormatter1
+        Type: StringFormatter
+        Children:
+        - Name: Format
+          Type: BaseDataVariableType
+          DataType: LocalizedText
+          ReferenceType: HasParameter
+          ModellingRule: Optional
+          Value: {"LocaleId":"en-US","Text":"BatchID{0}"}
+        - Name: ns=2;Source0
+          Type: BaseDataVariableType
+          DataType: BaseDataType
+          ReferenceType: HasSource
+          Children:
+          - Name: DynamicLink
+            Type: DynamicLink
+            DataType: NodePath
+            Value: "/Objects/RedeiptEditor/Model/UIData/PhaseData/OperationToPLC/Batch/BatchID"
+    - Name: Width
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 194.0
+    - Name: Height
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 88.0
+    - Name: HorizontalAlignment
+      Type: BaseVariableType
+      DataType: HorizontalAlignment
+      ModellingRule: Optional
+      Value: 3
+    - Name: VerticalAlignment
+      Type: BaseVariableType
+      DataType: VerticalAlignment
+      ModellingRule: Optional
+      Value: 3
+    - Name: TextVerticalAlignment
+      Type: BaseVariableType
+      DataType: TextVerticalAlignment
+      ModellingRule: Optional
+      Value: 1
+    - Name: FontSize
+      Type: BaseDataVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 16.0
+  - Name: Label8
+    Type: Label
+    Children:
+    - Name: Text
+      Type: BaseDataVariableType
+      DataType: LocalizedText
+      Children:
+      - Name: StringFormatter1
+        Type: StringFormatter
+        Children:
+        - Name: Format
+          Type: BaseDataVariableType
+          DataType: LocalizedText
+          ReferenceType: HasParameter
+          ModellingRule: Optional
+          Value: {"LocaleId":"en-US","Text":"RecipeName{0}"}
+        - Name: ns=2;Source0
+          Type: BaseDataVariableType
+          DataType: BaseDataType
+          ReferenceType: HasSource
+          Children:
+          - Name: DynamicLink
+            Type: DynamicLink
+            DataType: NodePath
+            Value: "/Objects/RedeiptEditor/Model/UIData/PhaseData/OperationToPLC/Batch/RecipeName"
+    - Name: Width
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 194.0
+    - Name: Height
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 88.0
+    - Name: HorizontalAlignment
+      Type: BaseVariableType
+      DataType: HorizontalAlignment
+      ModellingRule: Optional
+      Value: 3
+    - Name: VerticalAlignment
+      Type: BaseVariableType
+      DataType: VerticalAlignment
+      ModellingRule: Optional
+      Value: 3
+    - Name: TextVerticalAlignment
+      Type: BaseVariableType
+      DataType: TextVerticalAlignment
+      ModellingRule: Optional
+      Value: 1
+    - Name: FontSize
+      Type: BaseDataVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 16.0
+  - Name: Label3
+    Type: Label
+    Children:
+    - Name: Text
+      Type: BaseDataVariableType
+      DataType: LocalizedText
+      Children:
+      - Name: StringFormatter1
+        Type: StringFormatter
+        Children:
+        - Name: Format
+          Type: BaseDataVariableType
+          DataType: LocalizedText
+          ReferenceType: HasParameter
+          ModellingRule: Optional
+          Value: {"LocaleId":"en-US","Text":"NumberOfPhases{0}"}
+        - Name: ns=2;Source0
+          Type: BaseDataVariableType
+          DataType: BaseDataType
+          ReferenceType: HasSource
+          Children:
+          - Name: DynamicLink
+            Type: DynamicLink
+            DataType: NodePath
+            Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OP/NoOfPhases"
+    - Name: Width
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 194.0
+    - Name: Height
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 88.0
+    - Name: HorizontalAlignment
+      Type: BaseVariableType
+      DataType: HorizontalAlignment
+      ModellingRule: Optional
+      Value: 3
+    - Name: VerticalAlignment
+      Type: BaseVariableType
+      DataType: VerticalAlignment
+      ModellingRule: Optional
+      Value: 3
+    - Name: TextVerticalAlignment
+      Type: BaseVariableType
+      DataType: TextVerticalAlignment
+      ModellingRule: Optional
+      Value: 1
+    - Name: FontSize
+      Type: BaseDataVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 16.0
+  - Name: Label4
+    Type: Label
+    Children:
+    - Name: Text
+      Type: BaseDataVariableType
+      DataType: LocalizedText
+      Children:
+      - Name: StringFormatter1
+        Type: StringFormatter
+        Children:
+        - Name: Format
+          Type: BaseDataVariableType
+          DataType: LocalizedText
+          ReferenceType: HasParameter
+          ModellingRule: Optional
+          Value: {"LocaleId":"en-US","Text":"OperationName{0}"}
+        - Name: ns=2;Source0
+          Type: BaseDataVariableType
+          DataType: BaseDataType
+          ReferenceType: HasSource
+          Children:
+          - Name: DynamicLink
+            Type: DynamicLink
+            DataType: NodePath
+            Value: "/Objects/RedeiptEditor/Model/UIData/PhaseData/OperationToPLC/Operation/Name"
+    - Name: Width
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 194.0
+    - Name: Height
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 88.0
+    - Name: HorizontalAlignment
+      Type: BaseVariableType
+      DataType: HorizontalAlignment
+      ModellingRule: Optional
+      Value: 3
+    - Name: VerticalAlignment
+      Type: BaseVariableType
+      DataType: VerticalAlignment
+      ModellingRule: Optional
+      Value: 3
+    - Name: TextVerticalAlignment
+      Type: BaseVariableType
+      DataType: TextVerticalAlignment
+      ModellingRule: Optional
+      Value: 1
+    - Name: FontSize
+      Type: BaseDataVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 16.0
+  - Name: Label5
+    Type: Label
+    Children:
+    - Name: Text
+      Type: BaseDataVariableType
+      DataType: LocalizedText
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "/Objects/RedeiptEditor/NetLogic/BatchInforToPLC/StatusText"
+    - Name: Width
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 194.0
+    - Name: Height
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 88.0
+    - Name: TextVerticalAlignment
+      Type: BaseVariableType
+      DataType: TextVerticalAlignment
+      ModellingRule: Optional
+      Value: 1
+    - Name: VerticalAlignment
+      Type: BaseVariableType
+      DataType: VerticalAlignment
+      ModellingRule: Optional
+      Value: 3
+    - Name: HorizontalAlignment
+      Type: BaseVariableType
+      DataType: HorizontalAlignment
+      ModellingRule: Optional
+      Value: 3
+    - Name: FontSize
+      Type: BaseDataVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 16.0
+    - Name: RightMargin
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: -74.0
+  - Name: Label6
+    Type: Label
+    Children:
+    - Name: Text
+      Type: BaseDataVariableType
+      DataType: LocalizedText
+      Children:
+      - Name: StringFormatter1
+        Type: StringFormatter
+        Children:
+        - Name: Format
+          Type: BaseDataVariableType
+          DataType: LocalizedText
+          ReferenceType: HasParameter
+          ModellingRule: Optional
+          Value: {"LocaleId":"en-US","Text":"OperationEvtDone{0}"}
+        - Name: ns=2;Source0
+          Type: BaseDataVariableType
+          DataType: BaseDataType
+          ReferenceType: HasSource
+          Children:
+          - Name: DynamicLink
+            Type: DynamicLink
+            DataType: NodePath
+            Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OperationHandshake/EvtDone"
+    - Name: Width
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 194.0
+    - Name: Height
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 88.0
+    - Name: HorizontalAlignment
+      Type: BaseVariableType
+      DataType: HorizontalAlignment
+      ModellingRule: Optional
+      Value: 3
+    - Name: VerticalAlignment
+      Type: BaseVariableType
+      DataType: VerticalAlignment
+      ModellingRule: Optional
+      Value: 3
+    - Name: TextVerticalAlignment
+      Type: BaseVariableType
+      DataType: TextVerticalAlignment
+      ModellingRule: Optional
+      Value: 1
+    - Name: FontSize
+      Type: BaseDataVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 16.0
+    - Name: LeftMargin
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 104.0
+  - Name: VerticalLayout1
+    Type: ColumnLayout
+    Children:
+    - Name: Width
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 50.0
+    - Name: Height
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 50.0
+  - Name: HorizontalLayout1
+    Type: RowLayout
+    Children:
+    - Name: Width
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 50.0
+    - Name: Height
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 50.0
+  - Name: VerticalLayout2
+    Type: ColumnLayout
+    Children:
+    - Name: Width
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 50.0
+    - Name: Height
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 50.0
+  - Name: HorizontalLayout2
+    Type: RowLayout
+    Children:
+    - Name: Width
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 50.0
+    - Name: Height
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 50.0
+  - Name: VerticalLayout4
+    Type: ColumnLayout
+    Children:
+    - Name: Width
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 50.0
+    - Name: Height
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 50.0

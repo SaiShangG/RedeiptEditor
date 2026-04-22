@@ -1,0 +1,20 @@
+Name: UserInfo
+Type: FolderType
+Children:
+- Name: User
+  Type: BaseObjectType
+  Children:
+  - Name: UserName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "0"
+    Children:
+    - Name: DynamicLink
+      Type: DynamicLink
+      DataType: NodePath
+      Value: "/Types/ObjectTypes/BaseObjectType/PresentationEngine/Session/User@Pointer"
+      Children:
+      - Name: Mode
+        Type: BaseVariableType
+        DataType: DynamicLinkMode
+        Value: 2

@@ -18,6 +18,7 @@ using FTOptix.Core;
 using FTOptix.RecipeX;
 using FTOptix.RAEtherNetIP;
 using FTOptix.CommunicationDriver;
+using FTOptix.WebUI;
 #endregion
 
 public class BatchEditorLogic : BaseNetLogic
@@ -40,6 +41,9 @@ public class BatchEditorLogic : BaseNetLogic
 
     private static string ResolveBatchAuditUserBrowseName(string sessionFallback = null)
     {
+        string fromLogin = LoginButtonLogic.CurrentLoginUserBrowseName;
+        if (!string.IsNullOrWhiteSpace(fromLogin))
+            return fromLogin.Trim();
         try
         {
             var u = Instance?.Session?.User;
@@ -570,12 +574,17 @@ public class BatchEditorLogic : BaseNetLogic
             foreach (var child in recipeList.Children.ToList())
                 child.Delete();
 
-            store.Query("SELECT Name FROM Receipts", out _, out object[,] resultSet);
+            // 兼容 Optix Store SQL 解析差异：先取 Name/Status，再在 C# 侧做 Released（忽略大小写）过滤。
+            store.Query("SELECT Name, Status FROM Receipts", out _, out object[,] resultSet);
             if (resultSet == null) return;
 
             int rowCount = resultSet.GetLength(0);
             for (int i = 0; i < rowCount; i++)
             {
+                string status = resultSet[i, 1]?.ToString() ?? "";
+                if (!string.Equals(status.Trim(), "Released", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
                 string recipeName = resultSet[i, 0]?.ToString();
                 if (string.IsNullOrEmpty(recipeName)) continue;
                 try
@@ -651,7 +660,7 @@ public class BatchEditorLogic : BaseNetLogic
             }
             catch { }
 
-            string user = Session?.User?.BrowseName ?? "Unknown";
+            string user = ResolveBatchAuditUserBrowseName("Unknown");
             string modifiedDt = RecipeDatabaseTreeLoader.FormatStoredCreatedDateTimeNow();
             string receiptStatus = LookupReceiptStatusForRecipe(store, recipeName);
 
@@ -798,4 +807,5 @@ public class BatchEditorLogic : BaseNetLogic
             Log.Error("BatchEditorLogic", $"Error adding batch: {ex.Message}");
         }
     }
+
 }

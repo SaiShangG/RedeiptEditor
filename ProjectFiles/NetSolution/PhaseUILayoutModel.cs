@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using FTOptix.WebUI;
 #endregion
 
 #region JSON 配置（与 phase_ui_layout.sample.json 一致）

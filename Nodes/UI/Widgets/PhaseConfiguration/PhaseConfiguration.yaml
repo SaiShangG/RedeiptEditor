@@ -1489,7 +1489,7 @@ Children:
           - Name: Text
             Type: BaseDataVariableType
             DataType: LocalizedText
-            Value: {"LocaleId":"en-US","Text":"Kg"}
+            Value: {"LocaleId":"en-US","Text":""}
           - Name: VerticalAlignment
             Type: BaseVariableType
             DataType: VerticalAlignment
@@ -3206,7 +3206,7 @@ Children:
               - Name: Text
                 Type: BaseDataVariableType
                 DataType: LocalizedText
-                Value: {"LocaleId":"en-US","Text":"Kg"}
+                Value: {"LocaleId":"en-US","Text":""}
               - Name: Visible
                 Type: BaseDataVariableType
                 DataType: Boolean
