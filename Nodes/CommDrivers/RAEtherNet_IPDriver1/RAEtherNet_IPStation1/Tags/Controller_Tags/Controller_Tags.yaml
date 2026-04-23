@@ -6896,6 +6896,30 @@ Children:
     Type: BaseDataVariableType
     DataType: Boolean
     Value: true
+  - Name: BatchName
+    Type: RAEtherNetIPTag
+    DataType: String
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch.BatchName"
+  - Name: RecipeName
+    Type: RAEtherNetIPTag
+    DataType: String
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch.RecipeName"
+  - Name: RunningPhaseName
+    Type: RAEtherNetIPTag
+    DataType: String
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch.RunningPhaseName"
   - Name: BatchID
     Type: RAEtherNetIPTag
     DataType: Int32
@@ -6920,22 +6944,6 @@ Children:
       Type: BaseDataVariableType
       DataType: String
       Value: "Batch.EvtBatchDone"
-  - Name: BatchName
-    Type: RAEtherNetIPTag
-    DataType: String
-    Children:
-    - Name: SymbolName
-      Type: BaseDataVariableType
-      DataType: String
-      Value: "Batch.BatchName"
-  - Name: RunningPhaseName
-    Type: RAEtherNetIPTag
-    DataType: String
-    Children:
-    - Name: SymbolName
-      Type: BaseDataVariableType
-      DataType: String
-      Value: "Batch.RunningPhaseName"
   - Name: BatchStart
     Id: g=214423d22e181be33060c5a909950983
     Type: RAEtherNetIPTag
@@ -6945,14 +6953,120 @@ Children:
       Type: BaseDataVariableType
       DataType: String
       Value: "Batch.BatchStart"
-  - Name: RecipeName
+    - Name: Description
+      Type: RAEtherNetIPMetaTag
+      DataType: String
+      Value: "Batch Start From HMI"
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Batch.BatchStart.@Description"
+  - Name: BatchPause
+    Id: g=448dba14b509460db7b9d7c8b677a717
     Type: RAEtherNetIPTag
-    DataType: String
+    DataType: Boolean
     Children:
     - Name: SymbolName
       Type: BaseDataVariableType
       DataType: String
-      Value: "Batch.RecipeName"
+      Value: "Batch.BatchPause"
+    - Name: Description
+      Type: RAEtherNetIPMetaTag
+      DataType: String
+      Value: "Pause Command from HMI"
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Batch.BatchPause.@Description"
+  - Name: BatchResume
+    Id: g=13b3e1ad03abb5f9af78b53c95c2c568
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch.BatchResume"
+    - Name: Description
+      Type: RAEtherNetIPMetaTag
+      DataType: String
+      Value: "Resume Command from HMI"
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Batch.BatchResume.@Description"
+  - Name: BatchAbort
+    Id: g=72a08ebf8c35e492c41da2a79700af21
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch.BatchAbort"
+    - Name: Description
+      Type: RAEtherNetIPMetaTag
+      DataType: String
+      Value: "Abort Command from HMI"
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Batch.BatchAbort.@Description"
+  - Name: BatchIdle
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch.BatchIdle"
+    - Name: Description
+      Type: RAEtherNetIPMetaTag
+      DataType: String
+      Value: "Idle Status to HMI"
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Batch.BatchIdle.@Description"
+  - Name: BatchRunning
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch.BatchRunning"
+    - Name: Description
+      Type: RAEtherNetIPMetaTag
+      DataType: String
+      Value: "Running Status to HMI"
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Batch.BatchRunning.@Description"
+  - Name: BatchHeld
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch.BatchHeld"
+    - Name: Description
+      Type: RAEtherNetIPMetaTag
+      DataType: String
+      Value: "Held Status to HMI"
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Batch.BatchHeld.@Description"
 - Name: OperationHandshake
   Id: g=2f8451e1ac88b0ac7b9329072f7c6070
   Type: UDT_RecipeHandshake
@@ -7023,3 +7137,493 @@ Children:
       Type: BaseDataVariableType
       DataType: String
       Value: "OperationHandshake.CmdStart"
+- Name: Execution
+  Type: UDT_PhaseExecution
+  DataType: UDT_PhaseExecution
+  Children:
+  - Name: SymbolName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Execution"
+  - Name: BlockRead
+    Type: BaseDataVariableType
+    DataType: Boolean
+    Value: true
+  - Name: Decode
+    Type: StepDecode
+    DataType: StepDecode
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Execution.Decode"
+    - Name: BlockRead
+      Type: BaseDataVariableType
+      DataType: Boolean
+    - Name: Description
+      Type: RAEtherNetIPMetaTag
+      DataType: String
+      Value: "Step Sequence"
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Execution.Decode.@Description"
+    - Name: EnableIn
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Execution.Decode.EnableIn"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Enable Input - System Defined Parameter"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.EnableIn.@Description"
+    - Name: EnableOut
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Execution.Decode.EnableOut"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Enable Output - System Defined Parameter"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.EnableOut.@Description"
+    - Name: StepTimerReset
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Execution.Decode.StepTimerReset"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Step timer reset"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.StepTimerReset.@Description"
+    - Name: StepN
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Execution.Decode.StepN"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Step number indication"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.StepN.@Description"
+    - Name: StepPresetTime
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Execution.Decode.StepPresetTime"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Step preset time indication"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.StepPresetTime.@Description"
+    - Name: StepActualTime
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Execution.Decode.StepActualTime"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Step actual time indication"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.StepActualTime.@Description"
+    - Name: StepRemainTime
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Execution.Decode.StepRemainTime"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Step remain time (total seconds) indication"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.StepRemainTime.@Description"
+    - Name: StepTimerHold
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Execution.Decode.StepTimerHold"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Step timer held indication"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.StepTimerHold.@Description"
+    - Name: StepTimerDone
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Execution.Decode.StepTimerDone"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Step timer done indication"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.StepTimerDone.@Description"
+    - Name: StepDone
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Execution.Decode.StepDone"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Step done"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.StepDone.@Description"
+    - Name: StepChanged
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Execution.Decode.StepChanged"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Step changed"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.StepChanged.@Description"
+    - Name: RemainHour
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Execution.Decode.RemainHour"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Step remain time (hours) indication"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.RemainHour.@Description"
+    - Name: RemainMin
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Execution.Decode.RemainMin"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Step remain time (minutes) indication"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.RemainMin.@Description"
+    - Name: RemainSec
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Execution.Decode.RemainSec"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Step remain time (seconds) indication"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.RemainSec.@Description"
+    - Name: ActualHour
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Execution.Decode.ActualHour"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Step actual time (hours) indication"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.ActualHour.@Description"
+    - Name: ActualMin
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Execution.Decode.ActualMin"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Step actual time (minutes) indication"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.ActualMin.@Description"
+    - Name: ActualSec
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Execution.Decode.ActualSec"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Step actual time (seconds) indication"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.ActualSec.@Description"
+    - Name: StepTimerEnable
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Execution.Decode.StepTimerEnable"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Step Timer Enable"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.StepTimerEnable.@Description"
+    - Name: StepActualTimeLastScan
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Execution.Decode.StepActualTimeLastScan"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Step actual amount last scan"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.StepActualTimeLastScan.@Description"
+    - Name: StepNLastScan
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Execution.Decode.StepNLastScan"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Step number last scan"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.StepNLastScan.@Description"
+    - Name: StepTimer
+      Type: TIMER
+      DataType: TIMER
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Execution.Decode.StepTimer"
+      - Name: BlockRead
+        Type: BaseDataVariableType
+        DataType: Boolean
+        Value: true
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Step timer"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.StepTimer.@Description"
+      - Name: PRE
+        Type: RAEtherNetIPTag
+        DataType: Int32
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.StepTimer.PRE"
+      - Name: ACC
+        Type: RAEtherNetIPTag
+        DataType: Int32
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.StepTimer.ACC"
+      - Name: EN
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.StepTimer.EN"
+      - Name: TT
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.StepTimer.TT"
+      - Name: DN
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Decode.StepTimer.DN"
+  - Name: Steps
+    Type: UDT_SeqSteps
+    DataType: UDT_SeqSteps
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Execution.Steps"
+    - Name: BlockRead
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: Step
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      ValueRank: OneDimension
+      ArrayDimensions: [32]
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Execution.Steps.Step"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Sequence Steps"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Execution.Steps.Step.@Description"
+  - Name: TimeValue
+    Type: RAEtherNetIPTag
+    DataType: String
+    ValueRank: OneDimension
+    ArrayDimensions: [10]
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Execution.TimeValue"
+  - Name: StartNextPhase
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Execution.StartNextPhase"
+- Name: ONS
+  Type: RAEtherNetIPTag
+  DataType: Int32
+  Children:
+  - Name: SymbolName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "ONS"
