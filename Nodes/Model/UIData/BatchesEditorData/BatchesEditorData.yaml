@@ -8,11 +8,14 @@ Children:
     Id: g=bf382470105703ac805a58e5e767041f
     Type: BaseDataVariableType
     DataType: String
+    Value: "None"
   - Name: Comments
     Id: g=b86ad321217cc44c440a676d651572fc
     Type: BaseDataVariableType
     DataType: String
+    Value: "None"
   - Name: Recipe
     Id: g=f493ac38df2ccc2e5ff9c741724b77c0
     Type: BaseDataVariableType
     DataType: String
+    Value: "None"

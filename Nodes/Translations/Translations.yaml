@@ -9,7 +9,7 @@ Children:
   Value: 
    {
     "Type": 12,
-    "Dimensions": [39,2],
+    "Dimensions": [41,2],
     "Body": [
      "","en-US",
      "LoginFormAuthenticationFailed","Authentication failed",
@@ -49,6 +49,8 @@ Children:
      "LoginChangePasswordFormUnsupportedOperation","Unsupported operation",
      "LoginChangePasswordFormPasswordsDoNotMatch","Passwords do not match",
      "Failed","Failed",
-     "Success","Success"
+     "Success","Success",
+     "QNavigation","QNavigation",
+     "Default","Default"
     ]
    }

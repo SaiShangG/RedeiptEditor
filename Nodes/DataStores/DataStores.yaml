@@ -354,30 +354,6 @@ Children:
         - Name: NewValue
           Type: StoreColumn
           DataType: String
-    - Name: RecipeAuditLog
-      Type: SQLiteStoreTable
-      Children:
-      - Class: Reference
-        Target: ns=8;i=12
-        Direction: Forward
-      - Class: Reference
-        Target: ns=8;i=15
-        Direction: Forward
-      - Class: Reference
-        Target: ns=8;i=21
-        Direction: Forward
-      - Class: Reference
-        Target: ns=8;i=20
-        Direction: Forward
-      - Name: Columns
-        Type: BaseObjectType
-        Children:
-        - Name: EventFieldToLog1
-          Type: StoreColumn
-          DataType: String
-        - Name: EventFieldToLog2
-          Type: StoreColumn
-          DataType: String
   - Class: Reference
     Target: ns=9;i=30
     Direction: Forward

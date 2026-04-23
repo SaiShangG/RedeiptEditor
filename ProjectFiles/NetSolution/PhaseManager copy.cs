@@ -16,6 +16,7 @@
 // using FTOptix.RecipeX;
 // using FTOptix.RAEtherNetIP;
 // using FTOptix.CommunicationDriver;
+using FTOptix.WebUI;
 // #endregion
 
 // public class PhaseManager : BaseNetLogic

@@ -18,6 +18,7 @@ using FTOptix.Core;
 using FTOptix.RecipeX;
 using FTOptix.RAEtherNetIP;
 using FTOptix.CommunicationDriver;
+using FTOptix.WebUI;
 #endregion
 
 /// <summary>

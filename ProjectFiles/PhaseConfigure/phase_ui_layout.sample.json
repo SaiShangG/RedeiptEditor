@@ -5,10 +5,10 @@
     {
       "id": "ParaPanel1",
       "panelType": "PhaseParasPanel",
-      "title": "Phase Parameters Area (Test x2)",
+      "title": "Phase Parameters Area",
       "rowLayoutPath": "VL/HL",
-      "rowLayoutHorizontalGap": 16,
-      "sectionVerticalGap": 16,
+      "rowLayoutHorizontalGap": 8,
+      "sectionVerticalGap": 8,
       "items": [
         {
           "id": "Para0",
@@ -57,6 +57,39 @@
             "uiProperty": "Text",
             "sourceTagPath": "EC.EC2Selected"
           }
+        },  {
+          "id": "Para4",
+          "widgetType": "PhaseSinglePara",
+          "label": "Para5",
+          "bind": {
+            "bufferField": "EC.EC2Selected",
+            "valueRank": "OneDimension",
+            "index": 0,
+            "uiProperty": "Text",
+            "sourceTagPath": "EC.EC2Selected"
+          }
+        },  {
+          "id": "Para5",
+          "widgetType": "PhaseSinglePara",
+          "label": "Para6",
+          "bind": {
+            "bufferField": "EC.EC2Selected",
+            "valueRank": "OneDimension",
+            "index": 0,
+            "uiProperty": "Text",
+            "sourceTagPath": "EC.EC2Selected"
+          }
+        },  {
+          "id": "Para6",
+          "widgetType": "PhaseSinglePara",
+          "label": "Para7",
+          "bind": {
+            "bufferField": "EC.EC2Selected",
+            "valueRank": "OneDimension",
+            "index": 0,
+            "uiProperty": "Text",
+            "sourceTagPath": "EC.EC2Selected"
+          }
         }
       ]
     },
@@ -66,8 +99,8 @@
       "panelType": "PhaseParasPanel",
       "title": "Flow Path",
       "rowLayoutPath": "VL/HL",
-      "rowLayoutHorizontalGap": 16,
-      "sectionVerticalGap": 16,
+      "rowLayoutHorizontalGap": 8,
+      "sectionVerticalGap": 8,
       
       "items": [
     
@@ -105,6 +138,19 @@
             "index": 1,
             "uiProperty": "Checked",
             "sourceTagPath": "PP.Pump[2]"
+          }
+        },
+        
+        {
+          "id": "PumpSetting3",
+          "widgetType": "PhaseValvePanel",
+          "label": "Pump104",
+          "bind": {
+            "bufferField": "PP.Pump",
+            "valueRank": "OneDimension",
+            "index": 1,
+            "uiProperty": "Checked",
+            "sourceTagPath": "PP.Pump[3]"
           }
         },
         {
@@ -151,8 +197,8 @@
       "panelType": "PhaseParasPanel",
       "title": "End Conditions",
       "rowLayoutPath": "VL/HL",
-      "rowLayoutHorizontalGap": 16,
-      "sectionVerticalGap": 16,
+      "rowLayoutHorizontalGap": 8,
+      "sectionVerticalGap": 8,
       "items": [
         {
           "id": "ECGroup1",

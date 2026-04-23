@@ -13,6 +13,7 @@ using FTOptix.Store;
 using FTOptix.HMIProject;
 using FTOptix.EventLogger;
 using FTOptix.RecipeX;
+using FTOptix.WebUI;
 #endregion
 
 public partial class RecipeDatabaseTreeLoader

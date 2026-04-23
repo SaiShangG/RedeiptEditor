@@ -1,31 +1,94 @@
 #region Using directives
 using System;
+using FTOptix.CoreBase;
+using FTOptix.HMIProject;
 using UAManagedCore;
 using OpcUa = UAManagedCore.OpcUa;
-using FTOptix.UI;
-using FTOptix.HMIProject;
-using FTOptix.EventLogger;
 using FTOptix.NetLogic;
-using FTOptix.NativeUI;
-using FTOptix.SQLiteStore;
-using FTOptix.Store;
-using FTOptix.Retentivity;
-using FTOptix.CoreBase;
 using FTOptix.Core;
-using FTOptix.RecipeX;
-using FTOptix.RAEtherNetIP;
-using FTOptix.CommunicationDriver;
+using FTOptix.UI;
+using FTOptix.WebUI;
 #endregion
 
 public class LoginButtonLogic : BaseNetLogic
 {
+    // 单客户端场景缓存当前登录用户，避免全局 NetLogic 的 Session 上下文漂移到 Root。
+    public static string CurrentLoginUserBrowseName { get; private set; } = "";
+
     public override void Start()
     {
-        // Insert code to be executed when the user-defined logic is started
+        ComboBox comboBox = Owner.Owner.Get<ComboBox>("Username");
+        if (Project.Current.Authentication.AuthenticationMode == AuthenticationMode.ModelOnly)
+        {
+            comboBox.Mode = ComboBoxMode.Normal;
+        }
+        else
+        {
+            comboBox.Mode = ComboBoxMode.Editable;
+        }
     }
 
     public override void Stop()
     {
-        // Insert code to be executed when the user-defined logic is stopped
+
+    }
+
+    [ExportMethod]
+    public void PerformLogin(string username, string password)
+    {
+        var usersAlias = LogicObject.GetAlias("Users");
+        if (usersAlias == null || usersAlias.NodeId == NodeId.Empty)
+        {
+            Log.Error("LoginButtonLogic", "Missing Users alias");
+            return;
+        }
+
+        var passwordExpiredDialogType = LogicObject.GetAlias("PasswordExpiredDialogType") as DialogType;
+        if (passwordExpiredDialogType == null)
+        {
+            Log.Error("LoginButtonLogic", "Missing PasswordExpiredDialogType alias");
+            return;
+        }
+
+        Button loginButton = (Button)Owner;
+        loginButton.Enabled = false;
+
+        try
+        {
+            var loginResult = Session.Login(username, password);
+            if (loginResult.ResultCode == ChangeUserResultCode.PasswordExpired)
+            {
+                loginButton.Enabled = true;
+                var user = usersAlias.Get<User>(username);
+                var ownerButton = (Button)Owner;
+                ownerButton.OpenDialog(passwordExpiredDialogType, user.NodeId);
+                return;
+            }
+            else if (loginResult.ResultCode != ChangeUserResultCode.Success)
+            {
+                loginButton.Enabled = true;
+                Log.Error("LoginButtonLogic", "Authentication failed");
+            }
+
+            if (loginResult.ResultCode != ChangeUserResultCode.Success)
+            {
+                var outputMessageLabel = Owner.Owner.GetObject("LoginFormOutputMessage");
+                var outputMessageLogic = outputMessageLabel.GetObject("LoginFormOutputMessageLogic");
+                outputMessageLogic.ExecuteMethod("SetOutputMessage", new object[] { (int)loginResult.ResultCode });
+            }
+            else
+            {
+                string user = Session?.User?.BrowseName?.Trim();
+                if (string.IsNullOrEmpty(user))
+                    user = username?.Trim() ?? "";
+                CurrentLoginUserBrowseName = user;
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Error("LoginButtonLogic", e.Message);
+        }
+
+        loginButton.Enabled = true;
     }
 }

@@ -17,6 +17,7 @@ using FTOptix.EventLogger;
 using FTOptix.RecipeX;
 using FTOptix.RAEtherNetIP;
 using FTOptix.CommunicationDriver;
+using FTOptix.WebUI;
 #endregion
 
 public class SelectedLayerPanelController : BaseNetLogic

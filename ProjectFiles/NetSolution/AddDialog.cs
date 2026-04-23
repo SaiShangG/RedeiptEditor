@@ -15,6 +15,7 @@ using FTOptix.EventLogger;
 using FTOptix.RecipeX;
 using FTOptix.RAEtherNetIP;
 using FTOptix.CommunicationDriver;
+using FTOptix.WebUI;
 #endregion
 
 public class AddDialog : BaseNetLogic
@@ -57,9 +58,10 @@ public class AddDialog : BaseNetLogic
         {
             des = (string)desVar.Value;
         }
+        string createdBy = ResolveCurrentUserBrowseName();
         if (type == "Receipt")
         {
-            RecipeDatabaseManager.Instance.AddNewReceipt(name, des);
+            RecipeDatabaseManager.Instance.AddNewReceipt(name, des, createdBy);
         }
         else if (type == "Operation")
         {
@@ -71,7 +73,6 @@ public class AddDialog : BaseNetLogic
         }
         else if (type == "Batch")
         {
-            string createdBy = Session?.User?.BrowseName ?? "Unknown";
             BatchEditorLogic.AddNewBatch(name, des, createdBy);
         }
 
@@ -79,5 +80,16 @@ public class AddDialog : BaseNetLogic
             nameVar.Value = "";
         if (desVar != null)
             desVar.Value = "";
+    }
+
+    private string ResolveCurrentUserBrowseName()
+    {
+        string fromLogin = LoginButtonLogic.CurrentLoginUserBrowseName;
+        if (!string.IsNullOrWhiteSpace(fromLogin))
+            return fromLogin.Trim();
+        string fromSession = Session?.User?.BrowseName;
+        if (!string.IsNullOrWhiteSpace(fromSession))
+            return fromSession.Trim();
+        return "Unknown";
     }
 }
