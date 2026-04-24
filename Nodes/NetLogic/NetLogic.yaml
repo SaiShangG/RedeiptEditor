@@ -273,6 +273,9 @@ Children:
     Type: BaseDataVariableType
     DataType: NodeId
     Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Recipe"
+  - Name: RunningOpIndex
+    Type: BaseDataVariableType
+    DataType: Int32
 - Name: DeletePanelGeneralLogic
   Id: g=ae87e35871563e13d7977ee326beadfd
   Type: NetLogic

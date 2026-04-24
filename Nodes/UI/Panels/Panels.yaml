@@ -9854,6 +9854,15 @@ Children:
                                   Type: DynamicLink
                                   DataType: NodePath
                                   Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Recipe/Name"
+                              - Name: LeftMargin
+                                Type: BaseVariableType
+                                DataType: Size
+                                ModellingRule: Optional
+                              - Name: TextHorizontalAlignment
+                                Type: BaseVariableType
+                                DataType: TextHorizontalAlignment
+                                ModellingRule: Optional
+                                Value: 1
                       - Name: LabelValueHorizontal1
                         Type: Panel
                         Children:
@@ -9876,6 +9885,20 @@ Children:
                                   Type: DynamicLink
                                   DataType: NodePath
                                   Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OP/Name"
+                              - Name: LeftMargin
+                                Type: BaseVariableType
+                                DataType: Size
+                                ModellingRule: Optional
+                              - Name: TextVerticalAlignment
+                                Type: BaseVariableType
+                                DataType: TextVerticalAlignment
+                                ModellingRule: Optional
+                                Value: 1
+                              - Name: TextHorizontalAlignment
+                                Type: BaseVariableType
+                                DataType: TextHorizontalAlignment
+                                ModellingRule: Optional
+                                Value: 1
                       - Name: LabelValueHorizontal2
                         Type: LabelValueHorizontal
                         Children:
