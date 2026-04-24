@@ -9846,7 +9846,7 @@ Children:
                                       Type: BaseDataVariableType
                                       DataType: VariablePointer
                                       Description: {"NamespaceIndex":2,"TextId":"SetVariableToModifyDescription"}
-                                      Value: {"IdType":2,"Id":"448dba14b509460db7b9d7c8b677a717","Namespace":7}
+                                      Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchPause"
                                     - Name: Value
                                       Type: BaseDataVariableType
                                       DataType: Boolean
@@ -9916,7 +9916,7 @@ Children:
                                     - Name: VariableToModify
                                       Type: BaseDataVariableType
                                       DataType: VariablePointer
-                                      Value: {"IdType":2,"Id":"448dba14b509460db7b9d7c8b677a717","Namespace":7}
+                                      Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchPause"
                                     - Name: Value
                                       Type: BaseDataVariableType
                                       DataType: Boolean
@@ -10013,7 +10013,7 @@ Children:
                                       Type: BaseDataVariableType
                                       DataType: VariablePointer
                                       Description: {"NamespaceIndex":2,"TextId":"SetVariableToModifyDescription"}
-                                      Value: {"IdType":2,"Id":"13b3e1ad03abb5f9af78b53c95c2c568","Namespace":7}
+                                      Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchResume"
                                     - Name: Value
                                       Type: BaseDataVariableType
                                       DataType: Boolean
@@ -10083,7 +10083,7 @@ Children:
                                     - Name: VariableToModify
                                       Type: BaseDataVariableType
                                       DataType: VariablePointer
-                                      Value: {"IdType":2,"Id":"13b3e1ad03abb5f9af78b53c95c2c568","Namespace":7}
+                                      Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchResume"
                                     - Name: Value
                                       Type: BaseDataVariableType
                                       DataType: Boolean
@@ -10177,17 +10177,129 @@ Children:
                           - Name: Rectangle1
                             Type: Rectangle
                             Children:
+                            - Name: HorizontalLayout1
+                              Type: RowLayout
+                              Children:
+                              - Name: Width
+                                Type: BaseVariableType
+                                DataType: Size
+                                ModellingRule: Optional
+                                Value: 50.0
+                              - Name: Height
+                                Type: BaseVariableType
+                                DataType: Size
+                                ModellingRule: Optional
+                                Value: 50.0
+                              - Name: Value
+                                Type: Label
+                                Children:
+                                - Name: Text
+                                  Type: BaseDataVariableType
+                                  DataType: LocalizedText
+                                - Name: HorizontalAlignment
+                                  Type: BaseVariableType
+                                  DataType: HorizontalAlignment
+                                  ModellingRule: Optional
+                                - Name: VerticalAlignment
+                                  Type: BaseVariableType
+                                  DataType: VerticalAlignment
+                                  ModellingRule: Optional
+                                  Value: 3
+                                - Name: Width
+                                  Type: BaseVariableType
+                                  DataType: Size
+                                  ModellingRule: Optional
+                                  Value: 103.0
+                              - Name: HorizontalAlignment
+                                Type: BaseVariableType
+                                DataType: HorizontalAlignment
+                                ModellingRule: Optional
+                                Value: 3
+                              - Name: VerticalAlignment
+                                Type: BaseVariableType
+                                DataType: VerticalAlignment
+                                ModellingRule: Optional
+                                Value: 3
+                              - Name: Ellipse1
+                                Type: Ellipse
+                                Children:
+                                - Name: BorderThickness
+                                  Type: BaseDataVariableType
+                                  DataType: Size
+                                  ModellingRule: Optional
+                                  Value: 1.0
+                                - Name: Width
+                                  Type: BaseVariableType
+                                  DataType: Size
+                                  ModellingRule: Optional
+                                  Value: 20.0
+                                - Name: Height
+                                  Type: BaseVariableType
+                                  DataType: Size
+                                  ModellingRule: Optional
+                                  Value: 20.0
+                                - Name: LeftMargin
+                                  Type: BaseVariableType
+                                  DataType: Size
+                                  ModellingRule: Optional
+                                - Name: TopMargin
+                                  Type: BaseVariableType
+                                  DataType: Size
+                                  ModellingRule: Optional
+                                - Name: HorizontalAlignment
+                                  Type: BaseVariableType
+                                  DataType: HorizontalAlignment
+                                  ModellingRule: Optional
+                                  Value: 1
+                                - Name: VerticalAlignment
+                                  Type: BaseVariableType
+                                  DataType: VerticalAlignment
+                                  ModellingRule: Optional
+                                  Value: 2
+                                - Name: FillColor
+                                  Type: BaseDataVariableType
+                                  DataType: Color
+                                  Value: "#ffffff"
+                                  Children:
+                                  - Name: ConditionalConverter1
+                                    Type: ConditionalConverter
+                                    Children:
+                                    - Name: Condition
+                                      Type: BaseDataVariableType
+                                      DataType: Boolean
+                                      ReferenceType: HasSource
+                                      Children:
+                                      - Name: DynamicLink
+                                        Type: DynamicLink
+                                        DataType: NodePath
+                                        Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchRunning"
+                                    - Name: TrueValue
+                                      Type: BaseDataVariableType
+                                      DataType: Color
+                                      ReferenceType: HasParameter
+                                      ModellingRule: Optional
+                                      Value: "#05783b"
+                                    - Name: FalseValue
+                                      Type: BaseDataVariableType
+                                      DataType: Color
+                                      ReferenceType: HasParameter
+                                      ModellingRule: Optional
+                                      Value: "#b3b3b3"
+                                - Name: BorderColor
+                                  Type: BaseDataVariableType
+                                  DataType: Color
+                                  ModellingRule: Optional
+                                  Value: "#00000060"
                             - Name: Value
                               Type: Label
                               Children:
                               - Name: Text
                                 Type: BaseDataVariableType
                                 DataType: LocalizedText
-                                Children:
-                                - Name: DynamicLink
-                                  Type: DynamicLink
-                                  DataType: NodePath
-                                  Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Recipe/RecipeComplete"
+                              - Name: Visible
+                                Type: BaseDataVariableType
+                                DataType: Boolean
+                                ModellingRule: Optional
                             - Name: FillColor
                               Type: BaseDataVariableType
                               DataType: Color
@@ -10204,7 +10316,6 @@ Children:
                                   - Name: DynamicLink
                                     Type: DynamicLink
                                     DataType: NodePath
-                                    Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Recipe/RecipeComplete"
                       - Name: LabelValueHorizontal3
                         Type: LabelValueHorizontal
                         Children:
@@ -10216,17 +10327,129 @@ Children:
                           - Name: Rectangle1
                             Type: Rectangle
                             Children:
+                            - Name: HorizontalLayout1
+                              Type: RowLayout
+                              Children:
+                              - Name: Width
+                                Type: BaseVariableType
+                                DataType: Size
+                                ModellingRule: Optional
+                                Value: 50.0
+                              - Name: Height
+                                Type: BaseVariableType
+                                DataType: Size
+                                ModellingRule: Optional
+                                Value: 50.0
+                              - Name: Value
+                                Type: Label
+                                Children:
+                                - Name: Text
+                                  Type: BaseDataVariableType
+                                  DataType: LocalizedText
+                                - Name: HorizontalAlignment
+                                  Type: BaseVariableType
+                                  DataType: HorizontalAlignment
+                                  ModellingRule: Optional
+                                - Name: VerticalAlignment
+                                  Type: BaseVariableType
+                                  DataType: VerticalAlignment
+                                  ModellingRule: Optional
+                                  Value: 3
+                                - Name: Width
+                                  Type: BaseVariableType
+                                  DataType: Size
+                                  ModellingRule: Optional
+                                  Value: 103.0
+                              - Name: HorizontalAlignment
+                                Type: BaseVariableType
+                                DataType: HorizontalAlignment
+                                ModellingRule: Optional
+                                Value: 3
+                              - Name: VerticalAlignment
+                                Type: BaseVariableType
+                                DataType: VerticalAlignment
+                                ModellingRule: Optional
+                                Value: 3
+                              - Name: Ellipse1
+                                Type: Ellipse
+                                Children:
+                                - Name: BorderThickness
+                                  Type: BaseDataVariableType
+                                  DataType: Size
+                                  ModellingRule: Optional
+                                  Value: 1.0
+                                - Name: Width
+                                  Type: BaseVariableType
+                                  DataType: Size
+                                  ModellingRule: Optional
+                                  Value: 20.0
+                                - Name: Height
+                                  Type: BaseVariableType
+                                  DataType: Size
+                                  ModellingRule: Optional
+                                  Value: 20.0
+                                - Name: LeftMargin
+                                  Type: BaseVariableType
+                                  DataType: Size
+                                  ModellingRule: Optional
+                                - Name: TopMargin
+                                  Type: BaseVariableType
+                                  DataType: Size
+                                  ModellingRule: Optional
+                                - Name: HorizontalAlignment
+                                  Type: BaseVariableType
+                                  DataType: HorizontalAlignment
+                                  ModellingRule: Optional
+                                  Value: 1
+                                - Name: VerticalAlignment
+                                  Type: BaseVariableType
+                                  DataType: VerticalAlignment
+                                  ModellingRule: Optional
+                                  Value: 2
+                                - Name: FillColor
+                                  Type: BaseDataVariableType
+                                  DataType: Color
+                                  Value: "#ffffff"
+                                  Children:
+                                  - Name: ConditionalConverter1
+                                    Type: ConditionalConverter
+                                    Children:
+                                    - Name: Condition
+                                      Type: BaseDataVariableType
+                                      DataType: Boolean
+                                      ReferenceType: HasSource
+                                      Children:
+                                      - Name: DynamicLink
+                                        Type: DynamicLink
+                                        DataType: NodePath
+                                        Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchRunning"
+                                    - Name: TrueValue
+                                      Type: BaseDataVariableType
+                                      DataType: Color
+                                      ReferenceType: HasParameter
+                                      ModellingRule: Optional
+                                      Value: "#05783b"
+                                    - Name: FalseValue
+                                      Type: BaseDataVariableType
+                                      DataType: Color
+                                      ReferenceType: HasParameter
+                                      ModellingRule: Optional
+                                      Value: "#b3b3b3"
+                                - Name: BorderColor
+                                  Type: BaseDataVariableType
+                                  DataType: Color
+                                  ModellingRule: Optional
+                                  Value: "#00000060"
                             - Name: Value
                               Type: Label
                               Children:
                               - Name: Text
                                 Type: BaseDataVariableType
                                 DataType: LocalizedText
-                                Children:
-                                - Name: DynamicLink
-                                  Type: DynamicLink
-                                  DataType: NodePath
-                                  Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchName"
+                              - Name: Visible
+                                Type: BaseDataVariableType
+                                DataType: Boolean
+                                ModellingRule: Optional
                             - Name: FillColor
                               Type: BaseDataVariableType
                               DataType: Color
@@ -10243,7 +10466,6 @@ Children:
                                   - Name: DynamicLink
                                     Type: DynamicLink
                                     DataType: NodePath
-                                    Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OP/PhaseComplete"
                   - Name: Rectangle4
                     Type: Rectangle
                     Children:
@@ -10292,7 +10514,7 @@ Children:
                                       Type: BaseDataVariableType
                                       DataType: VariablePointer
                                       Description: {"NamespaceIndex":2,"TextId":"SetVariableToModifyDescription"}
-                                      Value: {"IdType":2,"Id":"72a08ebf8c35e492c41da2a79700af21","Namespace":7}
+                                      Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchAbort"
                                     - Name: Value
                                       Type: BaseDataVariableType
                                       DataType: Boolean
@@ -10381,7 +10603,7 @@ Children:
                                 - Name: VariableToModify
                                   Type: BaseDataVariableType
                                   DataType: VariablePointer
-                                  Value: {"IdType":2,"Id":"72a08ebf8c35e492c41da2a79700af21","Namespace":7}
+                                  Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchAbort"
                                 - Name: Value
                                   Type: BaseDataVariableType
                                   DataType: Boolean
@@ -10739,6 +10961,28 @@ Children:
                 DataType: Size
                 ModellingRule: Optional
                 Value: -2.0
+              - Name: Label1
+                Type: Label
+                Children:
+                - Name: Text
+                  Type: BaseDataVariableType
+                  DataType: LocalizedText
+                  Children:
+                  - Name: DynamicLink
+                    Type: DynamicLink
+                    DataType: NodePath
+                    Value: "/Objects/RedeiptEditor/NetLogic/BatchInforToPLC/StatusText"
+              - Name: Label2
+                Type: Label
+                Children:
+                - Name: Text
+                  Type: BaseDataVariableType
+                  DataType: LocalizedText
+                  Children:
+                  - Name: DynamicLink
+                    Type: DynamicLink
+                    DataType: NodePath
+                    Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OperationHandshake/EvtDone"
             - Name: BottomMargin
               Type: BaseVariableType
               DataType: Size

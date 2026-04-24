@@ -65,6 +65,7 @@ public class BatchInforToPLC : BaseNetLogic
     private IUANode _operationHandshakeRoot;
     private IUAVariable _plcEvtDone;
     private IUAVariable _plcCmdStart;
+    private IUAVariable _plcCmdSeq;
     private PeriodicTask _evtDoneTimer;
     private object _lastEvtDoneValue;
     private bool _hasLastEvtDoneValue;
@@ -78,19 +79,19 @@ public class BatchInforToPLC : BaseNetLogic
     public override void Start()
     {
         _statusText = LogicObject.GetVariable("StatusText");
-        SetStatus("初始化中…");
+        SetStatus("Initializing...");
 
         InitStateMachine();
-        SetStatus("状态机未启动");
+        SetStatus("State machine not started");
 
         if (!TryEnsureBatchTagReferences())
         {
             Log.Warning(LogCategory, "启动时未解析到 Batch 引用：请检查 NetLogic 上 Batch（NodeId）是否已绑定。");
-            SetStatus("未绑定 Batch（NodeId）");
+            SetStatus("Batch (NodeId) not bound");
         }
         else
         {
-            SetStatus("就绪（状态机未启动）");
+            SetStatus("Ready (state machine not started)");
         }
 
         SetupEvtDoneTimer();
@@ -98,7 +99,7 @@ public class BatchInforToPLC : BaseNetLogic
 
     public override void Stop()
     {
-        SetStatus("已停止");
+        SetStatus("Stopped");
         _statusText = null;
 
         _sm = null;
@@ -136,6 +137,7 @@ public class BatchInforToPLC : BaseNetLogic
         _operationHandshakeRoot = null;
         _plcEvtDone = null;
         _plcCmdStart = null;
+        _plcCmdSeq = null;
 
         _flowReceipt = null;
         _flowRecipeName = null;
@@ -159,7 +161,7 @@ public class BatchInforToPLC : BaseNetLogic
 
         if (_sm?.Current != _stIdle)
         {
-            SetStatus($"流程已在运行中：{_sm?.Current?.Name ?? "Unknown"}");
+            SetStatus($"Flow is already running: {_sm?.Current?.Name ?? "Unknown"}");
             return;
         }
 
@@ -180,19 +182,19 @@ public class BatchInforToPLC : BaseNetLogic
     [ExportMethod]
     public void DownloadBatchToPlc()
     {
-        SetStatus("下载中…");
+        SetStatus("Downloading...");
         TryTransitionTo(_stDownload);
         if (!TryEnsureBatchTagReferences())
         {
             Log.Error(LogCategory, "DownloadBatchToPlc：无法解析 Batch NodeId 或子标签。");
-            SetStatus("下载失败：Batch 引用无效");
+            SetStatus("Download failed: invalid Batch reference");
             TryTransitionTo(_stIdle);
             return;
         }
         if (!TryEnsureRecipeTagReferences())
         {
             Log.Error(LogCategory, "DownloadBatchToPlc：无法解析 Recipe NodeId 或子标签。");
-            SetStatus("下载失败：Recipe 引用无效");
+            SetStatus("Download failed: invalid Recipe reference");
             TryTransitionTo(_stIdle);
             return;
         }
@@ -201,7 +203,7 @@ public class BatchInforToPLC : BaseNetLogic
         if (editor == null)
         {
             Log.Error(LogCategory, "DownloadBatchToPlc：未找到 Model/UIData/BatchesEditorData/BatchEditorData。");
-            SetStatus("下载失败：未找到 BatchEditorData");
+            SetStatus("Download failed: BatchEditorData not found");
             TryTransitionTo(_stIdle);
             return;
         }
@@ -212,7 +214,7 @@ public class BatchInforToPLC : BaseNetLogic
         if (string.IsNullOrWhiteSpace(batchName))
         {
             Log.Warning(LogCategory, "DownloadBatchToPlc：批次名称为空，已中止。");
-            SetStatus("下载失败：批次名称为空");
+            SetStatus("Download failed: batch name is empty");
             TryTransitionTo(_stIdle);
             return;
         }
@@ -238,7 +240,7 @@ public class BatchInforToPLC : BaseNetLogic
         TrySetInt32(_plcRecipeNoOfOperations, noOfOperations);
 
         Log.Info(LogCategory, $"DownloadBatchToPlc：已写入 BatchName='{batchName}', RecipeName='{recipeName}', BatchID={batchId}, Recipe.ID={recipeId}, Recipe.NoOfOperations={noOfOperations}.");
-        SetStatus("下载成功");
+        SetStatus("Download successful");
         TryTransitionTo(_stIdle);
     }
 
@@ -248,41 +250,41 @@ public class BatchInforToPLC : BaseNetLogic
         errorStatus = "";
         if (!TryEnsureBatchTagReferences())
         {
-            errorStatus = "启动失败：Batch 引用无效";
+            errorStatus = "Start failed: invalid Batch reference";
             return false;
         }
         if (!TryEnsureOp1TagReferences())
         {
-            errorStatus = "启动失败：Operation 引用无效";
+            errorStatus = "Start failed: invalid Operation reference";
             return false;
         }
         if (!TryEnsurePhasesTagReferences())
         {
-            errorStatus = "启动失败：Phases 引用无效";
+            errorStatus = "Start failed: invalid Phases reference";
             return false;
         }
         if (!TryEnsureOperationHandshakeReferences())
         {
-            errorStatus = "启动失败：OperationHandshake 引用无效";
+            errorStatus = "Start failed: invalid OperationHandshake reference";
             return false;
         }
 
         string recipeName = ReadStringVariableValue(_plcBatchRecipeName);
         if (string.IsNullOrWhiteSpace(recipeName))
         {
-            errorStatus = "启动失败：PLC RecipeName 为空";
+            errorStatus = "Start failed: PLC RecipeName is empty";
             return false;
         }
         if (!TryReadRunningOpIndex(out int runningIndex))
         {
-            errorStatus = "启动失败：RunningOpIndex 无效";
+            errorStatus = "Start failed: invalid RunningOpIndex";
             return false;
         }
 
         var loader = RecipeDatabaseTreeLoader.Instance;
         if (loader == null)
         {
-            errorStatus = "启动失败：TreeLoader 未启动";
+            errorStatus = "Start failed: TreeLoader not started";
             return false;
         }
 
@@ -297,19 +299,19 @@ public class BatchInforToPLC : BaseNetLogic
         }
         if (receipt == null)
         {
-            errorStatus = $"启动失败：未找到配方 {recipeName}";
+            errorStatus = $"Start failed: recipe not found: {recipeName}";
             return false;
         }
 
         int opCount = receipt.Operations?.Count ?? 0;
         if (opCount == 0)
         {
-            errorStatus = $"启动失败：{recipeName} 无 Operation";
+            errorStatus = $"Start failed: {recipeName} has no Operation";
             return false;
         }
         if (runningIndex >= opCount)
         {
-            errorStatus = $"启动失败：索引 {runningIndex} 越界";
+            errorStatus = $"Start failed: index {runningIndex} out of range";
             return false;
         }
 
@@ -326,7 +328,7 @@ public class BatchInforToPLC : BaseNetLogic
     {
         if (_flowReceipt == null || _flowCurrentOpIndex < 0 || _flowCurrentOpIndex >= _flowOpCount)
         {
-            SetStatus("下载失败：流程上下文无效");
+            SetStatus("Download failed: invalid flow context");
             _flowActive = false;
             TryTransitionTo(_stIdle);
             return false;
@@ -369,9 +371,9 @@ public class BatchInforToPLC : BaseNetLogic
 
         Log.Info(LogCategory, $"FlowDownload：Recipe='{_flowRecipeName}', OpIndex={_flowCurrentOpIndex}, OP1.ID={opId}, OP1.Name='{opName}', OP1.NoOfPhases={noOfPhases}, 已下载Phase={loadedPhases}/{noOfPhases}, 写入字段总数={totalWritten}.");
         if (_flowActive)
-            SetFlowStatus(opName, "下载");
+            SetFlowStatus(opName, "Downloading");
         else
-            SetStatus("下载成功");
+            SetStatus("Download successful");
         TryTransitionTo(_stWriteRun);
         return true;
     }
@@ -385,7 +387,7 @@ public class BatchInforToPLC : BaseNetLogic
 
         _stIdle = new RedeiptEditor.NetSolution.SimpleStateMachine.State(
             "IDLE",
-            onEnter: _ => SetStatus("空闲"),
+            onEnter: _ => SetStatus("Idle"),
             onExit: _ => { },
             onRun: _ => { });
 
@@ -396,7 +398,7 @@ public class BatchInforToPLC : BaseNetLogic
                 if (_flowActive)
                     ExecuteDownloadCurrentOperation();
                 else
-                    SetStatus("下载状态");
+                    SetStatus("Download state");
             },
             onExit: _ => { },
             onRun: _ => { });
@@ -408,7 +410,7 @@ public class BatchInforToPLC : BaseNetLogic
                 if (_flowActive)
                     ExecuteWriteRunStep();
                 else
-                    SetStatus("写入并运行状态");
+                    SetStatus("Write-and-run state");
             },
             onExit: _ => { },
             onRun: _ => { });
@@ -418,9 +420,9 @@ public class BatchInforToPLC : BaseNetLogic
             onEnter: _ =>
             {
                 if (_flowActive)
-                    SetFlowStatus(GetCurrentFlowOpName(), "执行中等待完成");
+                    SetFlowStatus(GetCurrentFlowOpName(), "Running, waiting for completion");
                 else
-                    SetStatus("等待状态");
+                    SetStatus("Waiting state");
             },
             onExit: _ => { },
             onRun: _ => { });
@@ -430,7 +432,7 @@ public class BatchInforToPLC : BaseNetLogic
             onEnter: _ =>
             {
                 _flowActive = false;
-                SetStatus("运行结束");
+                SetStatus("Run finished");
             },
             onExit: _ => { },
             onRun: _ => { });
@@ -620,6 +622,7 @@ public class BatchInforToPLC : BaseNetLogic
         _operationHandshakeRoot = node;
         _plcEvtDone = node.GetVariable("EvtDone");
         _plcCmdStart = node.GetVariable("CmdStart");
+        _plcCmdSeq = node.GetVariable("CmdSeq");
         if (_plcEvtDone == null)
         {
             Log.Error(LogCategory, "OperationHandshake 根节点下缺少 EvtDone 子变量。");
@@ -671,6 +674,8 @@ public class BatchInforToPLC : BaseNetLogic
             _lastEvtDoneValue = current;
         }
 
+        UpdateRunningPhaseNameFromCmdSeqCurrentZeroBased();
+
         // 仅在 Wait 状态消费 EvtDone=1 事件推进流程
         if (_sm?.Current != _stWait)
             return;
@@ -707,11 +712,82 @@ public class BatchInforToPLC : BaseNetLogic
         TryTransitionTo(_stFinish);
     }
 
+    /// <summary>
+    /// 将 PLC 握手中的 CmdSeq（0 基，表示当前执行 phase）映射为 Phase 名称并写入 RunningPhaseName。
+    /// </summary>
+    private void UpdateRunningPhaseNameFromCmdSeqCurrentZeroBased()
+    {
+        if (_plcRunningPhaseName == null || _plcBatchRecipeName == null || _plcCmdSeq == null)
+            return;
+
+        string recipeName = ReadStringVariableValue(_plcBatchRecipeName);
+        if (string.IsNullOrWhiteSpace(recipeName))
+        {
+            WriteRunningPhaseNameIfChanged("");
+            return;
+        }
+
+        if (!TryReadRunningOpIndex(out int opIndex))
+            return;
+
+        int phaseIndex;
+        try
+        {
+            object raw = _plcCmdSeq.Value?.Value;
+            if (raw == null)
+                return;
+            phaseIndex = Convert.ToInt32(raw, CultureInfo.InvariantCulture);
+        }
+        catch
+        {
+            return;
+        }
+
+        var loader = RecipeDatabaseTreeLoader.Instance;
+        if (loader?.Tree == null)
+            return;
+
+        RecipeDatabaseTreeLoader.ReceiptNode receipt = null;
+        foreach (var r in loader.Tree)
+        {
+            if (string.Equals(r?.Name, recipeName, StringComparison.OrdinalIgnoreCase))
+            {
+                receipt = r;
+                break;
+            }
+        }
+
+        if (receipt?.Operations == null || opIndex < 0 || opIndex >= receipt.Operations.Count)
+            return;
+
+        var op = receipt.Operations[opIndex];
+        if (op?.Phases == null)
+            return;
+
+        if (phaseIndex < 0 || phaseIndex >= op.Phases.Count)
+        {
+            WriteRunningPhaseNameIfChanged("");
+            return;
+        }
+
+        string phaseName = op.Phases[phaseIndex]?.Name ?? "";
+        WriteRunningPhaseNameIfChanged(phaseName);
+    }
+
+    private void WriteRunningPhaseNameIfChanged(string newName)
+    {
+        string target = newName ?? "";
+        string current = ReadStringVariableValue(_plcRunningPhaseName);
+        if (string.Equals(current, target, StringComparison.Ordinal))
+            return;
+        TrySetString(_plcRunningPhaseName, target);
+    }
+
     private void ExecuteWriteRunStep()
     {
         if (!TryEnsureOperationHandshakeReferences())
         {
-            SetStatus("WriteRun 失败：OperationHandshake 引用无效");
+            SetStatus("WriteRun failed: invalid OperationHandshake reference");
             _flowActive = false;
             TryTransitionTo(_stIdle);
             return;
@@ -720,9 +796,9 @@ public class BatchInforToPLC : BaseNetLogic
         TrySetBoolean(_plcCmdStart, true);
         TrySetBoolean(_plcEvtDone, false);
         if (_flowActive)
-            SetFlowStatus(GetCurrentFlowOpName(), "执行中等待完成");
+            SetFlowStatus(GetCurrentFlowOpName(), "Running, waiting for completion");
         else
-            SetStatus("下载成功");
+            SetStatus("Download successful");
         TryTransitionTo(_stWait);
     }
 

@@ -7169,6 +7169,7 @@ Children:
         DataType: String
         Value: "Batch.BatchStart.@Description"
   - Name: BatchPause
+    Id: g=448dba14b509460db7b9d7c8b677a717
     Type: RAEtherNetIPTag
     DataType: Boolean
     Children:
@@ -7186,6 +7187,7 @@ Children:
         DataType: String
         Value: "Batch.BatchPause.@Description"
   - Name: BatchResume
+    Id: g=13b3e1ad03abb5f9af78b53c95c2c568
     Type: RAEtherNetIPTag
     DataType: Boolean
     Children:
@@ -7203,6 +7205,7 @@ Children:
         DataType: String
         Value: "Batch.BatchResume.@Description"
   - Name: BatchAbort
+    Id: g=72a08ebf8c35e492c41da2a79700af21
     Type: RAEtherNetIPTag
     DataType: Boolean
     Children:
