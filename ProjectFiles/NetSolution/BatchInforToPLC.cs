@@ -65,6 +65,7 @@ public class BatchInforToPLC : BaseNetLogic
     private IUANode _operationHandshakeRoot;
     private IUAVariable _plcEvtDone;
     private IUAVariable _plcCmdStart;
+    private IUAVariable _plcCmdSeq;
     private PeriodicTask _evtDoneTimer;
     private object _lastEvtDoneValue;
     private bool _hasLastEvtDoneValue;
@@ -136,6 +137,7 @@ public class BatchInforToPLC : BaseNetLogic
         _operationHandshakeRoot = null;
         _plcEvtDone = null;
         _plcCmdStart = null;
+        _plcCmdSeq = null;
 
         _flowReceipt = null;
         _flowRecipeName = null;
@@ -620,6 +622,7 @@ public class BatchInforToPLC : BaseNetLogic
         _operationHandshakeRoot = node;
         _plcEvtDone = node.GetVariable("EvtDone");
         _plcCmdStart = node.GetVariable("CmdStart");
+        _plcCmdSeq = node.GetVariable("CmdSeq");
         if (_plcEvtDone == null)
         {
             Log.Error(LogCategory, "OperationHandshake 根节点下缺少 EvtDone 子变量。");
@@ -671,6 +674,8 @@ public class BatchInforToPLC : BaseNetLogic
             _lastEvtDoneValue = current;
         }
 
+        UpdateRunningPhaseNameFromCmdSeqCurrentZeroBased();
+
         // 仅在 Wait 状态消费 EvtDone=1 事件推进流程
         if (_sm?.Current != _stWait)
             return;
@@ -705,6 +710,77 @@ public class BatchInforToPLC : BaseNetLogic
         }
 
         TryTransitionTo(_stFinish);
+    }
+
+    /// <summary>
+    /// 将 PLC 握手中的 CmdSeq（0 基，表示当前执行 phase）映射为 Phase 名称并写入 RunningPhaseName。
+    /// </summary>
+    private void UpdateRunningPhaseNameFromCmdSeqCurrentZeroBased()
+    {
+        if (_plcRunningPhaseName == null || _plcBatchRecipeName == null || _plcCmdSeq == null)
+            return;
+
+        string recipeName = ReadStringVariableValue(_plcBatchRecipeName);
+        if (string.IsNullOrWhiteSpace(recipeName))
+        {
+            WriteRunningPhaseNameIfChanged("");
+            return;
+        }
+
+        if (!TryReadRunningOpIndex(out int opIndex))
+            return;
+
+        int phaseIndex;
+        try
+        {
+            object raw = _plcCmdSeq.Value?.Value;
+            if (raw == null)
+                return;
+            phaseIndex = Convert.ToInt32(raw, CultureInfo.InvariantCulture);
+        }
+        catch
+        {
+            return;
+        }
+
+        var loader = RecipeDatabaseTreeLoader.Instance;
+        if (loader?.Tree == null)
+            return;
+
+        RecipeDatabaseTreeLoader.ReceiptNode receipt = null;
+        foreach (var r in loader.Tree)
+        {
+            if (string.Equals(r?.Name, recipeName, StringComparison.OrdinalIgnoreCase))
+            {
+                receipt = r;
+                break;
+            }
+        }
+
+        if (receipt?.Operations == null || opIndex < 0 || opIndex >= receipt.Operations.Count)
+            return;
+
+        var op = receipt.Operations[opIndex];
+        if (op?.Phases == null)
+            return;
+
+        if (phaseIndex < 0 || phaseIndex >= op.Phases.Count)
+        {
+            WriteRunningPhaseNameIfChanged("");
+            return;
+        }
+
+        string phaseName = op.Phases[phaseIndex]?.Name ?? "";
+        WriteRunningPhaseNameIfChanged(phaseName);
+    }
+
+    private void WriteRunningPhaseNameIfChanged(string newName)
+    {
+        string target = newName ?? "";
+        string current = ReadStringVariableValue(_plcRunningPhaseName);
+        if (string.Equals(current, target, StringComparison.Ordinal))
+            return;
+        TrySetString(_plcRunningPhaseName, target);
     }
 
     private void ExecuteWriteRunStep()
