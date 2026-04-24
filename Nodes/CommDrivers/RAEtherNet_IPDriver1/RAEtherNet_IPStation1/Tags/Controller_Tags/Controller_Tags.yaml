@@ -5777,212 +5777,6 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[9].EC.EC3SP.@Description"
-  - Name: PP
-    Id: g=630e7ef084b799a5f3b9d0cddffccd1c
-    Type: UDT_PhaseParameters
-    DataType: UDT_PhaseParameters
-    Children:
-    - Name: Valve
-      Type: RAEtherNetIPTag
-      DataType: Boolean
-      ValueRank: OneDimension
-      ArrayDimensions: [32]
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "Valve"
-    - Name: Pump
-      Type: RAEtherNetIPTag
-      DataType: Boolean
-      ValueRank: OneDimension
-      ArrayDimensions: [32]
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "Pump"
-    - Name: FixedSetPointEbl
-      Type: RAEtherNetIPTag
-      DataType: Boolean
-      ValueRank: OneDimension
-      ArrayDimensions: [32]
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "FixedSetPointEbl"
-    - Name: FixedSetPointValue
-      Type: RAEtherNetIPTag
-      DataType: Float
-      ValueRank: OneDimension
-      ArrayDimensions: [10]
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "FixedSetPointValue"
-    - Name: ControllerEbl
-      Type: RAEtherNetIPTag
-      DataType: Boolean
-      ValueRank: OneDimension
-      ArrayDimensions: [32]
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "ControllerEbl"
-    - Name: ControllerSetPointValue
-      Type: RAEtherNetIPTag
-      DataType: Float
-      ValueRank: OneDimension
-      ArrayDimensions: [10]
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "ControllerSetPointValue"
-  - Name: EC
-    Id: g=7e148a49f3194a4a1fd7dab1ed9db128
-    Type: UDT_EndConditions
-    DataType: UDT_EndConditions
-    Children:
-    - Name: LogicOperator1
-      Type: RAEtherNetIPTag
-      DataType: Boolean
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "LogicOperator1"
-    - Name: LogicOperator2
-      Type: RAEtherNetIPTag
-      DataType: Boolean
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "LogicOperator2"
-    - Name: EC1Operator
-      Type: RAEtherNetIPTag
-      DataType: Boolean
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "EC1Operator"
-    - Name: EC2Operator
-      Type: RAEtherNetIPTag
-      DataType: Boolean
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "EC2Operator"
-    - Name: EC3Operator
-      Type: RAEtherNetIPTag
-      DataType: Boolean
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "EC3Operator"
-    - Name: EC1Enable
-      Type: RAEtherNetIPTag
-      DataType: Boolean
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "EC1Enable"
-    - Name: EC2Enable
-      Type: RAEtherNetIPTag
-      DataType: Boolean
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "EC2Enable"
-    - Name: EC3Enable
-      Type: RAEtherNetIPTag
-      DataType: Boolean
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "EC3Enable"
-    - Name: EC1Selected
-      Type: RAEtherNetIPTag
-      DataType: Int32
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "EC1Selected"
-    - Name: EC2Selected
-      Type: RAEtherNetIPTag
-      DataType: Int32
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "EC2Selected"
-    - Name: EC3Selected
-      Type: RAEtherNetIPTag
-      DataType: Int32
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "EC3Selected"
-    - Name: RunningTimeHr
-      Type: RAEtherNetIPTag
-      DataType: Int32
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "RunningTimeHr"
-    - Name: RunningTimeMin
-      Type: RAEtherNetIPTag
-      DataType: Int32
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "RunningTimeMin"
-    - Name: RunningTimeSec
-      Type: RAEtherNetIPTag
-      DataType: Int32
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "RunningTimeSec"
-    - Name: EC1SP
-      Type: RAEtherNetIPTag
-      DataType: Float
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "EC1SP"
-    - Name: EC2SP
-      Type: RAEtherNetIPTag
-      DataType: Float
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "EC2SP"
-    - Name: EC3SP
-      Type: RAEtherNetIPTag
-      DataType: Float
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "EC3SP"
 - Name: Recipe
   Id: g=b5b146da4f2e1907129ba888b75e39da
   Type: UDT_Recipe
@@ -7102,6 +6896,30 @@ Children:
     Type: BaseDataVariableType
     DataType: Boolean
     Value: true
+  - Name: BatchName
+    Type: RAEtherNetIPTag
+    DataType: String
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch.BatchName"
+  - Name: RecipeName
+    Type: RAEtherNetIPTag
+    DataType: String
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch.RecipeName"
+  - Name: RunningPhaseName
+    Type: RAEtherNetIPTag
+    DataType: String
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch.RunningPhaseName"
   - Name: BatchID
     Type: RAEtherNetIPTag
     DataType: Int32
@@ -7126,22 +6944,6 @@ Children:
       Type: BaseDataVariableType
       DataType: String
       Value: "Batch.EvtBatchDone"
-  - Name: BatchName
-    Type: RAEtherNetIPTag
-    DataType: String
-    Children:
-    - Name: SymbolName
-      Type: BaseDataVariableType
-      DataType: String
-      Value: "Batch.BatchName"
-  - Name: RunningPhaseName
-    Type: RAEtherNetIPTag
-    DataType: String
-    Children:
-    - Name: SymbolName
-      Type: BaseDataVariableType
-      DataType: String
-      Value: "Batch.RunningPhaseName"
   - Name: BatchStart
     Id: g=214423d22e181be33060c5a909950983
     Type: RAEtherNetIPTag
@@ -7151,14 +6953,117 @@ Children:
       Type: BaseDataVariableType
       DataType: String
       Value: "Batch.BatchStart"
-  - Name: RecipeName
+    - Name: Description
+      Type: RAEtherNetIPMetaTag
+      DataType: String
+      Value: "Batch Start From HMI"
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Batch.BatchStart.@Description"
+  - Name: BatchPause
     Type: RAEtherNetIPTag
-    DataType: String
+    DataType: Boolean
     Children:
     - Name: SymbolName
       Type: BaseDataVariableType
       DataType: String
-      Value: "Batch.RecipeName"
+      Value: "Batch.BatchPause"
+    - Name: Description
+      Type: RAEtherNetIPMetaTag
+      DataType: String
+      Value: "Pause Command from HMI"
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Batch.BatchPause.@Description"
+  - Name: BatchResume
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch.BatchResume"
+    - Name: Description
+      Type: RAEtherNetIPMetaTag
+      DataType: String
+      Value: "Resume Command from HMI"
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Batch.BatchResume.@Description"
+  - Name: BatchAbort
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch.BatchAbort"
+    - Name: Description
+      Type: RAEtherNetIPMetaTag
+      DataType: String
+      Value: "Abort Command from HMI"
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Batch.BatchAbort.@Description"
+  - Name: BatchIdle
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch.BatchIdle"
+    - Name: Description
+      Type: RAEtherNetIPMetaTag
+      DataType: String
+      Value: "Idle Status to HMI"
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Batch.BatchIdle.@Description"
+  - Name: BatchRunning
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch.BatchRunning"
+    - Name: Description
+      Type: RAEtherNetIPMetaTag
+      DataType: String
+      Value: "Running Status to HMI"
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Batch.BatchRunning.@Description"
+  - Name: BatchHeld
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch.BatchHeld"
+    - Name: Description
+      Type: RAEtherNetIPMetaTag
+      DataType: String
+      Value: "Held Status to HMI"
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Batch.BatchHeld.@Description"
 - Name: OperationHandshake
   Id: g=2f8451e1ac88b0ac7b9329072f7c6070
   Type: UDT_RecipeHandshake

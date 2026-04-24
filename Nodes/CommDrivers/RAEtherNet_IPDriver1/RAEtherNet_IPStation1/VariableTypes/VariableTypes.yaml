@@ -32,7 +32,6 @@ Children:
       DataType: String
       Value: "NoOfOperations"
   - Name: RunningOperation
-    Id: g=8c2426f8f210aec8e24cf7e154864750
     Type: UDT_Operation
     DataType: UDT_Operation
     Children:
@@ -61,12 +60,10 @@ Children:
         DataType: String
         Value: "NoOfPhases"
     - Name: RunningPhase
-      Id: g=aac8b94074c1484e450b8f0086347e96
       Type: UDT_Phase
       DataType: UDT_Phase
       Children:
       - Name: PP
-        Id: g=f72f0bed18c4ff9b97dc8c62b1026f94
         Type: UDT_PhaseParameters
         DataType: UDT_PhaseParameters
         Children:
@@ -131,7 +128,6 @@ Children:
             DataType: String
             Value: "ControllerSetPointValue"
       - Name: EC
-        Id: g=3e4cdc16c74f513885395c00ba05c27b
         Type: UDT_EndConditions
         DataType: UDT_EndConditions
         Children:
@@ -358,12 +354,10 @@ Children:
       DataType: String
       Value: "NoOfPhases"
   - Name: RunningPhase
-    Id: g=dc969bf90ba9447e9cd601d15ed394a2
     Type: UDT_Phase
     DataType: UDT_Phase
     Children:
     - Name: PP
-      Id: g=b10065c5530906637a1b98b7df2b19ba
       Type: UDT_PhaseParameters
       DataType: UDT_PhaseParameters
       Children:
@@ -428,7 +422,6 @@ Children:
           DataType: String
           Value: "ControllerSetPointValue"
     - Name: EC
-      Id: g=356f2d9a56504fc55690850167b72a4c
       Type: UDT_EndConditions
       DataType: UDT_EndConditions
       Children:
@@ -622,6 +615,30 @@ Children:
   DataType: UDT_Batch
   ValueRank: Any
   Children:
+  - Name: BatchName
+    Type: RAEtherNetIPTag
+    DataType: String
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "BatchName"
+  - Name: RecipeName
+    Type: RAEtherNetIPTag
+    DataType: String
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "RecipeName"
+  - Name: RunningPhaseName
+    Type: RAEtherNetIPTag
+    DataType: String
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "RunningPhaseName"
   - Name: BatchID
     Type: RAEtherNetIPTag
     DataType: Int32
@@ -646,22 +663,6 @@ Children:
       Type: BaseDataVariableType
       DataType: String
       Value: "EvtBatchDone"
-  - Name: BatchName
-    Type: RAEtherNetIPTag
-    DataType: String
-    Children:
-    - Name: SymbolName
-      Type: BaseDataVariableType
-      DataType: String
-      Value: "BatchName"
-  - Name: RunningPhaseName
-    Type: RAEtherNetIPTag
-    DataType: String
-    Children:
-    - Name: SymbolName
-      Type: BaseDataVariableType
-      DataType: String
-      Value: "RunningPhaseName"
   - Name: BatchStart
     Type: RAEtherNetIPTag
     DataType: Boolean
@@ -670,14 +671,54 @@ Children:
       Type: BaseDataVariableType
       DataType: String
       Value: "BatchStart"
-  - Name: RecipeName
+  - Name: BatchPause
     Type: RAEtherNetIPTag
-    DataType: String
+    DataType: Boolean
     Children:
     - Name: SymbolName
       Type: BaseDataVariableType
       DataType: String
-      Value: "RecipeName"
+      Value: "BatchPause"
+  - Name: BatchResume
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "BatchResume"
+  - Name: BatchAbort
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "BatchAbort"
+  - Name: BatchIdle
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "BatchIdle"
+  - Name: BatchRunning
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "BatchRunning"
+  - Name: BatchHeld
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "BatchHeld"
 - Name: UDT_EndConditions
   Id: g=d6e94bfa443b81579dfafa4064177a40
   Supertype: RAEtherNetIPTagStructure
@@ -881,7 +922,6 @@ Children:
   ValueRank: Any
   Children:
   - Name: PP
-    Id: g=f0f59d8b392dd04e8d1c3209684a4690
     Type: UDT_PhaseParameters
     DataType: UDT_PhaseParameters
     Children:
@@ -946,7 +986,6 @@ Children:
         DataType: String
         Value: "ControllerSetPointValue"
   - Name: EC
-    Id: g=19418ef0664ac0b2a60fe97bdab8e1af
     Type: UDT_EndConditions
     DataType: UDT_EndConditions
     Children:
