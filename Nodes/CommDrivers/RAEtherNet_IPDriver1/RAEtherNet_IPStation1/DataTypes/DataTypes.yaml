@@ -50,6 +50,34 @@ Children:
     DisplayName: {"LocaleId":"","Text":"Default Binary"}
     ReferenceType: HasEncoding
 - Class: DataType
+  Name: UDT_SeqSteps
+  Id: g=3889982e024416fdd2de1eb98c9dc2b5
+  Supertype: Structure
+  StructDefinition: 
+   {
+    "Name": "UDT_SeqSteps",
+    "DataType": {
+     "IdType": 2,
+     "Id": "3889982e024416fdd2de1eb98c9dc2b5",
+     "Namespace": 7
+    },
+    "Fields": [{
+      "Name": "Step",
+      "DataType": {
+       "Id": 1
+      },
+      "ValueRank": "OneDimension",
+      "ArrayDimensions": [32]
+     }]
+   }
+  DisplayName: {"LocaleId":"","Text":"UDT_SeqSteps"}
+  Children:
+  - Name: ns=0;Default Binary
+    Type: DataTypeEncodingType
+    ModellingRule: None
+    DisplayName: {"LocaleId":"","Text":"Default Binary"}
+    ReferenceType: HasEncoding
+- Class: DataType
   Name: UDT_Operation
   Id: g=5039186152a13e2c43157dd6823420e7
   Supertype: Structure
@@ -202,6 +230,181 @@ Children:
      }]
    }
   DisplayName: {"LocaleId":"","Text":"UDT_Batch"}
+  Children:
+  - Name: ns=0;Default Binary
+    Type: DataTypeEncodingType
+    ModellingRule: None
+    DisplayName: {"LocaleId":"","Text":"Default Binary"}
+    ReferenceType: HasEncoding
+- Class: DataType
+  Name: StepDecode
+  Id: g=c7551c49714ec6050de68448ee6a37df
+  Supertype: Structure
+  StructDefinition: 
+   {
+    "Name": "StepDecode",
+    "DataType": {
+     "IdType": 2,
+     "Id": "c7551c49714ec6050de68448ee6a37df",
+     "Namespace": 7
+    },
+    "Fields": [{
+      "Name": "EnableIn",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "EnableOut",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "StepTimerReset",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "StepN",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "StepPresetTime",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "StepActualTime",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "StepRemainTime",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "StepTimerHold",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "StepTimerDone",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "StepDone",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "StepChanged",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "RemainHour",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "RemainMin",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "RemainSec",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "ActualHour",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "ActualMin",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "ActualSec",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "StepTimerEnable",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "StepActualTimeLastScan",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "StepNLastScan",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "StepTimer",
+      "DataType": {
+       "IdType": 2,
+       "Id": "6fb20912dea54af42b14d176caa459d6",
+       "Namespace": 7
+      }
+     }]
+   }
+  DisplayName: {"LocaleId":"","Text":"StepDecode"}
+  Children:
+  - Name: ns=0;Default Binary
+    Type: DataTypeEncodingType
+    ModellingRule: None
+    DisplayName: {"LocaleId":"","Text":"Default Binary"}
+    ReferenceType: HasEncoding
+- Class: DataType
+  Name: UDT_PhaseExecution
+  Id: g=3c732a58bdcbfe9b50a9a6f8522d2e61
+  Supertype: Structure
+  StructDefinition: 
+   {
+    "Name": "UDT_PhaseExecution",
+    "DataType": {
+     "IdType": 2,
+     "Id": "3c732a58bdcbfe9b50a9a6f8522d2e61",
+     "Namespace": 7
+    },
+    "Fields": [{
+      "Name": "Decode",
+      "DataType": {
+       "IdType": 2,
+       "Id": "c7551c49714ec6050de68448ee6a37df",
+       "Namespace": 7
+      }
+     },{
+      "Name": "Steps",
+      "DataType": {
+       "IdType": 2,
+       "Id": "3889982e024416fdd2de1eb98c9dc2b5",
+       "Namespace": 7
+      }
+     },{
+      "Name": "TimeValue",
+      "DataType": {
+       "Id": 12
+      },
+      "ValueRank": "OneDimension",
+      "ArrayDimensions": [10]
+     },{
+      "Name": "StartNextPhase",
+      "DataType": {
+       "Id": 1
+      }
+     }]
+   }
+  DisplayName: {"LocaleId":"","Text":"UDT_PhaseExecution"}
   Children:
   - Name: ns=0;Default Binary
     Type: DataTypeEncodingType
@@ -457,6 +660,52 @@ Children:
      }]
    }
   DisplayName: {"LocaleId":"","Text":"UDT_PhaseParameters"}
+  Children:
+  - Name: ns=0;Default Binary
+    Type: DataTypeEncodingType
+    ModellingRule: None
+    DisplayName: {"LocaleId":"","Text":"Default Binary"}
+    ReferenceType: HasEncoding
+- Class: DataType
+  Name: TIMER
+  Id: g=6fb20912dea54af42b14d176caa459d6
+  Supertype: Structure
+  StructDefinition: 
+   {
+    "Name": "TIMER",
+    "DataType": {
+     "IdType": 2,
+     "Id": "6fb20912dea54af42b14d176caa459d6",
+     "Namespace": 7
+    },
+    "Fields": [{
+      "Name": "PRE",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "ACC",
+      "DataType": {
+       "Id": 6
+      }
+     },{
+      "Name": "EN",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "TT",
+      "DataType": {
+       "Id": 1
+      }
+     },{
+      "Name": "DN",
+      "DataType": {
+       "Id": 1
+      }
+     }]
+   }
+  DisplayName: {"LocaleId":"","Text":"TIMER"}
   Children:
   - Name: ns=0;Default Binary
     Type: DataTypeEncodingType

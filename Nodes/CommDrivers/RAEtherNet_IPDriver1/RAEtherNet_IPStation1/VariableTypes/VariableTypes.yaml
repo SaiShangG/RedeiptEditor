@@ -32,6 +32,7 @@ Children:
       DataType: String
       Value: "NoOfOperations"
   - Name: RunningOperation
+    Id: g=e638bb7fcd2065020f8b8b864604764e
     Type: UDT_Operation
     DataType: UDT_Operation
     Children:
@@ -60,10 +61,12 @@ Children:
         DataType: String
         Value: "NoOfPhases"
     - Name: RunningPhase
+      Id: g=b23589c78c56e83f88f896dcd37e661e
       Type: UDT_Phase
       DataType: UDT_Phase
       Children:
       - Name: PP
+        Id: g=e12f3d437554abac35cccdc15ac28d94
         Type: UDT_PhaseParameters
         DataType: UDT_PhaseParameters
         Children:
@@ -128,6 +131,7 @@ Children:
             DataType: String
             Value: "ControllerSetPointValue"
       - Name: EC
+        Id: g=6d346f2e0634d0407a261032fe621f1d
         Type: UDT_EndConditions
         DataType: UDT_EndConditions
         Children:
@@ -323,6 +327,22 @@ Children:
       Type: BaseDataVariableType
       DataType: String
       Value: "RecipeComplete"
+- Name: UDT_SeqSteps
+  Id: g=e3470d2eeb6eb3c99402e78e50e74abe
+  Supertype: RAEtherNetIPTagStructure
+  DataType: UDT_SeqSteps
+  ValueRank: Any
+  Children:
+  - Name: Step
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    ValueRank: OneDimension
+    ArrayDimensions: [32]
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Step"
 - Name: UDT_Operation
   Id: g=f7d239467b0a62d12692a12797489189
   Supertype: RAEtherNetIPTagStructure
@@ -354,10 +374,12 @@ Children:
       DataType: String
       Value: "NoOfPhases"
   - Name: RunningPhase
+    Id: g=83aa5e0e2bfc42d8611b45fe195bc8f1
     Type: UDT_Phase
     DataType: UDT_Phase
     Children:
     - Name: PP
+      Id: g=25ae446d204ce2c89e9943ccc7e1729a
       Type: UDT_PhaseParameters
       DataType: UDT_PhaseParameters
       Children:
@@ -422,6 +444,7 @@ Children:
           DataType: String
           Value: "ControllerSetPointValue"
     - Name: EC
+      Id: g=4d1f72e49c81e4d0750e556888cfefee
       Type: UDT_EndConditions
       DataType: UDT_EndConditions
       Children:
@@ -719,6 +742,466 @@ Children:
       Type: BaseDataVariableType
       DataType: String
       Value: "BatchHeld"
+- Name: StepDecode
+  Id: g=0eaba51d2569c998857d3ef21758b2e5
+  Supertype: RAEtherNetIPTagStructure
+  DataType: StepDecode
+  ValueRank: Any
+  Children:
+  - Name: EnableIn
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "EnableIn"
+  - Name: EnableOut
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "EnableOut"
+  - Name: StepTimerReset
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "StepTimerReset"
+  - Name: StepN
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "StepN"
+  - Name: StepPresetTime
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "StepPresetTime"
+  - Name: StepActualTime
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "StepActualTime"
+  - Name: StepRemainTime
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "StepRemainTime"
+  - Name: StepTimerHold
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "StepTimerHold"
+  - Name: StepTimerDone
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "StepTimerDone"
+  - Name: StepDone
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "StepDone"
+  - Name: StepChanged
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "StepChanged"
+  - Name: RemainHour
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "RemainHour"
+  - Name: RemainMin
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "RemainMin"
+  - Name: RemainSec
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "RemainSec"
+  - Name: ActualHour
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "ActualHour"
+  - Name: ActualMin
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "ActualMin"
+  - Name: ActualSec
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "ActualSec"
+  - Name: StepTimerEnable
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "StepTimerEnable"
+  - Name: StepActualTimeLastScan
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "StepActualTimeLastScan"
+  - Name: StepNLastScan
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "StepNLastScan"
+  - Name: StepTimer
+    Id: g=fa30d667061917f32f3e4d477b4bae87
+    Type: TIMER
+    DataType: TIMER
+    Children:
+    - Name: PRE
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "PRE"
+    - Name: ACC
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "ACC"
+    - Name: EN
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EN"
+    - Name: TT
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "TT"
+    - Name: DN
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "DN"
+- Name: UDT_PhaseExecution
+  Id: g=a61b66af53fa68d73a565bbb08155ad7
+  Supertype: RAEtherNetIPTagStructure
+  DataType: UDT_PhaseExecution
+  ValueRank: Any
+  Children:
+  - Name: Decode
+    Id: g=e2061be539746e473148f3be37cfcaa7
+    Type: StepDecode
+    DataType: StepDecode
+    Children:
+    - Name: EnableIn
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EnableIn"
+    - Name: EnableOut
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EnableOut"
+    - Name: StepTimerReset
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "StepTimerReset"
+    - Name: StepN
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "StepN"
+    - Name: StepPresetTime
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "StepPresetTime"
+    - Name: StepActualTime
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "StepActualTime"
+    - Name: StepRemainTime
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "StepRemainTime"
+    - Name: StepTimerHold
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "StepTimerHold"
+    - Name: StepTimerDone
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "StepTimerDone"
+    - Name: StepDone
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "StepDone"
+    - Name: StepChanged
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "StepChanged"
+    - Name: RemainHour
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "RemainHour"
+    - Name: RemainMin
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "RemainMin"
+    - Name: RemainSec
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "RemainSec"
+    - Name: ActualHour
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "ActualHour"
+    - Name: ActualMin
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "ActualMin"
+    - Name: ActualSec
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "ActualSec"
+    - Name: StepTimerEnable
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "StepTimerEnable"
+    - Name: StepActualTimeLastScan
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "StepActualTimeLastScan"
+    - Name: StepNLastScan
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "StepNLastScan"
+    - Name: StepTimer
+      Id: g=8a191e4892c52b2c0c0bea1c1f120c52
+      Type: TIMER
+      DataType: TIMER
+      Children:
+      - Name: PRE
+        Type: RAEtherNetIPTag
+        DataType: Int32
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "PRE"
+      - Name: ACC
+        Type: RAEtherNetIPTag
+        DataType: Int32
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "ACC"
+      - Name: EN
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "EN"
+      - Name: TT
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "TT"
+      - Name: DN
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "DN"
+  - Name: Steps
+    Id: g=3cfd43b00d348560039d701d7de22db7
+    Type: UDT_SeqSteps
+    DataType: UDT_SeqSteps
+    Children:
+    - Name: Step
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      ValueRank: OneDimension
+      ArrayDimensions: [32]
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Step"
+  - Name: TimeValue
+    Type: RAEtherNetIPTag
+    DataType: String
+    ValueRank: OneDimension
+    ArrayDimensions: [10]
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "TimeValue"
+  - Name: StartNextPhase
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "StartNextPhase"
 - Name: UDT_EndConditions
   Id: g=d6e94bfa443b81579dfafa4064177a40
   Supertype: RAEtherNetIPTagStructure
@@ -922,6 +1405,7 @@ Children:
   ValueRank: Any
   Children:
   - Name: PP
+    Id: g=f5fd6006aefe9486473675d8832a5605
     Type: UDT_PhaseParameters
     DataType: UDT_PhaseParameters
     Children:
@@ -986,6 +1470,7 @@ Children:
         DataType: String
         Value: "ControllerSetPointValue"
   - Name: EC
+    Id: g=c52ed7cae36e17b5af1c8ff88a9fe7e0
     Type: UDT_EndConditions
     DataType: UDT_EndConditions
     Children:
@@ -1191,3 +1676,49 @@ Children:
       Type: BaseDataVariableType
       DataType: String
       Value: "ControllerSetPointValue"
+- Name: TIMER
+  Id: g=046f88731196659a9696b807d48df603
+  Supertype: RAEtherNetIPTagStructure
+  DataType: TIMER
+  ValueRank: Any
+  Children:
+  - Name: PRE
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "PRE"
+  - Name: ACC
+    Type: RAEtherNetIPTag
+    DataType: Int32
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "ACC"
+  - Name: EN
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "EN"
+  - Name: TT
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "TT"
+  - Name: DN
+    Type: RAEtherNetIPTag
+    DataType: Boolean
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "DN"
