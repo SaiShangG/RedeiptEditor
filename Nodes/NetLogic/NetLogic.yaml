@@ -208,6 +208,8 @@ Children:
       ValueRank: OneDimension
       ArrayDimensions: [0]
       Value: [{"TypeId":{"Id":296},"Body":{"Name":"commaSeparatedDisplayNames","DataType":{"Id":12},"ValueRank":-1,"ArrayDimensions":[],"Description":{"NamespaceIndex":-1,"LocaleId":"","Text":""}}}]
+  - Class: Method
+    Name: OpenRecipeEditorForSelectedBatch
 - Name: BatchRecipeAuditEventManager
   Id: g=1874eba8ba84da75f18cb910d6cd3006
   Type: NetLogic

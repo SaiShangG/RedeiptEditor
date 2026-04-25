@@ -527,6 +527,11 @@ Children:
                       DataType: Size
                       ModellingRule: Optional
                       Value: 20.0
+                    - Name: Enabled
+                      Type: BaseDataVariableType
+                      DataType: Boolean
+                      ModellingRule: Optional
+                      Value: true
                   - Name: BottomMargin
                     Type: BaseVariableType
                     DataType: Size
@@ -8521,6 +8526,157 @@ Children:
                     DataType: Size
                     ModellingRule: Optional
                     Value: 8.0
+                - Name: VerticalLayout3
+                  Type: ColumnLayout
+                  Children:
+                  - Name: Width
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 50.0
+                  - Name: Height
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 50.0
+                  - Name: HorizontalAlignment
+                    Type: BaseVariableType
+                    DataType: HorizontalAlignment
+                    ModellingRule: Optional
+                    Value: 3
+                  - Name: VerticalAlignment
+                    Type: BaseVariableType
+                    DataType: VerticalAlignment
+                    ModellingRule: Optional
+                    Value: 3
+                  - Name: ButtonWithIcon1
+                    Type: ButtonWithIcon
+                    Children:
+                    - Name: Button1
+                      Type: Button
+                      Children:
+                      - Name: Text
+                        Type: BaseDataVariableType
+                        DataType: LocalizedText
+                        ModellingRule: Optional
+                        Value: {"LocaleId":"en-US","Text":"Recipe Editor"}
+                      - Name: ImagePath
+                        Type: BaseDataVariableType
+                        DataType: ResourceUri
+                        ModellingRule: Optional
+                        Value: "ns=7;%PROJECTDIR%/Images/editor.svg"
+                      - Name: FontSize
+                        Type: BaseDataVariableType
+                        DataType: Size
+                        ModellingRule: Optional
+                        Value: 24.0
+                      - Name: TextColor
+                        Type: BaseDataVariableType
+                        DataType: Color
+                        ModellingRule: Optional
+                        Value: "#3b3b3b"
+                      - Name: BackgroundColor
+                        Type: BaseDataVariableType
+                        DataType: Color
+                        ModellingRule: Optional
+                        Value: "#ffffff"
+                      - Name: MouseClickEventHandler1
+                        Type: EventHandler
+                        Children:
+                        - Name: ListenEventType
+                          Type: PropertyType
+                          DataType: NodeId
+                          Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
+                        - Name: MethodsToCall
+                          Type: BaseObjectType
+                          Children:
+                          - Name: MethodContainer1
+                            Type: BaseObjectType
+                            Children:
+                            - Name: ns=2;ObjectPointer
+                              Type: NodePointer
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/NetLogic/BatchEditorLogic"
+                              Children:
+                              - Name: Kind
+                                Type: PropertyType
+                                DataType: NodeId
+                                Value: "/Types/ObjectTypes/BaseObjectType"
+                            - Name: ns=2;Method
+                              Type: BaseDataVariableType
+                              DataType: String
+                              Value: "OpenRecipeEditorForSelectedBatch"
+                        - Name: EventArguments
+                          Type: MouseClickEvent
+                          Children:
+                          - Name: EventId
+                            Type: PropertyType
+                            DataType: ByteString
+                          - Name: EventType
+                            Type: PropertyType
+                            DataType: NodeId
+                          - Name: SourceNode
+                            Type: PropertyType
+                            DataType: NodeId
+                          - Name: SourceName
+                            Type: PropertyType
+                            DataType: String
+                          - Name: Time
+                            Type: PropertyType
+                            DataType: UtcTime
+                          - Name: ReceiveTime
+                            Type: PropertyType
+                            DataType: UtcTime
+                          - Name: Message
+                            Type: PropertyType
+                            DataType: LocalizedText
+                          - Name: Severity
+                            Type: PropertyType
+                            DataType: UInt16
+                  - Name: VerticalGap
+                    Type: BaseDataVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 8.0
+                  - Name: BottomMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                  - Name: ButtonWithIcon2
+                    Type: ButtonWithIcon
+                    Children:
+                    - Name: Button1
+                      Type: Button
+                      Children:
+                      - Name: Text
+                        Type: BaseDataVariableType
+                        DataType: LocalizedText
+                        ModellingRule: Optional
+                        Value: {"LocaleId":"en-US","Text":"Editor"}
+                      - Name: ImagePath
+                        Type: BaseDataVariableType
+                        DataType: ResourceUri
+                        ModellingRule: Optional
+                        Value: "ns=7;%PROJECTDIR%/Images/editor.svg"
+                      - Name: FontSize
+                        Type: BaseDataVariableType
+                        DataType: Size
+                        ModellingRule: Optional
+                        Value: 24.0
+                      - Name: TextColor
+                        Type: BaseDataVariableType
+                        DataType: Color
+                        ModellingRule: Optional
+                        Value: "#3b3b3b"
+                      - Name: BackgroundColor
+                        Type: BaseDataVariableType
+                        DataType: Color
+                        ModellingRule: Optional
+                        Value: "#ffffff"
+                      - Name: Visible
+                        Type: BaseDataVariableType
+                        DataType: Boolean
+                        ModellingRule: Optional
               - Name: BottomMargin
                 Type: BaseVariableType
                 DataType: Size

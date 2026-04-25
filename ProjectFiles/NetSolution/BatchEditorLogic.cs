@@ -74,6 +74,7 @@ public class BatchEditorLogic : BaseNetLogic
         Instance = this;
         RefreshRecipeListFromStore();
         SetupBatchGridSelectionSync();
+        SelectFirstBatchFromDb();
     }
 
     public override void Stop()
@@ -94,6 +95,34 @@ public class BatchEditorLogic : BaseNetLogic
         }
         _uiSelectedItemVariable = null;
         if (Instance == this) Instance = null;
+    }
+
+    /// <summary>启动时直接从 DB 读取第一条 Batch 并填充表单字段。</summary>
+    private void SelectFirstBatchFromDb()
+    {
+        try
+        {
+            var store = Project.Current?.GetObject("DataStores")?.Get<Store>("ReceiptDB");
+            if (store == null) return;
+
+            store.Query("SELECT Name, RecipeName, Comments FROM Batches LIMIT 1", out _, out object[,] rows);
+            if (rows == null || rows.GetLength(0) == 0) return;
+
+            string name = NormalizeDbCell(rows[0, 0]);
+            string recipe = NormalizeDbCell(rows[0, 1]);
+            string comments = NormalizeDbCell(rows[0, 2]);
+
+            var editor = GetBatchEditorDataNode();
+            if (editor == null) return;
+
+            SetStringVariable(editor, "Name", name);
+            SetStringVariable(editor, "Recipe", recipe);
+            SetStringVariable(editor, "Comments", comments);
+        }
+        catch (Exception ex)
+        {
+            Log.Warning("BatchEditorLogic", $"SelectFirstBatchFromDb: {ex.Message}");
+        }
     }
 
     private void SetupBatchGridSelectionSync()
@@ -161,7 +190,7 @@ public class BatchEditorLogic : BaseNetLogic
         IUANode panelNode = projectRoot.GetObject("UI/Panels/BatchEditor") as IUANode;
         if (panelNode == null)
         {
-            
+
             var ui = projectRoot.GetObject("UI") as IUANode;
             var panels = ui?.GetObject("Panels") as IUANode;
             panelNode = panels?.GetObject("BatchEditor") as IUANode;
@@ -614,6 +643,65 @@ public class BatchEditorLogic : BaseNetLogic
     public void PopulateRecipeList()
     {
         RefreshRecipeListFromStore();
+    }
+
+    /// <summary>
+    /// Edit 按钮回调：导航到 RecipeEditorPanel，并在 Released 分组中选中当前 Batch 所关联的配方。
+    /// </summary>
+    [ExportMethod]
+    public void OpenRecipeEditorForSelectedBatch()
+    {
+        try
+        {
+            // 1. 取当前选中 Batch 的配方名称
+            var editor = GetBatchEditorDataNode();
+            if (editor == null)
+            {
+                Log.Warning("BatchEditorLogic", "OpenRecipeEditorForSelectedBatch: BatchEditorData node not found.");
+                return;
+            }
+
+            string recipeName = editor.GetVariable("Recipe")?.Value?.Value as string ?? "";
+            if (string.IsNullOrWhiteSpace(recipeName))
+            {
+                Log.Warning("BatchEditorLogic", "OpenRecipeEditorForSelectedBatch: no recipe is selected in current batch.");
+                return;
+            }
+
+            // 2. 导航到 RecipeEditorPanel
+            // 确认有效方法：FindDescendantObjectByBrowseName(Project.Current, "PanelLoader2") + ChangePanel("RecipeEditorPanel")
+            var panelLoader = FindDescendantObjectByBrowseName(Project.Current, "PanelLoader2") as PanelLoader;
+            if (panelLoader == null)
+            {
+                Log.Warning("BatchEditorLogic", "OpenRecipeEditorForSelectedBatch: PanelLoader2 not found.");
+                return;
+            }
+            panelLoader.ChangePanel("RecipeEditorPanel");
+
+            // 3. 在 Released 过滤下选中对应配方
+            var loader = RecipeDatabaseTreeLoader.Instance;
+            if (loader == null) return;
+
+            int receiptId = 0;
+            foreach (var receipt in loader.Tree)
+            {
+                if (string.Equals(receipt.Name, recipeName, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(receipt.Status?.Trim(), "Released", StringComparison.OrdinalIgnoreCase))
+                {
+                    receiptId = receipt.ReceiptID;
+                    break;
+                }
+            }
+
+            if (receiptId > 0)
+                GenerateTreeList.Instance?.RefreshAndKeepReceiptSelection(receiptId, "Released");
+            else
+                Log.Warning("BatchEditorLogic", $"OpenRecipeEditorForSelectedBatch: Released recipe '{recipeName}' not found in tree.");
+        }
+        catch (Exception ex)
+        {
+            Log.Error("BatchEditorLogic", $"OpenRecipeEditorForSelectedBatch: {ex.Message}");
+        }
     }
 
     [ExportMethod]
