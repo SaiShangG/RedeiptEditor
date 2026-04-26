@@ -9748,231 +9748,6 @@ Children:
               DataType: VerticalAlignment
               ModellingRule: Optional
               Value: 3
-            - Name: HorizontalLayout1
-              Type: RowLayout
-              Children:
-              - Name: Width
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 100.0
-              - Name: Height
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 100.0
-              - Name: HorizontalAlignment
-                Type: BaseVariableType
-                DataType: HorizontalAlignment
-                ModellingRule: Optional
-                Value: 3
-              - Name: LabelValueHorizontal2
-                Type: LabelValueHorizontal
-                Children:
-                - Name: HorizontalLayout1
-                  Type: RowLayout
-                  Children:
-                  - Name: Label1
-                    Type: Label
-                    Children:
-                    - Name: Text
-                      Type: BaseDataVariableType
-                      DataType: LocalizedText
-                      ModellingRule: Optional
-                      Value: {"LocaleId":"en-US","Text":"NoOfRunningOperation/NoOfOperation:"}
-                  - Name: Rectangle1
-                    Type: Rectangle
-                    Children:
-                    - Name: Value
-                      Type: Label
-                      Children:
-                      - Name: Text
-                        Type: BaseDataVariableType
-                        DataType: LocalizedText
-                        Children:
-                        - Name: DynamicLink
-                          Type: DynamicLink
-                          DataType: NodePath
-                          Value: "/Objects/RedeiptEditor/NetLogic/BatchInforToPLC/StatusText"
-                      - Name: WordWrap
-                        Type: BaseDataVariableType
-                        DataType: Boolean
-                        ModellingRule: Optional
-                        Value: true
-                - Name: HorizontalAlignment
-                  Type: BaseVariableType
-                  DataType: HorizontalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: TopMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 16.0
-                - Name: BottomMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 16.0
-              - Name: LabelValueHorizontal3
-                Type: LabelValueHorizontal
-                Children:
-                - Name: HorizontalLayout1
-                  Type: RowLayout
-                  Children:
-                  - Name: Label1
-                    Type: Label
-                    Children:
-                    - Name: Text
-                      Type: BaseDataVariableType
-                      DataType: LocalizedText
-                      ModellingRule: Optional
-                      Value: {"LocaleId":"en-US","Text":"CmdStart:"}
-                  - Name: Rectangle1
-                    Type: Rectangle
-                    Children:
-                    - Name: Value
-                      Type: Label
-                      Children:
-                      - Name: Text
-                        Type: BaseDataVariableType
-                        DataType: LocalizedText
-                        Children:
-                        - Name: DynamicLink
-                          Type: DynamicLink
-                          DataType: NodePath
-                          Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OperationHandshake/CmdStart"
-                - Name: HorizontalAlignment
-                  Type: BaseVariableType
-                  DataType: HorizontalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: TopMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 16.0
-                - Name: BottomMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 16.0
-              - Name: LabelValueHorizontal1
-                Type: LabelValueHorizontal
-                Children:
-                - Name: HorizontalLayout1
-                  Type: RowLayout
-                  Children:
-                  - Name: Label1
-                    Type: Label
-                    Children:
-                    - Name: Text
-                      Type: BaseDataVariableType
-                      DataType: LocalizedText
-                      ModellingRule: Optional
-                      Value: {"LocaleId":"en-US","Text":"Operation-EvtDone:"}
-                  - Name: Rectangle1
-                    Type: Rectangle
-                    Children:
-                    - Name: Value
-                      Type: Label
-                      Children:
-                      - Name: Text
-                        Type: BaseDataVariableType
-                        DataType: LocalizedText
-                        Children:
-                        - Name: DynamicLink
-                          Type: DynamicLink
-                          DataType: NodePath
-                          Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OperationHandshake/EvtDone"
-                - Name: HorizontalAlignment
-                  Type: BaseVariableType
-                  DataType: HorizontalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: TopMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 16.0
-                - Name: BottomMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 16.0
-              - Name: VerticalAlignment
-                Type: BaseVariableType
-                DataType: VerticalAlignment
-                ModellingRule: Optional
-                Value: 2
-              - Name: HorizontalGap
-                Type: BaseDataVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 8.0
-              - Name: LabelValueHorizontal4
-                Type: LabelValueHorizontal
-                Children:
-                - Name: HorizontalLayout1
-                  Type: RowLayout
-                  Children:
-                  - Name: Label1
-                    Type: Label
-                    Children:
-                    - Name: Text
-                      Type: BaseDataVariableType
-                      DataType: LocalizedText
-                      ModellingRule: Optional
-                      Value: {"LocaleId":"en-US","Text":"NoOfPhases:"}
-                  - Name: Rectangle1
-                    Type: Rectangle
-                    Children:
-                    - Name: Value
-                      Type: Label
-                      Children:
-                      - Name: Text
-                        Type: BaseDataVariableType
-                        DataType: LocalizedText
-                        Children:
-                        - Name: DynamicLink
-                          Type: DynamicLink
-                          DataType: NodePath
-                          Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OP/NoOfPhases"
-                - Name: HorizontalAlignment
-                  Type: BaseVariableType
-                  DataType: HorizontalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: TopMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 16.0
-                - Name: BottomMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 16.0
             - Name: BatchRecipeInfoPanel1
               Type: BatchRecipeInfoPanel
               Children:
@@ -11404,6 +11179,28 @@ Children:
                 DataType: Size
                 ModellingRule: Optional
                 Value: -2.0
+              - Name: Label1
+                Type: Label
+                Children:
+                - Name: Text
+                  Type: BaseDataVariableType
+                  DataType: LocalizedText
+                  Children:
+                  - Name: DynamicLink
+                    Type: DynamicLink
+                    DataType: NodePath
+                    Value: "/Objects/RedeiptEditor/NetLogic/BatchInforToPLC/StatusText"
+              - Name: Label2
+                Type: Label
+                Children:
+                - Name: Text
+                  Type: BaseDataVariableType
+                  DataType: LocalizedText
+                  Children:
+                  - Name: DynamicLink
+                    Type: DynamicLink
+                    DataType: NodePath
+                    Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OperationHandshake/EvtDone"
             - Name: BottomMargin
               Type: BaseVariableType
               DataType: Size
