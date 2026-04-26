@@ -79,8 +79,9 @@ public class GenerateTreeList : BaseNetLogic
         SyncSelectedItemToModel();
         RecipeDatabaseManager.Instance?.PushReceiptStatusSetFromSelectedReceipt();
         GenerateOperationPhaseListPanel.Instance?.RefreshIfModeChanged();
-        RecipeDatabaseManager.Instance?.RefreshTreeMoveButtonsEnabled();
+        if (StatusFilterIsDevelopment()) RecipeDatabaseManager.Instance?.RefreshTreeMoveButtonsEnabled();
         RecipeDatabaseTreeLoader.Instance?.LoadPhaseParametersToUdtTemplateBuffer(0);
+        ApplyMiddlePanelEnabledByFilter();
         if (EnableLog) Log.Info(LogCategory, $"Receipt   点击，SelectedID = {receiptId}");
     }
 
@@ -98,8 +99,9 @@ public class GenerateTreeList : BaseNetLogic
         SyncSelectedItemToModel();
         RecipeDatabaseManager.Instance?.PushReceiptStatusSetFromSelectedReceipt();
         GenerateOperationPhaseListPanel.Instance?.RefreshIfModeChanged();
-        RecipeDatabaseManager.Instance?.RefreshTreeMoveButtonsEnabled();
+        if (StatusFilterIsDevelopment()) RecipeDatabaseManager.Instance?.RefreshTreeMoveButtonsEnabled();
         RecipeDatabaseTreeLoader.Instance?.LoadPhaseParametersToUdtTemplateBuffer(0);
+        ApplyMiddlePanelEnabledByFilter();
         if (EnableLog) Log.Info(LogCategory, $"Operation 按钮点击，Selected Receipt={receiptId}, Operation={operationId}");
     }
 
@@ -117,9 +119,10 @@ public class GenerateTreeList : BaseNetLogic
         SyncSelectedItemToModel();
         RecipeDatabaseManager.Instance?.PushReceiptStatusSetFromSelectedReceipt();
         GenerateOperationPhaseListPanel.Instance?.RefreshIfModeChanged();
-        RecipeDatabaseManager.Instance?.RefreshTreeMoveButtonsEnabled();
+        if (StatusFilterIsDevelopment()) RecipeDatabaseManager.Instance?.RefreshTreeMoveButtonsEnabled();
         RecipeDatabaseTreeLoader.Instance?.LoadPhaseParametersToUdtTemplateBuffer(phaseId);
         PhaseManager.Instance?.RedrawPhaseParameterUI();
+        ApplyMiddlePanelEnabledByFilter();
         if (EnableLog) Log.Info(LogCategory, $"Phase 按钮点击，Selected Receipt={receiptId}, Operation={operationId}, Phase={phaseId}");
     }
 
@@ -248,6 +251,97 @@ public class GenerateTreeList : BaseNetLogic
         _devFilterButton.TextColor = dev ? FilterBarSelectedText : FilterBarUnselectedText;
         _releasedFilterButton.BackgroundColor = !dev ? FilterBarSelectedBg : FilterBarUnselectedBg;
         _releasedFilterButton.TextColor = !dev ? FilterBarSelectedText : FilterBarUnselectedText;
+        ApplyMiddlePanelEnabledByFilter();
+    }
+
+    /// <summary>
+    /// Released 页面仅禁止操作按钮区（Up/Down/Save/SaveAs/Rename/Remove）和内容面板区内
+    /// 的用户输入控件（TextBox / Switch / ComboBox / SpinBox / Button），
+    /// Label 等展示类控件保持正常显示。
+    /// 保留顶部 ReceiptInfoPannel（含 MODIFIABLE STATUS 下拉框）可交互。
+    /// </summary>
+    private void ApplyMiddlePanelEnabledByFilter()
+    {
+        try
+        {
+            bool enabled = StatusFilterIsDevelopment();
+
+            // 向上 6 级到达 ContentContainer
+            var contentContainer = LogicObject?.Owner?.Owner?.Owner?.Owner?.Owner?.Owner;
+            if (contentContainer == null) return;
+
+            var middleContainer = FindChildObjectByBrowseTail(contentContainer, "MiddleContainer");
+            if (middleContainer == null) return;
+
+            // MiddleContainer → Background → Rows
+            var bg = FindChildObjectByBrowseTail(middleContainer, "Background");
+            var rows = bg != null ? FindChildObjectByBrowseTail(bg, "Rows") : null;
+            if (rows == null) return;
+
+            // Background1 = 按钮栏（Up / Down / Save / Save As / Rename / Remove）
+            // 递归禁用，但保留 Save 按钮可用
+            var bg1 = FindChildObjectByBrowseTail(rows, "Background1");
+            if (bg1 != null)
+                SetInputControlsEnabledRecursive(bg1, enabled, skipSaveButton: true);
+
+            // Background2 = 中间内容面板区（Phase Parameters / Flow Path / End Conditions）
+            // 只递归禁用输入控件，避免 Label/Title 变灰影响可读性
+            var bg2 = FindChildObjectByBrowseTail(rows, "Background2");
+            if (bg2 != null)
+                SetInputControlsEnabledRecursive(bg2, enabled);
+
+            // RightContainer = 最右侧 Operation List / Phase List 面板
+            // 与 MiddleContainer 平级，位于 ContentContainer 下
+            var rightContainer = FindChildObjectByBrowseTail(contentContainer, "RightContainer");
+            if (rightContainer != null)
+                SetInputControlsEnabledRecursive(rightContainer, enabled);
+        }
+        catch (Exception ex)
+        {
+            if (EnableLog) Log.Warning(LogCategory, $"ApplyMiddlePanelEnabledByFilter: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// 递归遍历节点树，仅对交互控件（TextBox / Switch / ComboBox / SpinBox / Button）
+    /// 设置 Enabled，跳过 Label 等静态展示节点，避免文字变灰。
+    /// <paramref name="skipSaveButton"/> 为 true 时跳过 Text="Save" 的按钮。
+    /// </summary>
+    private static void SetInputControlsEnabledRecursive(IUANode node, bool enabled, bool skipSaveButton = false)
+    {
+        if (node == null) return;
+        // 命中交互控件：设置并不再深入（子节点由框架统一继承）
+        if (node is TextBox || node is Switch || node is ComboBox || node is SpinBox || node is Button)
+        {
+            if (skipSaveButton && node is Button btn && IsButtonWithText(btn, "Save"))
+                return; // Save 按钮保持原状
+            if (node is Item item) item.Enabled = enabled;
+            return;
+        }
+        foreach (var child in node.Children)
+            SetInputControlsEnabledRecursive(child, enabled, skipSaveButton);
+    }
+
+    /// <summary>检查按钮的 Text 变量值是否与指定文本匹配（忽略大小写）。</summary>
+    private static bool IsButtonWithText(Button btn, string text)
+    {
+        if (btn == null) return false;
+        try
+        {
+            var tv = btn.Text;
+            if (tv == null) return false;
+            return string.Equals(tv.Trim(), text, StringComparison.OrdinalIgnoreCase);
+
+        }
+        catch { return false; }
+    }
+
+    private static void SetNodeEnabled(IUANode node, bool value)
+    {
+        if (node == null) return;
+        if (node is Item item) { item.Enabled = value; return; }
+        var v = node.GetVariable("Enabled");
+        if (v != null) v.Value = value;
     }
 
     private static string BrowseNameTail(IUANode node)
@@ -422,7 +516,7 @@ public class GenerateTreeList : BaseNetLogic
         finally
         {
             treeContainer.Visible = wasVisible;
-            RecipeDatabaseManager.Instance?.RefreshTreeMoveButtonsEnabled();
+            if (StatusFilterIsDevelopment()) RecipeDatabaseManager.Instance?.RefreshTreeMoveButtonsEnabled();
             _filterDialogRecipeMultiActive = false;
         }
     }
