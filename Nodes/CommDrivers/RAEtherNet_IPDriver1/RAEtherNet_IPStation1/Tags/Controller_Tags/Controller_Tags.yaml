@@ -7017,6 +7017,7 @@ Children:
         DataType: String
         Value: "Batch.BatchAbort.@Description"
   - Name: BatchIdle
+    Id: g=4fce6335e8ada0a16e032d4fefb4969e
     Type: RAEtherNetIPTag
     DataType: Boolean
     Children:
