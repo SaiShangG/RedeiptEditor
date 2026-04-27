@@ -541,46 +541,6 @@ Children:
                     Type: BaseVariableType
                     DataType: VerticalAlignment
                     ModellingRule: Optional
-                - Name: ButtonWithIcon2
-                  Type: ButtonWithIcon
-                  Children:
-                  - Name: Button1
-                    Type: Button
-                    Children:
-                    - Name: Text
-                      Type: BaseDataVariableType
-                      DataType: LocalizedText
-                      ModellingRule: Optional
-                      Value: {"LocaleId":"en-US","Text":"Viewer"}
-                    - Name: ImagePath
-                      Type: BaseDataVariableType
-                      DataType: ResourceUri
-                      ModellingRule: Optional
-                      Value: "ns=7;%PROJECTDIR%/Images/viewer 1.png"
-                    - Name: ImageWidth
-                      Type: BaseDataVariableType
-                      DataType: Size
-                      ModellingRule: Optional
-                      Value: 30.0
-                    - Name: ImageHeight
-                      Type: BaseDataVariableType
-                      DataType: Size
-                      ModellingRule: Optional
-                      Value: 30.0
-                    - Name: FontSize
-                      Type: BaseDataVariableType
-                      DataType: Size
-                      ModellingRule: Optional
-                      Value: 20.0
-                  - Name: BottomMargin
-                    Type: BaseVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                    Value: 120.0
-                  - Name: VerticalAlignment
-                    Type: BaseVariableType
-                    DataType: VerticalAlignment
-                    ModellingRule: Optional
                 - Name: HorizontalAlignment
                   Type: BaseVariableType
                   DataType: HorizontalAlignment
@@ -11020,19 +10980,6 @@ Children:
                           - Name: Blink
                             Type: BaseDataVariableType
                             DataType: Boolean
-                            Children:
-                            - Name: ConditionalConverter1
-                              Type: ConditionalConverter
-                              Children:
-                              - Name: Condition
-                                Type: BaseDataVariableType
-                                DataType: Boolean
-                                ReferenceType: HasSource
-                                Children:
-                                - Name: DynamicLink
-                                  Type: DynamicLink
-                                  DataType: NodePath
-                                  Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchStart"
                         - Name: Button1
                           Type: Button
                         - Name: MouseDownEventHandler1
@@ -11190,17 +11137,6 @@ Children:
                     Type: DynamicLink
                     DataType: NodePath
                     Value: "/Objects/RedeiptEditor/NetLogic/BatchInforToPLC/StatusText"
-              - Name: Label2
-                Type: Label
-                Children:
-                - Name: Text
-                  Type: BaseDataVariableType
-                  DataType: LocalizedText
-                  Children:
-                  - Name: DynamicLink
-                    Type: DynamicLink
-                    DataType: NodePath
-                    Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OperationHandshake/EvtDone"
             - Name: BottomMargin
               Type: BaseVariableType
               DataType: Size
