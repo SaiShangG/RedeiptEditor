@@ -1,0 +1,21 @@
+Name: 'Program:MainProgram'
+Type: FolderType
+Children:
+- Name: UserAckConfirm
+  Id: g=38deefcbb910ddf88ea5b3b65fb4a1b6
+  Type: RAEtherNetIPTag
+  DataType: Boolean
+  Children:
+  - Name: SymbolName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Program:MainProgram.UserAckConfirm"
+  - Name: Description
+    Type: RAEtherNetIPMetaTag
+    DataType: String
+    Value: "User Acknowledgement Confirmation from HMI"
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Program:MainProgram.UserAckConfirm.@Description"
