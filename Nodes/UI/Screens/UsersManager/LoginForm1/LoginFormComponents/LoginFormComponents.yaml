@@ -141,6 +141,7 @@ Children:
     - Name: Text
       Type: BaseDataVariableType
       DataType: LocalizedText
+      Value: {"LocaleId":"en-US","Text":"Rockwell"}
     - Name: Width
       Type: BaseVariableType
       DataType: Size

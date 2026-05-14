@@ -15,9 +15,6 @@
           "widgetType": "PhaseSinglePara",
           "label": "Para1",
           "bind": {
-            "bufferField": "PP.FixedSetPointValue",
-            "valueRank": "OneDimension",
-            "index": 0,
             "uiProperty": "Text",
             "sourceTagPath": "PP.FixedSetPointValue[0]"
           }
@@ -27,9 +24,6 @@
           "widgetType": "PhaseSinglePara",
           "label": "Para2",
           "bind": {
-            "bufferField": "PP.ControllerSetPointValue",
-            "valueRank": "OneDimension",
-            "index": 0,
             "uiProperty": "Text",
             "sourceTagPath": "PP.ControllerSetPointValue[0]"
           }
@@ -39,9 +33,6 @@
           "widgetType": "PhaseSinglePara",
           "label": "Para3",
           "bind": {
-            "bufferField": "EC.EC1Selected",
-            "valueRank": "OneDimension",
-            "index": 0,
             "uiProperty": "Text",
             "sourceTagPath": "EC.EC1Selected"
           }
@@ -51,49 +42,39 @@
           "widgetType": "PhaseSinglePara",
           "label": "Para4",
           "bind": {
-            "bufferField": "EC.EC2Selected",
-            "valueRank": "OneDimension",
-            "index": 0,
             "uiProperty": "Text",
             "sourceTagPath": "EC.EC2Selected"
           }
-        },  {
+        },
+        {
           "id": "Para4",
           "widgetType": "PhaseSinglePara",
           "label": "Para5",
           "bind": {
-            "bufferField": "EC.EC2Selected",
-            "valueRank": "OneDimension",
-            "index": 0,
             "uiProperty": "Text",
             "sourceTagPath": "EC.EC2Selected"
           }
-        },  {
+        },
+        {
           "id": "Para5",
           "widgetType": "PhaseSinglePara",
           "label": "Para6",
           "bind": {
-            "bufferField": "EC.EC2Selected",
-            "valueRank": "OneDimension",
-            "index": 0,
             "uiProperty": "Text",
             "sourceTagPath": "EC.EC2Selected"
           }
-        },  {
+        },
+        {
           "id": "Para6",
           "widgetType": "PhaseSinglePara",
           "label": "Para7",
           "bind": {
-            "bufferField": "EC.EC2Selected",
-            "valueRank": "OneDimension",
-            "index": 0,
             "uiProperty": "Text",
             "sourceTagPath": "EC.EC2Selected"
           }
         }
       ]
     },
-  
     {
       "id": "ParaPanel3",
       "panelType": "PhaseParasPanel",
@@ -101,17 +82,12 @@
       "rowLayoutPath": "VL/HL",
       "rowLayoutHorizontalGap": 8,
       "sectionVerticalGap": 8,
-      
       "items": [
-    
         {
           "id": "PumpSetting0",
           "widgetType": "PhaseValvePanel",
           "label": "Pump101",
           "bind": {
-            "bufferField": "PP.Pump",
-            "valueRank": "OneDimension",
-            "index": 0,
             "uiProperty": "Checked",
             "sourceTagPath": "PP.Pump[0]"
           }
@@ -121,9 +97,6 @@
           "widgetType": "PhaseValvePanel",
           "label": "Pump102",
           "bind": {
-            "bufferField": "PP.Pump",
-            "valueRank": "OneDimension",
-            "index": 1,
             "uiProperty": "Checked",
             "sourceTagPath": "PP.Pump[1]"
           }
@@ -133,22 +106,15 @@
           "widgetType": "PhaseValvePanel",
           "label": "Pump103",
           "bind": {
-            "bufferField": "PP.Pump",
-            "valueRank": "OneDimension",
-            "index": 1,
             "uiProperty": "Checked",
             "sourceTagPath": "PP.Pump[2]"
           }
         },
-        
         {
           "id": "PumpSetting3",
           "widgetType": "PhaseValvePanel",
           "label": "Pump104",
           "bind": {
-            "bufferField": "PP.Pump",
-            "valueRank": "OneDimension",
-            "index": 1,
             "uiProperty": "Checked",
             "sourceTagPath": "PP.Pump[3]"
           }
@@ -158,9 +124,6 @@
           "widgetType": "PhaseValvePanel",
           "label": "Valve0",
           "bind": {
-            "bufferField": "PP.Valve",
-            "valueRank": "OneDimension",
-            "index": 0,
             "uiProperty": "Checked",
             "sourceTagPath": "PP.Valve[0]"
           }
@@ -170,9 +133,6 @@
           "widgetType": "PhaseValvePanel",
           "label": "Valve1",
           "bind": {
-            "bufferField": "PP.Valve",
-            "valueRank": "OneDimension",
-            "index": 1,
             "uiProperty": "Checked",
             "sourceTagPath": "PP.Valve[1]"
           }
@@ -182,16 +142,12 @@
           "widgetType": "PhaseValvePanel",
           "label": "Valve2",
           "bind": {
-            "bufferField": "PP.Valve",
-            "valueRank": "OneDimension",
-            "index": 2,
             "uiProperty": "Checked",
             "sourceTagPath": "PP.Valve[2]"
           }
         }
       ]
     },
-   
     {
       "id": "ParaPanel5",
       "panelType": "PhaseParasPanel",

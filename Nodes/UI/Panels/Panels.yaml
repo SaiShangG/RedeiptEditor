@@ -11121,19 +11121,6 @@ Children:
                             Type: BaseDataVariableType
                             DataType: Color
                             Value: "#f8fafc"
-                            Children:
-                            - Name: ConditionalConverter1
-                              Type: ConditionalConverter
-                              Children:
-                              - Name: Condition
-                                Type: BaseDataVariableType
-                                DataType: Boolean
-                                ReferenceType: HasSource
-                                Children:
-                                - Name: DynamicLink
-                                  Type: DynamicLink
-                                  DataType: NodePath
-                                  Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchStart"
                           - Name: MouseDownEventHandler1
                             Type: EventHandler
                             Children:
