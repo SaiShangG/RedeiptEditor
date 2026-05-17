@@ -1,6 +1,7 @@
 Name: Widgets
 Type: FolderType
 Children:
+- File: PhaseConfiguration/PhaseConfiguration.yaml
 - Name: AddNewDialog
   Id: g=ccebfe635417fcab41e0e23d8aa5d4ee
   Supertype: Dialog
@@ -9368,7 +9369,6 @@ Children:
       DataType: Size
       ModellingRule: Optional
       Value: 8.0
-- File: PhaseConfiguration/PhaseConfiguration.yaml
 - Name: BatchRecipeInfoPanel
   Id: g=b8fad84ad815d871581889875deb3bf9
   Supertype: Panel

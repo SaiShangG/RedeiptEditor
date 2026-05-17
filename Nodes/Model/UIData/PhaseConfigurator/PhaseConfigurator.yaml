@@ -1,0 +1,26 @@
+Name: PhaseConfigurator
+Type: FolderType
+Children:
+- Name: SelectedPhaseConfigJson
+  Type: BaseDataVariableType
+  DataType: String
+- Name: PhaseConfigSaveRequestJson
+  Type: BaseDataVariableType
+  DataType: String
+- Name: PhaseConfigSaveRequestFileName
+  Type: BaseDataVariableType
+  DataType: String
+- Name: PhaseConfigSaveTrigger
+  Type: BaseDataVariableType
+  DataType: Boolean
+- Name: PhaseConfigSaveResult
+  Type: BaseDataVariableType
+  DataType: String
+- Name: PhaseConfigLoadVersion
+  Type: BaseDataVariableType
+  DataType: Int32
+- Name: SelectedPhaseConfigFileName
+  Type: BaseDataVariableType
+  DataType: String
+- Name: PhaseConfigFileListJson
+  Type: BaseObjectType

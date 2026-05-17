@@ -6,6 +6,7 @@ using OpcUa = UAManagedCore.OpcUa;
 using FTOptix.NetLogic;
 using FTOptix.HMIProject;
 using FTOptix.Core;
+using FTOptix.WebUI;
 #endregion
 
 /// <summary>

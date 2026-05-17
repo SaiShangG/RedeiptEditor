@@ -90,16 +90,24 @@ Project:
    Uri: 'urn:FTOptix:CommunicationDriver:Net'
    Module: FTOptix.CommunicationDriver.Net
    Version: 4.0
+  25:
+   Uri: 'urn:FTOptix:WebUI'
+   Module: FTOptix.WebUI
+   Version: 2.0
+  26:
+   Uri: 'urn:FTOptix:WebUI:Net'
+   Module: FTOptix.WebUI.Net
+   Version: 2.0
  Statistics:
-  TotalNodeCount: 11611
-  Objects: 1929
-  ObjectTypes: 63
-  Variables: 9523
+  TotalNodeCount: 11686
+  Objects: 1982
+  ObjectTypes: 61
+  Variables: 9546
   VariableTypes: 11
   DataTypes: 17
-  Methods: 68
-  References: 130
+  Methods: 69
+  References: 140
   ReferenceTypes: 0
-  Files: 50
+  Files: 51
  Nodes:
  - File: Nodes/RedeiptEditor.yaml

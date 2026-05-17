@@ -230,6 +230,7 @@
         },
         {
           "id": "ECLogicOperator1",
+          "label": "ECOperator",
           "widgetType": "PanelEndConditionsOperator",
           "bind": {
             "uiPath": "Rectangle_Border/Switch_AndOr",
@@ -311,6 +312,7 @@
         },
         {
           "id": "ECLogicOperator2",
+          "label": "ECOperator",
           "widgetType": "PanelEndConditionsOperator",
           "bind": {
             "uiPath": "Rectangle_Border/Switch_AndOr",

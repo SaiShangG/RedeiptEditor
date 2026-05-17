@@ -136,3 +136,4 @@ Children:
 - File: PhaseData/PhaseData.yaml
 - File: UserInfo/UserInfo.yaml
 - File: SystemData/SystemData.yaml
+- File: PhaseConfigurator/PhaseConfigurator.yaml

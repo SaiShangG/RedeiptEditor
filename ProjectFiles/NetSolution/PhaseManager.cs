@@ -21,8 +21,8 @@ using FTOptix.WebUI;
 public class PhaseManager : BaseNetLogic
 {
     public static PhaseManager Instance { get; private set; }
-     private const string UdtPhaseTemplateUiBufferRootPath = "Model/UIData/PhaseData/UDT_PhaseTemplateUIBuffer1";
-     private const string TestTextTargetVariablePath = UdtPhaseTemplateUiBufferRootPath + "/PP/FixedSetPointValue";
+    private const string UdtPhaseTemplateUiBufferRootPath = "Model/UIData/PhaseData/UDT_PhaseTemplateUIBuffer1";
+    private const string TestTextTargetVariablePath = UdtPhaseTemplateUiBufferRootPath + "/PP/FixedSetPointValue";
     private const string ScrollRowsPath = "Background/ScrollView1/Rows";
 
     public override void Start()
@@ -168,7 +168,7 @@ public class PhaseManager : BaseNetLogic
         }
     }
 
-   
+
     /// <summary>记录 JsonFile 变量当前值类型与摘要，便于排查路径解析失败。</summary>
     private static string DescribeJsonFileVariableForLog(IUAVariable jsonVar)
     {
@@ -188,7 +188,7 @@ public class PhaseManager : BaseNetLogic
         {
             return ex.Message;
         }
-    }   
+    }
 
     #region Phase JSON 构建与 UDT_Phase 绑定
     private void BuildPhaseUiFromLayout(IUAObject owner, PhaseUILayoutRoot root)
@@ -257,7 +257,7 @@ public class PhaseManager : BaseNetLogic
             }
         }
     }
- 
+
     /// <summary>解析 sourceTagPath（如 PP.FixedSetPointValue[0]）为字段路径与可选数组索引。</summary>
     private static bool TryParseSourceTagPath(string sourceTagPath, out string bufferFieldPath, out int? arrayIndex, out string error)
     {
@@ -305,14 +305,14 @@ public class PhaseManager : BaseNetLogic
         arrayIndex = idx;
         return true;
     }
- 
+
 
     /// <summary>按 JSON <c>bind.sourceTagPath</c> 将控件绑定到 UDT_Phase 成员；带 [index] 时绑定数组元素。</summary>
     private void AttachUdtPhaseBufferBinds(IUAObject owner, PhaseUILayoutRoot root)
     {
         if (owner == null || root?.Sections == null) return;
         if (owner.Get(ScrollRowsPath) == null) return;
-         
+
         foreach (var sec in root.Sections)
         {
             if (sec?.Items == null) continue;
@@ -362,7 +362,7 @@ public class PhaseManager : BaseNetLogic
                     else
                         uiVar.SetDynamicLink(modelVar, DynamicLinkMode.ReadWrite);
                 }
-             }
+            }
         }
     }
 
@@ -450,7 +450,7 @@ public class PhaseManager : BaseNetLogic
         return null;
     }
 
-     
+
     private static void ClearScrollRows(IUANode container)
     {
         if (container?.Children == null) return;
@@ -507,28 +507,6 @@ public class PhaseManager : BaseNetLogic
             var label = w.Get<Label>("VerticalLayout1/ParaName/Label1");
             if (label != null) label.Text = lbl;
             rowLayout.Add(w);
-            return;
-        }
-        if (WidgetTypeIs(t, "PhaseUserAck"))
-        {
-            rowLayout.Add(InformationModel.Make<PhaseUserAck1>(item.Id));
-            return;
-        }
-        if (WidgetTypeIs(t, "PhaseAndorOr"))
-        {
-            var w = InformationModel.Make<PhaseAndorOr1>(item.Id);
-            if (item.Width.HasValue) w.Width = item.Width.Value;
-            rowLayout.Add(w);
-            return;
-        }
-        if (WidgetTypeIs(t, "PhaseRunningTime"))
-        {
-            rowLayout.Add(InformationModel.Make<PhaseRunningTime1>(item.Id));
-            return;
-        }
-        if (WidgetTypeIsParaCompare(t, 1))
-        {
-            rowLayout.Add(InformationModel.Make<PhaseParaCompare3>(item.Id));
             return;
         }
         if (WidgetTypeIsParaCompare(t, 2))

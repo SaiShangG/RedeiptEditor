@@ -4,6 +4,7 @@ using System.Globalization;
 using UAManagedCore;
 using FTOptix.NetLogic;
 using FTOptix.HMIProject;
+using FTOptix.WebUI;
 #endregion
 
 public class SystemDataClockLogic : BaseNetLogic

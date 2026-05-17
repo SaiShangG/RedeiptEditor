@@ -2807,6 +2807,16 @@ Children:
           Children:
           - Name: Label1
             Type: Label
+            Children:
+            - Name: Text
+              Type: BaseDataVariableType
+              DataType: LocalizedText
+              ModellingRule: Optional
+              Value: {"LocaleId":"en-US","Text":"End Condition X ( EC X )"}
+            - Name: Visible
+              Type: BaseDataVariableType
+              DataType: Boolean
+              Value: true
           - Name: ComboBox1
             Type: ComboBox
             Children:
