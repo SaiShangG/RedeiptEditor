@@ -20,6 +20,7 @@ using FTOptix.CoreBase;
 using FTOptix.CommunicationDriver;
 using FTOptix.Core;
 using FTOptix.WebUI;
+using FTOptix.EventLogger;
 #endregion
 
 public class PhaseConfigurator : BaseNetLogic

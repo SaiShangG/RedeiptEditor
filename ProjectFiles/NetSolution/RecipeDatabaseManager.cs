@@ -13,6 +13,7 @@ using FTOptix.RecipeX;
 using FTOptix.RAEtherNetIP;
 using FTOptix.CommunicationDriver;
 using FTOptix.WebUI;
+using FTOptix.EventLogger;
 #endregion
 
 public class RecipeDatabaseManager : BaseNetLogic

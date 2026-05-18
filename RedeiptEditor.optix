@@ -98,15 +98,23 @@ Project:
    Uri: 'urn:FTOptix:WebUI:Net'
    Module: FTOptix.WebUI.Net
    Version: 2.0
+  27:
+   Uri: 'urn:FTOptix:EventLogger'
+   Module: FTOptix.EventLogger
+   Version: 2.0
+  28:
+   Uri: 'urn:FTOptix:EventLogger:Net'
+   Module: FTOptix.EventLogger.Net
+   Version: 1.0
  Statistics:
-  TotalNodeCount: 11686
-  Objects: 1982
+  TotalNodeCount: 11712
+  Objects: 1993
   ObjectTypes: 61
-  Variables: 9546
+  Variables: 9561
   VariableTypes: 11
   DataTypes: 17
   Methods: 69
-  References: 140
+  References: 158
   ReferenceTypes: 0
   Files: 51
  Nodes:

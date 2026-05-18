@@ -12,6 +12,7 @@ using FTOptix.RecipeX;
 using FTOptix.RAEtherNetIP;
 using FTOptix.CommunicationDriver;
 using FTOptix.WebUI;
+using FTOptix.EventLogger;
 #endregion
 
 /// <summary>

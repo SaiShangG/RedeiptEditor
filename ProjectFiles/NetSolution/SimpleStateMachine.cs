@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using FTOptix.WebUI;
+using FTOptix.EventLogger;
 
 namespace RedeiptEditor.NetSolution
 {

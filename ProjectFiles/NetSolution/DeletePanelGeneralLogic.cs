@@ -7,6 +7,7 @@ using FTOptix.NetLogic;
 using FTOptix.HMIProject;
 using FTOptix.Core;
 using FTOptix.WebUI;
+using FTOptix.EventLogger;
 #endregion
 
 /// <summary>
