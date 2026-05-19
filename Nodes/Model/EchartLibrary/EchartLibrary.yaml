@@ -1,0 +1,457 @@
+Name: EchartLibrary
+Type: FolderType
+Children:
+- File: Types/Types.yaml
+- Name: HttpServer
+  Type: NetLogic
+  Children:
+  - Name: httpserver
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "127.0.0.1:8090"
+- Name: LineChart1
+  Type: BaseObjectType
+  Children:
+  - Name: xAxisType
+    Type: BaseDataVariableType
+    DataType: axis
+  - Name: xAxisData
+    Type: BaseDataVariableType
+    DataType: String
+    ValueRank: OneDimension
+    ArrayDimensions: [6]
+    Value: ["16:54","16:55","16:56","16:57","16:58","16:59"]
+  - Name: line1
+    Type: BaseObjectType
+    Children:
+    - Name: data
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [6]
+      Value: ["23","34","56","445","56","67"]
+    - Name: lineColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#0fafff"
+    - Name: lineType
+      Type: BaseDataVariableType
+      DataType: line
+    - Name: label
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "PH"
+    - Name: width
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 1
+    - Name: smooth
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: areaStyle
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: emphasis
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: labelColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#3b3b3b"
+    - Name: areaColor
+      Type: BaseDataVariableType
+      DataType: Color
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["#37deff","#6c95ff"]
+  - Name: URL
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "http://www.baidu.com"
+    Children:
+    - Name: StringFormatter1
+      Type: StringFormatter
+      Children:
+      - Name: Format
+        Type: BaseDataVariableType
+        DataType: LocalizedText
+        ReferenceType: HasParameter
+        Value: {"LocaleId":"en-US","Text":"http://{1}/LineChart/linechart.html?p={0}"}
+      - Name: ns=2;Source0
+        Type: BaseDataVariableType
+        DataType: BaseDataType
+        ReferenceType: HasSource
+        Children:
+        - Name: DynamicLink
+          Type: DynamicLink
+          DataType: NodePath
+          Value: "../../..@BrowsePath"
+      - Name: ns=2;Source1
+        Type: BaseDataVariableType
+        DataType: BaseDataType
+        ReferenceType: HasSource
+        Children:
+        - Name: DynamicLink
+          Type: DynamicLink
+          DataType: NodePath
+          Value: "../../../../HttpServer/httpserver@Value"
+  - Name: refreshInterval
+    Type: BaseDataVariableType
+    DataType: Float
+    Value: 1000.0
+  - Name: background
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#18386e"
+  - Name: axisFontColor
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#f9fafc"
+  - Name: axisLineColor
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#86eadd"
+  - Name: axisSplitLineColor
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#74737e"
+  - Name: axisSplitLineType
+    Type: BaseDataVariableType
+    DataType: axisSplitLine
+- Name: Pie4
+  Type: BaseObjectType
+  Children:
+  - Name: pieData
+    Type: BaseObjectType
+    Children:
+    - Name: data
+      Type: BaseDataVariableType
+      DataType: Float
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: [34.0,45.0,56.0]
+    - Name: labels
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["piechartLabel3","Label2","Label3"]
+    - Name: labelColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#90d4f6"
+    - Name: borderRadius
+      Type: BaseDataVariableType
+      DataType: Int32
+    - Name: borderColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#90d4f6"
+    - Name: borderWidth
+      Type: BaseDataVariableType
+      DataType: Int32
+    - Name: showLabel
+      Type: BaseDataVariableType
+      DataType: Boolean
+    - Name: showLabelLine
+      Type: BaseDataVariableType
+      DataType: Boolean
+    - Name: avoidLabelOverlap
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: radius
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["0","50%"]
+    - Name: startAngle
+      Type: BaseDataVariableType
+      DataType: Int32
+    - Name: endAngle
+      Type: BaseDataVariableType
+      DataType: Int32
+    - Name: center
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["50%","50%"]
+    - Name: padAngle
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 20
+    - Name: roseType
+      Type: BaseDataVariableType
+      DataType: Int32
+  - Name: URL
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "http://www.baidu.com"
+    Children:
+    - Name: StringFormatter1
+      Type: StringFormatter
+      Children:
+      - Name: Format
+        Type: BaseDataVariableType
+        DataType: LocalizedText
+        ReferenceType: HasParameter
+        Value: {"LocaleId":"en-US","Text":"http://{1}/PieChart/piechart.html?p={0}"}
+      - Name: ns=2;Source0
+        Type: BaseDataVariableType
+        DataType: BaseDataType
+        ReferenceType: HasSource
+        Children:
+        - Name: DynamicLink
+          Type: DynamicLink
+          DataType: NodePath
+          Value: "../../..@BrowsePath"
+      - Name: ns=2;Source1
+        Type: BaseDataVariableType
+        DataType: BaseDataType
+        ReferenceType: HasSource
+        Children:
+        - Name: DynamicLink
+          Type: DynamicLink
+          DataType: NodePath
+          Value: "../../../../HttpServer/httpserver@Value"
+  - Name: refreshInterval
+    Type: BaseDataVariableType
+    DataType: Float
+    Value: 1000.0
+  - Name: title
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Piechart4"
+  - Name: background
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#ffffff"
+  - Name: titleColor
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#075982"
+- Name: Gauge1
+  Type: BaseObjectType
+  Children:
+  - Name: gaugeData
+    Type: BaseObjectType
+    Children:
+    - Name: data
+      Type: BaseDataVariableType
+      DataType: Float
+      Value: 23.0
+    - Name: showProgress
+      Type: BaseDataVariableType
+      DataType: Boolean
+    - Name: showAxisTick
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: showAnchor
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: showPointer
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: showSplitLine
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: startAngle
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 210
+    - Name: endAngle
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: -30
+    - Name: center
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["50%","50%"]
+    - Name: radius
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "70%"
+    - Name: splitNumber
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 10
+    - Name: showAxisLabel
+      Type: BaseDataVariableType
+      DataType: Boolean
+    - Name: progressWidth
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 10
+    - Name: progressRoundCap
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: progressColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#075982"
+    - Name: anchorSize
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 10
+    - Name: anchorBorderWidth
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 10
+    - Name: axisTickColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#86eadd"
+    - Name: axisTickDistance
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 10
+    - Name: axisTickFontSize
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 10
+    - Name: axisTickWidth
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 2
+    - Name: axisTickLength
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 10
+    - Name: pointWidth
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 5
+    - Name: pointColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#9ef9ee"
+    - Name: axisLineWidth
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 10
+    - Name: axisLineColor
+      Type: BaseDataVariableType
+      DataType: Color
+      ValueRank: OneDimension
+      ArrayDimensions: [4]
+      Value: ["#0fafff","#0fafff","#0fafff","#0fafff"]
+    - Name: splitLineLength
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 13
+    - Name: splitLineWidth
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 4
+    - Name: splitLineDistance
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 10
+    - Name: splitLineColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#9ef9ee"
+    - Name: axisLabelDistance
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 25
+    - Name: axisLabelFontSize
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 20
+    - Name: axisLabelColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#0fafff"
+    - Name: maxValue
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 60
+    - Name: minValue
+      Type: BaseDataVariableType
+      DataType: Int32
+    - Name: showCurrentValue
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: currentValuePosition
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["0","50%"]
+    - Name: currentValueFontSize
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 30
+    - Name: currentValueUnit
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Km/h"
+    - Name: currentValueColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#9ef9ee"
+    - Name: axisLineRoundCap
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+  - Name: URL
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "http://www.baidu.com"
+    Children:
+    - Name: StringFormatter1
+      Type: StringFormatter
+      Children:
+      - Name: Format
+        Type: BaseDataVariableType
+        DataType: LocalizedText
+        ReferenceType: HasParameter
+        Value: {"LocaleId":"en-US","Text":"http://{1}/GaugeChart/gaugechart.html?p={0}"}
+      - Name: ns=2;Source0
+        Type: BaseDataVariableType
+        DataType: BaseDataType
+        ReferenceType: HasSource
+        Children:
+        - Name: DynamicLink
+          Type: DynamicLink
+          DataType: NodePath
+          Value: "../../..@BrowsePath"
+      - Name: ns=2;Source1
+        Type: BaseDataVariableType
+        DataType: BaseDataType
+        ReferenceType: HasSource
+        Children:
+        - Name: DynamicLink
+          Type: DynamicLink
+          DataType: NodePath
+          Value: "../../../../HttpServer/httpserver@Value"
+  - Name: refreshInterval
+    Type: BaseDataVariableType
+    DataType: Float
+    Value: 1000.0
+  - Name: title
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Gauger Demo 1"
+  - Name: background
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#000003d4"
+  - Name: titleColor
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#ffffff"

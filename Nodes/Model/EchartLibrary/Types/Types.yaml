@@ -1,0 +1,662 @@
+Name: Types
+Type: FolderType
+Children:
+- Name: Gauge
+  Id: g=f386295ff7a4912fb87bc9f6d8e6ff82
+  Supertype: BaseObjectType
+  Children:
+  - Name: gaugeData
+    Type: BaseObjectType
+    Children:
+    - Name: data
+      Type: BaseDataVariableType
+      DataType: Float
+      Value: 23.0
+    - Name: showProgress
+      Type: BaseDataVariableType
+      DataType: Boolean
+    - Name: showAxisTick
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: showAnchor
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: showPointer
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: showSplitLine
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: startAngle
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 210
+    - Name: endAngle
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: -30
+    - Name: center
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["50%","50%"]
+    - Name: radius
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "70%"
+    - Name: splitNumber
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 10
+    - Name: showAxisLabel
+      Type: BaseDataVariableType
+      DataType: Boolean
+    - Name: progressWidth
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 10
+    - Name: progressRoundCap
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: progressColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#075982"
+    - Name: anchorSize
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 10
+    - Name: anchorBorderWidth
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 10
+    - Name: axisTickColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#86eadd"
+    - Name: axisTickDistance
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 10
+    - Name: axisTickFontSize
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 10
+    - Name: axisTickWidth
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 2
+    - Name: axisTickLength
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 10
+    - Name: pointWidth
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 5
+    - Name: pointColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#9ef9ee"
+    - Name: axisLineWidth
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 10
+    - Name: axisLineColor
+      Type: BaseDataVariableType
+      DataType: Color
+      ValueRank: OneDimension
+      ArrayDimensions: [4]
+      Value: ["#0fafff","#0fafff","#0fafff","#0fafff"]
+    - Name: splitLineLength
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 13
+    - Name: splitLineWidth
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 4
+    - Name: splitLineDistance
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 10
+    - Name: splitLineColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#9ef9ee"
+    - Name: axisLabelDistance
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 25
+    - Name: axisLabelFontSize
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 20
+    - Name: axisLabelColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#0fafff"
+    - Name: maxValue
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 60
+    - Name: minValue
+      Type: BaseDataVariableType
+      DataType: Int32
+    - Name: showCurrentValue
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: currentValuePosition
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["0","50%"]
+    - Name: currentValueFontSize
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 30
+    - Name: currentValueUnit
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Km/h"
+    - Name: currentValueColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#9ef9ee"
+    - Name: axisLineRoundCap
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+  - Name: URL
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "http://www.baidu.com"
+    Children:
+    - Name: StringFormatter1
+      Type: StringFormatter
+      Children:
+      - Name: Format
+        Type: BaseDataVariableType
+        DataType: LocalizedText
+        ReferenceType: HasParameter
+        ModellingRule: Optional
+        Value: {"LocaleId":"en-US","Text":"http://{0}/GaugeChart/gaugechart.html?p={1}"}
+      - Name: ns=2;Source0
+        Type: BaseDataVariableType
+        DataType: BaseDataType
+        ReferenceType: HasSource
+        Children:
+        - Name: DynamicLink
+          Type: DynamicLink
+          DataType: NodePath
+          Value: "/Objects/RedeiptEditor/Model/EchartLibrary/HttpServer/httpserver@BrowsePath"
+      - Name: ns=2;Source1
+        Type: BaseDataVariableType
+        DataType: BaseDataType
+        ReferenceType: HasSource
+        Children:
+        - Name: DynamicLink
+          Type: DynamicLink
+          DataType: NodePath
+  - Name: refreshInterval
+    Type: BaseDataVariableType
+    DataType: Float
+    Value: 1000.0
+  - Name: title
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Gauger Demo 1"
+  - Name: background
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#000003d4"
+  - Name: titleColor
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#ffffff"
+- Name: LineChart
+  Id: g=4ca0723648ba0a764fc52497fc2e5490
+  Supertype: BaseObjectType
+  Children:
+  - Name: xAxisType
+    Type: BaseDataVariableType
+    DataType: axis
+  - Name: xAxisData
+    Type: BaseDataVariableType
+    DataType: String
+    ValueRank: OneDimension
+    ArrayDimensions: [6]
+    Value: ["MonXXX","TheTest","Wed","Thu","Fri","Text"]
+  - Name: line1
+    Type: BaseObjectType
+    Children:
+    - Name: data
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [6]
+      Value: ["23","34","56","78","56","67"]
+    - Name: lineColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#6f87dff8"
+    - Name: lineType
+      Type: BaseDataVariableType
+      DataType: line
+    - Name: label
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Pressure"
+    - Name: width
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 4
+    - Name: smooth
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: areaStyle
+      Type: BaseDataVariableType
+      DataType: Boolean
+    - Name: emphasis
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: markPoint
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: markLine
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: areaColor
+      Type: BaseDataVariableType
+      DataType: Color
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["#466aedf8","#77afe7"]
+    - Name: labelColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#ffffff"
+    - Name: bandWidth
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "30%"
+  - Name: URL
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "http://www.baidu.com"
+    Children:
+    - Name: StringFormatter1
+      Type: StringFormatter
+      Children:
+      - Name: Format
+        Type: BaseDataVariableType
+        DataType: LocalizedText
+        ReferenceType: HasParameter
+        ModellingRule: Optional
+        Value: {"LocaleId":"en-US","Text":"http://{0}/LineChart/linechart.html?p={1}"}
+      - Name: ns=2;Source0
+        Type: BaseDataVariableType
+        DataType: BaseDataType
+        ReferenceType: HasSource
+        Children:
+        - Name: DynamicLink
+          Type: DynamicLink
+          DataType: NodePath
+          Value: "/Objects/RedeiptEditor/Model/EchartLibrary/HttpServer/httpserver@BrowsePath"
+      - Name: ns=2;Source1
+        Type: BaseDataVariableType
+        DataType: BaseDataType
+        ReferenceType: HasSource
+        Children:
+        - Name: DynamicLink
+          Type: DynamicLink
+          DataType: NodePath
+  - Name: refreshInterval
+    Type: BaseDataVariableType
+    DataType: Float
+    Value: 1000.0
+  - Name: line2
+    Type: BaseObjectType
+    Children:
+    - Name: data
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [6]
+      Value: ["12","45","56","23","45","23"]
+    - Name: lineColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#37deff"
+    - Name: lineType
+      Type: BaseDataVariableType
+      DataType: line
+    - Name: label
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Label2"
+    - Name: width
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 1
+    - Name: smooth
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: areaStyle
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: emphasis
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: markPoint
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: markLine
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: areaColor
+      Type: BaseDataVariableType
+      DataType: Color
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["#37deff","#6c95ff"]
+    - Name: labelColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#ffffff"
+  - Name: toolbox
+    Type: BaseDataVariableType
+    DataType: String
+    ValueRank: OneDimension
+    ArrayDimensions: [5]
+    Value: ["dataZoom","dataView","magicType","restore","saveAsImage"]
+  - Name: line3
+    Type: BaseObjectType
+    Children:
+    - Name: data
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [6]
+      Value: ["21","45","32","45","12","45"]
+    - Name: lineColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#86eadd"
+    - Name: lineType
+      Type: BaseDataVariableType
+      DataType: line
+    - Name: label
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Label2"
+    - Name: width
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 1
+    - Name: smooth
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: areaStyle
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: emphasis
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: markPoint
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: markLine
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: areaColor
+      Type: BaseDataVariableType
+      DataType: Color
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["#86eadd","#3acfed"]
+    - Name: labelColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#ffffff"
+  - Name: background
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#000003d4"
+  - Name: axisFontColor
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#ffffff"
+  - Name: axisLineColor
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#86eadd"
+  - Name: axisSplitLineColor
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#74737e"
+  - Name: axisSplitLineType
+    Type: BaseDataVariableType
+    DataType: axisSplitLine
+- Name: Pie
+  Id: g=197a8a432a3a7a9dc3258994d52d1a06
+  Supertype: BaseObjectType
+  Children:
+  - Name: pieData
+    Type: BaseObjectType
+    Children:
+    - Name: data
+      Type: BaseDataVariableType
+      DataType: Float
+      ValueRank: OneDimension
+      ArrayDimensions: [5]
+      Value: [34.0,45.0,56.0,67.0,67.0]
+    - Name: labels
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [5]
+      Value: ["piechartLabel3","Label2","Label3","Label4","Label5"]
+    - Name: labelColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#ffffff"
+    - Name: borderRadius
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 1
+    - Name: borderColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#ffffff"
+    - Name: borderWidth
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 2
+    - Name: showLabel
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: showLabelLine
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: avoidLabelOverlap
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: radius
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["40%","60%"]
+    - Name: startAngle
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 180
+    - Name: endAngle
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 360
+    - Name: center
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["50%","50%"]
+    - Name: padAngle
+      Type: BaseDataVariableType
+      DataType: Int32
+    - Name: pieColorConfig
+      Type: BaseDataVariableType
+      DataType: Color
+      ValueRank: OneDimension
+      ArrayDimensions: [15]
+      Value: ["#c1232b","#b5c334","#fcce10","#e87c25","#27727b","#fe8463","#9bca63","#fad860","#f3a43b","#60c0dd","#d7504b","#c6e579","#f4e001","#f0805a","#26c0c0"]
+  - Name: URL
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "http://www.baidu.com"
+    Children:
+    - Name: StringFormatter1
+      Type: StringFormatter
+      Children:
+      - Name: Format
+        Type: BaseDataVariableType
+        DataType: LocalizedText
+        ReferenceType: HasParameter
+        ModellingRule: Optional
+        Value: {"LocaleId":"en-US","Text":"http://{1}/PieChart/piechart.html?p={0}"}
+      - Name: ns=2;Source0
+        Type: BaseDataVariableType
+        DataType: BaseDataType
+        ReferenceType: HasSource
+        Children:
+        - Name: DynamicLink
+          Type: DynamicLink
+          DataType: NodePath
+          Value: "../../..@BrowsePath"
+      - Name: ns=2;Source1
+        Type: BaseDataVariableType
+        DataType: BaseDataType
+        ReferenceType: HasSource
+        Children:
+        - Name: DynamicLink
+          Type: DynamicLink
+          DataType: NodePath
+          Value: "/Objects/RedeiptEditor/Model/EchartLibrary/HttpServer/httpserver@Value"
+  - Name: refreshInterval
+    Type: BaseDataVariableType
+    DataType: Float
+    Value: 1000.0
+  - Name: title
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Piechart3"
+  - Name: background
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#000003d4"
+  - Name: titleColor
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#ffffff"
+  - Name: titleFontSize
+    Type: BaseDataVariableType
+    DataType: Int32
+    Value: 16
+- Class: DataType
+  Name: lineType
+  Id: g=08c0cd176e19d97e634079bf72f11f13
+  Supertype: Enumeration
+  Children:
+  - Name: ns=0;EnumValues
+    Type: BaseDataVariableType
+    DataType: EnumValueType
+    ModellingRule: None
+    ValueRank: OneDimension
+    ArrayDimensions: [0]
+    Value: [{"TypeId":{"Id":7594},"Body":{"Value":0,"DisplayName":{"LocaleId":"en-US","Text":"line"},"Description":{"LocaleId":"en-US","Text":"line chart with solid line"}}},{"TypeId":{"Id":7594},"Body":{"Value":1,"DisplayName":{"LocaleId":"en-US","Text":"bar"},"Description":{"LocaleId":"en-US","Text":"bar chart"}}},{"TypeId":{"Id":7594},"Body":{"Value":2,"DisplayName":{"LocaleId":"en-US","Text":"dashedLine"},"Description":{"LocaleId":"en-US","Text":"line chart with dashed line"}}}]
+- Class: DataType
+  Name: axisSplitLineType
+  Id: g=4f0f9a3970957778ee8cc2804e50ce76
+  Supertype: Enumeration
+  Children:
+  - Name: ns=0;EnumValues
+    Type: BaseDataVariableType
+    DataType: EnumValueType
+    ModellingRule: None
+    ValueRank: OneDimension
+    ArrayDimensions: [0]
+    Value: [{"TypeId":{"Id":7594},"Body":{"Value":0,"DisplayName":{"LocaleId":"en-US","Text":"solid"},"Description":{"LocaleId":"en-US","Text":"solid"}}},{"TypeId":{"Id":7594},"Body":{"Value":1,"DisplayName":{"LocaleId":"en-US","Text":"dashed"},"Description":{"LocaleId":"en-US","Text":"dashed"}}},{"TypeId":{"Id":7594},"Body":{"Value":2,"DisplayName":{"LocaleId":"en-US","Text":"dotted"},"Description":{"LocaleId":"en-US","Text":"dotted"}}}]
+- Class: DataType
+  Name: axisType
+  Id: g=617e392a42de622fd7e55d4fe1c6d245
+  Supertype: Enumeration
+  Children:
+  - Name: ns=0;EnumValues
+    Type: BaseDataVariableType
+    DataType: EnumValueType
+    ModellingRule: None
+    ValueRank: OneDimension
+    ArrayDimensions: [0]
+    Value: [{"TypeId":{"Id":7594},"Body":{"Value":0,"DisplayName":{"LocaleId":"en-US","Text":"category"},"Description":{"LocaleId":"en-US","Text":"category"}}},{"TypeId":{"Id":7594},"Body":{"Value":1,"DisplayName":{"LocaleId":"en-US","Text":"value"},"Description":{"LocaleId":"en-US","Text":"value"}}}]
+- Class: DataType
+  Name: axis
+  Id: g=69f382be7cf29cf8ce79c5cc53e9990d
+  Supertype: Enumeration
+  Children:
+  - Name: ns=0;EnumValues
+    Type: BaseDataVariableType
+    DataType: EnumValueType
+    ModellingRule: None
+    ValueRank: OneDimension
+    ArrayDimensions: [0]
+    Value: [{"TypeId":{"Id":7594},"Body":{"Value":0,"DisplayName":{"LocaleId":"en-US","Text":"category"},"Description":{"LocaleId":"en-US","Text":"category"}}},{"TypeId":{"Id":7594},"Body":{"Value":1,"DisplayName":{"LocaleId":"en-US","Text":"value"},"Description":{"LocaleId":"en-US","Text":"value"}}}]
+- Class: DataType
+  Name: line
+  Id: g=8db58d05b6fac69cbcb875bfaa7eda13
+  Supertype: Enumeration
+  Children:
+  - Name: ns=0;EnumValues
+    Type: BaseDataVariableType
+    DataType: EnumValueType
+    ModellingRule: None
+    ValueRank: OneDimension
+    ArrayDimensions: [0]
+    Value: [{"TypeId":{"Id":7594},"Body":{"Value":0,"DisplayName":{"LocaleId":"en-US","Text":"line"},"Description":{"LocaleId":"en-US","Text":"line chart with solid line"}}},{"TypeId":{"Id":7594},"Body":{"Value":1,"DisplayName":{"LocaleId":"en-US","Text":"bar"},"Description":{"LocaleId":"en-US","Text":"bar chart"}}},{"TypeId":{"Id":7594},"Body":{"Value":2,"DisplayName":{"LocaleId":"en-US","Text":"dashedLine"},"Description":{"LocaleId":"en-US","Text":"line chart with dashed line"}}}]
+- Class: DataType
+  Name: axisSplitLine
+  Id: g=2e4abbaf218fb397637e3eedc6a480bd
+  Supertype: Enumeration
+  Children:
+  - Name: ns=0;EnumValues
+    Type: BaseDataVariableType
+    DataType: EnumValueType
+    ModellingRule: None
+    ValueRank: OneDimension
+    ArrayDimensions: [0]
+    Value: [{"TypeId":{"Id":7594},"Body":{"Value":0,"DisplayName":{"LocaleId":"en-US","Text":"solid"},"Description":{"LocaleId":"en-US","Text":"solid"}}},{"TypeId":{"Id":7594},"Body":{"Value":1,"DisplayName":{"LocaleId":"en-US","Text":"dashed"},"Description":{"LocaleId":"en-US","Text":"dashed"}}},{"TypeId":{"Id":7594},"Body":{"Value":2,"DisplayName":{"LocaleId":"en-US","Text":"dotted"},"Description":{"LocaleId":"en-US","Text":"dotted"}}}]

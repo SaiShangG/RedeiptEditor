@@ -2,3 +2,4 @@ Name: Templates
 Type: FolderType
 Children:
 - File: PhaseTemplate/PhaseTemplate.yaml
+- File: OperationTemplate/OperationTemplate.yaml

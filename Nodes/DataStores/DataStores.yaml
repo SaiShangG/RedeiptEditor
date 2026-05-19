@@ -631,33 +631,10 @@ Children:
     - Class: Method
       Name: GenerateColumns
 - Name: PhaseAuditDB
-  Id: g=fd68b858e28d65b099ccc71c3e9c1ce5
   Type: SQLiteStore
   Children:
   - Name: Tables
     Type: BaseObjectType
-    Children:
-    - Name: PhaseAudit
-      Type: SQLiteStoreTable
-      Children:
-      - Class: Reference
-        Target: ns=8;i=12
-        Direction: Forward
-      - Class: Reference
-        Target: ns=8;i=15
-        Direction: Forward
-      - Class: Reference
-        Target: ns=8;i=21
-        Direction: Forward
-      - Class: Reference
-        Target: ns=8;i=20
-        Direction: Forward
-      - Name: Columns
-        Type: BaseObjectType
-        Children:
-        - Name: EventFieldToLog1
-          Type: StoreColumn
-          DataType: BaseDataType
   - Class: Reference
     Target: ns=9;i=30
     Direction: Forward
