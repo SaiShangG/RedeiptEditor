@@ -76,135 +76,137 @@ Children:
                   DataType: Color
                   ModellingRule: Optional
                   Value: "#ffffff"
-            - Name: ExitEditor
-              Type: Button
+            - Name: Rectangle1
+              Type: Rectangle
               Children:
-              - Name: LeftMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-              - Name: TopMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-              - Name: BottomMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-              - Name: Visible
-                Type: BaseDataVariableType
-                DataType: Boolean
-                ModellingRule: Optional
-              - Name: RightMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 16.0
-              - Name: ImagePath
-                Type: BaseDataVariableType
-                DataType: ResourceUri
-                ModellingRule: Optional
-                Value: "ns=7;%PROJECTDIR%/Images/logout.svg"
-              - Name: Text
-                Type: BaseDataVariableType
-                DataType: LocalizedText
-                ModellingRule: Optional
-                Value: {"LocaleId":"en-US","Text":"Exit"}
-              - Name: ImagePosition
-                Type: BaseDataVariableType
-                DataType: ButtonImagePosition
-                ModellingRule: Optional
-                Value: 9
-              - Name: BackgroundColor
-                Type: BaseDataVariableType
-                DataType: Color
-                ModellingRule: Optional
-                Value: "#ffffff"
-              - Name: TextColor
-                Type: BaseDataVariableType
-                DataType: Color
-                ModellingRule: Optional
-                Value: "#3b3b3b"
-              - Name: MouseClickEventHandler1
-                Type: EventHandler
+              - Name: ExitEditor
+                Type: Button
                 Children:
-                - Name: ListenEventType
-                  Type: PropertyType
-                  DataType: NodeId
-                  Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
-                - Name: MethodsToCall
-                  Type: BaseObjectType
+                - Name: LeftMargin
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                - Name: TopMargin
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                - Name: BottomMargin
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                - Name: Visible
+                  Type: BaseDataVariableType
+                  DataType: Boolean
+                  ModellingRule: Optional
+                - Name: RightMargin
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                - Name: ImagePath
+                  Type: BaseDataVariableType
+                  DataType: ResourceUri
+                  ModellingRule: Optional
+                  Value: "ns=7;%PROJECTDIR%/Images/icon_save_as 1.png"
+                - Name: Text
+                  Type: BaseDataVariableType
+                  DataType: LocalizedText
+                  ModellingRule: Optional
+                  Value: {"LocaleId":"en-US","Text":"Exit"}
+                - Name: ImagePosition
+                  Type: BaseDataVariableType
+                  DataType: ButtonImagePosition
+                  ModellingRule: Optional
+                  Value: 9
+                - Name: BackgroundColor
+                  Type: BaseDataVariableType
+                  DataType: Color
+                  ModellingRule: Optional
+                  Value: "#ffffff00"
+                - Name: TextColor
+                  Type: BaseDataVariableType
+                  DataType: Color
+                  ModellingRule: Optional
+                  Value: "#ffffff"
+                - Name: MouseClickEventHandler1
+                  Type: EventHandler
                   Children:
-                  - Name: MethodContainer1
+                  - Name: ListenEventType
+                    Type: PropertyType
+                    DataType: NodeId
+                    Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
+                  - Name: MethodsToCall
                     Type: BaseObjectType
                     Children:
-                    - Name: ns=2;ObjectPointer
-                      Type: NodePointer
-                      DataType: NodeId
-                      Children:
-                      - Name: Kind
-                        Type: PropertyType
-                        DataType: NodeId
-                        Value: "/Types/ObjectTypes/BaseObjectType"
-                      - Name: DynamicLink
-                        Type: DynamicLink
-                        DataType: NodePath
-                        Value: "{PanelLoader2}@NodeId"
-                        Children:
-                        - Name: Mode
-                          Type: BaseVariableType
-                          DataType: DynamicLinkMode
-                          ModellingRule: Optional
-                          Value: 2
-                    - Name: ns=2;Method
-                      Type: BaseDataVariableType
-                      DataType: String
-                      Value: "ChangePanel"
-                    - Name: InputArguments
+                    - Name: MethodContainer1
                       Type: BaseObjectType
                       Children:
-                      - Name: NewPanel
-                        Type: BaseDataVariableType
+                      - Name: ns=2;ObjectPointer
+                        Type: NodePointer
                         DataType: NodeId
-                        Description: {"NamespaceIndex":3,"TextId":"ChangePanelNewPanelDescription"}
-                        Value: "/Objects/RedeiptEditor/UI/Panels/RecipeEditorPanels/LoginPanel"
-                      - Name: AliasNode
+                        Children:
+                        - Name: Kind
+                          Type: PropertyType
+                          DataType: NodeId
+                          Value: "/Types/ObjectTypes/BaseObjectType"
+                        - Name: DynamicLink
+                          Type: DynamicLink
+                          DataType: NodePath
+                          Value: "{PanelLoader2}@NodeId"
+                          Children:
+                          - Name: Mode
+                            Type: BaseVariableType
+                            DataType: DynamicLinkMode
+                            ModellingRule: Optional
+                            Value: 2
+                      - Name: ns=2;Method
                         Type: BaseDataVariableType
-                        DataType: NodeId
-                        Description: {"NamespaceIndex":3,"TextId":"ChangePanelAliasNodeDescription"}
-                        ValueRank: ScalarOrOneDimension
-                - Name: EventArguments
-                  Type: MouseClickEvent
-                  Children:
-                  - Name: EventId
-                    Type: PropertyType
-                    DataType: ByteString
-                  - Name: EventType
-                    Type: PropertyType
-                    DataType: NodeId
-                  - Name: SourceNode
-                    Type: PropertyType
-                    DataType: NodeId
-                  - Name: SourceName
-                    Type: PropertyType
-                    DataType: String
-                  - Name: Time
-                    Type: PropertyType
-                    DataType: UtcTime
-                  - Name: ReceiveTime
-                    Type: PropertyType
-                    DataType: UtcTime
-                  - Name: Message
-                    Type: PropertyType
-                    DataType: LocalizedText
-                  - Name: Severity
-                    Type: PropertyType
-                    DataType: UInt16
+                        DataType: String
+                        Value: "ChangePanel"
+                      - Name: InputArguments
+                        Type: BaseObjectType
+                        Children:
+                        - Name: NewPanel
+                          Type: BaseDataVariableType
+                          DataType: NodeId
+                          Description: {"NamespaceIndex":3,"TextId":"ChangePanelNewPanelDescription"}
+                          Value: "/Objects/RedeiptEditor/UI/Panels/RecipeEditorPanels/LoginPanel"
+                        - Name: AliasNode
+                          Type: BaseDataVariableType
+                          DataType: NodeId
+                          Description: {"NamespaceIndex":3,"TextId":"ChangePanelAliasNodeDescription"}
+                          ValueRank: ScalarOrOneDimension
+                  - Name: EventArguments
+                    Type: MouseClickEvent
+                    Children:
+                    - Name: EventId
+                      Type: PropertyType
+                      DataType: ByteString
+                    - Name: EventType
+                      Type: PropertyType
+                      DataType: NodeId
+                    - Name: SourceNode
+                      Type: PropertyType
+                      DataType: NodeId
+                    - Name: SourceName
+                      Type: PropertyType
+                      DataType: String
+                    - Name: Time
+                      Type: PropertyType
+                      DataType: UtcTime
+                    - Name: ReceiveTime
+                      Type: PropertyType
+                      DataType: UtcTime
+                    - Name: Message
+                      Type: PropertyType
+                      DataType: LocalizedText
+                    - Name: Severity
+                      Type: PropertyType
+                      DataType: UInt16
           - Name: FillColor
             Type: BaseDataVariableType
             DataType: Color
             ModellingRule: Optional
-            Value: "#075982"
+            Value: "#003c69"
           - Name: VerticalAlignment
             Type: BaseVariableType
             DataType: VerticalAlignment

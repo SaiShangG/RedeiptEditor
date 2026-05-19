@@ -1,7 +1,7 @@
 Name: OperationPanels
 Type: FolderType
 Children:
-- Name: UnitControlDashboard
+- Name: UnitMainDashboard
   Id: g=eb433e60f331d430836578a780eee2cd
   Supertype: Panel
   ReferenceType: HasComponent
@@ -122,276 +122,6 @@ Children:
                   DataType: Color
                   ModellingRule: Optional
                   Value: "#f0f0f0"
-              - Name: ExitEditor1
-                Type: Button
-                Children:
-                - Name: MouseClickEventHandler1
-                  Type: EventHandler
-                  Children:
-                  - Name: ListenEventType
-                    Type: PropertyType
-                    DataType: NodeId
-                    Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
-                  - Name: MethodsToCall
-                    Type: BaseObjectType
-                    Children:
-                    - Name: MethodContainer1
-                      Type: BaseObjectType
-                      Children:
-                      - Name: ns=2;ObjectPointer
-                        Type: NodePointer
-                        DataType: NodeId
-                        Children:
-                        - Name: Kind
-                          Type: PropertyType
-                          DataType: NodeId
-                          Value: "/Types/ObjectTypes/BaseObjectType"
-                        - Name: DynamicLink
-                          Type: DynamicLink
-                          DataType: NodePath
-                          Value: "{PanelLoader2}@NodeId"
-                          Children:
-                          - Name: Mode
-                            Type: BaseVariableType
-                            DataType: DynamicLinkMode
-                            ModellingRule: Optional
-                            Value: 2
-                      - Name: ns=2;Method
-                        Type: BaseDataVariableType
-                        DataType: String
-                        Value: "ChangePanel"
-                      - Name: InputArguments
-                        Type: BaseObjectType
-                        Children:
-                        - Name: NewPanel
-                          Type: BaseDataVariableType
-                          DataType: NodeId
-                          Description: {"NamespaceIndex":3,"TextId":"ChangePanelNewPanelDescription"}
-                          Value: "/Objects/RedeiptEditor/UI/Panels/RecipeEditorPanels/RecipeOverviewPanel"
-                        - Name: AliasNode
-                          Type: BaseDataVariableType
-                          DataType: NodeId
-                          Description: {"NamespaceIndex":3,"TextId":"ChangePanelAliasNodeDescription"}
-                          ValueRank: ScalarOrOneDimension
-                  - Name: EventArguments
-                    Type: MouseClickEvent
-                    Children:
-                    - Name: EventId
-                      Type: PropertyType
-                      DataType: ByteString
-                    - Name: EventType
-                      Type: PropertyType
-                      DataType: NodeId
-                    - Name: SourceNode
-                      Type: PropertyType
-                      DataType: NodeId
-                    - Name: SourceName
-                      Type: PropertyType
-                      DataType: String
-                    - Name: Time
-                      Type: PropertyType
-                      DataType: UtcTime
-                    - Name: ReceiveTime
-                      Type: PropertyType
-                      DataType: UtcTime
-                    - Name: Message
-                      Type: PropertyType
-                      DataType: LocalizedText
-                    - Name: Severity
-                      Type: PropertyType
-                      DataType: UInt16
-                - Name: Text
-                  Type: BaseDataVariableType
-                  DataType: LocalizedText
-                  ModellingRule: Optional
-                  Value: {"LocaleId":"en-US","Text":"Exit"}
-                - Name: RightMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 16.0
-                - Name: TopMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                - Name: BottomMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                - Name: LeftMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                - Name: Width
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 150.0
-                - Name: BackgroundColor
-                  Type: BaseDataVariableType
-                  DataType: Color
-                  ModellingRule: Optional
-                  Value: "#78a2b6"
-                - Name: TextColor
-                  Type: BaseDataVariableType
-                  DataType: Color
-                  ModellingRule: Optional
-                  Value: "#3b3b3b"
-                - Name: ImagePath
-                  Type: BaseDataVariableType
-                  DataType: ResourceUri
-                  ModellingRule: Optional
-                  Value: "ns=7;%PROJECTDIR%/Images/logout.svg"
-                - Name: ImagePosition
-                  Type: BaseDataVariableType
-                  DataType: ButtonImagePosition
-                  ModellingRule: Optional
-                  Value: 9
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 2
-                - Name: Height
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 54.0
-              - Name: ExitEditor2
-                Type: Button
-                Children:
-                - Name: MouseClickEventHandler1
-                  Type: EventHandler
-                  Children:
-                  - Name: ListenEventType
-                    Type: PropertyType
-                    DataType: NodeId
-                    Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
-                  - Name: MethodsToCall
-                    Type: BaseObjectType
-                    Children:
-                    - Name: MethodContainer1
-                      Type: BaseObjectType
-                      Children:
-                      - Name: ns=2;ObjectPointer
-                        Type: NodePointer
-                        DataType: NodeId
-                        Children:
-                        - Name: Kind
-                          Type: PropertyType
-                          DataType: NodeId
-                          Value: "/Types/ObjectTypes/BaseObjectType"
-                        - Name: DynamicLink
-                          Type: DynamicLink
-                          DataType: NodePath
-                          Value: "{PanelLoader2}@NodeId"
-                          Children:
-                          - Name: Mode
-                            Type: BaseVariableType
-                            DataType: DynamicLinkMode
-                            ModellingRule: Optional
-                            Value: 2
-                      - Name: ns=2;Method
-                        Type: BaseDataVariableType
-                        DataType: String
-                        Value: "ChangePanel"
-                      - Name: InputArguments
-                        Type: BaseObjectType
-                        Children:
-                        - Name: NewPanel
-                          Type: BaseDataVariableType
-                          DataType: NodeId
-                          Description: {"NamespaceIndex":3,"TextId":"ChangePanelNewPanelDescription"}
-                          Value: "/Objects/RedeiptEditor/UI/Panels/RecipeEditorPanels/RecipeOverviewPanel"
-                        - Name: AliasNode
-                          Type: BaseDataVariableType
-                          DataType: NodeId
-                          Description: {"NamespaceIndex":3,"TextId":"ChangePanelAliasNodeDescription"}
-                          ValueRank: ScalarOrOneDimension
-                  - Name: EventArguments
-                    Type: MouseClickEvent
-                    Children:
-                    - Name: EventId
-                      Type: PropertyType
-                      DataType: ByteString
-                    - Name: EventType
-                      Type: PropertyType
-                      DataType: NodeId
-                    - Name: SourceNode
-                      Type: PropertyType
-                      DataType: NodeId
-                    - Name: SourceName
-                      Type: PropertyType
-                      DataType: String
-                    - Name: Time
-                      Type: PropertyType
-                      DataType: UtcTime
-                    - Name: ReceiveTime
-                      Type: PropertyType
-                      DataType: UtcTime
-                    - Name: Message
-                      Type: PropertyType
-                      DataType: LocalizedText
-                    - Name: Severity
-                      Type: PropertyType
-                      DataType: UInt16
-                - Name: Text
-                  Type: BaseDataVariableType
-                  DataType: LocalizedText
-                  ModellingRule: Optional
-                  Value: {"LocaleId":"en-US","Text":"Exit"}
-                - Name: RightMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 16.0
-                - Name: TopMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                - Name: BottomMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                - Name: LeftMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                - Name: Width
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 150.0
-                - Name: BackgroundColor
-                  Type: BaseDataVariableType
-                  DataType: Color
-                  ModellingRule: Optional
-                  Value: "#78a2b6"
-                - Name: TextColor
-                  Type: BaseDataVariableType
-                  DataType: Color
-                  ModellingRule: Optional
-                  Value: "#3b3b3b"
-                - Name: ImagePath
-                  Type: BaseDataVariableType
-                  DataType: ResourceUri
-                  ModellingRule: Optional
-                  Value: "ns=7;%PROJECTDIR%/Images/logout.svg"
-                - Name: ImagePosition
-                  Type: BaseDataVariableType
-                  DataType: ButtonImagePosition
-                  ModellingRule: Optional
-                  Value: 9
-                - Name: Height
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 54.0
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 2
               - Name: VerticalGap
                 Type: BaseDataVariableType
                 DataType: Size
@@ -401,136 +131,776 @@ Children:
                 DataType: Size
                 ModellingRule: Optional
                 Value: 16.0
-            - Name: ExitEditor
-              Type: Button
-              Children:
-              - Name: MouseClickEventHandler1
-                Type: EventHandler
+              - Name: Rectangle4
+                Type: Rectangle
                 Children:
-                - Name: ListenEventType
-                  Type: PropertyType
-                  DataType: NodeId
-                  Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
-                - Name: MethodsToCall
-                  Type: BaseObjectType
+                - Name: ExitEditor1
+                  Type: Button
                   Children:
-                  - Name: MethodContainer1
-                    Type: BaseObjectType
+                  - Name: MouseClickEventHandler1
+                    Type: EventHandler
                     Children:
-                    - Name: ns=2;ObjectPointer
-                      Type: NodePointer
+                    - Name: ListenEventType
+                      Type: PropertyType
                       DataType: NodeId
-                      Children:
-                      - Name: Kind
-                        Type: PropertyType
-                        DataType: NodeId
-                        Value: "/Types/ObjectTypes/BaseObjectType"
-                      - Name: DynamicLink
-                        Type: DynamicLink
-                        DataType: NodePath
-                        Value: "{PanelLoader2}@NodeId"
-                        Children:
-                        - Name: Mode
-                          Type: BaseVariableType
-                          DataType: DynamicLinkMode
-                          ModellingRule: Optional
-                          Value: 2
-                    - Name: ns=2;Method
-                      Type: BaseDataVariableType
-                      DataType: String
-                      Value: "ChangePanel"
-                    - Name: InputArguments
+                      Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
+                    - Name: MethodsToCall
                       Type: BaseObjectType
                       Children:
-                      - Name: NewPanel
-                        Type: BaseDataVariableType
+                      - Name: MethodContainer1
+                        Type: BaseObjectType
+                        Children:
+                        - Name: ns=2;ObjectPointer
+                          Type: NodePointer
+                          DataType: NodeId
+                          Children:
+                          - Name: Kind
+                            Type: PropertyType
+                            DataType: NodeId
+                            Value: "/Types/ObjectTypes/BaseObjectType"
+                          - Name: DynamicLink
+                            Type: DynamicLink
+                            DataType: NodePath
+                            Value: "{Loader}@NodeId"
+                            Children:
+                            - Name: Mode
+                              Type: BaseVariableType
+                              DataType: DynamicLinkMode
+                              ModellingRule: Optional
+                              Value: 2
+                        - Name: ns=2;Method
+                          Type: BaseDataVariableType
+                          DataType: String
+                          Value: "ChangePanel"
+                        - Name: InputArguments
+                          Type: BaseObjectType
+                          Children:
+                          - Name: NewPanel
+                            Type: BaseDataVariableType
+                            DataType: NodeId
+                            Description: {"NamespaceIndex":3,"TextId":"ChangePanelNewPanelDescription"}
+                            Value: "/Objects/RedeiptEditor/UI/Panels/OperationPanels/UnitOperationDashboard"
+                          - Name: AliasNode
+                            Type: BaseDataVariableType
+                            DataType: NodeId
+                            Description: {"NamespaceIndex":3,"TextId":"ChangePanelAliasNodeDescription"}
+                            ValueRank: ScalarOrOneDimension
+                    - Name: EventArguments
+                      Type: MouseClickEvent
+                      Children:
+                      - Name: EventId
+                        Type: PropertyType
+                        DataType: ByteString
+                      - Name: EventType
+                        Type: PropertyType
                         DataType: NodeId
-                        Description: {"NamespaceIndex":3,"TextId":"ChangePanelNewPanelDescription"}
-                        Value: "/Objects/RedeiptEditor/UI/Panels/RecipeEditorPanels/RecipeOverviewPanel"
-                      - Name: AliasNode
-                        Type: BaseDataVariableType
+                      - Name: SourceNode
+                        Type: PropertyType
                         DataType: NodeId
-                        Description: {"NamespaceIndex":3,"TextId":"ChangePanelAliasNodeDescription"}
-                        ValueRank: ScalarOrOneDimension
-                - Name: EventArguments
-                  Type: MouseClickEvent
-                  Children:
-                  - Name: EventId
-                    Type: PropertyType
-                    DataType: ByteString
-                  - Name: EventType
-                    Type: PropertyType
-                    DataType: NodeId
-                  - Name: SourceNode
-                    Type: PropertyType
-                    DataType: NodeId
-                  - Name: SourceName
-                    Type: PropertyType
-                    DataType: String
-                  - Name: Time
-                    Type: PropertyType
-                    DataType: UtcTime
-                  - Name: ReceiveTime
-                    Type: PropertyType
-                    DataType: UtcTime
-                  - Name: Message
-                    Type: PropertyType
+                      - Name: SourceName
+                        Type: PropertyType
+                        DataType: String
+                      - Name: Time
+                        Type: PropertyType
+                        DataType: UtcTime
+                      - Name: ReceiveTime
+                        Type: PropertyType
+                        DataType: UtcTime
+                      - Name: Message
+                        Type: PropertyType
+                        DataType: LocalizedText
+                      - Name: Severity
+                        Type: PropertyType
+                        DataType: UInt16
+                  - Name: Text
+                    Type: BaseDataVariableType
                     DataType: LocalizedText
-                  - Name: Severity
+                    ModellingRule: Optional
+                    Value: {"LocaleId":"en-US","Text":"Control Dashboard"}
+                  - Name: RightMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 16.0
+                  - Name: TopMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                  - Name: BottomMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                  - Name: LeftMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                  - Name: Width
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 247.0
+                  - Name: BackgroundColor
+                    Type: BaseDataVariableType
+                    DataType: Color
+                    ModellingRule: Optional
+                    Value: "#78a2b600"
+                  - Name: TextColor
+                    Type: BaseDataVariableType
+                    DataType: Color
+                    ModellingRule: Optional
+                    Value: "#ffffff"
+                  - Name: ImagePath
+                    Type: BaseDataVariableType
+                    DataType: ResourceUri
+                    ModellingRule: Optional
+                  - Name: ImagePosition
+                    Type: BaseDataVariableType
+                    DataType: ButtonImagePosition
+                    ModellingRule: Optional
+                    Value: 9
+                  - Name: VerticalAlignment
+                    Type: BaseVariableType
+                    DataType: VerticalAlignment
+                    ModellingRule: Optional
+                    Value: 2
+                  - Name: Height
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 54.0
+                  - Name: FontSize
+                    Type: BaseDataVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 20.0
+                - Name: VerticalAlignment
+                  Type: BaseVariableType
+                  DataType: VerticalAlignment
+                  ModellingRule: Optional
+                  Value: 2
+                - Name: BorderColor
+                  Type: BaseDataVariableType
+                  DataType: Color
+                  ModellingRule: Optional
+                  Value: "#cfdeea"
+                - Name: FillColor
+                  Type: BaseDataVariableType
+                  DataType: Color
+                  ModellingRule: Optional
+                  Value: "#ffffff00"
+              - Name: Rectangle1
+                Type: Rectangle
+                Children:
+                - Name: ExitEditor1
+                  Type: Button
+                  Children:
+                  - Name: MouseClickEventHandler1
+                    Type: EventHandler
+                    Children:
+                    - Name: ListenEventType
+                      Type: PropertyType
+                      DataType: NodeId
+                      Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
+                    - Name: MethodsToCall
+                      Type: BaseObjectType
+                      Children:
+                      - Name: MethodContainer1
+                        Type: BaseObjectType
+                        Children:
+                        - Name: ns=2;ObjectPointer
+                          Type: NodePointer
+                          DataType: NodeId
+                          Children:
+                          - Name: Kind
+                            Type: PropertyType
+                            DataType: NodeId
+                            Value: "/Types/ObjectTypes/BaseObjectType"
+                          - Name: DynamicLink
+                            Type: DynamicLink
+                            DataType: NodePath
+                            Value: "{Loader}@NodeId"
+                            Children:
+                            - Name: Mode
+                              Type: BaseVariableType
+                              DataType: DynamicLinkMode
+                              ModellingRule: Optional
+                              Value: 2
+                        - Name: ns=2;Method
+                          Type: BaseDataVariableType
+                          DataType: String
+                          Value: "ChangePanel"
+                        - Name: InputArguments
+                          Type: BaseObjectType
+                          Children:
+                          - Name: NewPanel
+                            Type: BaseDataVariableType
+                            DataType: NodeId
+                            Description: {"NamespaceIndex":3,"TextId":"ChangePanelNewPanelDescription"}
+                            Value: "/Objects/RedeiptEditor/UI/Panels/OperationPanels/ProductionDashboard"
+                          - Name: AliasNode
+                            Type: BaseDataVariableType
+                            DataType: NodeId
+                            Description: {"NamespaceIndex":3,"TextId":"ChangePanelAliasNodeDescription"}
+                            ValueRank: ScalarOrOneDimension
+                    - Name: EventArguments
+                      Type: MouseClickEvent
+                      Children:
+                      - Name: EventId
+                        Type: PropertyType
+                        DataType: ByteString
+                      - Name: EventType
+                        Type: PropertyType
+                        DataType: NodeId
+                      - Name: SourceNode
+                        Type: PropertyType
+                        DataType: NodeId
+                      - Name: SourceName
+                        Type: PropertyType
+                        DataType: String
+                      - Name: Time
+                        Type: PropertyType
+                        DataType: UtcTime
+                      - Name: ReceiveTime
+                        Type: PropertyType
+                        DataType: UtcTime
+                      - Name: Message
+                        Type: PropertyType
+                        DataType: LocalizedText
+                      - Name: Severity
+                        Type: PropertyType
+                        DataType: UInt16
+                  - Name: Text
+                    Type: BaseDataVariableType
+                    DataType: LocalizedText
+                    ModellingRule: Optional
+                    Value: {"LocaleId":"en-US","Text":"Production Dashboard"}
+                  - Name: RightMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 16.0
+                  - Name: TopMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                  - Name: BottomMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                  - Name: LeftMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                  - Name: Width
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 247.0
+                  - Name: BackgroundColor
+                    Type: BaseDataVariableType
+                    DataType: Color
+                    ModellingRule: Optional
+                    Value: "#78a2b600"
+                  - Name: TextColor
+                    Type: BaseDataVariableType
+                    DataType: Color
+                    ModellingRule: Optional
+                    Value: "#ffffff"
+                  - Name: ImagePath
+                    Type: BaseDataVariableType
+                    DataType: ResourceUri
+                    ModellingRule: Optional
+                  - Name: ImagePosition
+                    Type: BaseDataVariableType
+                    DataType: ButtonImagePosition
+                    ModellingRule: Optional
+                    Value: 9
+                  - Name: VerticalAlignment
+                    Type: BaseVariableType
+                    DataType: VerticalAlignment
+                    ModellingRule: Optional
+                    Value: 2
+                  - Name: Height
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 54.0
+                  - Name: FontSize
+                    Type: BaseDataVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 20.0
+                - Name: VerticalAlignment
+                  Type: BaseVariableType
+                  DataType: VerticalAlignment
+                  ModellingRule: Optional
+                  Value: 2
+                - Name: BorderColor
+                  Type: BaseDataVariableType
+                  DataType: Color
+                  ModellingRule: Optional
+                  Value: "#cfdeea"
+                - Name: FillColor
+                  Type: BaseDataVariableType
+                  DataType: Color
+                  ModellingRule: Optional
+                  Value: "#ffffff00"
+              - Name: Rectangle2
+                Type: Rectangle
+                Children:
+                - Name: ExitEditor2
+                  Type: Button
+                  Children:
+                  - Name: MouseClickEventHandler1
+                    Type: EventHandler
+                    Children:
+                    - Name: ListenEventType
+                      Type: PropertyType
+                      DataType: NodeId
+                      Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
+                    - Name: MethodsToCall
+                      Type: BaseObjectType
+                      Children:
+                      - Name: MethodContainer1
+                        Type: BaseObjectType
+                        Children:
+                        - Name: ns=2;ObjectPointer
+                          Type: NodePointer
+                          DataType: NodeId
+                          Children:
+                          - Name: Kind
+                            Type: PropertyType
+                            DataType: NodeId
+                            Value: "/Types/ObjectTypes/BaseObjectType"
+                          - Name: DynamicLink
+                            Type: DynamicLink
+                            DataType: NodePath
+                            Value: "{Loader}@NodeId"
+                            Children:
+                            - Name: Mode
+                              Type: BaseVariableType
+                              DataType: DynamicLinkMode
+                              ModellingRule: Optional
+                              Value: 2
+                        - Name: ns=2;Method
+                          Type: BaseDataVariableType
+                          DataType: String
+                          Value: "ChangePanel"
+                        - Name: InputArguments
+                          Type: BaseObjectType
+                          Children:
+                          - Name: NewPanel
+                            Type: BaseDataVariableType
+                            DataType: NodeId
+                            Description: {"NamespaceIndex":3,"TextId":"ChangePanelNewPanelDescription"}
+                            Value: "/Objects/RedeiptEditor/UI/Panels/OperationPanels/QualityAndMaintanceDashboard"
+                          - Name: AliasNode
+                            Type: BaseDataVariableType
+                            DataType: NodeId
+                            Description: {"NamespaceIndex":3,"TextId":"ChangePanelAliasNodeDescription"}
+                            ValueRank: ScalarOrOneDimension
+                    - Name: EventArguments
+                      Type: MouseClickEvent
+                      Children:
+                      - Name: EventId
+                        Type: PropertyType
+                        DataType: ByteString
+                      - Name: EventType
+                        Type: PropertyType
+                        DataType: NodeId
+                      - Name: SourceNode
+                        Type: PropertyType
+                        DataType: NodeId
+                      - Name: SourceName
+                        Type: PropertyType
+                        DataType: String
+                      - Name: Time
+                        Type: PropertyType
+                        DataType: UtcTime
+                      - Name: ReceiveTime
+                        Type: PropertyType
+                        DataType: UtcTime
+                      - Name: Message
+                        Type: PropertyType
+                        DataType: LocalizedText
+                      - Name: Severity
+                        Type: PropertyType
+                        DataType: UInt16
+                  - Name: Text
+                    Type: BaseDataVariableType
+                    DataType: LocalizedText
+                    ModellingRule: Optional
+                    Value: {"LocaleId":"en-US","Text":"Quality & Mainatance Dashboard"}
+                  - Name: RightMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 16.0
+                  - Name: TopMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                  - Name: BottomMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                  - Name: LeftMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                  - Name: Width
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 344.0
+                  - Name: BackgroundColor
+                    Type: BaseDataVariableType
+                    DataType: Color
+                    ModellingRule: Optional
+                    Value: "#78a2b600"
+                  - Name: TextColor
+                    Type: BaseDataVariableType
+                    DataType: Color
+                    ModellingRule: Optional
+                    Value: "#ffffff"
+                  - Name: ImagePath
+                    Type: BaseDataVariableType
+                    DataType: ResourceUri
+                    ModellingRule: Optional
+                  - Name: ImagePosition
+                    Type: BaseDataVariableType
+                    DataType: ButtonImagePosition
+                    ModellingRule: Optional
+                    Value: 9
+                  - Name: Height
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 54.0
+                  - Name: VerticalAlignment
+                    Type: BaseVariableType
+                    DataType: VerticalAlignment
+                    ModellingRule: Optional
+                    Value: 2
+                  - Name: FontSize
+                    Type: BaseDataVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 20.0
+                - Name: VerticalAlignment
+                  Type: BaseVariableType
+                  DataType: VerticalAlignment
+                  ModellingRule: Optional
+                  Value: 2
+                - Name: BorderColor
+                  Type: BaseDataVariableType
+                  DataType: Color
+                  ModellingRule: Optional
+                  Value: "#cfdeea"
+                - Name: FillColor
+                  Type: BaseDataVariableType
+                  DataType: Color
+                  ModellingRule: Optional
+                  Value: "#ffffff00"
+              - Name: Rectangle3
+                Type: Rectangle
+                Children:
+                - Name: ExitEditor3
+                  Type: Button
+                  Children:
+                  - Name: MouseClickEventHandler1
+                    Type: EventHandler
+                    Children:
+                    - Name: ListenEventType
+                      Type: PropertyType
+                      DataType: NodeId
+                      Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
+                    - Name: MethodsToCall
+                      Type: BaseObjectType
+                      Children:
+                      - Name: MethodContainer1
+                        Type: BaseObjectType
+                        Children:
+                        - Name: ns=2;ObjectPointer
+                          Type: NodePointer
+                          DataType: NodeId
+                          Children:
+                          - Name: Kind
+                            Type: PropertyType
+                            DataType: NodeId
+                            Value: "/Types/ObjectTypes/BaseObjectType"
+                          - Name: DynamicLink
+                            Type: DynamicLink
+                            DataType: NodePath
+                            Value: "{Loader}@NodeId"
+                            Children:
+                            - Name: Mode
+                              Type: BaseVariableType
+                              DataType: DynamicLinkMode
+                              ModellingRule: Optional
+                              Value: 2
+                        - Name: ns=2;Method
+                          Type: BaseDataVariableType
+                          DataType: String
+                          Value: "ChangePanel"
+                        - Name: InputArguments
+                          Type: BaseObjectType
+                          Children:
+                          - Name: NewPanel
+                            Type: BaseDataVariableType
+                            DataType: NodeId
+                            Description: {"NamespaceIndex":3,"TextId":"ChangePanelNewPanelDescription"}
+                            Value: "/Objects/RedeiptEditor/UI/Panels/OperationPanels/SustainabilityDashboard"
+                          - Name: AliasNode
+                            Type: BaseDataVariableType
+                            DataType: NodeId
+                            Description: {"NamespaceIndex":3,"TextId":"ChangePanelAliasNodeDescription"}
+                            ValueRank: ScalarOrOneDimension
+                    - Name: EventArguments
+                      Type: MouseClickEvent
+                      Children:
+                      - Name: EventId
+                        Type: PropertyType
+                        DataType: ByteString
+                      - Name: EventType
+                        Type: PropertyType
+                        DataType: NodeId
+                      - Name: SourceNode
+                        Type: PropertyType
+                        DataType: NodeId
+                      - Name: SourceName
+                        Type: PropertyType
+                        DataType: String
+                      - Name: Time
+                        Type: PropertyType
+                        DataType: UtcTime
+                      - Name: ReceiveTime
+                        Type: PropertyType
+                        DataType: UtcTime
+                      - Name: Message
+                        Type: PropertyType
+                        DataType: LocalizedText
+                      - Name: Severity
+                        Type: PropertyType
+                        DataType: UInt16
+                  - Name: Text
+                    Type: BaseDataVariableType
+                    DataType: LocalizedText
+                    ModellingRule: Optional
+                    Value: {"LocaleId":"en-US","Text":"Sustanability Dashboard"}
+                  - Name: RightMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 16.0
+                  - Name: TopMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                  - Name: BottomMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                  - Name: LeftMargin
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                  - Name: Width
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 264.0
+                  - Name: BackgroundColor
+                    Type: BaseDataVariableType
+                    DataType: Color
+                    ModellingRule: Optional
+                    Value: "#78a2b600"
+                  - Name: TextColor
+                    Type: BaseDataVariableType
+                    DataType: Color
+                    ModellingRule: Optional
+                    Value: "#ffffff"
+                  - Name: ImagePath
+                    Type: BaseDataVariableType
+                    DataType: ResourceUri
+                    ModellingRule: Optional
+                  - Name: ImagePosition
+                    Type: BaseDataVariableType
+                    DataType: ButtonImagePosition
+                    ModellingRule: Optional
+                    Value: 9
+                  - Name: Height
+                    Type: BaseVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 54.0
+                  - Name: VerticalAlignment
+                    Type: BaseVariableType
+                    DataType: VerticalAlignment
+                    ModellingRule: Optional
+                    Value: 2
+                  - Name: FontSize
+                    Type: BaseDataVariableType
+                    DataType: Size
+                    ModellingRule: Optional
+                    Value: 20.0
+                - Name: VerticalAlignment
+                  Type: BaseVariableType
+                  DataType: VerticalAlignment
+                  ModellingRule: Optional
+                  Value: 2
+                - Name: BorderColor
+                  Type: BaseDataVariableType
+                  DataType: Color
+                  ModellingRule: Optional
+                  Value: "#cfdeea"
+                - Name: FillColor
+                  Type: BaseDataVariableType
+                  DataType: Color
+                  ModellingRule: Optional
+                  Value: "#ffffff00"
+            - Name: Rectangle1
+              Type: Rectangle
+              Children:
+              - Name: ExitEditor
+                Type: Button
+                Children:
+                - Name: MouseClickEventHandler1
+                  Type: EventHandler
+                  Children:
+                  - Name: ListenEventType
                     Type: PropertyType
-                    DataType: UInt16
-              - Name: Text
-                Type: BaseDataVariableType
-                DataType: LocalizedText
-                ModellingRule: Optional
-                Value: {"LocaleId":"en-US","Text":"Exit"}
-              - Name: RightMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 16.0
-              - Name: TopMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-              - Name: BottomMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-              - Name: LeftMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-              - Name: Width
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 110.0
-              - Name: BackgroundColor
+                    DataType: NodeId
+                    Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
+                  - Name: MethodsToCall
+                    Type: BaseObjectType
+                    Children:
+                    - Name: MethodContainer1
+                      Type: BaseObjectType
+                      Children:
+                      - Name: ns=2;ObjectPointer
+                        Type: NodePointer
+                        DataType: NodeId
+                        Children:
+                        - Name: Kind
+                          Type: PropertyType
+                          DataType: NodeId
+                          Value: "/Types/ObjectTypes/BaseObjectType"
+                        - Name: DynamicLink
+                          Type: DynamicLink
+                          DataType: NodePath
+                          Value: "{PanelLoader2}@NodeId"
+                          Children:
+                          - Name: Mode
+                            Type: BaseVariableType
+                            DataType: DynamicLinkMode
+                            ModellingRule: Optional
+                            Value: 2
+                      - Name: ns=2;Method
+                        Type: BaseDataVariableType
+                        DataType: String
+                        Value: "ChangePanel"
+                      - Name: InputArguments
+                        Type: BaseObjectType
+                        Children:
+                        - Name: NewPanel
+                          Type: BaseDataVariableType
+                          DataType: NodeId
+                          Description: {"NamespaceIndex":3,"TextId":"ChangePanelNewPanelDescription"}
+                          Value: "/Objects/RedeiptEditor/UI/Panels/RecipeEditorPanels/RecipeOverviewPanel"
+                        - Name: AliasNode
+                          Type: BaseDataVariableType
+                          DataType: NodeId
+                          Description: {"NamespaceIndex":3,"TextId":"ChangePanelAliasNodeDescription"}
+                          ValueRank: ScalarOrOneDimension
+                  - Name: EventArguments
+                    Type: MouseClickEvent
+                    Children:
+                    - Name: EventId
+                      Type: PropertyType
+                      DataType: ByteString
+                    - Name: EventType
+                      Type: PropertyType
+                      DataType: NodeId
+                    - Name: SourceNode
+                      Type: PropertyType
+                      DataType: NodeId
+                    - Name: SourceName
+                      Type: PropertyType
+                      DataType: String
+                    - Name: Time
+                      Type: PropertyType
+                      DataType: UtcTime
+                    - Name: ReceiveTime
+                      Type: PropertyType
+                      DataType: UtcTime
+                    - Name: Message
+                      Type: PropertyType
+                      DataType: LocalizedText
+                    - Name: Severity
+                      Type: PropertyType
+                      DataType: UInt16
+                - Name: Text
+                  Type: BaseDataVariableType
+                  DataType: LocalizedText
+                  ModellingRule: Optional
+                  Value: {"LocaleId":"en-US","Text":"Exit"}
+                - Name: RightMargin
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                - Name: TopMargin
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                - Name: BottomMargin
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                - Name: LeftMargin
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                - Name: Width
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                  Value: 110.0
+                - Name: BackgroundColor
+                  Type: BaseDataVariableType
+                  DataType: Color
+                  ModellingRule: Optional
+                  Value: "#78a2b600"
+                - Name: TextColor
+                  Type: BaseDataVariableType
+                  DataType: Color
+                  ModellingRule: Optional
+                  Value: "#ffffff"
+                - Name: ImagePath
+                  Type: BaseDataVariableType
+                  DataType: ResourceUri
+                  ModellingRule: Optional
+                  Value: "ns=7;%PROJECTDIR%/Images/icon_save_as 1.png"
+                - Name: ImagePosition
+                  Type: BaseDataVariableType
+                  DataType: ButtonImagePosition
+                  ModellingRule: Optional
+                  Value: 9
+              - Name: BorderColor
                 Type: BaseDataVariableType
                 DataType: Color
                 ModellingRule: Optional
-                Value: "#78a2b6"
-              - Name: TextColor
+                Value: "#cfdeea"
+              - Name: FillColor
                 Type: BaseDataVariableType
                 DataType: Color
                 ModellingRule: Optional
-                Value: "#3b3b3b"
-              - Name: ImagePath
-                Type: BaseDataVariableType
-                DataType: ResourceUri
-                ModellingRule: Optional
-                Value: "ns=7;%PROJECTDIR%/Images/logout.svg"
-              - Name: ImagePosition
-                Type: BaseDataVariableType
-                DataType: ButtonImagePosition
-                ModellingRule: Optional
-                Value: 9
+                Value: "#ffffff00"
           - Name: FillColor
             Type: BaseDataVariableType
             DataType: Color
             ModellingRule: Optional
-            Value: "#075982"
+            Value: "#003c69"
           - Name: VerticalAlignment
             Type: BaseVariableType
             DataType: VerticalAlignment
@@ -544,9 +914,30 @@ Children:
           Type: BaseVariableType
           DataType: VerticalAlignment
           ModellingRule: Optional
-      - Name: Container
-        Type: Panel
+      - Name: Loader
+        Type: PanelLoader
         Children:
+        - Name: Panel
+          Type: NodePointer
+          DataType: NodeId
+          Value: "/Objects/RedeiptEditor/UI/Panels/OperationPanels/UnitOperationDashboard"
+          Children:
+          - Name: Kind
+            Type: PropertyType
+            DataType: NodeId
+            Value: "/Types/ObjectTypes/BaseObjectType/BaseUIObject/Item/Container"
+        - Name: CurrentPanel
+          Type: NodePointer
+          DataType: NodeId
+          AccessLevel: Read
+          Children:
+          - Name: Kind
+            Type: PropertyType
+            DataType: NodeId
+            Value: "/Types/ObjectTypes/BaseObjectType/BaseUIObject/Item"
+        - Class: Reference
+          Target: ns=3;i=478
+          Direction: Forward
         - Name: Width
           Type: BaseVariableType
           DataType: Size
@@ -567,1364 +958,6 @@ Children:
           DataType: VerticalAlignment
           ModellingRule: Optional
           Value: 3
-        - Name: TopMargin
-          Type: BaseVariableType
-          DataType: Size
-          ModellingRule: Optional
-        - Name: VerticalLayout1
-          Type: ColumnLayout
-          Children:
-          - Name: Width
-            Type: BaseVariableType
-            DataType: Size
-            ModellingRule: Optional
-            Value: 50.0
-          - Name: Height
-            Type: BaseVariableType
-            DataType: Size
-            ModellingRule: Optional
-            Value: 50.0
-          - Name: HorizontalAlignment
-            Type: BaseVariableType
-            DataType: HorizontalAlignment
-            ModellingRule: Optional
-            Value: 3
-          - Name: VerticalAlignment
-            Type: BaseVariableType
-            DataType: VerticalAlignment
-            ModellingRule: Optional
-            Value: 3
-          - Name: Rectangle3
-            Type: Rectangle
-            Children:
-            - Name: Width
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-              Value: 170.0
-            - Name: Height
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-              Value: 60.0
-            - Name: LeftMargin
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-            - Name: TopMargin
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-            - Name: HorizontalAlignment
-              Type: BaseVariableType
-              DataType: HorizontalAlignment
-              ModellingRule: Optional
-              Value: 3
-            - Name: VerticalAlignment
-              Type: BaseVariableType
-              DataType: VerticalAlignment
-              ModellingRule: Optional
-            - Name: BorderColor
-              Type: BaseDataVariableType
-              DataType: Color
-              ModellingRule: Optional
-              Value: "#dae1e9"
-            - Name: RightMargin
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-            - Name: BottomMargin
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-            - Name: FillColor
-              Type: BaseDataVariableType
-              DataType: Color
-              ModellingRule: Optional
-            - Name: HorizontalLayout1
-              Type: RowLayout
-              Children:
-              - Name: Width
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 50.0
-              - Name: Height
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 60.0
-              - Name: HorizontalAlignment
-                Type: BaseVariableType
-                DataType: HorizontalAlignment
-                ModellingRule: Optional
-                Value: 3
-              - Name: VerticalAlignment
-                Type: BaseVariableType
-                DataType: VerticalAlignment
-                ModellingRule: Optional
-                Value: 2
-              - Name: IconLabelValue1
-                Type: IconLabelValue
-                Children:
-                - Name: Column
-                  Type: ColumnLayout
-                  Children:
-                  - Name: Row
-                    Type: RowLayout
-                    Children:
-                    - Name: Image1
-                      Type: Image
-                      Children:
-                      - Name: Path
-                        Type: BaseDataVariableType
-                        DataType: ResourceUri
-                        Value: "ns=7;%PROJECTDIR%/Images/people.svg"
-                      - Name: Width
-                        Type: BaseVariableType
-                        DataType: Size
-                        ModellingRule: Optional
-                        Value: 20.0
-                      - Name: Height
-                        Type: BaseVariableType
-                        DataType: Size
-                        ModellingRule: Optional
-                        Value: 20.0
-                    - Name: Label1
-                      Type: Label
-                      Children:
-                      - Name: Text
-                        Type: BaseDataVariableType
-                        DataType: LocalizedText
-                        ModellingRule: Optional
-                        Value: {"LocaleId":"en-US","Text":"User"}
-                  - Name: Value
-                    Type: Label
-              - Name: IconLabelValue2
-                Type: IconLabelValue
-                Children:
-                - Name: Column
-                  Type: ColumnLayout
-                  Children:
-                  - Name: Row
-                    Type: RowLayout
-                    Children:
-                    - Name: Image1
-                      Type: Image
-                      Children:
-                      - Name: Path
-                        Type: BaseDataVariableType
-                        DataType: ResourceUri
-                        Value: "ns=7;%PROJECTDIR%/Images/ReceiptName.png"
-                      - Name: Width
-                        Type: BaseVariableType
-                        DataType: Size
-                        ModellingRule: Optional
-                        Value: 20.0
-                      - Name: Height
-                        Type: BaseVariableType
-                        DataType: Size
-                        ModellingRule: Optional
-                        Value: 20.0
-                    - Name: Label1
-                      Type: Label
-                      Children:
-                      - Name: Text
-                        Type: BaseDataVariableType
-                        DataType: LocalizedText
-                        ModellingRule: Optional
-                        Value: {"LocaleId":"en-US","Text":"Batch"}
-                  - Name: Value
-                    Type: Label
-              - Name: IconLabelValue3
-                Type: IconLabelValue
-                Children:
-                - Name: Column
-                  Type: ColumnLayout
-                  Children:
-                  - Name: Row
-                    Type: RowLayout
-                    Children:
-                    - Name: Image1
-                      Type: Image
-                      Children:
-                      - Name: Path
-                        Type: BaseDataVariableType
-                        DataType: ResourceUri
-                        Value: "ns=7;%PROJECTDIR%/Images/OperationName.png"
-                      - Name: Width
-                        Type: BaseVariableType
-                        DataType: Size
-                        ModellingRule: Optional
-                        Value: 20.0
-                      - Name: Height
-                        Type: BaseVariableType
-                        DataType: Size
-                        ModellingRule: Optional
-                        Value: 20.0
-                    - Name: Label1
-                      Type: Label
-                      Children:
-                      - Name: Text
-                        Type: BaseDataVariableType
-                        DataType: LocalizedText
-                        ModellingRule: Optional
-                        Value: {"LocaleId":"en-US","Text":"Recipe"}
-                  - Name: Value
-                    Type: Label
-              - Name: IconLabelValue4
-                Type: IconLabelValue
-                Children:
-                - Name: Column
-                  Type: ColumnLayout
-                  Children:
-                  - Name: Row
-                    Type: RowLayout
-                    Children:
-                    - Name: Image1
-                      Type: Image
-                      Children:
-                      - Name: Path
-                        Type: BaseDataVariableType
-                        DataType: ResourceUri
-                        Value: "ns=7;%PROJECTDIR%/Images/PhaseName.png"
-                      - Name: Width
-                        Type: BaseVariableType
-                        DataType: Size
-                        ModellingRule: Optional
-                        Value: 20.0
-                      - Name: Height
-                        Type: BaseVariableType
-                        DataType: Size
-                        ModellingRule: Optional
-                        Value: 20.0
-                    - Name: Label1
-                      Type: Label
-                      Children:
-                      - Name: Text
-                        Type: BaseDataVariableType
-                        DataType: LocalizedText
-                        ModellingRule: Optional
-                        Value: {"LocaleId":"en-US","Text":"Phase"}
-                  - Name: Value
-                    Type: Label
-              - Name: IconLabelValue5
-                Type: IconLabelValue
-                Children:
-                - Name: Column
-                  Type: ColumnLayout
-                  Children:
-                  - Name: Row
-                    Type: RowLayout
-                    Children:
-                    - Name: Image1
-                      Type: Image
-                      Children:
-                      - Name: Path
-                        Type: BaseDataVariableType
-                        DataType: ResourceUri
-                        Value: "ns=7;%PROJECTDIR%/Images/state (1).svg"
-                      - Name: Width
-                        Type: BaseVariableType
-                        DataType: Size
-                        ModellingRule: Optional
-                        Value: 20.0
-                      - Name: Height
-                        Type: BaseVariableType
-                        DataType: Size
-                        ModellingRule: Optional
-                        Value: 20.0
-                    - Name: Label1
-                      Type: Label
-                      Children:
-                      - Name: Text
-                        Type: BaseDataVariableType
-                        DataType: LocalizedText
-                        ModellingRule: Optional
-                        Value: {"LocaleId":"en-US","Text":"eSig"}
-                  - Name: Value
-                    Type: Label
-              - Name: LeftMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 16.0
-              - Name: RightMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 16.0
-              - Name: TopMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 8.0
-              - Name: BottomMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 8.0
-          - Name: Rectangle2
-            Type: Rectangle
-            Children:
-            - Name: Width
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-              Value: 170.0
-            - Name: Height
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-              Value: 50.0
-            - Name: LeftMargin
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-            - Name: TopMargin
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-            - Name: HorizontalAlignment
-              Type: BaseVariableType
-              DataType: HorizontalAlignment
-              ModellingRule: Optional
-              Value: 3
-            - Name: VerticalAlignment
-              Type: BaseVariableType
-              DataType: VerticalAlignment
-              ModellingRule: Optional
-              Value: 3
-            - Name: BorderColor
-              Type: BaseDataVariableType
-              DataType: Color
-              ModellingRule: Optional
-              Value: "#dae1e9"
-            - Name: RightMargin
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-            - Name: BottomMargin
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-            - Name: FillColor
-              Type: BaseDataVariableType
-              DataType: Color
-              ModellingRule: Optional
-              Value: "#ffffff00"
-            - Name: HorizontalLayout1
-              Type: RowLayout
-              Children:
-              - Name: Width
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 50.0
-              - Name: Height
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 60.0
-              - Name: HorizontalAlignment
-                Type: BaseVariableType
-                DataType: HorizontalAlignment
-                ModellingRule: Optional
-                Value: 3
-              - Name: VerticalAlignment
-                Type: BaseVariableType
-                DataType: VerticalAlignment
-                ModellingRule: Optional
-                Value: 3
-              - Name: LeftMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 16.0
-              - Name: RightMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 16.0
-              - Name: Rectangle2
-                Type: Rectangle
-                Children:
-                - Name: Width
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 400.0
-                - Name: Height
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 260.0
-                - Name: LeftMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                - Name: TopMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                - Name: VerticalLayout1
-                  Type: ColumnLayout
-                  Children:
-                  - Name: Width
-                    Type: BaseVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                    Value: 400.0
-                  - Name: Height
-                    Type: BaseVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                    Value: 50.0
-                  - Name: HorizontalAlignment
-                    Type: BaseVariableType
-                    DataType: HorizontalAlignment
-                    ModellingRule: Optional
-                    Value: 3
-                  - Name: VerticalAlignment
-                    Type: BaseVariableType
-                    DataType: VerticalAlignment
-                    ModellingRule: Optional
-                    Value: 3
-                  - Name: ControlFaceplates1
-                    Type: ControlFaceplates
-                    Children:
-                    - Name: BG
-                      Type: Rectangle
-                      Children:
-                      - Name: HL
-                        Type: RowLayout
-                        Children:
-                        - Name: VL
-                          Type: ColumnLayout
-                          Children:
-                          - Name: Title
-                            Type: Label
-                          - Name: Row1
-                            Type: RowLayout
-                            Children:
-                            - Name: Value
-                              Type: Label
-                            - Name: Label
-                              Type: Label
-                          - Name: Row
-                            Type: RowLayout
-                            Children:
-                            - Name: Row
-                              Type: RowLayout
-                              Children:
-                              - Name: Label
-                                Type: Label
-                              - Name: Value
-                                Type: Label
-                            - Name: PolyLine1
-                              Type: PolyLine
-                            - Name: Row1
-                              Type: RowLayout
-                              Children:
-                              - Name: Label
-                                Type: Label
-                              - Name: Value
-                                Type: Label
-                      - Name: State
-                        Type: Ellipse
-                  - Name: ControlFaceplates2
-                    Type: ControlFaceplates
-                    Children:
-                    - Name: BG
-                      Type: Rectangle
-                      Children:
-                      - Name: HL
-                        Type: RowLayout
-                        Children:
-                        - Name: VL
-                          Type: ColumnLayout
-                          Children:
-                          - Name: Title
-                            Type: Label
-                          - Name: Row1
-                            Type: RowLayout
-                            Children:
-                            - Name: Value
-                              Type: Label
-                            - Name: Label
-                              Type: Label
-                          - Name: Row
-                            Type: RowLayout
-                            Children:
-                            - Name: Row
-                              Type: RowLayout
-                              Children:
-                              - Name: Label
-                                Type: Label
-                              - Name: Value
-                                Type: Label
-                            - Name: PolyLine1
-                              Type: PolyLine
-                            - Name: Row1
-                              Type: RowLayout
-                              Children:
-                              - Name: Label
-                                Type: Label
-                              - Name: Value
-                                Type: Label
-                      - Name: State
-                        Type: Ellipse
-                  - Name: ControlFaceplates3
-                    Type: ControlFaceplates
-                    Children:
-                    - Name: BG
-                      Type: Rectangle
-                      Children:
-                      - Name: HL
-                        Type: RowLayout
-                        Children:
-                        - Name: VL
-                          Type: ColumnLayout
-                          Children:
-                          - Name: Title
-                            Type: Label
-                          - Name: Row1
-                            Type: RowLayout
-                            Children:
-                            - Name: Value
-                              Type: Label
-                            - Name: Label
-                              Type: Label
-                          - Name: Row
-                            Type: RowLayout
-                            Children:
-                            - Name: Row
-                              Type: RowLayout
-                              Children:
-                              - Name: Label
-                                Type: Label
-                              - Name: Value
-                                Type: Label
-                            - Name: PolyLine1
-                              Type: PolyLine
-                            - Name: Row1
-                              Type: RowLayout
-                              Children:
-                              - Name: Label
-                                Type: Label
-                              - Name: Value
-                                Type: Label
-                      - Name: State
-                        Type: Ellipse
-                  - Name: ControlFaceplates4
-                    Type: ControlFaceplates
-                    Children:
-                    - Name: BG
-                      Type: Rectangle
-                      Children:
-                      - Name: HL
-                        Type: RowLayout
-                        Children:
-                        - Name: VL
-                          Type: ColumnLayout
-                          Children:
-                          - Name: Title
-                            Type: Label
-                          - Name: Row1
-                            Type: RowLayout
-                            Children:
-                            - Name: Value
-                              Type: Label
-                            - Name: Label
-                              Type: Label
-                          - Name: Row
-                            Type: RowLayout
-                            Children:
-                            - Name: Row
-                              Type: RowLayout
-                              Children:
-                              - Name: Label
-                                Type: Label
-                              - Name: Value
-                                Type: Label
-                            - Name: PolyLine1
-                              Type: PolyLine
-                            - Name: Row1
-                              Type: RowLayout
-                              Children:
-                              - Name: Label
-                                Type: Label
-                              - Name: Value
-                                Type: Label
-                      - Name: State
-                        Type: Ellipse
-                  - Name: ControlFaceplates5
-                    Type: ControlFaceplates
-                    Children:
-                    - Name: BG
-                      Type: Rectangle
-                      Children:
-                      - Name: HL
-                        Type: RowLayout
-                        Children:
-                        - Name: VL
-                          Type: ColumnLayout
-                          Children:
-                          - Name: Title
-                            Type: Label
-                          - Name: Row1
-                            Type: RowLayout
-                            Children:
-                            - Name: Value
-                              Type: Label
-                            - Name: Label
-                              Type: Label
-                          - Name: Row
-                            Type: RowLayout
-                            Children:
-                            - Name: Row
-                              Type: RowLayout
-                              Children:
-                              - Name: Label
-                                Type: Label
-                              - Name: Value
-                                Type: Label
-                            - Name: PolyLine1
-                              Type: PolyLine
-                            - Name: Row1
-                              Type: RowLayout
-                              Children:
-                              - Name: Label
-                                Type: Label
-                              - Name: Value
-                                Type: Label
-                      - Name: State
-                        Type: Ellipse
-                  - Name: VerticalGap
-                    Type: BaseDataVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                    Value: 8.0
-                  - Name: TopMargin
-                    Type: BaseVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                    Value: 8.0
-                  - Name: BottomMargin
-                    Type: BaseVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                    Value: 8.0
-                  - Name: RightMargin
-                    Type: BaseVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                    Value: 8.0
-                  - Name: LeftMargin
-                    Type: BaseVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                    Value: 8.0
-                - Name: HorizontalAlignment
-                  Type: BaseVariableType
-                  DataType: HorizontalAlignment
-                  ModellingRule: Optional
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: CornerRadius
-                  Type: BaseDataVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 5.0
-                - Name: FillColor
-                  Type: BaseDataVariableType
-                  DataType: Color
-                  ModellingRule: Optional
-                  Value: "#f9fafc"
-                - Name: BorderColor
-                  Type: BaseDataVariableType
-                  DataType: Color
-                  ModellingRule: Optional
-                  Value: "#00000034"
-              - Name: Rectangle1
-                Type: Rectangle
-                Children:
-                - Name: Width
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 260.0
-                - Name: Height
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 150.0
-                - Name: LeftMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                - Name: TopMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                - Name: VerticalLayout2
-                  Type: ColumnLayout
-                  Children:
-                  - Name: Width
-                    Type: BaseVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                    Value: 50.0
-                  - Name: Height
-                    Type: BaseVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                    Value: 50.0
-                  - Name: HorizontalAlignment
-                    Type: BaseVariableType
-                    DataType: HorizontalAlignment
-                    ModellingRule: Optional
-                    Value: 3
-                  - Name: VerticalAlignment
-                    Type: BaseVariableType
-                    DataType: VerticalAlignment
-                    ModellingRule: Optional
-                    Value: 3
-                  - Name: Image1
-                    Type: Image
-                    Children:
-                    - Name: Path
-                      Type: BaseDataVariableType
-                      DataType: ResourceUri
-                      Value: "ns=7;%PROJECTDIR%/Images/bioreactor.png"
-                    - Name: Width
-                      Type: BaseVariableType
-                      DataType: Size
-                      ModellingRule: Optional
-                      Value: 50.0
-                    - Name: Height
-                      Type: BaseVariableType
-                      DataType: Size
-                      ModellingRule: Optional
-                      Value: 50.0
-                    - Name: HorizontalAlignment
-                      Type: BaseVariableType
-                      DataType: HorizontalAlignment
-                      ModellingRule: Optional
-                      Value: 3
-                    - Name: VerticalAlignment
-                      Type: BaseVariableType
-                      DataType: VerticalAlignment
-                      ModellingRule: Optional
-                      Value: 3
-                  - Name: TopMargin
-                    Type: BaseVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                    Value: 16.0
-                  - Name: BottomMargin
-                    Type: BaseVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                    Value: 16.0
-                - Name: HorizontalAlignment
-                  Type: BaseVariableType
-                  DataType: HorizontalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: BorderColor
-                  Type: BaseDataVariableType
-                  DataType: Color
-                  ModellingRule: Optional
-                  Value: "#00000039"
-                - Name: FillColor
-                  Type: BaseDataVariableType
-                  DataType: Color
-                  ModellingRule: Optional
-                  Value: "#f9fafc"
-                - Name: CornerRadius
-                  Type: BaseDataVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 5.0
-              - Name: HorizontalGap
-                Type: BaseDataVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 16.0
-              - Name: Rectangle3
-                Type: Rectangle
-                Children:
-                - Name: Width
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 300.0
-                - Name: Height
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 260.0
-                - Name: LeftMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                - Name: TopMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                - Name: HorizontalAlignment
-                  Type: BaseVariableType
-                  DataType: HorizontalAlignment
-                  ModellingRule: Optional
-                  Value: 1
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: CornerRadius
-                  Type: BaseDataVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 5.0
-                - Name: FillColor
-                  Type: BaseDataVariableType
-                  DataType: Color
-                  ModellingRule: Optional
-                  Value: "#f9fafc"
-                - Name: BorderColor
-                  Type: BaseDataVariableType
-                  DataType: Color
-                  ModellingRule: Optional
-                  Value: "#00000034"
-                - Name: VerticalLayout3
-                  Type: ColumnLayout
-                  Children:
-                  - Name: Width
-                    Type: BaseVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                    Value: 300.0
-                  - Name: Height
-                    Type: BaseVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                    Value: 50.0
-                  - Name: HorizontalAlignment
-                    Type: BaseVariableType
-                    DataType: HorizontalAlignment
-                    ModellingRule: Optional
-                    Value: 3
-                  - Name: VerticalAlignment
-                    Type: BaseVariableType
-                    DataType: VerticalAlignment
-                    ModellingRule: Optional
-                    Value: 3
-                  - Name: ParameterWithStatus1
-                    Type: ParameterWithStatus
-                    Children:
-                    - Name: BG
-                      Type: Rectangle
-                      Children:
-                      - Name: HL
-                        Type: RowLayout
-                        Children:
-                        - Name: VL
-                          Type: ColumnLayout
-                          Children:
-                          - Name: Title
-                            Type: Label
-                          - Name: Row
-                            Type: RowLayout
-                            Children:
-                            - Name: Row
-                              Type: RowLayout
-                              Children:
-                              - Name: Value
-                                Type: Label
-                              - Name: Label
-                                Type: Label
-                      - Name: State
-                        Type: Ellipse
-                  - Name: ParameterWithStatus2
-                    Type: ParameterWithStatus
-                    Children:
-                    - Name: BG
-                      Type: Rectangle
-                      Children:
-                      - Name: HL
-                        Type: RowLayout
-                        Children:
-                        - Name: VL
-                          Type: ColumnLayout
-                          Children:
-                          - Name: Title
-                            Type: Label
-                          - Name: Row
-                            Type: RowLayout
-                            Children:
-                            - Name: Row
-                              Type: RowLayout
-                              Children:
-                              - Name: Value
-                                Type: Label
-                              - Name: Label
-                                Type: Label
-                      - Name: State
-                        Type: Ellipse
-                  - Name: ParameterWithStatus3
-                    Type: ParameterWithStatus
-                    Children:
-                    - Name: BG
-                      Type: Rectangle
-                      Children:
-                      - Name: HL
-                        Type: RowLayout
-                        Children:
-                        - Name: VL
-                          Type: ColumnLayout
-                          Children:
-                          - Name: Title
-                            Type: Label
-                          - Name: Row
-                            Type: RowLayout
-                            Children:
-                            - Name: Row
-                              Type: RowLayout
-                              Children:
-                              - Name: Value
-                                Type: Label
-                              - Name: Label
-                                Type: Label
-                      - Name: State
-                        Type: Ellipse
-                  - Name: ParameterWithStatus4
-                    Type: ParameterWithStatus
-                    Children:
-                    - Name: BG
-                      Type: Rectangle
-                      Children:
-                      - Name: HL
-                        Type: RowLayout
-                        Children:
-                        - Name: VL
-                          Type: ColumnLayout
-                          Children:
-                          - Name: Title
-                            Type: Label
-                          - Name: Row
-                            Type: RowLayout
-                            Children:
-                            - Name: Row
-                              Type: RowLayout
-                              Children:
-                              - Name: Value
-                                Type: Label
-                              - Name: Label
-                                Type: Label
-                      - Name: State
-                        Type: Ellipse
-                  - Name: ParameterWithStatus5
-                    Type: ParameterWithStatus
-                    Children:
-                    - Name: BG
-                      Type: Rectangle
-                      Children:
-                      - Name: HL
-                        Type: RowLayout
-                        Children:
-                        - Name: VL
-                          Type: ColumnLayout
-                          Children:
-                          - Name: Title
-                            Type: Label
-                          - Name: Row
-                            Type: RowLayout
-                            Children:
-                            - Name: Row
-                              Type: RowLayout
-                              Children:
-                              - Name: Value
-                                Type: Label
-                              - Name: Label
-                                Type: Label
-                      - Name: State
-                        Type: Ellipse
-                  - Name: VerticalGap
-                    Type: BaseDataVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                    Value: 16.0
-                  - Name: LeftMargin
-                    Type: BaseVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                    Value: 8.0
-                  - Name: TopMargin
-                    Type: BaseVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                    Value: 8.0
-                  - Name: RightMargin
-                    Type: BaseVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                    Value: 8.0
-                  - Name: BottomMargin
-                    Type: BaseVariableType
-                    DataType: Size
-                    ModellingRule: Optional
-                    Value: 8.0
-          - Name: HorizontalGap
-            Type: BaseDataVariableType
-            DataType: Size
-            ModellingRule: Optional
-          - Name: VerticalGap
-            Type: BaseDataVariableType
-            DataType: Size
-            ModellingRule: Optional
-            Value: 8.0
-          - Name: Rectangle1
-            Type: Rectangle
-            Children:
-            - Name: Width
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-              Value: 170.0
-            - Name: Height
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-              Value: 300.0
-            - Name: LeftMargin
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-            - Name: TopMargin
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-            - Name: HorizontalAlignment
-              Type: BaseVariableType
-              DataType: HorizontalAlignment
-              ModellingRule: Optional
-              Value: 3
-            - Name: VerticalAlignment
-              Type: BaseVariableType
-              DataType: VerticalAlignment
-              ModellingRule: Optional
-            - Name: BorderColor
-              Type: BaseDataVariableType
-              DataType: Color
-              ModellingRule: Optional
-              Value: "#dae1e9"
-            - Name: RightMargin
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-            - Name: BottomMargin
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-              Value: 32.0
-            - Name: FillColor
-              Type: BaseDataVariableType
-              DataType: Color
-              ModellingRule: Optional
-            - Name: HorizontalLayout1
-              Type: RowLayout
-              Children:
-              - Name: Width
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 50.0
-              - Name: Height
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 60.0
-              - Name: HorizontalAlignment
-                Type: BaseVariableType
-                DataType: HorizontalAlignment
-                ModellingRule: Optional
-                Value: 3
-              - Name: VerticalAlignment
-                Type: BaseVariableType
-                DataType: VerticalAlignment
-                ModellingRule: Optional
-                Value: 3
-              - Name: LeftMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 16.0
-              - Name: RightMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 16.0
-              - Name: WebBrowser1
-                Type: WebBrowser
-                Children:
-                - Name: URL
-                  Type: BaseDataVariableType
-                  DataType: ResourceUri
-                  Children:
-                  - Name: DynamicLink
-                    Type: DynamicLink
-                    DataType: NodePath
-                    Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineChart1/URL"
-                - Class: Reference
-                  Target: ns=3;i=354
-                  Direction: Forward
-                - Class: Reference
-                  Target: ns=3;i=356
-                  Direction: Forward
-                - Class: Reference
-                  Target: ns=3;i=358
-                  Direction: Forward
-                - Name: Width
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 300.0
-                - Name: Height
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 300.0
-                - Name: HorizontalAlignment
-                  Type: BaseVariableType
-                  DataType: HorizontalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-              - Name: WebBrowser2
-                Type: WebBrowser
-                Children:
-                - Name: URL
-                  Type: BaseDataVariableType
-                  DataType: ResourceUri
-                  Children:
-                  - Name: DynamicLink
-                    Type: DynamicLink
-                    DataType: NodePath
-                    Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineChart1/URL"
-                - Class: Reference
-                  Target: ns=3;i=354
-                  Direction: Forward
-                - Class: Reference
-                  Target: ns=3;i=356
-                  Direction: Forward
-                - Class: Reference
-                  Target: ns=3;i=358
-                  Direction: Forward
-                - Name: Width
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 300.0
-                - Name: Height
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 300.0
-                - Name: LeftMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                - Name: TopMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                - Name: HorizontalAlignment
-                  Type: BaseVariableType
-                  DataType: HorizontalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-              - Name: HorizontalGap
-                Type: BaseDataVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 16.0
-              - Name: WebBrowser3
-                Type: WebBrowser
-                Children:
-                - Name: URL
-                  Type: BaseDataVariableType
-                  DataType: ResourceUri
-                  Children:
-                  - Name: DynamicLink
-                    Type: DynamicLink
-                    DataType: NodePath
-                    Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineChart1/URL"
-                - Class: Reference
-                  Target: ns=3;i=354
-                  Direction: Forward
-                - Class: Reference
-                  Target: ns=3;i=356
-                  Direction: Forward
-                - Class: Reference
-                  Target: ns=3;i=358
-                  Direction: Forward
-                - Name: Width
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 300.0
-                - Name: Height
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 300.0
-                - Name: LeftMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                - Name: TopMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                - Name: HorizontalAlignment
-                  Type: BaseVariableType
-                  DataType: HorizontalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-              - Name: WebBrowser4
-                Type: WebBrowser
-                Children:
-                - Name: URL
-                  Type: BaseDataVariableType
-                  DataType: ResourceUri
-                  Children:
-                  - Name: DynamicLink
-                    Type: DynamicLink
-                    DataType: NodePath
-                    Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineChart1/URL"
-                - Class: Reference
-                  Target: ns=3;i=354
-                  Direction: Forward
-                - Class: Reference
-                  Target: ns=3;i=356
-                  Direction: Forward
-                - Class: Reference
-                  Target: ns=3;i=358
-                  Direction: Forward
-                - Name: Width
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 300.0
-                - Name: Height
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 300.0
-                - Name: LeftMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                - Name: TopMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                - Name: HorizontalAlignment
-                  Type: BaseVariableType
-                  DataType: HorizontalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-              - Name: WebBrowser5
-                Type: WebBrowser
-                Children:
-                - Name: URL
-                  Type: BaseDataVariableType
-                  DataType: ResourceUri
-                  Children:
-                  - Name: DynamicLink
-                    Type: DynamicLink
-                    DataType: NodePath
-                    Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineChart1/URL"
-                - Class: Reference
-                  Target: ns=3;i=354
-                  Direction: Forward
-                - Class: Reference
-                  Target: ns=3;i=356
-                  Direction: Forward
-                - Class: Reference
-                  Target: ns=3;i=358
-                  Direction: Forward
-                - Name: Width
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 300.0
-                - Name: Height
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                  Value: 300.0
-                - Name: LeftMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                - Name: TopMargin
-                  Type: BaseVariableType
-                  DataType: Size
-                  ModellingRule: Optional
-                - Name: HorizontalAlignment
-                  Type: BaseVariableType
-                  DataType: HorizontalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-                - Name: VerticalAlignment
-                  Type: BaseVariableType
-                  DataType: VerticalAlignment
-                  ModellingRule: Optional
-                  Value: 3
-              - Name: TopMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 8.0
-              - Name: BottomMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 8.0
-          - Name: BottomMargin
-            Type: BaseVariableType
-            DataType: Size
-            ModellingRule: Optional
       - Name: HorizontalAlignment
         Type: BaseVariableType
         DataType: HorizontalAlignment
@@ -1950,6 +983,16 @@ Children:
       DataType: Color
       ModellingRule: Optional
       Value: "#f4f7fa"
+  - Name: HorizontalAlignment
+    Type: BaseVariableType
+    DataType: HorizontalAlignment
+    ModellingRule: Optional
+    Value: 3
+  - Name: VerticalAlignment
+    Type: BaseVariableType
+    DataType: VerticalAlignment
+    ModellingRule: Optional
+    Value: 3
 - Name: ProductionDashboard
   Id: g=6b09ef540f8466aa31859c1b952ca656
   Supertype: Panel
@@ -1999,176 +1042,6 @@ Children:
         DataType: Size
         ModellingRule: Optional
         Value: 50.0
-      - Name: Header1
-        Type: Header
-        Children:
-        - Name: HeaderBackground
-          Type: Rectangle
-          Children:
-          - Name: Container
-            Type: RowLayout
-            Children:
-            - Name: HorizontalLayout1
-              Type: RowLayout
-              Children:
-              - Name: Icon
-                Type: Image
-                Children:
-                - Name: Path
-                  Type: BaseDataVariableType
-                  DataType: ResourceUri
-                  Value: "ns=7;%PROJECTDIR%/Images/editor.svg"
-              - Name: ReceiptEditor
-                Type: Label
-                Children:
-                - Name: Text
-                  Type: BaseDataVariableType
-                  DataType: LocalizedText
-                  ModellingRule: Optional
-                  Value: {"LocaleId":"en-US","Text":" Dashboard"}
-            - Name: ExitEditor
-              Type: Button
-              Children:
-              - Name: MouseClickEventHandler1
-                Type: EventHandler
-                Children:
-                - Name: ListenEventType
-                  Type: PropertyType
-                  DataType: NodeId
-                  Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
-                - Name: MethodsToCall
-                  Type: BaseObjectType
-                  Children:
-                  - Name: MethodContainer1
-                    Type: BaseObjectType
-                    Children:
-                    - Name: ns=2;ObjectPointer
-                      Type: NodePointer
-                      DataType: NodeId
-                      Children:
-                      - Name: Kind
-                        Type: PropertyType
-                        DataType: NodeId
-                        Value: "/Types/ObjectTypes/BaseObjectType"
-                      - Name: DynamicLink
-                        Type: DynamicLink
-                        DataType: NodePath
-                        Value: "{PanelLoader2}@NodeId"
-                        Children:
-                        - Name: Mode
-                          Type: BaseVariableType
-                          DataType: DynamicLinkMode
-                          ModellingRule: Optional
-                          Value: 2
-                    - Name: ns=2;Method
-                      Type: BaseDataVariableType
-                      DataType: String
-                      Value: "ChangePanel"
-                    - Name: InputArguments
-                      Type: BaseObjectType
-                      Children:
-                      - Name: NewPanel
-                        Type: BaseDataVariableType
-                        DataType: NodeId
-                        Description: {"NamespaceIndex":3,"TextId":"ChangePanelNewPanelDescription"}
-                        Value: "/Objects/RedeiptEditor/UI/Panels/RecipeEditorPanels/RecipeOverviewPanel"
-                      - Name: AliasNode
-                        Type: BaseDataVariableType
-                        DataType: NodeId
-                        Description: {"NamespaceIndex":3,"TextId":"ChangePanelAliasNodeDescription"}
-                        ValueRank: ScalarOrOneDimension
-                - Name: EventArguments
-                  Type: MouseClickEvent
-                  Children:
-                  - Name: EventId
-                    Type: PropertyType
-                    DataType: ByteString
-                  - Name: EventType
-                    Type: PropertyType
-                    DataType: NodeId
-                  - Name: SourceNode
-                    Type: PropertyType
-                    DataType: NodeId
-                  - Name: SourceName
-                    Type: PropertyType
-                    DataType: String
-                  - Name: Time
-                    Type: PropertyType
-                    DataType: UtcTime
-                  - Name: ReceiveTime
-                    Type: PropertyType
-                    DataType: UtcTime
-                  - Name: Message
-                    Type: PropertyType
-                    DataType: LocalizedText
-                  - Name: Severity
-                    Type: PropertyType
-                    DataType: UInt16
-              - Name: Text
-                Type: BaseDataVariableType
-                DataType: LocalizedText
-                ModellingRule: Optional
-                Value: {"LocaleId":"en-US","Text":"Exit"}
-              - Name: RightMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 16.0
-              - Name: TopMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-              - Name: BottomMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-              - Name: LeftMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-              - Name: Width
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 110.0
-              - Name: BackgroundColor
-                Type: BaseDataVariableType
-                DataType: Color
-                ModellingRule: Optional
-                Value: "#f0f0f0"
-              - Name: TextColor
-                Type: BaseDataVariableType
-                DataType: Color
-                ModellingRule: Optional
-                Value: "#3b3b3b"
-              - Name: ImagePath
-                Type: BaseDataVariableType
-                DataType: ResourceUri
-                ModellingRule: Optional
-                Value: "ns=7;%PROJECTDIR%/Images/logout.svg"
-              - Name: ImagePosition
-                Type: BaseDataVariableType
-                DataType: ButtonImagePosition
-                ModellingRule: Optional
-                Value: 9
-          - Name: FillColor
-            Type: BaseDataVariableType
-            DataType: Color
-            ModellingRule: Optional
-            Value: "#e0eff8"
-          - Name: VerticalAlignment
-            Type: BaseVariableType
-            DataType: VerticalAlignment
-            ModellingRule: Optional
-            Value: 3
-        - Name: BottomMargin
-          Type: BaseVariableType
-          DataType: Size
-          ModellingRule: Optional
-        - Name: VerticalAlignment
-          Type: BaseVariableType
-          DataType: VerticalAlignment
-          ModellingRule: Optional
       - Name: Container
         Type: Panel
         Children:
@@ -2236,10 +1109,12 @@ Children:
               Type: BaseVariableType
               DataType: Size
               ModellingRule: Optional
+              Value: 16.0
             - Name: TopMargin
               Type: BaseVariableType
               DataType: Size
               ModellingRule: Optional
+              Value: 8.0
             - Name: HorizontalAlignment
               Type: BaseVariableType
               DataType: HorizontalAlignment
@@ -2258,6 +1133,7 @@ Children:
               Type: BaseVariableType
               DataType: Size
               ModellingRule: Optional
+              Value: 16.0
             - Name: BottomMargin
               Type: BaseVariableType
               DataType: Size
@@ -3765,11 +2641,18 @@ Children:
                               Type: Ellipse
                             - Name: Label1
                               Type: Label
+          - Name: LeftMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+          - Name: TopMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
         - Name: BottomMargin
           Type: BaseVariableType
           DataType: Size
           ModellingRule: Optional
-          Value: 16.0
       - Name: HorizontalAlignment
         Type: BaseVariableType
         DataType: HorizontalAlignment
@@ -3854,176 +2737,6 @@ Children:
         DataType: Size
         ModellingRule: Optional
         Value: 50.0
-      - Name: Header1
-        Type: Header
-        Children:
-        - Name: HeaderBackground
-          Type: Rectangle
-          Children:
-          - Name: Container
-            Type: RowLayout
-            Children:
-            - Name: HorizontalLayout1
-              Type: RowLayout
-              Children:
-              - Name: Icon
-                Type: Image
-                Children:
-                - Name: Path
-                  Type: BaseDataVariableType
-                  DataType: ResourceUri
-                  Value: "ns=7;%PROJECTDIR%/Images/editor.svg"
-              - Name: ReceiptEditor
-                Type: Label
-                Children:
-                - Name: Text
-                  Type: BaseDataVariableType
-                  DataType: LocalizedText
-                  ModellingRule: Optional
-                  Value: {"LocaleId":"en-US","Text":" Dashboard"}
-            - Name: ExitEditor
-              Type: Button
-              Children:
-              - Name: MouseClickEventHandler1
-                Type: EventHandler
-                Children:
-                - Name: ListenEventType
-                  Type: PropertyType
-                  DataType: NodeId
-                  Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
-                - Name: MethodsToCall
-                  Type: BaseObjectType
-                  Children:
-                  - Name: MethodContainer1
-                    Type: BaseObjectType
-                    Children:
-                    - Name: ns=2;ObjectPointer
-                      Type: NodePointer
-                      DataType: NodeId
-                      Children:
-                      - Name: Kind
-                        Type: PropertyType
-                        DataType: NodeId
-                        Value: "/Types/ObjectTypes/BaseObjectType"
-                      - Name: DynamicLink
-                        Type: DynamicLink
-                        DataType: NodePath
-                        Value: "{PanelLoader2}@NodeId"
-                        Children:
-                        - Name: Mode
-                          Type: BaseVariableType
-                          DataType: DynamicLinkMode
-                          ModellingRule: Optional
-                          Value: 2
-                    - Name: ns=2;Method
-                      Type: BaseDataVariableType
-                      DataType: String
-                      Value: "ChangePanel"
-                    - Name: InputArguments
-                      Type: BaseObjectType
-                      Children:
-                      - Name: NewPanel
-                        Type: BaseDataVariableType
-                        DataType: NodeId
-                        Description: {"NamespaceIndex":3,"TextId":"ChangePanelNewPanelDescription"}
-                        Value: "/Objects/RedeiptEditor/UI/Panels/RecipeEditorPanels/RecipeOverviewPanel"
-                      - Name: AliasNode
-                        Type: BaseDataVariableType
-                        DataType: NodeId
-                        Description: {"NamespaceIndex":3,"TextId":"ChangePanelAliasNodeDescription"}
-                        ValueRank: ScalarOrOneDimension
-                - Name: EventArguments
-                  Type: MouseClickEvent
-                  Children:
-                  - Name: EventId
-                    Type: PropertyType
-                    DataType: ByteString
-                  - Name: EventType
-                    Type: PropertyType
-                    DataType: NodeId
-                  - Name: SourceNode
-                    Type: PropertyType
-                    DataType: NodeId
-                  - Name: SourceName
-                    Type: PropertyType
-                    DataType: String
-                  - Name: Time
-                    Type: PropertyType
-                    DataType: UtcTime
-                  - Name: ReceiveTime
-                    Type: PropertyType
-                    DataType: UtcTime
-                  - Name: Message
-                    Type: PropertyType
-                    DataType: LocalizedText
-                  - Name: Severity
-                    Type: PropertyType
-                    DataType: UInt16
-              - Name: Text
-                Type: BaseDataVariableType
-                DataType: LocalizedText
-                ModellingRule: Optional
-                Value: {"LocaleId":"en-US","Text":"Exit"}
-              - Name: RightMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 16.0
-              - Name: TopMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-              - Name: BottomMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-              - Name: LeftMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-              - Name: Width
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 110.0
-              - Name: BackgroundColor
-                Type: BaseDataVariableType
-                DataType: Color
-                ModellingRule: Optional
-                Value: "#f0f0f0"
-              - Name: TextColor
-                Type: BaseDataVariableType
-                DataType: Color
-                ModellingRule: Optional
-                Value: "#3b3b3b"
-              - Name: ImagePath
-                Type: BaseDataVariableType
-                DataType: ResourceUri
-                ModellingRule: Optional
-                Value: "ns=7;%PROJECTDIR%/Images/logout.svg"
-              - Name: ImagePosition
-                Type: BaseDataVariableType
-                DataType: ButtonImagePosition
-                ModellingRule: Optional
-                Value: 9
-          - Name: FillColor
-            Type: BaseDataVariableType
-            DataType: Color
-            ModellingRule: Optional
-            Value: "#e0eff8"
-          - Name: VerticalAlignment
-            Type: BaseVariableType
-            DataType: VerticalAlignment
-            ModellingRule: Optional
-            Value: 3
-        - Name: BottomMargin
-          Type: BaseVariableType
-          DataType: Size
-          ModellingRule: Optional
-        - Name: VerticalAlignment
-          Type: BaseVariableType
-          DataType: VerticalAlignment
-          ModellingRule: Optional
       - Name: Container
         Type: Panel
         Children:
@@ -4091,6 +2804,7 @@ Children:
               Type: BaseVariableType
               DataType: Size
               ModellingRule: Optional
+              Value: 16.0
             - Name: TopMargin
               Type: BaseVariableType
               DataType: Size
@@ -4113,6 +2827,7 @@ Children:
               Type: BaseVariableType
               DataType: Size
               ModellingRule: Optional
+              Value: 16.0
             - Name: BottomMargin
               Type: BaseVariableType
               DataType: Size
@@ -5042,6 +3757,7 @@ Children:
             Type: BaseVariableType
             DataType: Size
             ModellingRule: Optional
+            Value: 8.0
           - Name: Rectangle4
             Type: Rectangle
             Children:
@@ -5535,6 +4251,21 @@ Children:
                             Children:
                             - Name: Button1
                               Type: Button
+              - Name: HorizontalGap
+                Type: BaseDataVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 16.0
+              - Name: LeftMargin
+                Type: BaseVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 16.0
+              - Name: RightMargin
+                Type: BaseVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 16.0
           - Name: Rectangle5
             Type: Rectangle
             Children:
@@ -5799,11 +4530,35 @@ Children:
                 DataType: VerticalAlignment
                 ModellingRule: Optional
                 Value: 3
+              - Name: LeftMargin
+                Type: BaseVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 16.0
+              - Name: RightMargin
+                Type: BaseVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 16.0
+              - Name: DataListStyle
+                Type: BaseDataVariableType
+                DataType: String
+                ModellingRule: Optional
+                Value: "Default1"
+          - Name: LeftMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 8.0
+          - Name: TopMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 8.0
         - Name: BottomMargin
           Type: BaseVariableType
           DataType: Size
           ModellingRule: Optional
-          Value: 16.0
       - Name: HorizontalAlignment
         Type: BaseVariableType
         DataType: HorizontalAlignment
@@ -5888,176 +4643,6 @@ Children:
         DataType: Size
         ModellingRule: Optional
         Value: 50.0
-      - Name: Header1
-        Type: Header
-        Children:
-        - Name: HeaderBackground
-          Type: Rectangle
-          Children:
-          - Name: Container
-            Type: RowLayout
-            Children:
-            - Name: HorizontalLayout1
-              Type: RowLayout
-              Children:
-              - Name: Icon
-                Type: Image
-                Children:
-                - Name: Path
-                  Type: BaseDataVariableType
-                  DataType: ResourceUri
-                  Value: "ns=7;%PROJECTDIR%/Images/editor.svg"
-              - Name: ReceiptEditor
-                Type: Label
-                Children:
-                - Name: Text
-                  Type: BaseDataVariableType
-                  DataType: LocalizedText
-                  ModellingRule: Optional
-                  Value: {"LocaleId":"en-US","Text":" Dashboard"}
-            - Name: ExitEditor
-              Type: Button
-              Children:
-              - Name: MouseClickEventHandler1
-                Type: EventHandler
-                Children:
-                - Name: ListenEventType
-                  Type: PropertyType
-                  DataType: NodeId
-                  Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
-                - Name: MethodsToCall
-                  Type: BaseObjectType
-                  Children:
-                  - Name: MethodContainer1
-                    Type: BaseObjectType
-                    Children:
-                    - Name: ns=2;ObjectPointer
-                      Type: NodePointer
-                      DataType: NodeId
-                      Children:
-                      - Name: Kind
-                        Type: PropertyType
-                        DataType: NodeId
-                        Value: "/Types/ObjectTypes/BaseObjectType"
-                      - Name: DynamicLink
-                        Type: DynamicLink
-                        DataType: NodePath
-                        Value: "{PanelLoader2}@NodeId"
-                        Children:
-                        - Name: Mode
-                          Type: BaseVariableType
-                          DataType: DynamicLinkMode
-                          ModellingRule: Optional
-                          Value: 2
-                    - Name: ns=2;Method
-                      Type: BaseDataVariableType
-                      DataType: String
-                      Value: "ChangePanel"
-                    - Name: InputArguments
-                      Type: BaseObjectType
-                      Children:
-                      - Name: NewPanel
-                        Type: BaseDataVariableType
-                        DataType: NodeId
-                        Description: {"NamespaceIndex":3,"TextId":"ChangePanelNewPanelDescription"}
-                        Value: "/Objects/RedeiptEditor/UI/Panels/RecipeEditorPanels/RecipeOverviewPanel"
-                      - Name: AliasNode
-                        Type: BaseDataVariableType
-                        DataType: NodeId
-                        Description: {"NamespaceIndex":3,"TextId":"ChangePanelAliasNodeDescription"}
-                        ValueRank: ScalarOrOneDimension
-                - Name: EventArguments
-                  Type: MouseClickEvent
-                  Children:
-                  - Name: EventId
-                    Type: PropertyType
-                    DataType: ByteString
-                  - Name: EventType
-                    Type: PropertyType
-                    DataType: NodeId
-                  - Name: SourceNode
-                    Type: PropertyType
-                    DataType: NodeId
-                  - Name: SourceName
-                    Type: PropertyType
-                    DataType: String
-                  - Name: Time
-                    Type: PropertyType
-                    DataType: UtcTime
-                  - Name: ReceiveTime
-                    Type: PropertyType
-                    DataType: UtcTime
-                  - Name: Message
-                    Type: PropertyType
-                    DataType: LocalizedText
-                  - Name: Severity
-                    Type: PropertyType
-                    DataType: UInt16
-              - Name: Text
-                Type: BaseDataVariableType
-                DataType: LocalizedText
-                ModellingRule: Optional
-                Value: {"LocaleId":"en-US","Text":"Exit"}
-              - Name: RightMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 16.0
-              - Name: TopMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-              - Name: BottomMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-              - Name: LeftMargin
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-              - Name: Width
-                Type: BaseVariableType
-                DataType: Size
-                ModellingRule: Optional
-                Value: 110.0
-              - Name: BackgroundColor
-                Type: BaseDataVariableType
-                DataType: Color
-                ModellingRule: Optional
-                Value: "#f0f0f0"
-              - Name: TextColor
-                Type: BaseDataVariableType
-                DataType: Color
-                ModellingRule: Optional
-                Value: "#3b3b3b"
-              - Name: ImagePath
-                Type: BaseDataVariableType
-                DataType: ResourceUri
-                ModellingRule: Optional
-                Value: "ns=7;%PROJECTDIR%/Images/logout.svg"
-              - Name: ImagePosition
-                Type: BaseDataVariableType
-                DataType: ButtonImagePosition
-                ModellingRule: Optional
-                Value: 9
-          - Name: FillColor
-            Type: BaseDataVariableType
-            DataType: Color
-            ModellingRule: Optional
-            Value: "#e0eff8"
-          - Name: VerticalAlignment
-            Type: BaseVariableType
-            DataType: VerticalAlignment
-            ModellingRule: Optional
-            Value: 3
-        - Name: BottomMargin
-          Type: BaseVariableType
-          DataType: Size
-          ModellingRule: Optional
-        - Name: VerticalAlignment
-          Type: BaseVariableType
-          DataType: VerticalAlignment
-          ModellingRule: Optional
       - Name: Container
         Type: Panel
         Children:
@@ -6125,10 +4710,12 @@ Children:
               Type: BaseVariableType
               DataType: Size
               ModellingRule: Optional
+              Value: 16.0
             - Name: TopMargin
               Type: BaseVariableType
               DataType: Size
               ModellingRule: Optional
+              Value: 8.0
             - Name: HorizontalAlignment
               Type: BaseVariableType
               DataType: HorizontalAlignment
@@ -6147,6 +4734,7 @@ Children:
               Type: BaseVariableType
               DataType: Size
               ModellingRule: Optional
+              Value: 16.0
             - Name: BottomMargin
               Type: BaseVariableType
               DataType: Size
@@ -7274,6 +5862,7 @@ Children:
               Type: BaseVariableType
               DataType: VerticalAlignment
               ModellingRule: Optional
+              Value: 3
             - Name: BorderColor
               Type: BaseDataVariableType
               DataType: Color
@@ -7702,11 +6291,20 @@ Children:
                 DataType: Size
                 ModellingRule: Optional
                 Value: 16.0
+              - Name: HorizontalGap
+                Type: BaseDataVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 8.0
+              - Name: BottomMargin
+                Type: BaseVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 8.0
         - Name: BottomMargin
           Type: BaseVariableType
           DataType: Size
           ModellingRule: Optional
-          Value: 16.0
       - Name: HorizontalAlignment
         Type: BaseVariableType
         DataType: HorizontalAlignment
@@ -7732,6 +6330,1397 @@ Children:
       DataType: Color
       ModellingRule: Optional
       Value: "#f4f7fa"
+  - Name: HorizontalAlignment
+    Type: BaseVariableType
+    DataType: HorizontalAlignment
+    ModellingRule: Optional
+    Value: 3
+  - Name: VerticalAlignment
+    Type: BaseVariableType
+    DataType: VerticalAlignment
+    ModellingRule: Optional
+    Value: 3
+- Name: UnitOperationDashboard
+  Id: g=a815575b4017aca8e42d9a7f428ab3fb
+  Supertype: Panel
+  ReferenceType: HasComponent
+  Children:
+  - Name: Width
+    Type: BaseVariableType
+    DataType: Size
+    ModellingRule: Optional
+    Value: 1920.0
+  - Name: Height
+    Type: BaseVariableType
+    DataType: Size
+    ModellingRule: Optional
+    Value: 1080.0
+  - Name: VerticalLayout1
+    Type: ColumnLayout
+    Children:
+    - Name: Width
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 50.0
+    - Name: Height
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 50.0
+    - Name: HorizontalAlignment
+      Type: BaseVariableType
+      DataType: HorizontalAlignment
+      ModellingRule: Optional
+      Value: 3
+    - Name: VerticalAlignment
+      Type: BaseVariableType
+      DataType: VerticalAlignment
+      ModellingRule: Optional
+      Value: 3
+    - Name: Rectangle3
+      Type: Rectangle
+      Children:
+      - Name: Width
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+        Value: 170.0
+      - Name: Height
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+        Value: 60.0
+      - Name: LeftMargin
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+        Value: 16.0
+      - Name: TopMargin
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+        Value: 8.0
+      - Name: HorizontalAlignment
+        Type: BaseVariableType
+        DataType: HorizontalAlignment
+        ModellingRule: Optional
+        Value: 3
+      - Name: VerticalAlignment
+        Type: BaseVariableType
+        DataType: VerticalAlignment
+        ModellingRule: Optional
+      - Name: BorderColor
+        Type: BaseDataVariableType
+        DataType: Color
+        ModellingRule: Optional
+        Value: "#dae1e9"
+      - Name: RightMargin
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+        Value: 16.0
+      - Name: BottomMargin
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+      - Name: FillColor
+        Type: BaseDataVariableType
+        DataType: Color
+        ModellingRule: Optional
+      - Name: HorizontalLayout1
+        Type: RowLayout
+        Children:
+        - Name: Width
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 50.0
+        - Name: Height
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 60.0
+        - Name: HorizontalAlignment
+          Type: BaseVariableType
+          DataType: HorizontalAlignment
+          ModellingRule: Optional
+          Value: 3
+        - Name: VerticalAlignment
+          Type: BaseVariableType
+          DataType: VerticalAlignment
+          ModellingRule: Optional
+          Value: 2
+        - Name: IconLabelValue1
+          Type: IconLabelValue
+          Children:
+          - Name: Column
+            Type: ColumnLayout
+            Children:
+            - Name: Row
+              Type: RowLayout
+              Children:
+              - Name: Image1
+                Type: Image
+                Children:
+                - Name: Path
+                  Type: BaseDataVariableType
+                  DataType: ResourceUri
+                  Value: "ns=7;%PROJECTDIR%/Images/people.svg"
+                - Name: Width
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                  Value: 20.0
+                - Name: Height
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                  Value: 20.0
+              - Name: Label1
+                Type: Label
+                Children:
+                - Name: Text
+                  Type: BaseDataVariableType
+                  DataType: LocalizedText
+                  ModellingRule: Optional
+                  Value: {"LocaleId":"en-US","Text":"User"}
+            - Name: Value
+              Type: Label
+        - Name: IconLabelValue2
+          Type: IconLabelValue
+          Children:
+          - Name: Column
+            Type: ColumnLayout
+            Children:
+            - Name: Row
+              Type: RowLayout
+              Children:
+              - Name: Image1
+                Type: Image
+                Children:
+                - Name: Path
+                  Type: BaseDataVariableType
+                  DataType: ResourceUri
+                  Value: "ns=7;%PROJECTDIR%/Images/ReceiptName.png"
+                - Name: Width
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                  Value: 20.0
+                - Name: Height
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                  Value: 20.0
+              - Name: Label1
+                Type: Label
+                Children:
+                - Name: Text
+                  Type: BaseDataVariableType
+                  DataType: LocalizedText
+                  ModellingRule: Optional
+                  Value: {"LocaleId":"en-US","Text":"Batch"}
+            - Name: Value
+              Type: Label
+        - Name: IconLabelValue3
+          Type: IconLabelValue
+          Children:
+          - Name: Column
+            Type: ColumnLayout
+            Children:
+            - Name: Row
+              Type: RowLayout
+              Children:
+              - Name: Image1
+                Type: Image
+                Children:
+                - Name: Path
+                  Type: BaseDataVariableType
+                  DataType: ResourceUri
+                  Value: "ns=7;%PROJECTDIR%/Images/OperationName.png"
+                - Name: Width
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                  Value: 20.0
+                - Name: Height
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                  Value: 20.0
+              - Name: Label1
+                Type: Label
+                Children:
+                - Name: Text
+                  Type: BaseDataVariableType
+                  DataType: LocalizedText
+                  ModellingRule: Optional
+                  Value: {"LocaleId":"en-US","Text":"Recipe"}
+            - Name: Value
+              Type: Label
+        - Name: IconLabelValue4
+          Type: IconLabelValue
+          Children:
+          - Name: Column
+            Type: ColumnLayout
+            Children:
+            - Name: Row
+              Type: RowLayout
+              Children:
+              - Name: Image1
+                Type: Image
+                Children:
+                - Name: Path
+                  Type: BaseDataVariableType
+                  DataType: ResourceUri
+                  Value: "ns=7;%PROJECTDIR%/Images/PhaseName.png"
+                - Name: Width
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                  Value: 20.0
+                - Name: Height
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                  Value: 20.0
+              - Name: Label1
+                Type: Label
+                Children:
+                - Name: Text
+                  Type: BaseDataVariableType
+                  DataType: LocalizedText
+                  ModellingRule: Optional
+                  Value: {"LocaleId":"en-US","Text":"Phase"}
+            - Name: Value
+              Type: Label
+        - Name: IconLabelValue5
+          Type: IconLabelValue
+          Children:
+          - Name: Column
+            Type: ColumnLayout
+            Children:
+            - Name: Row
+              Type: RowLayout
+              Children:
+              - Name: Image1
+                Type: Image
+                Children:
+                - Name: Path
+                  Type: BaseDataVariableType
+                  DataType: ResourceUri
+                  Value: "ns=7;%PROJECTDIR%/Images/state (1).svg"
+                - Name: Width
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                  Value: 20.0
+                - Name: Height
+                  Type: BaseVariableType
+                  DataType: Size
+                  ModellingRule: Optional
+                  Value: 20.0
+              - Name: Label1
+                Type: Label
+                Children:
+                - Name: Text
+                  Type: BaseDataVariableType
+                  DataType: LocalizedText
+                  ModellingRule: Optional
+                  Value: {"LocaleId":"en-US","Text":"eSig"}
+            - Name: Value
+              Type: Label
+        - Name: LeftMargin
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 16.0
+        - Name: RightMargin
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 16.0
+        - Name: TopMargin
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 8.0
+        - Name: BottomMargin
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 8.0
+    - Name: Rectangle2
+      Type: Rectangle
+      Children:
+      - Name: Width
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+        Value: 170.0
+      - Name: Height
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+        Value: 50.0
+      - Name: LeftMargin
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+      - Name: TopMargin
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+      - Name: HorizontalAlignment
+        Type: BaseVariableType
+        DataType: HorizontalAlignment
+        ModellingRule: Optional
+        Value: 3
+      - Name: VerticalAlignment
+        Type: BaseVariableType
+        DataType: VerticalAlignment
+        ModellingRule: Optional
+        Value: 3
+      - Name: BorderColor
+        Type: BaseDataVariableType
+        DataType: Color
+        ModellingRule: Optional
+        Value: "#dae1e9"
+      - Name: RightMargin
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+      - Name: BottomMargin
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+      - Name: FillColor
+        Type: BaseDataVariableType
+        DataType: Color
+        ModellingRule: Optional
+        Value: "#ffffff00"
+      - Name: HorizontalLayout1
+        Type: RowLayout
+        Children:
+        - Name: Width
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 50.0
+        - Name: Height
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 60.0
+        - Name: HorizontalAlignment
+          Type: BaseVariableType
+          DataType: HorizontalAlignment
+          ModellingRule: Optional
+          Value: 3
+        - Name: VerticalAlignment
+          Type: BaseVariableType
+          DataType: VerticalAlignment
+          ModellingRule: Optional
+          Value: 3
+        - Name: LeftMargin
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 16.0
+        - Name: RightMargin
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 16.0
+        - Name: Rectangle2
+          Type: Rectangle
+          Children:
+          - Name: Width
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 400.0
+          - Name: Height
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 260.0
+          - Name: LeftMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+          - Name: TopMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+          - Name: VerticalLayout1
+            Type: ColumnLayout
+            Children:
+            - Name: Width
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 400.0
+            - Name: Height
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 50.0
+            - Name: HorizontalAlignment
+              Type: BaseVariableType
+              DataType: HorizontalAlignment
+              ModellingRule: Optional
+              Value: 3
+            - Name: VerticalAlignment
+              Type: BaseVariableType
+              DataType: VerticalAlignment
+              ModellingRule: Optional
+              Value: 3
+            - Name: ControlFaceplates1
+              Type: ControlFaceplates
+              Children:
+              - Name: BG
+                Type: Rectangle
+                Children:
+                - Name: HL
+                  Type: RowLayout
+                  Children:
+                  - Name: VL
+                    Type: ColumnLayout
+                    Children:
+                    - Name: Title
+                      Type: Label
+                    - Name: Row1
+                      Type: RowLayout
+                      Children:
+                      - Name: Value
+                        Type: Label
+                      - Name: Label
+                        Type: Label
+                    - Name: Row
+                      Type: RowLayout
+                      Children:
+                      - Name: Row
+                        Type: RowLayout
+                        Children:
+                        - Name: Label
+                          Type: Label
+                        - Name: Value
+                          Type: Label
+                      - Name: PolyLine1
+                        Type: PolyLine
+                      - Name: Row1
+                        Type: RowLayout
+                        Children:
+                        - Name: Label
+                          Type: Label
+                        - Name: Value
+                          Type: Label
+                - Name: State
+                  Type: Ellipse
+            - Name: ControlFaceplates2
+              Type: ControlFaceplates
+              Children:
+              - Name: BG
+                Type: Rectangle
+                Children:
+                - Name: HL
+                  Type: RowLayout
+                  Children:
+                  - Name: VL
+                    Type: ColumnLayout
+                    Children:
+                    - Name: Title
+                      Type: Label
+                    - Name: Row1
+                      Type: RowLayout
+                      Children:
+                      - Name: Value
+                        Type: Label
+                      - Name: Label
+                        Type: Label
+                    - Name: Row
+                      Type: RowLayout
+                      Children:
+                      - Name: Row
+                        Type: RowLayout
+                        Children:
+                        - Name: Label
+                          Type: Label
+                        - Name: Value
+                          Type: Label
+                      - Name: PolyLine1
+                        Type: PolyLine
+                      - Name: Row1
+                        Type: RowLayout
+                        Children:
+                        - Name: Label
+                          Type: Label
+                        - Name: Value
+                          Type: Label
+                - Name: State
+                  Type: Ellipse
+            - Name: ControlFaceplates3
+              Type: ControlFaceplates
+              Children:
+              - Name: BG
+                Type: Rectangle
+                Children:
+                - Name: HL
+                  Type: RowLayout
+                  Children:
+                  - Name: VL
+                    Type: ColumnLayout
+                    Children:
+                    - Name: Title
+                      Type: Label
+                    - Name: Row1
+                      Type: RowLayout
+                      Children:
+                      - Name: Value
+                        Type: Label
+                      - Name: Label
+                        Type: Label
+                    - Name: Row
+                      Type: RowLayout
+                      Children:
+                      - Name: Row
+                        Type: RowLayout
+                        Children:
+                        - Name: Label
+                          Type: Label
+                        - Name: Value
+                          Type: Label
+                      - Name: PolyLine1
+                        Type: PolyLine
+                      - Name: Row1
+                        Type: RowLayout
+                        Children:
+                        - Name: Label
+                          Type: Label
+                        - Name: Value
+                          Type: Label
+                - Name: State
+                  Type: Ellipse
+            - Name: ControlFaceplates4
+              Type: ControlFaceplates
+              Children:
+              - Name: BG
+                Type: Rectangle
+                Children:
+                - Name: HL
+                  Type: RowLayout
+                  Children:
+                  - Name: VL
+                    Type: ColumnLayout
+                    Children:
+                    - Name: Title
+                      Type: Label
+                    - Name: Row1
+                      Type: RowLayout
+                      Children:
+                      - Name: Value
+                        Type: Label
+                      - Name: Label
+                        Type: Label
+                    - Name: Row
+                      Type: RowLayout
+                      Children:
+                      - Name: Row
+                        Type: RowLayout
+                        Children:
+                        - Name: Label
+                          Type: Label
+                        - Name: Value
+                          Type: Label
+                      - Name: PolyLine1
+                        Type: PolyLine
+                      - Name: Row1
+                        Type: RowLayout
+                        Children:
+                        - Name: Label
+                          Type: Label
+                        - Name: Value
+                          Type: Label
+                - Name: State
+                  Type: Ellipse
+            - Name: ControlFaceplates5
+              Type: ControlFaceplates
+              Children:
+              - Name: BG
+                Type: Rectangle
+                Children:
+                - Name: HL
+                  Type: RowLayout
+                  Children:
+                  - Name: VL
+                    Type: ColumnLayout
+                    Children:
+                    - Name: Title
+                      Type: Label
+                    - Name: Row1
+                      Type: RowLayout
+                      Children:
+                      - Name: Value
+                        Type: Label
+                      - Name: Label
+                        Type: Label
+                    - Name: Row
+                      Type: RowLayout
+                      Children:
+                      - Name: Row
+                        Type: RowLayout
+                        Children:
+                        - Name: Label
+                          Type: Label
+                        - Name: Value
+                          Type: Label
+                      - Name: PolyLine1
+                        Type: PolyLine
+                      - Name: Row1
+                        Type: RowLayout
+                        Children:
+                        - Name: Label
+                          Type: Label
+                        - Name: Value
+                          Type: Label
+                - Name: State
+                  Type: Ellipse
+            - Name: VerticalGap
+              Type: BaseDataVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 8.0
+            - Name: TopMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 8.0
+            - Name: BottomMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 8.0
+            - Name: RightMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 8.0
+            - Name: LeftMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 8.0
+          - Name: HorizontalAlignment
+            Type: BaseVariableType
+            DataType: HorizontalAlignment
+            ModellingRule: Optional
+          - Name: VerticalAlignment
+            Type: BaseVariableType
+            DataType: VerticalAlignment
+            ModellingRule: Optional
+            Value: 3
+          - Name: CornerRadius
+            Type: BaseDataVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 5.0
+          - Name: FillColor
+            Type: BaseDataVariableType
+            DataType: Color
+            ModellingRule: Optional
+            Value: "#f9fafc"
+          - Name: BorderColor
+            Type: BaseDataVariableType
+            DataType: Color
+            ModellingRule: Optional
+            Value: "#00000034"
+        - Name: Rectangle1
+          Type: Rectangle
+          Children:
+          - Name: Width
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 260.0
+          - Name: Height
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 150.0
+          - Name: LeftMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+          - Name: TopMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+          - Name: VerticalLayout2
+            Type: ColumnLayout
+            Children:
+            - Name: Width
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 50.0
+            - Name: Height
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 50.0
+            - Name: HorizontalAlignment
+              Type: BaseVariableType
+              DataType: HorizontalAlignment
+              ModellingRule: Optional
+              Value: 3
+            - Name: VerticalAlignment
+              Type: BaseVariableType
+              DataType: VerticalAlignment
+              ModellingRule: Optional
+              Value: 3
+            - Name: Image1
+              Type: Image
+              Children:
+              - Name: Path
+                Type: BaseDataVariableType
+                DataType: ResourceUri
+                Value: "ns=7;%PROJECTDIR%/Images/bioreactor.png"
+              - Name: Width
+                Type: BaseVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 50.0
+              - Name: Height
+                Type: BaseVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 50.0
+              - Name: HorizontalAlignment
+                Type: BaseVariableType
+                DataType: HorizontalAlignment
+                ModellingRule: Optional
+                Value: 3
+              - Name: VerticalAlignment
+                Type: BaseVariableType
+                DataType: VerticalAlignment
+                ModellingRule: Optional
+                Value: 3
+            - Name: TopMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 16.0
+            - Name: BottomMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 16.0
+          - Name: HorizontalAlignment
+            Type: BaseVariableType
+            DataType: HorizontalAlignment
+            ModellingRule: Optional
+            Value: 3
+          - Name: VerticalAlignment
+            Type: BaseVariableType
+            DataType: VerticalAlignment
+            ModellingRule: Optional
+            Value: 3
+          - Name: BorderColor
+            Type: BaseDataVariableType
+            DataType: Color
+            ModellingRule: Optional
+            Value: "#00000039"
+          - Name: FillColor
+            Type: BaseDataVariableType
+            DataType: Color
+            ModellingRule: Optional
+            Value: "#f9fafc"
+          - Name: CornerRadius
+            Type: BaseDataVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 5.0
+        - Name: HorizontalGap
+          Type: BaseDataVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 16.0
+        - Name: Rectangle3
+          Type: Rectangle
+          Children:
+          - Name: Width
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 300.0
+          - Name: Height
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 260.0
+          - Name: LeftMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+          - Name: TopMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+          - Name: HorizontalAlignment
+            Type: BaseVariableType
+            DataType: HorizontalAlignment
+            ModellingRule: Optional
+            Value: 1
+          - Name: VerticalAlignment
+            Type: BaseVariableType
+            DataType: VerticalAlignment
+            ModellingRule: Optional
+            Value: 3
+          - Name: CornerRadius
+            Type: BaseDataVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 5.0
+          - Name: FillColor
+            Type: BaseDataVariableType
+            DataType: Color
+            ModellingRule: Optional
+            Value: "#f9fafc"
+          - Name: BorderColor
+            Type: BaseDataVariableType
+            DataType: Color
+            ModellingRule: Optional
+            Value: "#00000034"
+          - Name: VerticalLayout3
+            Type: ColumnLayout
+            Children:
+            - Name: Width
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 300.0
+            - Name: Height
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 50.0
+            - Name: HorizontalAlignment
+              Type: BaseVariableType
+              DataType: HorizontalAlignment
+              ModellingRule: Optional
+              Value: 3
+            - Name: VerticalAlignment
+              Type: BaseVariableType
+              DataType: VerticalAlignment
+              ModellingRule: Optional
+              Value: 3
+            - Name: ParameterWithStatus1
+              Type: ParameterWithStatus
+              Children:
+              - Name: BG
+                Type: Rectangle
+                Children:
+                - Name: HL
+                  Type: RowLayout
+                  Children:
+                  - Name: VL
+                    Type: ColumnLayout
+                    Children:
+                    - Name: Title
+                      Type: Label
+                    - Name: Row
+                      Type: RowLayout
+                      Children:
+                      - Name: Row
+                        Type: RowLayout
+                        Children:
+                        - Name: Value
+                          Type: Label
+                        - Name: Label
+                          Type: Label
+                - Name: State
+                  Type: Ellipse
+            - Name: ParameterWithStatus2
+              Type: ParameterWithStatus
+              Children:
+              - Name: BG
+                Type: Rectangle
+                Children:
+                - Name: HL
+                  Type: RowLayout
+                  Children:
+                  - Name: VL
+                    Type: ColumnLayout
+                    Children:
+                    - Name: Title
+                      Type: Label
+                    - Name: Row
+                      Type: RowLayout
+                      Children:
+                      - Name: Row
+                        Type: RowLayout
+                        Children:
+                        - Name: Value
+                          Type: Label
+                        - Name: Label
+                          Type: Label
+                - Name: State
+                  Type: Ellipse
+            - Name: ParameterWithStatus3
+              Type: ParameterWithStatus
+              Children:
+              - Name: BG
+                Type: Rectangle
+                Children:
+                - Name: HL
+                  Type: RowLayout
+                  Children:
+                  - Name: VL
+                    Type: ColumnLayout
+                    Children:
+                    - Name: Title
+                      Type: Label
+                    - Name: Row
+                      Type: RowLayout
+                      Children:
+                      - Name: Row
+                        Type: RowLayout
+                        Children:
+                        - Name: Value
+                          Type: Label
+                        - Name: Label
+                          Type: Label
+                - Name: State
+                  Type: Ellipse
+            - Name: ParameterWithStatus4
+              Type: ParameterWithStatus
+              Children:
+              - Name: BG
+                Type: Rectangle
+                Children:
+                - Name: HL
+                  Type: RowLayout
+                  Children:
+                  - Name: VL
+                    Type: ColumnLayout
+                    Children:
+                    - Name: Title
+                      Type: Label
+                    - Name: Row
+                      Type: RowLayout
+                      Children:
+                      - Name: Row
+                        Type: RowLayout
+                        Children:
+                        - Name: Value
+                          Type: Label
+                        - Name: Label
+                          Type: Label
+                - Name: State
+                  Type: Ellipse
+            - Name: ParameterWithStatus5
+              Type: ParameterWithStatus
+              Children:
+              - Name: BG
+                Type: Rectangle
+                Children:
+                - Name: HL
+                  Type: RowLayout
+                  Children:
+                  - Name: VL
+                    Type: ColumnLayout
+                    Children:
+                    - Name: Title
+                      Type: Label
+                    - Name: Row
+                      Type: RowLayout
+                      Children:
+                      - Name: Row
+                        Type: RowLayout
+                        Children:
+                        - Name: Value
+                          Type: Label
+                        - Name: Label
+                          Type: Label
+                - Name: State
+                  Type: Ellipse
+            - Name: VerticalGap
+              Type: BaseDataVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 16.0
+            - Name: LeftMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 8.0
+            - Name: TopMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 8.0
+            - Name: RightMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 8.0
+            - Name: BottomMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 8.0
+        - Name: TopMargin
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 8.0
+        - Name: BottomMargin
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 8.0
+    - Name: HorizontalGap
+      Type: BaseDataVariableType
+      DataType: Size
+      ModellingRule: Optional
+    - Name: VerticalGap
+      Type: BaseDataVariableType
+      DataType: Size
+      ModellingRule: Optional
+      Value: 8.0
+    - Name: Rectangle1
+      Type: Rectangle
+      Children:
+      - Name: Width
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+        Value: 170.0
+      - Name: Height
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+        Value: 300.0
+      - Name: LeftMargin
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+      - Name: TopMargin
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+      - Name: HorizontalAlignment
+        Type: BaseVariableType
+        DataType: HorizontalAlignment
+        ModellingRule: Optional
+        Value: 3
+      - Name: VerticalAlignment
+        Type: BaseVariableType
+        DataType: VerticalAlignment
+        ModellingRule: Optional
+      - Name: BorderColor
+        Type: BaseDataVariableType
+        DataType: Color
+        ModellingRule: Optional
+        Value: "#dae1e9"
+      - Name: RightMargin
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+      - Name: BottomMargin
+        Type: BaseVariableType
+        DataType: Size
+        ModellingRule: Optional
+      - Name: FillColor
+        Type: BaseDataVariableType
+        DataType: Color
+        ModellingRule: Optional
+      - Name: HorizontalLayout1
+        Type: RowLayout
+        Children:
+        - Name: Width
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 50.0
+        - Name: Height
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 60.0
+        - Name: HorizontalAlignment
+          Type: BaseVariableType
+          DataType: HorizontalAlignment
+          ModellingRule: Optional
+          Value: 3
+        - Name: VerticalAlignment
+          Type: BaseVariableType
+          DataType: VerticalAlignment
+          ModellingRule: Optional
+          Value: 3
+        - Name: LeftMargin
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 16.0
+        - Name: RightMargin
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 16.0
+        - Name: WebBrowser1
+          Type: WebBrowser
+          Children:
+          - Name: URL
+            Type: BaseDataVariableType
+            DataType: ResourceUri
+            Children:
+            - Name: DynamicLink
+              Type: DynamicLink
+              DataType: NodePath
+              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineChart1/URL"
+          - Class: Reference
+            Target: ns=3;i=354
+            Direction: Forward
+          - Class: Reference
+            Target: ns=3;i=356
+            Direction: Forward
+          - Class: Reference
+            Target: ns=3;i=358
+            Direction: Forward
+          - Name: Width
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 300.0
+          - Name: Height
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 300.0
+          - Name: HorizontalAlignment
+            Type: BaseVariableType
+            DataType: HorizontalAlignment
+            ModellingRule: Optional
+            Value: 3
+          - Name: VerticalAlignment
+            Type: BaseVariableType
+            DataType: VerticalAlignment
+            ModellingRule: Optional
+            Value: 3
+        - Name: WebBrowser2
+          Type: WebBrowser
+          Children:
+          - Name: URL
+            Type: BaseDataVariableType
+            DataType: ResourceUri
+            Children:
+            - Name: DynamicLink
+              Type: DynamicLink
+              DataType: NodePath
+              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineChart1/URL"
+          - Class: Reference
+            Target: ns=3;i=354
+            Direction: Forward
+          - Class: Reference
+            Target: ns=3;i=356
+            Direction: Forward
+          - Class: Reference
+            Target: ns=3;i=358
+            Direction: Forward
+          - Name: Width
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 300.0
+          - Name: Height
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 300.0
+          - Name: LeftMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+          - Name: TopMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+          - Name: HorizontalAlignment
+            Type: BaseVariableType
+            DataType: HorizontalAlignment
+            ModellingRule: Optional
+            Value: 3
+          - Name: VerticalAlignment
+            Type: BaseVariableType
+            DataType: VerticalAlignment
+            ModellingRule: Optional
+            Value: 3
+        - Name: HorizontalGap
+          Type: BaseDataVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 16.0
+        - Name: WebBrowser3
+          Type: WebBrowser
+          Children:
+          - Name: URL
+            Type: BaseDataVariableType
+            DataType: ResourceUri
+            Children:
+            - Name: DynamicLink
+              Type: DynamicLink
+              DataType: NodePath
+              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineChart1/URL"
+          - Class: Reference
+            Target: ns=3;i=354
+            Direction: Forward
+          - Class: Reference
+            Target: ns=3;i=356
+            Direction: Forward
+          - Class: Reference
+            Target: ns=3;i=358
+            Direction: Forward
+          - Name: Width
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 300.0
+          - Name: Height
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 300.0
+          - Name: LeftMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+          - Name: TopMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+          - Name: HorizontalAlignment
+            Type: BaseVariableType
+            DataType: HorizontalAlignment
+            ModellingRule: Optional
+            Value: 3
+          - Name: VerticalAlignment
+            Type: BaseVariableType
+            DataType: VerticalAlignment
+            ModellingRule: Optional
+            Value: 3
+        - Name: WebBrowser4
+          Type: WebBrowser
+          Children:
+          - Name: URL
+            Type: BaseDataVariableType
+            DataType: ResourceUri
+            Children:
+            - Name: DynamicLink
+              Type: DynamicLink
+              DataType: NodePath
+              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineChart1/URL"
+          - Class: Reference
+            Target: ns=3;i=354
+            Direction: Forward
+          - Class: Reference
+            Target: ns=3;i=356
+            Direction: Forward
+          - Class: Reference
+            Target: ns=3;i=358
+            Direction: Forward
+          - Name: Width
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 300.0
+          - Name: Height
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 300.0
+          - Name: LeftMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+          - Name: TopMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+          - Name: HorizontalAlignment
+            Type: BaseVariableType
+            DataType: HorizontalAlignment
+            ModellingRule: Optional
+            Value: 3
+          - Name: VerticalAlignment
+            Type: BaseVariableType
+            DataType: VerticalAlignment
+            ModellingRule: Optional
+            Value: 3
+        - Name: WebBrowser5
+          Type: WebBrowser
+          Children:
+          - Name: URL
+            Type: BaseDataVariableType
+            DataType: ResourceUri
+            Children:
+            - Name: DynamicLink
+              Type: DynamicLink
+              DataType: NodePath
+              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineChart1/URL"
+          - Class: Reference
+            Target: ns=3;i=354
+            Direction: Forward
+          - Class: Reference
+            Target: ns=3;i=356
+            Direction: Forward
+          - Class: Reference
+            Target: ns=3;i=358
+            Direction: Forward
+          - Name: Width
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 300.0
+          - Name: Height
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 300.0
+          - Name: LeftMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+          - Name: TopMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+          - Name: HorizontalAlignment
+            Type: BaseVariableType
+            DataType: HorizontalAlignment
+            ModellingRule: Optional
+            Value: 3
+          - Name: VerticalAlignment
+            Type: BaseVariableType
+            DataType: VerticalAlignment
+            ModellingRule: Optional
+            Value: 3
+        - Name: TopMargin
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 8.0
+        - Name: BottomMargin
+          Type: BaseVariableType
+          DataType: Size
+          ModellingRule: Optional
+          Value: 8.0
+    - Name: BottomMargin
+      Type: BaseVariableType
+      DataType: Size
+      ModellingRule: Optional
   - Name: HorizontalAlignment
     Type: BaseVariableType
     DataType: HorizontalAlignment

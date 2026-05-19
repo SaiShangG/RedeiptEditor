@@ -371,7 +371,7 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
 
     private static void SetTitle(Container item, string baseName)
     {
-        var btn = item.Get("Rectangle1")?.Get("VerticalLayout1")?.Get("ButtonWithIcon1")?.Get<Button>("Button1");
+        var btn = GetTemplateTitleButton(item);
         if (btn != null) btn.Text = baseName;
     }
 
@@ -388,7 +388,32 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
 
     private static Button GetTemplateTitleButton(Container item)
     {
-        return item?.Get("Rectangle1")?.Get("VerticalLayout1")?.Get("ButtonWithIcon1")?.Get<Button>("Button1");
+        return GetCardHeader(item)?.Get("Rectangle2")?.Get<Button>("Button1");
+    }
+
+    private static ColumnLayout GetCardContentLayout(Container item)
+    {
+        return item?.Get("Rectangle1")?.Get<ColumnLayout>("VerticalLayout1");
+    }
+
+    private static IUAObject GetCardHeader(Container item)
+    {
+        return GetCardContentLayout(item)?.Get("ButtonWithIcon1") as IUAObject;
+    }
+
+    private static RowLayout GetCardBodyRow(Container item)
+    {
+        return GetCardContentLayout(item)?.Get<RowLayout>("Row");
+    }
+
+    private static ComboBox GetVersionComboBox(Container item)
+    {
+        return GetCardBodyRow(item)?.Get<ComboBox>("ComboBox1");
+    }
+
+    private static Button GetInsertButton(Container item)
+    {
+        return GetCardBodyRow(item)?.Get("ButtonWithIcon1")?.Get("Rectangle2")?.Get<Button>("Button1");
     }
 
     /// <summary>根据记录的选中模板刷新各卡片标题按钮背景色（与左侧树选中行一致）。</summary>
@@ -417,7 +442,7 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     /// <summary>标题按钮（与 Insert 同级的 ButtonWithIcon1）：创建时增加 Click 回调，Log 当前是 Operation/Phase 及下拉框选中版本项（如 Operation_000、Phase_003）。</summary>
     private void SetTitleButtonClick(Container item, string baseName)
     {
-        var btn = item.Get("Rectangle1")?.Get("VerticalLayout1")?.Get("ButtonWithIcon1")?.Get<Button>("Button1");
+        var btn = GetTemplateTitleButton(item);
         if (btn == null) return;
         btn.UAEvent -= TitleButtonClicked;
         btn.UAEvent += TitleButtonClicked;
@@ -448,7 +473,7 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     /// </summary>
     private void SetVersionComboBoxAndIds(Container item, string baseName, List<(int Id, string Version)> versions)
     {
-        var comboBox = item.Get("Rectangle1")?.Get("VerticalLayout1")?.Get("Row")?.Get<ComboBox>("ComboBox1");
+        var comboBox = GetVersionComboBox(item);
         // 与 GetSelectedVersionId 一致：Model 子节点按 BrowseName 排序，VersionIds 须同一顺序
         var ordered = versions
             .OrderBy(v => string.IsNullOrEmpty(v.Version) ? "0" : v.Version, StringComparer.Ordinal)
@@ -501,7 +526,7 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     /// <summary>与标题按钮一致：切换版本后仍刷新 Operation/Phase 模板面板，避免仅操作下拉导致中间区“掉选中”。</summary>
     private void WireVersionComboBoxForMiddlePanelSync(Container item, string baseName)
     {
-        var comboBox = item.Get("Rectangle1")?.Get("VerticalLayout1")?.Get("Row")?.Get<ComboBox>("ComboBox1");
+        var comboBox = GetVersionComboBox(item);
         if (comboBox == null) return;
 
         comboBox.UAEvent -= OnVersionComboUserSelectionChanged;
@@ -529,7 +554,7 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     /// </summary>
     private void SetInsertButton(Container item)
     {
-        var btn = item.Get("Rectangle1")?.Get("VerticalLayout1")?.Get("Row")?.Get("ButtonWithIcon1")?.Get<Button>("Button1");
+        var btn = GetInsertButton(item);
         if (btn == null) return;
 
         btn.UAEvent -= InsertButtonClicked; // 先移除
@@ -549,7 +574,7 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     /// <summary>从 ComboBox 当前选中项得到版本项名称，如 baseName + "_000" / "_003"。</summary>
     private static string GetSelectedVersionItemName(Container item, string baseName)
     {
-        var comboBox = item.Get("Rectangle1")?.Get("VerticalLayout1")?.Get("Row")?.Get<ComboBox>("ComboBox1");
+        var comboBox = GetVersionComboBox(item);
         if (comboBox == null) return baseName + "_???";
         var modelVar = comboBox.GetVariable("Model");
         NodeId modelNodeId = modelVar?.Value != null && modelVar.Value.Value is NodeId mid ? (NodeId)mid : NodeId.Empty;
@@ -574,7 +599,7 @@ public class GenerateOperationPhaseListPanel : BaseNetLogic
     private static int GetSelectedVersionId(Container item)
     {
         int selectedIndex = 0;
-        var comboBox = item.Get("Rectangle1")?.Get("VerticalLayout1")?.Get("Row")?.Get<ComboBox>("ComboBox1");
+        var comboBox = GetVersionComboBox(item);
         if (comboBox != null)
         {
             var modelVar = comboBox.GetVariable("Model");

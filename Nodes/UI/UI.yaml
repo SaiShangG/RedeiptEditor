@@ -92,7 +92,7 @@ Children:
           DataType: NodeId
           ReferenceType: HasParameter
           ModellingRule: Optional
-          Value: "/Objects/RedeiptEditor/UI/Panels/OperationPanels/UnitControlDashboard"
+          Value: "/Objects/RedeiptEditor/UI/Panels/OperationPanels/UnitMainDashboard"
         - Name: FalseValue
           Type: BaseDataVariableType
           DataType: NodeId

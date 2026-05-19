@@ -134,6 +134,14 @@ Children:
         Type: BaseDataVariableType
         DataType: Color
         Value: "#ffffff00"
+      - Name: SelectionColor
+        Type: BaseDataVariableType
+        DataType: Color
+        Value: "#005b9f"
+      - Name: FocusBorderColor
+        Type: BaseDataVariableType
+        DataType: Color
+        Value: "#005b9f"
   - Name: SwitchStyles
     Type: BaseObjectType
     Children:
@@ -159,11 +167,11 @@ Children:
       - Name: InactiveTextColor
         Type: BaseDataVariableType
         DataType: Color
-        Value: "#000000"
+        Value: "#b3b3b3"
       - Name: InactiveColor
         Type: BaseDataVariableType
         DataType: Color
-        Value: "#cfdeea"
+        Value: "#005b9f"
       - Name: FontSize
         Type: BaseDataVariableType
         DataType: Size
@@ -187,11 +195,11 @@ Children:
       - Name: ActivePrimaryColor
         Type: BaseDataVariableType
         DataType: Color
-        Value: "#247cc4"
+        Value: "#ffffff"
       - Name: ActiveSecondaryColor
         Type: BaseDataVariableType
         DataType: Color
-        Value: "#000000"
+        Value: "#ffffff"
   - Name: ChartStyles
     Type: BaseObjectType
     Children:
@@ -219,6 +227,33 @@ Children:
         Type: BaseDataVariableType
         DataType: Color
         Value: "#ffffff"
+    - Name: Default1
+      Type: DataListStyle
+      Children:
+      - Name: HeaderFontSize
+        Type: BaseDataVariableType
+        DataType: Size
+        Value: 18.0
+      - Name: HeaderFontWeight
+        Type: BaseDataVariableType
+        DataType: FontWeightEnum
+        Value: 700
+      - Name: FontSize
+        Type: BaseDataVariableType
+        DataType: Size
+        Value: 14.0
+      - Name: BackgroundColor
+        Type: BaseDataVariableType
+        DataType: Color
+        Value: "#ffffff"
+      - Name: SelectionBackgroundColor
+        Type: BaseDataVariableType
+        DataType: Color
+        Value: "#005b9f"
+      - Name: SelectionBorderColor
+        Type: BaseDataVariableType
+        DataType: Color
+        Value: "#005b9f"
   - Name: ToolTipStyles
     Type: BaseObjectType
     Children:

@@ -3,3 +3,4 @@ Type: ModelCategoryFolder
 Children:
 - File: UIData/UIData.yaml
 - File: EchartLibrary/EchartLibrary.yaml
+- File: DashboardData/DashboardData.yaml

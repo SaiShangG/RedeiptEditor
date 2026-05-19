@@ -1,0 +1,276 @@
+Name: DashboardData
+Type: FolderType
+Children:
+- Name: ControlDashboard
+  Type: BaseObjectType
+  Children:
+  - Name: BatchInfo
+    Type: BaseObjectType
+    Children:
+    - Name: label1
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "User"
+    - Name: label2
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+    - Name: label3
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+    - Name: label4
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+    - Name: label5
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+    - Name: Value1
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+    - Name: Value2
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+    - Name: Value3
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+    - Name: Value4
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+    - Name: Value5
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+  - Name: KeyParameters
+    Type: BaseObjectType
+    Children:
+    - Name: Item1
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["0","0","0"]
+    - Name: ItemValue1
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["0","0","0"]
+    - Name: Item2
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["0","0","0"]
+    - Name: ItemValue2
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["0","0","0"]
+    - Name: Item3
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["0","0","0"]
+    - Name: ItemValue3
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["0","0","0"]
+    - Name: Item4
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["0","0","0"]
+    - Name: ItemValue4
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["0","0","0"]
+    - Name: Item5
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["0","0","0"]
+    - Name: ItemValue5
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["0","0","0"]
+  - Name: Parameters
+    Type: BaseObjectType
+    Children:
+    - Name: Item1
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["0","0"]
+    - Name: ItemValue1
+      Type: BaseDataVariableType
+      DataType: String
+    - Name: Item2
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["0","0"]
+    - Name: Item3
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["0","0"]
+    - Name: Item4
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["0","0"]
+    - Name: Item5
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["0","0"]
+    - Name: ItemValue2
+      Type: BaseDataVariableType
+      DataType: String
+    - Name: ItemValue3
+      Type: BaseDataVariableType
+      DataType: String
+    - Name: ItemValue4
+      Type: BaseDataVariableType
+      DataType: String
+    - Name: ItemValue5
+      Type: BaseDataVariableType
+      DataType: String
+- Name: ProductionDashboard
+  Type: BaseObjectType
+  Children:
+  - Name: Info
+    Type: BaseObjectType
+    Children:
+    - Name: label1
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "User"
+    - Name: label2
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+    - Name: label3
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+    - Name: label4
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+    - Name: label5
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+    - Name: Value1
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+    - Name: Value2
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+    - Name: Value3
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+    - Name: Value4
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+    - Name: Value5
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+  - Name: KeyParameters
+    Type: BaseObjectType
+    Children:
+    - Name: Item1
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["0","0","0"]
+    - Name: ItemValue1
+      Type: BaseDataVariableType
+      DataType: String
+    - Name: Item2
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["0","0","0"]
+    - Name: Item3
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["0","0","0"]
+    - Name: Item4
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["0","0","0"]
+    - Name: Item5
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["0","0","0"]
+    - Name: Item6
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["0","0","0"]
+    - Name: ItemValue2
+      Type: BaseDataVariableType
+      DataType: String
+    - Name: ItemValue3
+      Type: BaseDataVariableType
+      DataType: String
+    - Name: ItemValue4
+      Type: BaseDataVariableType
+      DataType: String
+    - Name: ItemValue5
+      Type: BaseDataVariableType
+      DataType: String
+    - Name: ItemValue6
+      Type: BaseDataVariableType
+      DataType: String
+  - Name: BatchInfo
+    Type: BaseObjectType
+    Children:
+    - Name: BatchProgress
+      Type: BaseDataVariableType
+      DataType: Int32
+    - Name: ETA
+      Type: BaseDataVariableType
+      DataType: Int32
+    - Name: PhaseName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"

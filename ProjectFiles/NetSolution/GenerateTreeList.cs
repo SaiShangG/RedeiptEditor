@@ -362,10 +362,36 @@ public class GenerateTreeList : BaseNetLogic
         return null;
     }
 
+    private static IUAObject FindDescendantObjectByBrowseTail(IUANode parent, string tail)
+    {
+        if (parent == null || string.IsNullOrEmpty(tail)) return null;
+        foreach (var ch in parent.Children)
+        {
+            if (string.Equals(BrowseNameTail(ch), tail, StringComparison.OrdinalIgnoreCase))
+                return ch as IUAObject;
+            var nested = FindDescendantObjectByBrowseTail(ch, tail);
+            if (nested != null) return nested;
+        }
+        return null;
+    }
+
     private static Button TryGetButtonWithIconInnerButton(IUAObject wrap)
     {
         if (wrap == null) return null;
-        return wrap.Get<Button>("Button1") ?? wrap.GetObject("Button1") as Button;
+        return FindDescendantObjectByBrowseTail(wrap, "Button1") as Button;
+    }
+
+    private IUAObject FindDevReleasedContainerNearTree()
+    {
+        IUANode current = LogicObject?.Owner;
+        while (current != null)
+        {
+            var row = FindChildObjectByBrowseTail(current, "DevReleasedContainer")
+                ?? FindDescendantObjectByBrowseTail(current, "DevReleasedContainer");
+            if (row != null) return row;
+            current = current.Owner;
+        }
+        return null;
     }
 
     /// <summary>在左侧面板 <c>VerticalLayout1</c> 下定位 Dev/Released，订阅点击（无需改 yaml）。</summary>
@@ -374,8 +400,7 @@ public class GenerateTreeList : BaseNetLogic
         UnwireDevReleasedFilterButtons();
         try
         {
-            IUANode vertical = LogicObject.Owner?.Owner?.Owner;
-            var row = FindChildObjectByBrowseTail(vertical, "DevReleasedContainer");
+            var row = FindDevReleasedContainerNearTree();
             var devWrap = FindChildObjectByBrowseTail(row, "Dev");
             var relWrap = FindChildObjectByBrowseTail(row, "Released");
             _devFilterButton = TryGetButtonWithIconInnerButton(devWrap);
@@ -385,7 +410,7 @@ public class GenerateTreeList : BaseNetLogic
             if (_releasedFilterButton != null)
                 _releasedFilterButton.UAEvent += OnReleasedFilterButtonClicked;
             if ((_devFilterButton == null || _releasedFilterButton == null) && EnableLog)
-                Log.Warning(LogCategory, "Dev/Released 筛选按钮未找到（期望路径: TreeList1 父级 ColumnLayout / DevReleasedContainer）。");
+                Log.Warning(LogCategory, "Dev/Released 筛选按钮未找到（已尝试在 TreeList 邻近祖先节点下递归查找 DevReleasedContainer/Button1）。");
         }
         catch (Exception ex)
         {
