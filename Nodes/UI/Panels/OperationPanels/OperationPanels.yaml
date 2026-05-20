@@ -1165,6 +1165,15 @@ Children:
     DataType: VerticalAlignment
     ModellingRule: Optional
     Value: 3
+  - Name: ControlDashboard
+    Type: Alias
+    DataType: NodeId
+    Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard"
+    Children:
+    - Name: Kind
+      Type: PropertyType
+      DataType: NodeId
+      Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard"
 - Name: ProductionDashboard
   Id: g=6b09ef540f8466aa31859c1b952ca656
   Supertype: Panel
@@ -2269,7 +2278,7 @@ Children:
                       - Name: DynamicLink
                         Type: DynamicLink
                         DataType: NodePath
-                        Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineChart1/URL"
+                        Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineCharts/LineChart1/URL"
                     - Class: Reference
                       Target: ns=3;i=354
                       Direction: Forward
@@ -4252,7 +4261,7 @@ Children:
                             - Name: DynamicLink
                               Type: DynamicLink
                               DataType: NodePath
-                              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/Pie4/URL"
+                              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/PieCharts/Pie4/URL"
                           - Class: Reference
                             Target: ns=3;i=354
                             Direction: Forward
@@ -4303,7 +4312,7 @@ Children:
                             - Name: DynamicLink
                               Type: DynamicLink
                               DataType: NodePath
-                              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/Pie4/URL"
+                              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/PieCharts/Pie4/URL"
                           - Class: Reference
                             Target: ns=3;i=354
                             Direction: Forward
@@ -4354,7 +4363,7 @@ Children:
                             - Name: DynamicLink
                               Type: DynamicLink
                               DataType: NodePath
-                              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/Pie4/URL"
+                              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/PieCharts/Pie4/URL"
                           - Class: Reference
                             Target: ns=3;i=354
                             Direction: Forward
@@ -4405,7 +4414,7 @@ Children:
                             - Name: DynamicLink
                               Type: DynamicLink
                               DataType: NodePath
-                              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/Pie4/URL"
+                              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/PieCharts/Pie4/URL"
                           - Class: Reference
                             Target: ns=3;i=354
                             Direction: Forward
@@ -5742,7 +5751,7 @@ Children:
                             - Name: DynamicLink
                               Type: DynamicLink
                               DataType: NodePath
-                              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/Pie4/URL"
+                              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/PieCharts/Pie4/URL"
                           - Class: Reference
                             Target: ns=3;i=354
                             Direction: Forward
@@ -5820,7 +5829,7 @@ Children:
                             - Name: DynamicLink
                               Type: DynamicLink
                               DataType: NodePath
-                              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/Pie4/URL"
+                              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/PieCharts/Pie4/URL"
                           - Class: Reference
                             Target: ns=3;i=354
                             Direction: Forward
@@ -5898,7 +5907,7 @@ Children:
                             - Name: DynamicLink
                               Type: DynamicLink
                               DataType: NodePath
-                              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/Pie4/URL"
+                              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/PieCharts/Pie4/URL"
                           - Class: Reference
                             Target: ns=3;i=354
                             Direction: Forward
@@ -5976,7 +5985,7 @@ Children:
                             - Name: DynamicLink
                               Type: DynamicLink
                               DataType: NodePath
-                              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/Pie4/URL"
+                              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/PieCharts/Pie4/URL"
                           - Class: Reference
                             Target: ns=3;i=354
                             Direction: Forward
@@ -6164,7 +6173,7 @@ Children:
                             - Name: DynamicLink
                               Type: DynamicLink
                               DataType: NodePath
-                              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/Pie4/URL"
+                              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/PieCharts/Pie4/URL"
                           - Class: Reference
                             Target: ns=3;i=354
                             Direction: Forward
@@ -6242,7 +6251,7 @@ Children:
                             - Name: DynamicLink
                               Type: DynamicLink
                               DataType: NodePath
-                              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/Pie4/URL"
+                              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/PieCharts/Pie4/URL"
                           - Class: Reference
                             Target: ns=3;i=354
                             Direction: Forward
@@ -6320,7 +6329,7 @@ Children:
                             - Name: DynamicLink
                               Type: DynamicLink
                               DataType: NodePath
-                              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/Pie4/URL"
+                              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/PieCharts/Pie4/URL"
                           - Class: Reference
                             Target: ns=3;i=354
                             Direction: Forward
@@ -6398,7 +6407,7 @@ Children:
                       - Name: DynamicLink
                         Type: DynamicLink
                         DataType: NodePath
-                        Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineChart1/URL"
+                        Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineCharts/LineChart1/URL"
                     - Class: Reference
                       Target: ns=3;i=354
                       Direction: Forward
@@ -6655,10 +6664,22 @@ Children:
                 - Name: Text
                   Type: BaseDataVariableType
                   DataType: LocalizedText
-                  ModellingRule: Optional
-                  Value: {"LocaleId":"en-US","Text":"User"}
+                  Children:
+                  - Name: DynamicLink
+                    Type: DynamicLink
+                    DataType: NodePath
+                    Value: "{ControlDashboard}/BatchInfo/label1"
             - Name: Value
               Type: Label
+              Children:
+              - Name: Text
+                Type: BaseDataVariableType
+                DataType: LocalizedText
+                Children:
+                - Name: DynamicLink
+                  Type: DynamicLink
+                  DataType: NodePath
+                  Value: "{ControlDashboard}/BatchInfo/Value1"
         - Name: IconLabelValue2
           Type: IconLabelValue
           Children:
@@ -6691,10 +6712,22 @@ Children:
                 - Name: Text
                   Type: BaseDataVariableType
                   DataType: LocalizedText
-                  ModellingRule: Optional
-                  Value: {"LocaleId":"en-US","Text":"Batch"}
+                  Children:
+                  - Name: DynamicLink
+                    Type: DynamicLink
+                    DataType: NodePath
+                    Value: "{ControlDashboard}/BatchInfo/label2"
             - Name: Value
               Type: Label
+              Children:
+              - Name: Text
+                Type: BaseDataVariableType
+                DataType: LocalizedText
+                Children:
+                - Name: DynamicLink
+                  Type: DynamicLink
+                  DataType: NodePath
+                  Value: "{ControlDashboard}/BatchInfo/Value2"
         - Name: IconLabelValue3
           Type: IconLabelValue
           Children:
@@ -6727,10 +6760,22 @@ Children:
                 - Name: Text
                   Type: BaseDataVariableType
                   DataType: LocalizedText
-                  ModellingRule: Optional
-                  Value: {"LocaleId":"en-US","Text":"Recipe"}
+                  Children:
+                  - Name: DynamicLink
+                    Type: DynamicLink
+                    DataType: NodePath
+                    Value: "{ControlDashboard}/BatchInfo/label3"
             - Name: Value
               Type: Label
+              Children:
+              - Name: Text
+                Type: BaseDataVariableType
+                DataType: LocalizedText
+                Children:
+                - Name: DynamicLink
+                  Type: DynamicLink
+                  DataType: NodePath
+                  Value: "{ControlDashboard}/BatchInfo/Value3"
         - Name: IconLabelValue4
           Type: IconLabelValue
           Children:
@@ -6763,10 +6808,22 @@ Children:
                 - Name: Text
                   Type: BaseDataVariableType
                   DataType: LocalizedText
-                  ModellingRule: Optional
-                  Value: {"LocaleId":"en-US","Text":"Phase"}
+                  Children:
+                  - Name: DynamicLink
+                    Type: DynamicLink
+                    DataType: NodePath
+                    Value: "{ControlDashboard}/BatchInfo/label4"
             - Name: Value
               Type: Label
+              Children:
+              - Name: Text
+                Type: BaseDataVariableType
+                DataType: LocalizedText
+                Children:
+                - Name: DynamicLink
+                  Type: DynamicLink
+                  DataType: NodePath
+                  Value: "{ControlDashboard}/BatchInfo/Value4"
         - Name: IconLabelValue5
           Type: IconLabelValue
           Children:
@@ -6799,10 +6856,22 @@ Children:
                 - Name: Text
                   Type: BaseDataVariableType
                   DataType: LocalizedText
-                  ModellingRule: Optional
-                  Value: {"LocaleId":"en-US","Text":"eSig"}
+                  Children:
+                  - Name: DynamicLink
+                    Type: DynamicLink
+                    DataType: NodePath
+                    Value: "{ControlDashboard}/BatchInfo/label5"
             - Name: Value
               Type: Label
+              Children:
+              - Name: Text
+                Type: BaseDataVariableType
+                DataType: LocalizedText
+                Children:
+                - Name: DynamicLink
+                  Type: DynamicLink
+                  DataType: NodePath
+                  Value: "{ControlDashboard}/BatchInfo/Value5"
         - Name: LeftMargin
           Type: BaseVariableType
           DataType: Size
@@ -6963,13 +7032,40 @@ Children:
                     Children:
                     - Name: Title
                       Type: Label
+                      Children:
+                      - Name: Text
+                        Type: BaseDataVariableType
+                        DataType: LocalizedText
+                        Children:
+                        - Name: DynamicLink
+                          Type: DynamicLink
+                          DataType: NodePath
+                          Value: "{ControlDashboard}/KeyParameters/Item1[0]"
                     - Name: Row1
                       Type: RowLayout
                       Children:
                       - Name: Value
                         Type: Label
+                        Children:
+                        - Name: Text
+                          Type: BaseDataVariableType
+                          DataType: LocalizedText
+                          Children:
+                          - Name: DynamicLink
+                            Type: DynamicLink
+                            DataType: NodePath
+                            Value: "{ControlDashboard}/KeyParameters/ItemValue1[0]"
                       - Name: Label
                         Type: Label
+                        Children:
+                        - Name: Text
+                          Type: BaseDataVariableType
+                          DataType: LocalizedText
+                          Children:
+                          - Name: DynamicLink
+                            Type: DynamicLink
+                            DataType: NodePath
+                            Value: "{ControlDashboard}/KeyParameters/Item1[1]"
                     - Name: Row
                       Type: RowLayout
                       Children:
@@ -6978,8 +7074,26 @@ Children:
                         Children:
                         - Name: Label
                           Type: Label
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{ControlDashboard}/KeyParameters/Item1[2]"
                         - Name: Value
                           Type: Label
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{ControlDashboard}/KeyParameters/ItemValue1[1]"
                       - Name: PolyLine1
                         Type: PolyLine
                       - Name: Row1
@@ -7005,13 +7119,40 @@ Children:
                     Children:
                     - Name: Title
                       Type: Label
+                      Children:
+                      - Name: Text
+                        Type: BaseDataVariableType
+                        DataType: LocalizedText
+                        Children:
+                        - Name: DynamicLink
+                          Type: DynamicLink
+                          DataType: NodePath
+                          Value: "{ControlDashboard}/KeyParameters/Item2[0]"
                     - Name: Row1
                       Type: RowLayout
                       Children:
                       - Name: Value
                         Type: Label
+                        Children:
+                        - Name: Text
+                          Type: BaseDataVariableType
+                          DataType: LocalizedText
+                          Children:
+                          - Name: DynamicLink
+                            Type: DynamicLink
+                            DataType: NodePath
+                            Value: "{ControlDashboard}/KeyParameters/ItemValue2[0]"
                       - Name: Label
                         Type: Label
+                        Children:
+                        - Name: Text
+                          Type: BaseDataVariableType
+                          DataType: LocalizedText
+                          Children:
+                          - Name: DynamicLink
+                            Type: DynamicLink
+                            DataType: NodePath
+                            Value: "{ControlDashboard}/KeyParameters/Item2[1]"
                     - Name: Row
                       Type: RowLayout
                       Children:
@@ -7020,8 +7161,26 @@ Children:
                         Children:
                         - Name: Label
                           Type: Label
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{ControlDashboard}/KeyParameters/Item2[2]"
                         - Name: Value
                           Type: Label
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{ControlDashboard}/KeyParameters/ItemValue2[1]"
                       - Name: PolyLine1
                         Type: PolyLine
                       - Name: Row1
@@ -7047,13 +7206,40 @@ Children:
                     Children:
                     - Name: Title
                       Type: Label
+                      Children:
+                      - Name: Text
+                        Type: BaseDataVariableType
+                        DataType: LocalizedText
+                        Children:
+                        - Name: DynamicLink
+                          Type: DynamicLink
+                          DataType: NodePath
+                          Value: "{ControlDashboard}/KeyParameters/Item3[0]"
                     - Name: Row1
                       Type: RowLayout
                       Children:
                       - Name: Value
                         Type: Label
+                        Children:
+                        - Name: Text
+                          Type: BaseDataVariableType
+                          DataType: LocalizedText
+                          Children:
+                          - Name: DynamicLink
+                            Type: DynamicLink
+                            DataType: NodePath
+                            Value: "{ControlDashboard}/KeyParameters/ItemValue3[0]"
                       - Name: Label
                         Type: Label
+                        Children:
+                        - Name: Text
+                          Type: BaseDataVariableType
+                          DataType: LocalizedText
+                          Children:
+                          - Name: DynamicLink
+                            Type: DynamicLink
+                            DataType: NodePath
+                            Value: "{ControlDashboard}/KeyParameters/Item3[1]"
                     - Name: Row
                       Type: RowLayout
                       Children:
@@ -7062,8 +7248,26 @@ Children:
                         Children:
                         - Name: Label
                           Type: Label
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{ControlDashboard}/KeyParameters/Item3[2]"
                         - Name: Value
                           Type: Label
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{ControlDashboard}/KeyParameters/ItemValue3[1]"
                       - Name: PolyLine1
                         Type: PolyLine
                       - Name: Row1
@@ -7089,13 +7293,40 @@ Children:
                     Children:
                     - Name: Title
                       Type: Label
+                      Children:
+                      - Name: Text
+                        Type: BaseDataVariableType
+                        DataType: LocalizedText
+                        Children:
+                        - Name: DynamicLink
+                          Type: DynamicLink
+                          DataType: NodePath
+                          Value: "{ControlDashboard}/KeyParameters/Item4[0]"
                     - Name: Row1
                       Type: RowLayout
                       Children:
                       - Name: Value
                         Type: Label
+                        Children:
+                        - Name: Text
+                          Type: BaseDataVariableType
+                          DataType: LocalizedText
+                          Children:
+                          - Name: DynamicLink
+                            Type: DynamicLink
+                            DataType: NodePath
+                            Value: "{ControlDashboard}/KeyParameters/ItemValue4[0]"
                       - Name: Label
                         Type: Label
+                        Children:
+                        - Name: Text
+                          Type: BaseDataVariableType
+                          DataType: LocalizedText
+                          Children:
+                          - Name: DynamicLink
+                            Type: DynamicLink
+                            DataType: NodePath
+                            Value: "{ControlDashboard}/KeyParameters/Item4[1]"
                     - Name: Row
                       Type: RowLayout
                       Children:
@@ -7104,8 +7335,26 @@ Children:
                         Children:
                         - Name: Label
                           Type: Label
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{ControlDashboard}/KeyParameters/Item4[2]"
                         - Name: Value
                           Type: Label
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{ControlDashboard}/KeyParameters/ItemValue4[1]"
                       - Name: PolyLine1
                         Type: PolyLine
                       - Name: Row1
@@ -7131,13 +7380,40 @@ Children:
                     Children:
                     - Name: Title
                       Type: Label
+                      Children:
+                      - Name: Text
+                        Type: BaseDataVariableType
+                        DataType: LocalizedText
+                        Children:
+                        - Name: DynamicLink
+                          Type: DynamicLink
+                          DataType: NodePath
+                          Value: "{ControlDashboard}/KeyParameters/Item5[0]"
                     - Name: Row1
                       Type: RowLayout
                       Children:
                       - Name: Value
                         Type: Label
+                        Children:
+                        - Name: Text
+                          Type: BaseDataVariableType
+                          DataType: LocalizedText
+                          Children:
+                          - Name: DynamicLink
+                            Type: DynamicLink
+                            DataType: NodePath
+                            Value: "{ControlDashboard}/KeyParameters/ItemValue4[0]"
                       - Name: Label
                         Type: Label
+                        Children:
+                        - Name: Text
+                          Type: BaseDataVariableType
+                          DataType: LocalizedText
+                          Children:
+                          - Name: DynamicLink
+                            Type: DynamicLink
+                            DataType: NodePath
+                            Value: "{ControlDashboard}/KeyParameters/Item4[1]"
                     - Name: Row
                       Type: RowLayout
                       Children:
@@ -7146,8 +7422,26 @@ Children:
                         Children:
                         - Name: Label
                           Type: Label
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{ControlDashboard}/KeyParameters/Item4[2]"
                         - Name: Value
                           Type: Label
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{ControlDashboard}/KeyParameters/ItemValue5[1]"
                       - Name: PolyLine1
                         Type: PolyLine
                       - Name: Row1
@@ -7402,6 +7696,15 @@ Children:
                     Children:
                     - Name: Title
                       Type: Label
+                      Children:
+                      - Name: Text
+                        Type: BaseDataVariableType
+                        DataType: LocalizedText
+                        Children:
+                        - Name: DynamicLink
+                          Type: DynamicLink
+                          DataType: NodePath
+                          Value: "{ControlDashboard}/Parameters/Item1[0]"
                     - Name: Row
                       Type: RowLayout
                       Children:
@@ -7410,8 +7713,26 @@ Children:
                         Children:
                         - Name: Value
                           Type: Label
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{ControlDashboard}/Parameters/ItemValue1"
                         - Name: Label
                           Type: Label
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{ControlDashboard}/Parameters/Item1[1]"
                 - Name: State
                   Type: Ellipse
             - Name: ParameterWithStatus2
@@ -7428,6 +7749,15 @@ Children:
                     Children:
                     - Name: Title
                       Type: Label
+                      Children:
+                      - Name: Text
+                        Type: BaseDataVariableType
+                        DataType: LocalizedText
+                        Children:
+                        - Name: DynamicLink
+                          Type: DynamicLink
+                          DataType: NodePath
+                          Value: "{ControlDashboard}/Parameters/Item2[0]"
                     - Name: Row
                       Type: RowLayout
                       Children:
@@ -7436,8 +7766,26 @@ Children:
                         Children:
                         - Name: Value
                           Type: Label
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{ControlDashboard}/Parameters/ItemValue2"
                         - Name: Label
                           Type: Label
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{ControlDashboard}/Parameters/Item2[1]"
                 - Name: State
                   Type: Ellipse
             - Name: ParameterWithStatus3
@@ -7454,6 +7802,15 @@ Children:
                     Children:
                     - Name: Title
                       Type: Label
+                      Children:
+                      - Name: Text
+                        Type: BaseDataVariableType
+                        DataType: LocalizedText
+                        Children:
+                        - Name: DynamicLink
+                          Type: DynamicLink
+                          DataType: NodePath
+                          Value: "{ControlDashboard}/Parameters/Item3[0]"
                     - Name: Row
                       Type: RowLayout
                       Children:
@@ -7462,8 +7819,26 @@ Children:
                         Children:
                         - Name: Value
                           Type: Label
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{ControlDashboard}/Parameters/ItemValue3"
                         - Name: Label
                           Type: Label
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{ControlDashboard}/Parameters/Item3[1]"
                 - Name: State
                   Type: Ellipse
             - Name: ParameterWithStatus4
@@ -7480,6 +7855,15 @@ Children:
                     Children:
                     - Name: Title
                       Type: Label
+                      Children:
+                      - Name: Text
+                        Type: BaseDataVariableType
+                        DataType: LocalizedText
+                        Children:
+                        - Name: DynamicLink
+                          Type: DynamicLink
+                          DataType: NodePath
+                          Value: "{ControlDashboard}/Parameters/Item4[0]"
                     - Name: Row
                       Type: RowLayout
                       Children:
@@ -7488,8 +7872,31 @@ Children:
                         Children:
                         - Name: Value
                           Type: Label
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{ControlDashboard}/Parameters/ItemValue4"
                         - Name: Label
                           Type: Label
+                          Children:
+                          - Name: LeftMargin
+                            Type: BaseVariableType
+                            DataType: Size
+                            ModellingRule: Optional
+                            Value: 1.0
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{ControlDashboard}/Parameters/Item4[1]"
                 - Name: State
                   Type: Ellipse
             - Name: ParameterWithStatus5
@@ -7506,6 +7913,15 @@ Children:
                     Children:
                     - Name: Title
                       Type: Label
+                      Children:
+                      - Name: Text
+                        Type: BaseDataVariableType
+                        DataType: LocalizedText
+                        Children:
+                        - Name: DynamicLink
+                          Type: DynamicLink
+                          DataType: NodePath
+                          Value: "{ControlDashboard}/Parameters/Item5[0]"
                     - Name: Row
                       Type: RowLayout
                       Children:
@@ -7514,8 +7930,26 @@ Children:
                         Children:
                         - Name: Value
                           Type: Label
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{ControlDashboard}/Parameters/ItemValue5"
                         - Name: Label
                           Type: Label
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{ControlDashboard}/Parameters/Item5[1]"
                 - Name: State
                   Type: Ellipse
             - Name: VerticalGap
@@ -7652,7 +8086,7 @@ Children:
             - Name: DynamicLink
               Type: DynamicLink
               DataType: NodePath
-              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineChart1/URL"
+              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineCharts/LineChart1/URL"
           - Class: Reference
             Target: ns=3;i=354
             Direction: Forward
@@ -7692,7 +8126,7 @@ Children:
             - Name: DynamicLink
               Type: DynamicLink
               DataType: NodePath
-              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineChart1/URL"
+              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineCharts/LineChart2/URL"
           - Class: Reference
             Target: ns=3;i=354
             Direction: Forward
@@ -7745,7 +8179,7 @@ Children:
             - Name: DynamicLink
               Type: DynamicLink
               DataType: NodePath
-              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineChart1/URL"
+              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineCharts/LineChart3/URL"
           - Class: Reference
             Target: ns=3;i=354
             Direction: Forward
@@ -7793,7 +8227,7 @@ Children:
             - Name: DynamicLink
               Type: DynamicLink
               DataType: NodePath
-              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineChart1/URL"
+              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineCharts/LineChart4/URL"
           - Class: Reference
             Target: ns=3;i=354
             Direction: Forward
@@ -7841,7 +8275,7 @@ Children:
             - Name: DynamicLink
               Type: DynamicLink
               DataType: NodePath
-              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineChart1/URL"
+              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineCharts/LineChart5/URL"
           - Class: Reference
             Target: ns=3;i=354
             Direction: Forward

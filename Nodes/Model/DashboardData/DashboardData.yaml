@@ -2,6 +2,7 @@ Name: DashboardData
 Type: FolderType
 Children:
 - Name: ControlDashboard
+  Id: g=311039e8861943382372fd1ab7dc9aa9
   Type: BaseObjectType
   Children:
   - Name: BatchInfo
@@ -14,39 +15,39 @@ Children:
     - Name: label2
       Type: BaseDataVariableType
       DataType: String
-      Value: "0"
+      Value: "Batch"
     - Name: label3
       Type: BaseDataVariableType
       DataType: String
-      Value: "0"
+      Value: "Recipe"
     - Name: label4
       Type: BaseDataVariableType
       DataType: String
-      Value: "0"
+      Value: "Phase"
     - Name: label5
       Type: BaseDataVariableType
       DataType: String
-      Value: "0"
+      Value: "eSig"
     - Name: Value1
       Type: BaseDataVariableType
       DataType: String
-      Value: "0"
+      Value: "Sai Shang"
     - Name: Value2
       Type: BaseDataVariableType
       DataType: String
-      Value: "0"
+      Value: "B156"
     - Name: Value3
       Type: BaseDataVariableType
       DataType: String
-      Value: "0"
+      Value: "Test_001"
     - Name: Value4
       Type: BaseDataVariableType
       DataType: String
-      Value: "0"
+      Value: "Phase_001"
     - Name: Value5
       Type: BaseDataVariableType
       DataType: String
-      Value: "0"
+      Value: "Required for Abort"
   - Name: KeyParameters
     Type: BaseObjectType
     Children:
@@ -55,61 +56,61 @@ Children:
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [3]
-      Value: ["0","0","0"]
+      Value: ["Temperature","℃","PV"]
     - Name: ItemValue1
       Type: BaseDataVariableType
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [3]
-      Value: ["0","0","0"]
+      Value: ["37.0","37.0","Auto"]
     - Name: Item2
       Type: BaseDataVariableType
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [3]
-      Value: ["0","0","0"]
+      Value: ["PH","0","PV"]
     - Name: ItemValue2
       Type: BaseDataVariableType
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [3]
-      Value: ["0","0","0"]
+      Value: ["7.12","7.2","Auto"]
     - Name: Item3
       Type: BaseDataVariableType
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [3]
-      Value: ["0","0","0"]
+      Value: ["DO","0","PV"]
     - Name: ItemValue3
       Type: BaseDataVariableType
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [3]
-      Value: ["0","0","0"]
+      Value: ["38","40","Auto"]
     - Name: Item4
       Type: BaseDataVariableType
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [3]
-      Value: ["0","0","0"]
+      Value: ["Agitator RPM","0","PV"]
     - Name: ItemValue4
       Type: BaseDataVariableType
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [3]
-      Value: ["0","0","0"]
+      Value: ["420","450","Auto"]
     - Name: Item5
       Type: BaseDataVariableType
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [3]
-      Value: ["0","0","0"]
+      Value: ["Pressure","0","PV"]
     - Name: ItemValue5
       Type: BaseDataVariableType
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [3]
-      Value: ["0","0","0"]
+      Value: ["0.35","0.35","Auto"]
   - Name: Parameters
     Type: BaseObjectType
     Children:
@@ -118,46 +119,74 @@ Children:
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [2]
-      Value: ["0","0"]
+      Value: ["Air Flow","Nm³/hr"]
     - Name: ItemValue1
       Type: BaseDataVariableType
       DataType: String
+      Value: "210"
     - Name: Item2
       Type: BaseDataVariableType
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [2]
-      Value: ["0","0"]
+      Value: ["O₂","L/min"]
     - Name: Item3
       Type: BaseDataVariableType
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [2]
-      Value: ["0","0"]
+      Value: ["Base Add","L/hr"]
     - Name: Item4
       Type: BaseDataVariableType
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [2]
-      Value: ["0","0"]
+      Value: ["Antifoam","L/hr"]
     - Name: Item5
       Type: BaseDataVariableType
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [2]
-      Value: ["0","0"]
+      Value: ["Feed","L/hr"]
     - Name: ItemValue2
       Type: BaseDataVariableType
       DataType: String
+      Value: "18.5"
     - Name: ItemValue3
       Type: BaseDataVariableType
       DataType: String
+      Value: "0.8"
     - Name: ItemValue4
       Type: BaseDataVariableType
       DataType: String
+      Value: "0.0"
     - Name: ItemValue5
       Type: BaseDataVariableType
       DataType: String
+      Value: "0.0"
+  - Name: TrendData
+    Type: BaseObjectType
+    Children:
+    - Name: Label1
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Temperature"
+    - Name: Label2
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "PH"
+    - Name: Label3
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "DO"
+    - Name: Label4
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "RPM"
+    - Name: Label5
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Air"
 - Name: ProductionDashboard
   Type: BaseObjectType
   Children:

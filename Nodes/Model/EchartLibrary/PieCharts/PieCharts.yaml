@@ -1,0 +1,117 @@
+Name: PieCharts
+Type: FolderType
+Children:
+- Name: Pie4
+  Type: BaseObjectType
+  Children:
+  - Name: pieData
+    Type: BaseObjectType
+    Children:
+    - Name: data
+      Type: BaseDataVariableType
+      DataType: Float
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: [34.0,45.0,56.0]
+    - Name: labels
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["piechartLabel3","Label2","Label3"]
+    - Name: labelColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#90d4f6"
+    - Name: borderRadius
+      Type: BaseDataVariableType
+      DataType: Int32
+    - Name: borderColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#90d4f6"
+    - Name: borderWidth
+      Type: BaseDataVariableType
+      DataType: Int32
+    - Name: showLabel
+      Type: BaseDataVariableType
+      DataType: Boolean
+    - Name: showLabelLine
+      Type: BaseDataVariableType
+      DataType: Boolean
+    - Name: avoidLabelOverlap
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: radius
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["0","50%"]
+    - Name: startAngle
+      Type: BaseDataVariableType
+      DataType: Int32
+    - Name: endAngle
+      Type: BaseDataVariableType
+      DataType: Int32
+    - Name: center
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["50%","50%"]
+    - Name: padAngle
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 20
+    - Name: roseType
+      Type: BaseDataVariableType
+      DataType: Int32
+  - Name: URL
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "http://www.baidu.com"
+    Children:
+    - Name: StringFormatter1
+      Type: StringFormatter
+      Children:
+      - Name: Format
+        Type: BaseDataVariableType
+        DataType: LocalizedText
+        ReferenceType: HasParameter
+        Value: {"LocaleId":"en-US","Text":"http://{1}/PieChart/piechart.html?p={0}"}
+      - Name: ns=2;Source0
+        Type: BaseDataVariableType
+        DataType: BaseDataType
+        ReferenceType: HasSource
+        Children:
+        - Name: DynamicLink
+          Type: DynamicLink
+          DataType: NodePath
+          Value: "../../..@BrowsePath"
+      - Name: ns=2;Source1
+        Type: BaseDataVariableType
+        DataType: BaseDataType
+        ReferenceType: HasSource
+        Children:
+        - Name: DynamicLink
+          Type: DynamicLink
+          DataType: NodePath
+          Value: "../../../../../HttpServer/httpserver@Value"
+  - Name: refreshInterval
+    Type: BaseDataVariableType
+    DataType: Float
+    Value: 1000.0
+  - Name: title
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Piechart4"
+  - Name: background
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#ffffff"
+  - Name: titleColor
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#075982"

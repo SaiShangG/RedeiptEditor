@@ -3653,7 +3653,7 @@ Children:
         - Name: DynamicLink
           Type: DynamicLink
           DataType: NodePath
-          Value: "/Objects/RedeiptEditor/Model/EchartLibrary/Pie4/URL"
+          Value: "/Objects/RedeiptEditor/Model/EchartLibrary/PieCharts/Pie4/URL"
       - Class: Reference
         Target: ns=3;i=354
         Direction: Forward
