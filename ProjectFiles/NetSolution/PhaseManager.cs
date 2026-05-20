@@ -209,7 +209,7 @@ public class PhaseManager : BaseNetLogic
             if (!PanelTypeIsPhaseParas(sec.PanelType))
                 continue;
 
-            var panel = InformationModel.Make<PhaseParasPanel1>(sec.Id);
+            var panel = InformationModel.Make<PhaseParasPanel>(sec.Id);
             panel.VerticalAlignment = VerticalAlignment.Top;
             // 分区级垂直间距：由 JSON sectionVerticalGap 控制
             if (sec.SectionVerticalGap.HasValue)
@@ -502,7 +502,7 @@ public class PhaseManager : BaseNetLogic
 
         if (WidgetTypeIs(t, "PhaseSinglePara"))
         {
-            var w = InformationModel.Make<PhaseSinglePara1>(item.Id);
+            var w = InformationModel.Make<PhaseSinglePara>(item.Id);
             string lbl = !string.IsNullOrEmpty(item.label) ? item.label : item.Id;
             var label = w.Get<Label>("VerticalLayout1/ParaName/Label1");
             if (label != null) label.Text = lbl;
@@ -511,7 +511,7 @@ public class PhaseManager : BaseNetLogic
         }
         if (WidgetTypeIsParaCompare(t, 2))
         {
-            rowLayout.Add(InformationModel.Make<PhaseParaCompare4>(item.Id));
+            rowLayout.Add(InformationModel.Make<PhaseParaCompare>(item.Id));
             return;
         }
         if (WidgetTypeIs(t, "PanelEndConditionsOperator"))
@@ -533,7 +533,7 @@ public class PhaseManager : BaseNetLogic
         }
         if (WidgetTypeIs(t, "PhaseValvePanel"))
         {
-            var w = InformationModel.Make<PhaseValvePanel1>(item.Id);
+            var w = InformationModel.Make<PhaseValvePanel>(item.Id);
             string lbl = !string.IsNullOrEmpty(item.label) ? item.label : item.Id;
             var label = w.Get<Label>("VerticalLayout1/ParaName/Label1");
             if (label != null) label.Text = lbl;

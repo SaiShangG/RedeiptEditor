@@ -2,7 +2,7 @@ Name: PhaseParaTemplateUnit
 Id: g=54e39a39aea9158048aa60d13b57eae7
 Type: FolderType
 Children:
-- Name: PhaseSinglePara1
+- Name: PhaseSinglePara
   Id: g=59b1d86cf7ddb50384ef0c38ce6d2595
   Supertype: Panel
   ReferenceType: HasComponent
@@ -283,7 +283,7 @@ Children:
       DataType: ContentVerticalAlignment
       ModellingRule: Optional
       Value: 1
-- Name: PhaseParaCompare4
+- Name: PhaseParaCompare
   Id: g=4a883e868df22e904db30cdef116838a
   Supertype: Panel
   ReferenceType: HasComponent
@@ -677,7 +677,7 @@ Children:
           Type: BaseDataVariableType
           DataType: String
           Value: ">="
-- Name: PhaseValvePanel1
+- Name: PhaseValvePanel
   Id: g=05194114e6be0c178b95225e1b4458c5
   Supertype: Panel
   ReferenceType: HasComponent
@@ -1675,7 +1675,7 @@ Children:
         Type: BaseVariableType
         DataType: Size
         ModellingRule: Optional
-- Name: PhaseParasPanel1
+- Name: PhaseParasPanel
   Id: g=655a175a74e09b83ce5e7471ef7da970
   Supertype: Panel
   ReferenceType: HasComponent

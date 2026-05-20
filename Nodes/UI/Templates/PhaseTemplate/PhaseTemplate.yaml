@@ -81,7 +81,7 @@ Children:
         Type: ColumnLayout
         Children:
         - Name: PhaseParasPanel1
-          Type: PhaseParasPanel1
+          Type: PhaseParasPanel
           Children:
           - Name: BG
             Type: Rectangle
