@@ -14115,7 +14115,7 @@ Children:
           - Name: URL
             Type: BaseDataVariableType
             DataType: ResourceUri
-            Value: "http://localhost:5173/"
+            Value: "ns=7;%PROJECTDIR%/PhaseConfiguratorTool/index.html"
           - Class: Reference
             Target: ns=3;i=354
             Direction: Forward
