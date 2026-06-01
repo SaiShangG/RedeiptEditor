@@ -2747,7 +2747,7 @@ Children:
                             - Name: type
                               Type: BaseDataVariableType
                               DataType: String
-                              Value: "Receipt"
+                              Value: "Recipe"
                         - Name: MethodContainer2
                           Type: BaseObjectType
                           Children:
@@ -2825,6 +2825,11 @@ Children:
                       DataType: Color
                       ModellingRule: Optional
                       Value: "#00568f"
+                    - Name: Text
+                      Type: BaseDataVariableType
+                      DataType: LocalizedText
+                      ModellingRule: Optional
+                      Value: {"LocaleId":"en-US","Text":"Add Recipe"}
               - Name: VerticalGap
                 Type: BaseDataVariableType
                 DataType: Size
