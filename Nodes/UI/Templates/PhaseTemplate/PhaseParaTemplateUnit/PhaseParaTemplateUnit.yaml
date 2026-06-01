@@ -604,12 +604,12 @@ Children:
         - Name: Model
           Type: NodePointer
           DataType: NodeId
-          Value: "/Objects/RedeiptEditor/Model/UIData/ParaCompareMethods"
+          Value: {"IdType":2,"Id":"42a141643a45d23e2cae76aab07fb0da","Namespace":7}
           Children:
           - Name: ItemKind
             Type: PropertyType
             DataType: NodeId
-            Value: "/Objects/RedeiptEditor/Model/UIData/ParaCompareMethods/&>="
+            Value: {"IdType":2,"Id":"7097e60b307b15e2cdad4fb7732cff76","Namespace":7}
           - Name: Kind
             Type: PropertyType
             DataType: NodeId
@@ -634,7 +634,7 @@ Children:
           - Name: Kind
             Type: PropertyType
             DataType: NodeId
-            Value: "/Objects/RedeiptEditor/Model/UIData/ParaCompareMethods/&>="
+            Value: {"IdType":2,"Id":"7097e60b307b15e2cdad4fb7732cff76","Namespace":7}
         - Name: UISelectedItem
           Type: BaseDataVariableType
           DataType: NodeId
@@ -658,7 +658,7 @@ Children:
           - Name: Kind
             Type: PropertyType
             DataType: NodeId
-            Value: "/Objects/RedeiptEditor/Model/UIData/ParaCompareMethods/&>="
+            Value: {"IdType":2,"Id":"7097e60b307b15e2cdad4fb7732cff76","Namespace":7}
         - Name: LeftMargin
           Type: BaseVariableType
           DataType: Size
@@ -945,10 +945,7 @@ Children:
       Type: BaseVariableType
       DataType: Size
       ModellingRule: Optional
-- Class: Reference
-  Type: HasComponent
-  Target: g=f26114586dc2dde8e83dd59c7cecc6e7
-- Name: PanelEndConditionGroup2
+- Name: PanelEndConditionGroup
   Id: g=64a87e462f89d28c783de01c26c37d41
   Supertype: Panel
   ReferenceType: HasComponent
@@ -972,7 +969,7 @@ Children:
     Type: BaseVariableType
     DataType: VerticalAlignment
     ModellingRule: Optional
-  - Name: VerticalLayout1
+  - Name: VL
     Type: ColumnLayout
     Children:
     - Name: Width
@@ -995,7 +992,7 @@ Children:
       DataType: VerticalAlignment
       ModellingRule: Optional
       Value: 3
-    - Name: PanelEndConditionsEnable1
+    - Name: PanelEndConditionsEnable
       Type: PanelEndConditionsEnable
       Children:
       - Name: Rectangle_Border
@@ -1029,7 +1026,7 @@ Children:
         Type: BaseVariableType
         DataType: VerticalAlignment
         ModellingRule: Optional
-    - Name: PanelEndConditionSelection1
+    - Name: PanelEndConditionSelection
       Type: PanelEndConditionSelection
       Children:
       - Name: Rectangle_Border
@@ -1078,6 +1075,19 @@ Children:
                   - Name: DynamicLink
                     Type: DynamicLink
                     DataType: NodePath
+            - Name: RightMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+            - Name: Text
+              Type: BaseDataVariableType
+              DataType: LocalizedText
+              Value: {"LocaleId":"en-US","Text":"End Condition X ( EC X )"}
+            - Name: TopMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 10.0
           - Name: ComboBox1
             Type: ComboBox
             Children:
@@ -1087,18 +1097,20 @@ Children:
             - Name: Model
               Type: NodePointer
               DataType: NodeId
-              Value: "/Objects/RedeiptEditor/Model/UIData/PhaseData/End Conditions"
               Children:
               - Name: ItemKind
                 Type: PropertyType
                 DataType: NodeId
-                Value: "/Types/VariableTypes/BaseVariableType/BaseDataVariableType"
               - Name: Kind
                 Type: PropertyType
                 DataType: NodeId
+              - Name: DynamicLink
+                Type: DynamicLink
+                DataType: NodePath
+                Value: "../../../../../../EndConditionItems@NodeId"
             - Name: SelectedValue
               Type: BaseDataVariableType
-              DataType: BaseDataType
+              DataType: Int32
             - Name: SelectedItem
               Type: NodePointer
               DataType: NodeId
@@ -1106,7 +1118,6 @@ Children:
               - Name: Kind
                 Type: PropertyType
                 DataType: NodeId
-                Value: "/Types/VariableTypes/BaseVariableType/BaseDataVariableType"
             - Name: UISelectedItem
               Type: BaseDataVariableType
               DataType: NodeId
@@ -1125,7 +1136,6 @@ Children:
               - Name: Kind
                 Type: PropertyType
                 DataType: NodeId
-                Value: "/Types/VariableTypes/BaseVariableType/BaseDataVariableType"
             - Name: DisplayValuePath
               Type: BaseDataVariableType
               DataType: LocalizedText
@@ -1133,15 +1143,60 @@ Children:
               - Name: DynamicLink
                 Type: DynamicLink
                 DataType: NodePath
-                Value: "{Item}@Description"
+                Value: "{Item}@BrowseName"
             - Name: SelectedValuePath
               Type: BaseDataVariableType
-              DataType: BaseDataType
+              DataType: Int32
               Children:
               - Name: DynamicLink
                 Type: DynamicLink
                 DataType: NodePath
                 Value: "{Item}@Value"
+            - Name: TopMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 40.0
+          - Name: Label3
+            Type: Label
+            Children:
+            - Name: Visible
+              Type: BaseDataVariableType
+              DataType: Boolean
+              Value: true
+            - Name: RightMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 158.0
+            - Name: LeftMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 228.0
+            - Name: TopMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 10.0
+            - Name: Width
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 40.0
+            - Name: Height
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 20.0
+            - Name: Text
+              Type: BaseDataVariableType
+              DataType: LocalizedText
+              Children:
+              - Name: DynamicLink
+                Type: DynamicLink
+                DataType: NodePath
+                Value: "/Objects/RedeiptEditor/Model/UIData/PhaseData/UDT_PhaseTemplateUIBuffer1/EC/EC1SP"
           - Name: TimeContainer
             Type: RowLayout
             Children:
@@ -1166,19 +1221,6 @@ Children:
                 Type: BaseDataVariableType
                 DataType: Boolean
                 Value: true
-                Children:
-                - Name: ExpressionEvaluator1
-                  Type: ExpressionEvaluator
-                  Children:
-                  - Name: Source0
-                    Type: BaseDataVariableType
-                    DataType: BaseDataType
-                    ReferenceType: HasSource
-                    Children:
-                    - Name: DynamicLink
-                      Type: DynamicLink
-                      DataType: NodePath
-                      Value: "../../../../../ComboBox1/UISelectedValue"
             - Name: 'Lbl__ :'
               Type: Label
               Children:
@@ -1190,19 +1232,6 @@ Children:
                 Type: BaseDataVariableType
                 DataType: Boolean
                 Value: true
-                Children:
-                - Name: ExpressionEvaluator1
-                  Type: ExpressionEvaluator
-                  Children:
-                  - Name: Source0
-                    Type: BaseDataVariableType
-                    DataType: BaseDataType
-                    ReferenceType: HasSource
-                    Children:
-                    - Name: DynamicLink
-                      Type: DynamicLink
-                      DataType: NodePath
-                      Value: "../../../../../ComboBox1/UISelectedValue"
             - Name: SpinBox_Min
               Type: SpinBox
               Children:
@@ -1224,19 +1253,6 @@ Children:
                 Type: BaseDataVariableType
                 DataType: Boolean
                 Value: true
-                Children:
-                - Name: ExpressionEvaluator1
-                  Type: ExpressionEvaluator
-                  Children:
-                  - Name: Source0
-                    Type: BaseDataVariableType
-                    DataType: BaseDataType
-                    ReferenceType: HasSource
-                    Children:
-                    - Name: DynamicLink
-                      Type: DynamicLink
-                      DataType: NodePath
-                      Value: "../../../../../ComboBox1/UISelectedValue"
             - Name: 'Lbl__ :1'
               Type: Label
               Children:
@@ -1248,19 +1264,6 @@ Children:
                 Type: BaseDataVariableType
                 DataType: Boolean
                 Value: true
-                Children:
-                - Name: ExpressionEvaluator1
-                  Type: ExpressionEvaluator
-                  Children:
-                  - Name: Source0
-                    Type: BaseDataVariableType
-                    DataType: BaseDataType
-                    ReferenceType: HasSource
-                    Children:
-                    - Name: DynamicLink
-                      Type: DynamicLink
-                      DataType: NodePath
-                      Value: "../../../../../ComboBox1/UISelectedValue"
             - Name: SpinBox_Sec
               Type: SpinBox
               Children:
@@ -1282,19 +1285,34 @@ Children:
                 Type: BaseDataVariableType
                 DataType: Boolean
                 Value: true
+            - Name: Visible
+              Type: BaseDataVariableType
+              DataType: Boolean
+              Value: true
+              Children:
+              - Name: ExpressionEvaluator1
+                Type: ExpressionEvaluator
                 Children:
-                - Name: ExpressionEvaluator1
-                  Type: ExpressionEvaluator
+                - Name: Expression
+                  Type: BaseDataVariableType
+                  DataType: String
+                  ReferenceType: HasParameter
+                  ModellingRule: Optional
+                  Value: "{0}==0"
+                - Name: ns=2;Source0
+                  Type: BaseDataVariableType
+                  DataType: BaseDataType
+                  ReferenceType: HasSource
                   Children:
-                  - Name: Source0
-                    Type: BaseDataVariableType
-                    DataType: BaseDataType
-                    ReferenceType: HasSource
-                    Children:
-                    - Name: DynamicLink
-                      Type: DynamicLink
-                      DataType: NodePath
-                      Value: "../../../../../ComboBox1/UISelectedValue"
+                  - Name: DynamicLink
+                    Type: DynamicLink
+                    DataType: NodePath
+                    Value: "../../../../ComboBox1/SelectedValue"
+            - Name: TopMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 80.0
           - Name: Lbl__HHMMSS
             Type: Label
             Children:
@@ -1310,7 +1328,13 @@ Children:
               - Name: ExpressionEvaluator1
                 Type: ExpressionEvaluator
                 Children:
-                - Name: Source0
+                - Name: Expression
+                  Type: BaseDataVariableType
+                  DataType: String
+                  ReferenceType: HasParameter
+                  ModellingRule: Optional
+                  Value: "{0}==0"
+                - Name: ns=2;Source0
                   Type: BaseDataVariableType
                   DataType: BaseDataType
                   ReferenceType: HasSource
@@ -1318,363 +1342,120 @@ Children:
                   - Name: DynamicLink
                     Type: DynamicLink
                     DataType: NodePath
-                    Value: "../../../../ComboBox1/UISelectedValue"
-          - Name: WeightContainer
-            Type: RowLayout
+                    Value: "../../../../ComboBox1/SelectedValue"
+            - Name: TopMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 130.0
+          - Name: SelectItemTemplatePanel1
+            Type: SelectItemTemplatePanel
             Children:
-            - Name: Switch_Operator
-              Type: Switch
+            - Name: HL
+              Type: RowLayout
               Children:
-              - Name: Checked
-                Type: BaseDataVariableType
-                DataType: Boolean
-              - Name: Visible
-                Type: BaseDataVariableType
-                DataType: Boolean
-                Value: true
+              - Name: Switch
+                Type: Switch
                 Children:
-                - Name: ExpressionEvaluator1
-                  Type: ExpressionEvaluator
-                  Children:
-                  - Name: Source0
-                    Type: BaseDataVariableType
-                    DataType: BaseDataType
-                    ReferenceType: HasSource
-                    Children:
-                    - Name: DynamicLink
-                      Type: DynamicLink
-                      DataType: NodePath
-                      Value: "../../../../../ComboBox1/UISelectedValue"
-              - Name: Enabled
-                Type: BaseDataVariableType
-                DataType: Boolean
-                Value: true
-            - Name: SpinBox_Weight
-              Type: SpinBox
+                - Name: Checked
+                  Type: BaseDataVariableType
+                  DataType: Boolean
+                - Name: Visible
+                  Type: BaseDataVariableType
+                  DataType: Boolean
+                  Value: true
+                - Name: Enabled
+                  Type: BaseDataVariableType
+                  DataType: Boolean
+                  Value: true
+              - Name: SpinBox
+                Type: SpinBox
+                Children:
+                - Name: Value
+                  Type: BaseDataVariableType
+                  DataType: Double
+                - Name: MinValue
+                  Type: BaseDataVariableType
+                  DataType: Double
+                - Name: MaxValue
+                  Type: BaseDataVariableType
+                  DataType: Double
+                  Value: 14.0
+                - Name: Enabled
+                  Type: BaseDataVariableType
+                  DataType: Boolean
+                  Value: true
+                - Name: Visible
+                  Type: BaseDataVariableType
+                  DataType: Boolean
+                  Value: true
+              - Name: Unit
+                Type: Label
+                Children:
+                - Name: Text
+                  Type: BaseDataVariableType
+                  DataType: LocalizedText
+                  Value: {"LocaleId":"en-US","Text":"pH"}
+                - Name: Visible
+                  Type: BaseDataVariableType
+                  DataType: Boolean
+                  Value: true
+            - Name: Visible
+              Type: BaseDataVariableType
+              DataType: Boolean
+              Value: true
               Children:
-              - Name: Value
-                Type: BaseDataVariableType
-                DataType: Double
-              - Name: MinValue
-                Type: BaseDataVariableType
-                DataType: Double
-              - Name: MaxValue
-                Type: BaseDataVariableType
-                DataType: Double
-                Value: 1000.0
-              - Name: Enabled
-                Type: BaseDataVariableType
-                DataType: Boolean
-                Value: true
-              - Name: Visible
-                Type: BaseDataVariableType
-                DataType: Boolean
-                Value: true
+              - Name: ExpressionEvaluator1
+                Type: ExpressionEvaluator
                 Children:
-                - Name: ExpressionEvaluator1
-                  Type: ExpressionEvaluator
+                - Name: Expression
+                  Type: BaseDataVariableType
+                  DataType: String
+                  ReferenceType: HasParameter
+                  ModellingRule: Optional
+                  Value: "{0}>0"
+                - Name: ns=2;Source0
+                  Type: BaseDataVariableType
+                  DataType: BaseDataType
+                  ReferenceType: HasSource
                   Children:
-                  - Name: Source0
-                    Type: BaseDataVariableType
-                    DataType: BaseDataType
-                    ReferenceType: HasSource
-                    Children:
-                    - Name: DynamicLink
-                      Type: DynamicLink
-                      DataType: NodePath
-                      Value: "../../../../../ComboBox1/UISelectedValue"
-            - Name: Lbl_Kg
-              Type: Label
-              Children:
-              - Name: Text
-                Type: BaseDataVariableType
-                DataType: LocalizedText
-                Value: {"LocaleId":"en-US","Text":"Kg"}
-              - Name: Visible
-                Type: BaseDataVariableType
-                DataType: Boolean
-                Value: true
-                Children:
-                - Name: ExpressionEvaluator1
-                  Type: ExpressionEvaluator
-                  Children:
-                  - Name: Source0
-                    Type: BaseDataVariableType
-                    DataType: BaseDataType
-                    ReferenceType: HasSource
-                    Children:
-                    - Name: DynamicLink
-                      Type: DynamicLink
-                      DataType: NodePath
-                      Value: "../../../../../ComboBox1/UISelectedValue"
-          - Name: PHContainer
-            Type: RowLayout
-            Children:
-            - Name: Switch_Operator
-              Type: Switch
-              Children:
-              - Name: Checked
-                Type: BaseDataVariableType
-                DataType: Boolean
-              - Name: Visible
-                Type: BaseDataVariableType
-                DataType: Boolean
-                Value: true
-                Children:
-                - Name: ExpressionEvaluator1
-                  Type: ExpressionEvaluator
-                  Children:
-                  - Name: Source0
-                    Type: BaseDataVariableType
-                    DataType: BaseDataType
-                    ReferenceType: HasSource
-                    Children:
-                    - Name: DynamicLink
-                      Type: DynamicLink
-                      DataType: NodePath
-                      Value: "../../../../../ComboBox1/UISelectedValue"
-              - Name: Enabled
-                Type: BaseDataVariableType
-                DataType: Boolean
-                Value: true
-            - Name: SpinBox_pH
-              Type: SpinBox
-              Children:
-              - Name: Value
-                Type: BaseDataVariableType
-                DataType: Double
-              - Name: MinValue
-                Type: BaseDataVariableType
-                DataType: Double
-              - Name: MaxValue
-                Type: BaseDataVariableType
-                DataType: Double
-                Value: 14.0
-              - Name: Enabled
-                Type: BaseDataVariableType
-                DataType: Boolean
-                Value: true
-              - Name: Visible
-                Type: BaseDataVariableType
-                DataType: Boolean
-                Value: true
-                Children:
-                - Name: ExpressionEvaluator1
-                  Type: ExpressionEvaluator
-                  Children:
-                  - Name: Source0
-                    Type: BaseDataVariableType
-                    DataType: BaseDataType
-                    ReferenceType: HasSource
-                    Children:
-                    - Name: DynamicLink
-                      Type: DynamicLink
-                      DataType: NodePath
-                      Value: "../../../../../ComboBox1/UISelectedValue"
-            - Name: Lbl__pH
-              Type: Label
-              Children:
-              - Name: Text
-                Type: BaseDataVariableType
-                DataType: LocalizedText
-                Value: {"LocaleId":"en-US","Text":"pH"}
-              - Name: Visible
-                Type: BaseDataVariableType
-                DataType: Boolean
-                Value: true
-                Children:
-                - Name: ExpressionEvaluator1
-                  Type: ExpressionEvaluator
-                  Children:
-                  - Name: Source0
-                    Type: BaseDataVariableType
-                    DataType: BaseDataType
-                    ReferenceType: HasSource
-                    Children:
-                    - Name: DynamicLink
-                      Type: DynamicLink
-                      DataType: NodePath
-                      Value: "../../../../../ComboBox1/UISelectedValue"
-          - Name: OxygenContainer
-            Type: RowLayout
-            Children:
-            - Name: Switch_Operator
-              Type: Switch
-              Children:
-              - Name: Checked
-                Type: BaseDataVariableType
-                DataType: Boolean
-              - Name: Visible
-                Type: BaseDataVariableType
-                DataType: Boolean
-                Value: true
-                Children:
-                - Name: ExpressionEvaluator1
-                  Type: ExpressionEvaluator
-                  Children:
-                  - Name: Source0
-                    Type: BaseDataVariableType
-                    DataType: BaseDataType
-                    ReferenceType: HasSource
-                    Children:
-                    - Name: DynamicLink
-                      Type: DynamicLink
-                      DataType: NodePath
-                      Value: "../../../../../ComboBox1/UISelectedValue"
-              - Name: Enabled
-                Type: BaseDataVariableType
-                DataType: Boolean
-                Value: true
-            - Name: SpinBox_Oxygen
-              Type: SpinBox
-              Children:
-              - Name: Value
-                Type: BaseDataVariableType
-                DataType: Double
-              - Name: MinValue
-                Type: BaseDataVariableType
-                DataType: Double
-              - Name: MaxValue
-                Type: BaseDataVariableType
-                DataType: Double
-                Value: 100.0
-              - Name: Enabled
-                Type: BaseDataVariableType
-                DataType: Boolean
-                Value: true
-              - Name: Visible
-                Type: BaseDataVariableType
-                DataType: Boolean
-                Value: true
-                Children:
-                - Name: ExpressionEvaluator1
-                  Type: ExpressionEvaluator
-                  Children:
-                  - Name: Source0
-                    Type: BaseDataVariableType
-                    DataType: BaseDataType
-                    ReferenceType: HasSource
-                    Children:
-                    - Name: DynamicLink
-                      Type: DynamicLink
-                      DataType: NodePath
-                      Value: "../../../../../ComboBox1/UISelectedValue"
-            - Name: Lbl__%
-              Type: Label
-              Children:
-              - Name: Text
-                Type: BaseDataVariableType
-                DataType: LocalizedText
-                Value: {"LocaleId":"en-US","Text":"%"}
-              - Name: Visible
-                Type: BaseDataVariableType
-                DataType: Boolean
-                Value: true
-                Children:
-                - Name: ExpressionEvaluator1
-                  Type: ExpressionEvaluator
-                  Children:
-                  - Name: Source0
-                    Type: BaseDataVariableType
-                    DataType: BaseDataType
-                    ReferenceType: HasSource
-                    Children:
-                    - Name: DynamicLink
-                      Type: DynamicLink
-                      DataType: NodePath
-                      Value: "../../../../../ComboBox1/UISelectedValue"
-          - Name: TempContainer
-            Type: RowLayout
-            Children:
-            - Name: Switch_Operator
-              Type: Switch
-              Children:
-              - Name: Checked
-                Type: BaseDataVariableType
-                DataType: Boolean
-              - Name: Visible
-                Type: BaseDataVariableType
-                DataType: Boolean
-                Value: true
-                Children:
-                - Name: ExpressionEvaluator1
-                  Type: ExpressionEvaluator
-                  Children:
-                  - Name: Source0
-                    Type: BaseDataVariableType
-                    DataType: BaseDataType
-                    ReferenceType: HasSource
-                    Children:
-                    - Name: DynamicLink
-                      Type: DynamicLink
-                      DataType: NodePath
-                      Value: "../../../../../ComboBox1/UISelectedValue"
-              - Name: Enabled
-                Type: BaseDataVariableType
-                DataType: Boolean
-                Value: true
-            - Name: SpinBox_Temp
-              Type: SpinBox
-              Children:
-              - Name: Value
-                Type: BaseDataVariableType
-                DataType: Double
-              - Name: MinValue
-                Type: BaseDataVariableType
-                DataType: Double
-              - Name: MaxValue
-                Type: BaseDataVariableType
-                DataType: Double
-                Value: 100.0
-              - Name: Enabled
-                Type: BaseDataVariableType
-                DataType: Boolean
-                Value: true
-              - Name: Visible
-                Type: BaseDataVariableType
-                DataType: Boolean
-                Value: true
-                Children:
-                - Name: ExpressionEvaluator1
-                  Type: ExpressionEvaluator
-                  Children:
-                  - Name: Source0
-                    Type: BaseDataVariableType
-                    DataType: BaseDataType
-                    ReferenceType: HasSource
-                    Children:
-                    - Name: DynamicLink
-                      Type: DynamicLink
-                      DataType: NodePath
-                      Value: "../../../../../ComboBox1/UISelectedValue"
-            - Name: Lbl__°C
-              Type: Label
-              Children:
-              - Name: Text
-                Type: BaseDataVariableType
-                DataType: LocalizedText
-                Value: {"LocaleId":"en-US","Text":"°C"}
-              - Name: Visible
-                Type: BaseDataVariableType
-                DataType: Boolean
-                Value: true
-                Children:
-                - Name: ExpressionEvaluator1
-                  Type: ExpressionEvaluator
-                  Children:
-                  - Name: Source0
-                    Type: BaseDataVariableType
-                    DataType: BaseDataType
-                    ReferenceType: HasSource
-                    Children:
-                    - Name: DynamicLink
-                      Type: DynamicLink
-                      DataType: NodePath
-                      Value: "../../../../../ComboBox1/UISelectedValue"
+                  - Name: DynamicLink
+                    Type: DynamicLink
+                    DataType: NodePath
+                    Value: "../../../../ComboBox1/SelectedValue"
+            - Name: TopMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 80.0
       - Name: TopMargin
         Type: BaseVariableType
         DataType: Size
         ModellingRule: Optional
+  - Name: EndConditionItems
+    Type: BaseObjectType
+  - Name: Visible
+    Type: BaseDataVariableType
+    DataType: Boolean
+    Value: true
+    Children:
+    - Name: ExpressionEvaluator1
+      Type: ExpressionEvaluator
+      Children:
+      - Name: Expression
+        Type: BaseDataVariableType
+        DataType: String
+        ReferenceType: HasParameter
+        ModellingRule: Optional
+        Value: "{0}"
+      - Name: ns=2;Source0
+        Type: BaseDataVariableType
+        DataType: BaseDataType
+        ReferenceType: HasSource
+        Children:
+        - Name: DynamicLink
+          Type: DynamicLink
+          DataType: NodePath
 - Name: PhaseParasPanel
   Id: g=655a175a74e09b83ce5e7471ef7da970
   Supertype: Panel
@@ -1943,3 +1724,4 @@ Children:
       DataType: Size
       ModellingRule: Optional
       Value: 48.0
+- File: EndConditionUnit/EndConditionUnit.yaml

@@ -1,6 +1,7 @@
 #region Using directives
 using System;
 using System.Collections.Generic;
+using System.Text;
 using UAManagedCore;
 using FTOptix.UI;
 using FTOptix.HMIProject;
@@ -132,8 +133,71 @@ public class PhaseManager : BaseNetLogic
                 if (string.IsNullOrEmpty(item?.Id)) continue;
                 var w = owner.GetObject(ScrollRowsPath + "/" + sec.Id + "/" + rp + "/" + item.Id) as IUAObject;
                 RegisterPhaseParaValueEditors(w, sec.Id + "/" + item.Id);
+
+                if (WidgetTypeIs(item.WidgetType, "PanelEndConditionGroup"))
+                    RegisterEndConditionUnitLabelObserver(w, item, sec.Id + "/" + item.Id);
             }
         }
+    }
+
+    /// <summary>按 JSON 中每项 unit 配置，在下拉选项变更时更新 SelectItemTemplatePanel 的单位标签。</summary>
+    private void RegisterEndConditionUnitLabelObserver(IUAObject groupWidget, PhaseUILayoutItem item, string logTag)
+    {
+        if (groupWidget == null || item == null) return;
+
+        var unitMap = BuildEndConditionUnitMap(item);
+        if (unitMap.Count == 0) return;
+
+        var comboBox = groupWidget.Get<ComboBox>("VL/PanelEndConditionSelection/Rectangle_Border/Panel2/ComboBox1");
+        var unitLabel = groupWidget.Get<Label>("VL/PanelEndConditionSelection/Rectangle_Border/Panel2/SelectItemTemplatePanel1/HL/Unit");
+        var selectedValueVar = comboBox?.GetVariable("SelectedValue");
+        if (selectedValueVar == null || unitLabel == null) return;
+
+        ApplyEndConditionUnitText(unitLabel, selectedValueVar.Value, unitMap);
+
+        try
+        {
+            var obs = new CallbackVariableChangeObserver((iv, nv, ov, access, sender) =>
+                ApplyEndConditionUnitText(unitLabel, nv, unitMap));
+            _phaseInputRegs.Add(selectedValueVar.RegisterEventObserver(obs, EventType.VariableValueChanged, _phaseInputAffinityId));
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(nameof(PhaseManager), $"EndCondition 单位标签订阅失败 {logTag}: {ex.Message}");
+        }
+    }
+
+    private static Dictionary<int, string> BuildEndConditionUnitMap(PhaseUILayoutItem item)
+    {
+        var map = new Dictionary<int, string>();
+        if (item?.Config?.ConditionSelector?.Items == null) return map;
+
+        foreach (var option in item.Config.ConditionSelector.Items)
+        {
+            if (option == null) continue;
+            map[option.Value] = option.Unit ?? string.Empty;
+        }
+
+        return map;
+    }
+
+    private static void ApplyEndConditionUnitText(Label unitLabel, UAValue selectedValue, Dictionary<int, string> unitMap)
+    {
+        if (unitLabel == null || unitMap == null) return;
+
+        int selected = 0;
+        try
+        {
+            if (selectedValue?.Value != null)
+                selected = Convert.ToInt32(selectedValue.Value);
+        }
+        catch
+        {
+            selected = 0;
+        }
+
+        unitMap.TryGetValue(selected, out string unitText);
+        unitLabel.Text = unitText ?? string.Empty;
     }
     #endregion
     [ExportMethod]
@@ -329,41 +393,48 @@ public class PhaseManager : BaseNetLogic
                 if (WidgetTypeIs(item.WidgetType, "PanelEndConditionGroup"))
                     WireEndConditionSelectionVisibility(widget);
 
+                foreach (var slotEntry in EnumerateSlotBindSpecs(item))
+                    AttachUdtPhaseBufferBind(widget, item.WidgetType, slotEntry.Value, sec.Id, item.Id, slotEntry.Key);
+
+                foreach (var configBindEntry in EnumeratePanelEndConditionGroupConfigBindSpecs(item))
+                    AttachUdtPhaseBufferBind(widget, item.WidgetType, configBindEntry.Value, sec.Id, item.Id, configBindEntry.Key);
+
                 foreach (var bindSpec in EnumerateBindSpecs(item))
-                {
-                    if (bindSpec == null) continue;
-                    if (string.IsNullOrWhiteSpace(bindSpec.SourceTagPath))
-                        throw new InvalidOperationException($"绑定失败 {sec.Id}/{item.Id}: bind.sourceTagPath 为空。");
+                    AttachUdtPhaseBufferBind(widget, item.WidgetType, bindSpec, sec.Id, item.Id);
 
-                    if (!TryParseSourceTagPath(bindSpec.SourceTagPath, out string bufferFieldPath, out int? parsedIndex, out string parseError))
-                        throw new InvalidOperationException($"绑定失败，index解析失败 {sec.Id}/{item.Id}: {parseError}");
-
-                    string modelVarPath = UdtPhaseTemplateUiBufferRootPath + "/" + bufferFieldPath.Replace('.', '/');
-                    IUAVariable modelVar = Project.Current.GetVariable(modelVarPath);
-                    if (modelVar == null)
-                    {
-                        if (parsedIndex.HasValue)
-                        {
-                            modelVar = Project.Current.GetVariable(modelVarPath + "[" + parsedIndex.Value + "]");
-                            if (modelVar == null)
-                                modelVar = Project.Current.GetVariable(modelVarPath + "/" + parsedIndex.Value);
-                        }
-                    }
-                    if (modelVar == null)
-                        throw new InvalidOperationException($"绑定失败 {sec.Id}/{item.Id}: 未找到模型变量 {modelVarPath}" + (parsedIndex.HasValue ? $"（index={parsedIndex.Value}）" : "") + "。");
-
-                    IUAVariable uiVar = ResolveUiVariable(widget, bindSpec, sec.Id, item.Id);
-                    if (uiVar == null)
-                        throw new InvalidOperationException($"绑定失败 {sec.Id}/{item.Id}: 未找到 UI 属性变量 {bindSpec.UiProperty}。");
-
-                    uiVar.ResetDynamicLink();
-                    if (parsedIndex.HasValue)
-                        uiVar.SetDynamicLink(modelVar, (uint)parsedIndex.Value, DynamicLinkMode.ReadWrite);
-                    else
-                        uiVar.SetDynamicLink(modelVar, DynamicLinkMode.ReadWrite);
-                }
             }
         }
+    }
+
+    private static void AttachUdtPhaseBufferBind(IUAObject widget, string widgetType, PhaseUILayoutBindSpec bindSpec, string sectionId, string itemId, string slotKey = null)
+    {
+        if (bindSpec == null) return;
+        if (string.IsNullOrWhiteSpace(bindSpec.SourceTagPath))
+            throw new InvalidOperationException($"绑定失败 {sectionId}/{itemId}: bind.sourceTagPath 为空。");
+
+        if (!TryParseSourceTagPath(bindSpec.SourceTagPath, out string bufferFieldPath, out int? parsedIndex, out string parseError))
+            throw new InvalidOperationException($"绑定失败，index解析失败 {sectionId}/{itemId}: {parseError}");
+
+        string modelVarPath = UdtPhaseTemplateUiBufferRootPath + "/" + bufferFieldPath.Replace('.', '/');
+        IUAVariable modelVar = Project.Current.GetVariable(modelVarPath);
+        if (modelVar == null && parsedIndex.HasValue)
+        {
+            modelVar = Project.Current.GetVariable(modelVarPath + "[" + parsedIndex.Value + "]");
+            if (modelVar == null)
+                modelVar = Project.Current.GetVariable(modelVarPath + "/" + parsedIndex.Value);
+        }
+        if (modelVar == null)
+            throw new InvalidOperationException($"绑定失败 {sectionId}/{itemId}: 未找到模型变量 {modelVarPath}" + (parsedIndex.HasValue ? $"（index={parsedIndex.Value}）" : "") + "。");
+
+        IUAVariable uiVar = ResolveUiVariable(widget, widgetType, bindSpec, sectionId, itemId, slotKey);
+        if (uiVar == null)
+            throw new InvalidOperationException($"绑定失败 {sectionId}/{itemId}: 未找到 UI 属性变量 {bindSpec.UiProperty}。");
+
+        uiVar.ResetDynamicLink();
+        if (parsedIndex.HasValue)
+            uiVar.SetDynamicLink(modelVar, (uint)parsedIndex.Value, DynamicLinkMode.ReadWrite);
+        else
+            uiVar.SetDynamicLink(modelVar, DynamicLinkMode.ReadWrite);
     }
 
     /// <summary>兼容旧版单 bind 与新版 binds[]。</summary>
@@ -376,20 +447,116 @@ public class PhaseManager : BaseNetLogic
             if (spec != null) yield return spec;
     }
 
-    /// <summary>按 uiPath 与 uiProperty 解析目标 UI 变量；无 uiPath 时保持旧行为。</summary>
-    private static IUAVariable ResolveUiVariable(IUAObject widget, PhaseUILayoutBindSpec bindSpec, string sectionId, string itemId)
+    private static IEnumerable<KeyValuePair<string, PhaseUILayoutBindSpec>> EnumerateSlotBindSpecs(PhaseUILayoutItem item)
+    {
+        var bindings = item?.Bindings;
+        if (bindings == null) yield break;
+        foreach (var entry in bindings)
+            if (entry.Value != null) yield return entry;
+    }
+
+    private static IEnumerable<KeyValuePair<string, PhaseUILayoutBindSpec>> EnumeratePanelEndConditionGroupConfigBindSpecs(PhaseUILayoutItem item)
+    {
+        if (item?.Config?.ConditionSelector?.Items == null) yield break;
+        foreach (var option in item.Config.ConditionSelector.Items)
+        {
+            if (option?.Bindings == null) continue;
+            foreach (var entry in option.Bindings)
+            {
+                if (entry.Value == null) continue;
+                if (!IsSupportedPanelEndConditionGroupBindingKey(entry.Key)) continue;
+                yield return entry;
+            }
+        }
+    }
+
+    private static bool IsSupportedPanelEndConditionGroupBindingKey(string bindingKey)
+    {
+        if (string.IsNullOrWhiteSpace(bindingKey)) return false;
+        return string.Equals(bindingKey, "timeHr", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(bindingKey, "timeMin", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(bindingKey, "timeSec", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(bindingKey, "weightOperator", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(bindingKey, "weightValue", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(bindingKey, "phOperator", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(bindingKey, "phValue", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(bindingKey, "oxygenOperator", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(bindingKey, "oxygenValue", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(bindingKey, "tempOperator", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(bindingKey, "tempValue", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private sealed class UiBindingGuide
+    {
+        public UiBindingGuide(string uiPath, string uiProperty)
+        {
+            UiPath = uiPath;
+            UiProperty = uiProperty;
+        }
+
+        public string UiPath { get; }
+        public string UiProperty { get; }
+    }
+
+    private static UiBindingGuide GetDefaultUiBindingGuide(string widgetType, string slotKey = null)
+    {
+        if (WidgetTypeIs(widgetType, "PhaseSinglePara"))
+            return new UiBindingGuide("VerticalLayout1/ParaValue/TextBox1", "Text");
+        if (WidgetTypeIs(widgetType, "PhaseValvePanel"))
+            return new UiBindingGuide("VerticalLayout1/ParaValue/Switch1", "Checked");
+        if (WidgetTypeIs(widgetType, "PanelEndConditionsOperator"))
+            return new UiBindingGuide("Rectangle_Border/Switch_AndOr", "Checked");
+        if (WidgetTypeIs(widgetType, "PanelEndConditionGroup"))
+            return GetPanelEndConditionGroupSlotGuide(slotKey);
+        return null;
+    }
+
+    private static UiBindingGuide GetPanelEndConditionGroupSlotGuide(string slotKey)
+    {
+        if (string.IsNullOrWhiteSpace(slotKey)) return null;
+        if (string.Equals(slotKey, "enableSwitch", StringComparison.OrdinalIgnoreCase))
+            return new UiBindingGuide("VL/PanelEndConditionsEnable/Rectangle_Border/HorizontalLayout1/Switch_Vlv1", "Checked");
+        if (string.Equals(slotKey, "conditionSelector", StringComparison.OrdinalIgnoreCase))
+            return new UiBindingGuide("VL/PanelEndConditionSelection/Rectangle_Border/Panel2/ComboBox1", "SelectedValue");
+        if (string.Equals(slotKey, "timeHr", StringComparison.OrdinalIgnoreCase))
+            return new UiBindingGuide("VL/PanelEndConditionSelection/Rectangle_Border/Panel2/TimeContainer/SpinBox_Hr", "Value");
+        if (string.Equals(slotKey, "timeMin", StringComparison.OrdinalIgnoreCase))
+            return new UiBindingGuide("VL/PanelEndConditionSelection/Rectangle_Border/Panel2/TimeContainer/SpinBox_Min", "Value");
+        if (string.Equals(slotKey, "timeSec", StringComparison.OrdinalIgnoreCase))
+            return new UiBindingGuide("VL/PanelEndConditionSelection/Rectangle_Border/Panel2/TimeContainer/SpinBox_Sec", "Value");
+        if (string.Equals(slotKey, "weightOperator", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(slotKey, "phOperator", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(slotKey, "oxygenOperator", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(slotKey, "tempOperator", StringComparison.OrdinalIgnoreCase))
+            return new UiBindingGuide("VL/PanelEndConditionSelection/Rectangle_Border/Panel2/SelectItemTemplatePanel1/HL/Switch", "Checked");
+        if (string.Equals(slotKey, "weightValue", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(slotKey, "phValue", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(slotKey, "oxygenValue", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(slotKey, "tempValue", StringComparison.OrdinalIgnoreCase))
+            return new UiBindingGuide("VL/PanelEndConditionSelection/Rectangle_Border/Panel2/SelectItemTemplatePanel1/HL/SpinBox", "Value");
+        return null;
+    }
+
+    /// <summary>按显式 bind 或组件默认映射解析目标 UI 变量。</summary>
+    private static IUAVariable ResolveUiVariable(IUAObject widget, string widgetType, PhaseUILayoutBindSpec bindSpec, string sectionId, string itemId, string slotKey = null)
     {
         if (widget == null || bindSpec == null) return null;
-        string uiProperty = bindSpec.UiProperty?.Trim();
+        var defaultGuide = GetDefaultUiBindingGuide(widgetType, slotKey);
+        string uiPath = !string.IsNullOrWhiteSpace(bindSpec.UiPath)
+            ? bindSpec.UiPath.Trim()
+            : defaultGuide?.UiPath;
+        string uiProperty = !string.IsNullOrWhiteSpace(bindSpec.UiProperty)
+            ? bindSpec.UiProperty.Trim()
+            : defaultGuide?.UiProperty;
         if (string.IsNullOrEmpty(uiProperty))
-            throw new InvalidOperationException($"绑定失败 {sectionId}/{itemId}: bind.uiProperty 为空。");
+            throw new InvalidOperationException($"绑定失败 {sectionId}/{itemId}: bind.uiProperty 为空，且 widgetType={widgetType} 未配置默认 UI 映射。");
 
         IUAObject scopeObject = widget;
-        if (!string.IsNullOrWhiteSpace(bindSpec.UiPath))
+        if (!string.IsNullOrWhiteSpace(uiPath))
         {
-            var scopeNode = widget.Get(bindSpec.UiPath);
+            var scopeNode = widget.Get(uiPath);
             if (scopeNode == null)
-                throw new InvalidOperationException($"绑定失败 {sectionId}/{itemId}: 未找到 uiPath={bindSpec.UiPath}。");
+                throw new InvalidOperationException($"绑定失败 {sectionId}/{itemId}: 未找到 uiPath={uiPath}。");
             if (scopeNode is IUAVariable scopeVar)
             {
                 if (string.IsNullOrEmpty(uiProperty) || string.Equals(uiProperty, scopeVar.BrowseName, StringComparison.OrdinalIgnoreCase))
@@ -401,7 +568,7 @@ public class PhaseManager : BaseNetLogic
                 throw new InvalidOperationException($"绑定失败 {sectionId}/{itemId}: uiPath 目标不是对象节点。");
         }
 
-        if (string.IsNullOrWhiteSpace(bindSpec.UiPath))
+        if (string.IsNullOrWhiteSpace(uiPath))
         {
             if (string.Equals(uiProperty, "Text", StringComparison.OrdinalIgnoreCase))
             {
@@ -426,8 +593,8 @@ public class PhaseManager : BaseNetLogic
     private static void WireEndConditionSelectionVisibility(IUAObject groupWidget)
     {
         if (groupWidget == null) return;
-        var enableSwitch = groupWidget.GetObject("VerticalLayout1/PanelEndConditionsEnable1/Rectangle_Border/HorizontalLayout1/Switch_Vlv1") as Switch;
-        var selectionPanel = groupWidget.GetObject("VerticalLayout1/PanelEndConditionSelection1") as IUAObject;
+        var enableSwitch = groupWidget.GetObject("VL/PanelEndConditionsEnable/Rectangle_Border/HorizontalLayout1/Switch_Vlv1") as Switch;
+        var selectionPanel = groupWidget.GetObject("VL/PanelEndConditionSelection") as IUAObject;
         var checkedVar = enableSwitch?.GetVariable("Checked");
         var visibleVar = selectionPanel?.GetVariable("Visible");
         if (checkedVar == null || visibleVar == null) return;
@@ -495,6 +662,93 @@ public class PhaseManager : BaseNetLogic
             || string.Equals(t, "PhaseParaCompare4", StringComparison.OrdinalIgnoreCase);
     }
 
+    /// <summary>
+    /// 按 JSON 重建 ComboBox 的 EndConditionItems 选项变量；下拉下方的 SelectItemTemplatePanel 由 Optix 模板静态实例提供，此处不再创建/删除面板。
+    /// </summary>
+    private static void RebuildEndConditionItems(IUAObject groupWidget, PhaseUILayoutItem item)
+    {
+        if (groupWidget == null || item?.Config?.ConditionSelector?.Items == null) return;
+
+        var endConditionItems = groupWidget.GetObject("EndConditionItems") as IUAObject;
+        if (endConditionItems == null) return;
+
+        var usedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        var oldChildren = new List<IUANode>();
+        if (endConditionItems.Children != null)
+        {
+            foreach (var child in endConditionItems.Children)
+                oldChildren.Add(child);
+        }
+        foreach (var child in oldChildren)
+            child.Delete();
+
+        AddEmptyConditionSelectorOption(endConditionItems, usedNames);
+
+        foreach (var option in item.Config.ConditionSelector.Items)
+        {
+            if (option == null || string.IsNullOrWhiteSpace(option.Label))
+                continue;
+
+            string safeName = MakeUniqueNodeName(usedNames, option.Label);
+            int numericValue = option.Value;
+            var variable = InformationModel.MakeVariable(safeName, UAManagedCore.OpcUa.DataTypes.Int32);
+            variable.Description = new LocalizedText(option.Label);
+            variable.DisplayName = new LocalizedText(option.Label);
+            variable.Value = numericValue;
+            endConditionItems.Add(variable);
+        }
+    }
+
+    private static void AddEmptyConditionSelectorOption(IUAObject endConditionItems, ISet<string> usedNames)
+    {
+        if (endConditionItems == null || usedNames == null) return;
+
+        string safeName = MakeUniqueNodeName(usedNames, "Empty");
+        var variable = InformationModel.MakeVariable(safeName, UAManagedCore.OpcUa.DataTypes.Int32);
+        variable.Description = new LocalizedText(string.Empty);
+        variable.DisplayName = new LocalizedText(string.Empty);
+        variable.Value = -1;
+        endConditionItems.Add(variable);
+    }
+
+    private static string MakeSafeNodeName(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return "Item";
+
+        string raw = text.Trim()
+            .Replace(" ", "_")
+            .Replace("/", "_")
+            .Replace("\\", "_")
+            .Replace(":", "_");
+
+        var builder = new StringBuilder(raw.Length);
+        foreach (char ch in raw)
+        {
+            if (char.IsLetterOrDigit(ch) || ch == '_')
+                builder.Append(ch);
+        }
+
+        string safe = builder.ToString().Trim('_');
+
+        return string.IsNullOrEmpty(safe) ? "Item" : safe;
+    }
+
+    private static string MakeUniqueNodeName(ISet<string> usedNames, string text)
+    {
+        string baseName = MakeSafeNodeName(text);
+        string candidate = baseName;
+        int index = 2;
+
+        while (!usedNames.Add(candidate))
+        {
+            candidate = $"{baseName}_{index}";
+            index++;
+        }
+
+        return candidate;
+    }
+
     private static void AddLayoutWidget(RowLayout rowLayout, PhaseUILayoutItem item)
     {
         if (item == null || string.IsNullOrEmpty(item.Id) || string.IsNullOrEmpty(item.WidgetType)) return;
@@ -524,10 +778,11 @@ public class PhaseManager : BaseNetLogic
             var w = InformationModel.Make<PanelEndConditionGroup>(item.Id);
             if (item.Width.HasValue) w.Width = item.Width.Value;
             int groupNo = ExtractTrailingNumberOrDefault(item.Id, 1);
-            var enableLabel = w.Get<Label>("VerticalLayout1/PanelEndConditionsEnable1/Rectangle_Border/HorizontalLayout1/Label Valve1");
+            var enableLabel = w.Get<Label>("VL/PanelEndConditionsEnable/Rectangle_Border/HorizontalLayout1/LabelValve1");
             if (enableLabel != null) enableLabel.Text = "EC" + groupNo;
-            var titleLabel = w.Get<Label>("VerticalLayout1/PanelEndConditionSelection1/Rectangle_Border/Panel2/Label1");
+            var titleLabel = w.Get<Label>("VL/PanelEndConditionSelection/Rectangle_Border/Panel2/Label1");
             if (titleLabel != null) titleLabel.Text = $"End Condition {groupNo} ( EC {groupNo} )";
+            RebuildEndConditionItems(w, item);
             rowLayout.Add(w);
             return;
         }

@@ -21,7 +21,7 @@ Children:
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [6]
-      Value: ["23","34","56","445","56","67"]
+      Value: ["37","36","37","36","36.8","37"]
     - Name: lineColor
       Type: BaseDataVariableType
       DataType: Color
@@ -143,7 +143,7 @@ Children:
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [6]
-      Value: ["23","34","56","445","56","67"]
+      Value: ["7","7.2","7.16","7.12","7","7.3"]
     - Name: lineColor
       Type: BaseDataVariableType
       DataType: Color
@@ -265,7 +265,7 @@ Children:
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [6]
-      Value: ["23","34","56","445","56","67"]
+      Value: ["37","37","38","39","40","38"]
     - Name: lineColor
       Type: BaseDataVariableType
       DataType: Color
@@ -387,7 +387,7 @@ Children:
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [6]
-      Value: ["23","34","56","445","56","67"]
+      Value: ["420","425","420","430","420","425"]
     - Name: lineColor
       Type: BaseDataVariableType
       DataType: Color
@@ -509,11 +509,11 @@ Children:
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [6]
-      Value: ["23","34","56","445","56","67"]
+      Value: ["37","37.1","38","37","37","37.6"]
     - Name: lineColor
       Type: BaseDataVariableType
       DataType: Color
-      Value: "#0fafff"
+      Value: "#075982"
     - Name: lineType
       Type: BaseDataVariableType
       DataType: line
@@ -525,7 +525,7 @@ Children:
       - Name: DynamicLink
         Type: DynamicLink
         DataType: NodePath
-        Value: "../../../../../DashboardData/ControlDashboard/TrendData/Label1"
+        Value: "../../../../../DashboardData/SustanabilityDashboard/Label1"
         Children:
         - Name: Mode
           Type: BaseVariableType
@@ -611,3 +611,329 @@ Children:
   - Name: axisSplitLineType
     Type: BaseDataVariableType
     DataType: axisSplitLine
+  - Name: line2
+    Type: BaseObjectType
+    Children:
+    - Name: data
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [6]
+      Value: ["420","425","420","430","420","425"]
+    - Name: lineColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#f09944"
+    - Name: lineType
+      Type: BaseDataVariableType
+      DataType: line
+    - Name: label
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "PH"
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../../../../DashboardData/SustanabilityDashboard/Label2"
+        Children:
+        - Name: Mode
+          Type: BaseVariableType
+          DataType: DynamicLinkMode
+          Value: 2
+    - Name: width
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 1
+    - Name: smooth
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: areaStyle
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: emphasis
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: labelColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#3b3b3b"
+    - Name: areaColor
+      Type: BaseDataVariableType
+      DataType: Color
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["#37deff","#6c95ff"]
+- Name: LineChartProduction
+  Type: BaseObjectType
+  Children:
+  - Name: xAxisType
+    Type: BaseDataVariableType
+    DataType: axis
+  - Name: xAxisData
+    Type: BaseDataVariableType
+    DataType: String
+    ValueRank: OneDimension
+    ArrayDimensions: [6]
+    Value: ["16:54","16:55","16:56","16:57","16:58","16:59"]
+  - Name: line1
+    Type: BaseObjectType
+    Children:
+    - Name: data
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [6]
+      Value: ["37","37.1","38","37","37","37.6"]
+    - Name: lineColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#075982"
+    - Name: lineType
+      Type: BaseDataVariableType
+      DataType: line
+    - Name: label
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "PH"
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "PH"
+        Children:
+        - Name: Mode
+          Type: BaseVariableType
+          DataType: DynamicLinkMode
+          Value: 2
+    - Name: width
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 1
+    - Name: smooth
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: areaStyle
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: emphasis
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: labelColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#3b3b3b"
+    - Name: areaColor
+      Type: BaseDataVariableType
+      DataType: Color
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["#37deff","#6c95ff"]
+  - Name: URL
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "http://www.baidu.com"
+    Children:
+    - Name: StringFormatter1
+      Type: StringFormatter
+      Children:
+      - Name: Format
+        Type: BaseDataVariableType
+        DataType: LocalizedText
+        ReferenceType: HasParameter
+        Value: {"LocaleId":"en-US","Text":"http://{1}/LineChart/linechart.html?p={0}"}
+      - Name: ns=2;Source0
+        Type: BaseDataVariableType
+        DataType: BaseDataType
+        ReferenceType: HasSource
+        Children:
+        - Name: DynamicLink
+          Type: DynamicLink
+          DataType: NodePath
+          Value: "../../..@BrowsePath"
+      - Name: ns=2;Source1
+        Type: BaseDataVariableType
+        DataType: BaseDataType
+        ReferenceType: HasSource
+        Children:
+        - Name: DynamicLink
+          Type: DynamicLink
+          DataType: NodePath
+          Value: "../../../../../HttpServer/httpserver@Value"
+  - Name: refreshInterval
+    Type: BaseDataVariableType
+    DataType: Float
+    Value: 1000.0
+  - Name: background
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#18386e"
+  - Name: axisFontColor
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#f9fafc"
+  - Name: axisLineColor
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#86eadd"
+  - Name: axisSplitLineColor
+    Type: BaseDataVariableType
+    DataType: Color
+    Value: "#74737e"
+  - Name: axisSplitLineType
+    Type: BaseDataVariableType
+    DataType: axisSplitLine
+  - Name: line2
+    Type: BaseObjectType
+    Children:
+    - Name: data
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [6]
+      Value: ["420","425","420","430","420","425"]
+    - Name: lineColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#f09944"
+    - Name: lineType
+      Type: BaseDataVariableType
+      DataType: line
+    - Name: label
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "PH"
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "RPM"
+        Children:
+        - Name: Mode
+          Type: BaseVariableType
+          DataType: DynamicLinkMode
+          Value: 2
+    - Name: width
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 1
+    - Name: smooth
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: areaStyle
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: emphasis
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: labelColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#3b3b3b"
+    - Name: areaColor
+      Type: BaseDataVariableType
+      DataType: Color
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["#37deff","#6c95ff"]
+  - Name: line3
+    Type: BaseObjectType
+    Children:
+    - Name: data
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [6]
+      Value: ["37","37","38","39","40","38"]
+    - Name: lineColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#0fafff"
+    - Name: lineType
+      Type: BaseDataVariableType
+      DataType: line
+    - Name: label
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Temp"
+    - Name: width
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 1
+    - Name: smooth
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: areaStyle
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: emphasis
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: labelColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#3b3b3b"
+    - Name: areaColor
+      Type: BaseDataVariableType
+      DataType: Color
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["#37deff","#6c95ff"]
+  - Name: line4
+    Type: BaseObjectType
+    Children:
+    - Name: data
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [6]
+      Value: ["210","200","210","210","210","210"]
+    - Name: lineColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#0fafff"
+    - Name: lineType
+      Type: BaseDataVariableType
+      DataType: line
+    - Name: label
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Air"
+    - Name: width
+      Type: BaseDataVariableType
+      DataType: Int32
+      Value: 1
+    - Name: smooth
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: areaStyle
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: emphasis
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: labelColor
+      Type: BaseDataVariableType
+      DataType: Color
+      Value: "#3b3b3b"
+    - Name: areaColor
+      Type: BaseDataVariableType
+      DataType: Color
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["#37deff","#6c95ff"]

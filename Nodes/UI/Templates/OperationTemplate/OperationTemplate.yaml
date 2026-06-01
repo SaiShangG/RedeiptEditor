@@ -1484,11 +1484,11 @@ Children:
               - Name: Value
                 Type: BaseDataVariableType
                 DataType: Color
-                Value: "#18386e"
+                Value: "#eb001b"
           - Name: Path
             Type: BaseDataVariableType
             DataType: ResourceUri
-            Value: "ns=7;%PROJECTDIR%/Images/filter.svg"
+            Value: "ns=7;%PROJECTDIR%/Images/Dashboard/check-circle.svg"
           - Class: Reference
             Target: ns=3;i=1360
             Direction: Forward
@@ -1496,12 +1496,12 @@ Children:
             Type: BaseVariableType
             DataType: Size
             ModellingRule: Optional
-            Value: 30.0
+            Value: 20.0
           - Name: Height
             Type: BaseVariableType
             DataType: Size
             ModellingRule: Optional
-            Value: 30.0
+            Value: 20.0
           - Name: VerticalAlignment
             Type: BaseVariableType
             DataType: VerticalAlignment
@@ -1514,7 +1514,7 @@ Children:
             Type: BaseVariableType
             DataType: Size
             ModellingRule: Optional
-            Value: 4.0
+            Value: 8.0
           - Name: HorizontalAlignment
             Type: BaseVariableType
             DataType: HorizontalAlignment

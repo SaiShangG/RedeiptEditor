@@ -18,7 +18,7 @@ Children:
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [3]
-      Value: ["piechartLabel3","Label2","Label3"]
+      Value: ["Compressed Air","Steam","Other"]
     - Name: labelColor
       Type: BaseDataVariableType
       DataType: Color
@@ -36,9 +36,11 @@ Children:
     - Name: showLabel
       Type: BaseDataVariableType
       DataType: Boolean
+      Value: true
     - Name: showLabelLine
       Type: BaseDataVariableType
       DataType: Boolean
+      Value: true
     - Name: avoidLabelOverlap
       Type: BaseDataVariableType
       DataType: Boolean
@@ -106,12 +108,12 @@ Children:
   - Name: title
     Type: BaseDataVariableType
     DataType: String
-    Value: "Piechart4"
+    Value: "GHG Emission Contribution"
   - Name: background
     Type: BaseDataVariableType
     DataType: Color
-    Value: "#ffffff"
+    Value: "#18386e"
   - Name: titleColor
     Type: BaseDataVariableType
     DataType: Color
-    Value: "#075982"
+    Value: "#ffffff"

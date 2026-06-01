@@ -48,6 +48,54 @@ public class PhaseUILayoutItem
     public List<PhaseUILayoutBindSpec> Binds { get; set; }
     public int? Width { get; set; }
     public string label { get; set; }
+    public Dictionary<string, PhaseUILayoutBindSpec> Bindings { get; set; }
+    public PhaseUILayoutItemConfig Config { get; set; }
+}
+
+public class PhaseUILayoutItemConfig
+{
+    public PhaseUILayoutConditionSelectorConfig ConditionSelector { get; set; }
+}
+
+public class PhaseUILayoutConditionSelectorConfig
+{
+    public List<PhaseUILayoutConditionSelectorItem> Items { get; set; }
+}
+
+public class PhaseUILayoutConditionSelectorItem
+{
+    public string Label { get; set; }
+
+    [JsonConverter(typeof(FlexibleInt32JsonConverter))]
+    public int Value { get; set; }
+
+    public string Unit { get; set; }
+    public Dictionary<string, PhaseUILayoutBindSpec> Bindings { get; set; }
+}
+
+/// <summary>兼容 JSON 中 value 为数字或数字字符串（前端编辑器可能写出 "4"）。</summary>
+public sealed class FlexibleInt32JsonConverter : JsonConverter<int>
+{
+    public override int Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        switch (reader.TokenType)
+        {
+            case JsonTokenType.Number:
+                return reader.GetInt32();
+            case JsonTokenType.String:
+                string text = reader.GetString();
+                if (int.TryParse(text, out int parsed))
+                    return parsed;
+                throw new JsonException($"无法将字符串 \"{text}\" 转换为 Int32。");
+            default:
+                throw new JsonException($"无法将 {reader.TokenType} 转换为 Int32。");
+        }
+    }
+
+    public override void Write(Utf8JsonWriter writer, int value, JsonSerializerOptions options)
+    {
+        writer.WriteNumberValue(value);
+    }
 }
 
 /// <summary>相位 UI 布局 JSON 的加载与按文件名查找（与 ResourceUri 解析无关）。</summary>

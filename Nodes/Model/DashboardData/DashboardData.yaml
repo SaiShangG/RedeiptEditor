@@ -190,7 +190,7 @@ Children:
 - Name: ProductionDashboard
   Type: BaseObjectType
   Children:
-  - Name: Info
+  - Name: BatchInfo
     Type: BaseObjectType
     Children:
     - Name: label1
@@ -200,39 +200,39 @@ Children:
     - Name: label2
       Type: BaseDataVariableType
       DataType: String
-      Value: "0"
+      Value: "Batch"
     - Name: label3
       Type: BaseDataVariableType
       DataType: String
-      Value: "0"
+      Value: "Recipe"
     - Name: label4
       Type: BaseDataVariableType
       DataType: String
-      Value: "0"
+      Value: "Phase"
     - Name: label5
       Type: BaseDataVariableType
       DataType: String
-      Value: "0"
+      Value: "Historian"
     - Name: Value1
       Type: BaseDataVariableType
       DataType: String
-      Value: "0"
+      Value: "Sai Shang"
     - Name: Value2
       Type: BaseDataVariableType
       DataType: String
-      Value: "0"
+      Value: "B156"
     - Name: Value3
       Type: BaseDataVariableType
       DataType: String
-      Value: "0"
+      Value: "Test_001"
     - Name: Value4
       Type: BaseDataVariableType
       DataType: String
-      Value: "0"
+      Value: "Phase_001"
     - Name: Value5
       Type: BaseDataVariableType
       DataType: String
-      Value: "0"
+      Value: "OK"
   - Name: KeyParameters
     Type: BaseObjectType
     Children:
@@ -240,66 +240,602 @@ Children:
       Type: BaseDataVariableType
       DataType: String
       ValueRank: OneDimension
-      ArrayDimensions: [3]
-      Value: ["0","0","0"]
+      ArrayDimensions: [4]
+      Value: ["Batch Health","","In Design Spec",""]
     - Name: ItemValue1
       Type: BaseDataVariableType
       DataType: String
+      Value: "GREEN"
     - Name: Item2
       Type: BaseDataVariableType
       DataType: String
       ValueRank: OneDimension
-      ArrayDimensions: [3]
-      Value: ["0","0","0"]
+      ArrayDimensions: [4]
+      Value: ["Cycle","min","Ahead of Plan",""]
+    - Name: ItemValue2
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "-12"
     - Name: Item3
       Type: BaseDataVariableType
       DataType: String
       ValueRank: OneDimension
-      ArrayDimensions: [3]
-      Value: ["0","0","0"]
+      ArrayDimensions: [4]
+      Value: ["VCD","×10⁴ cell/ml","Ahead of Plan",""]
+    - Name: ItemValue3
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "8.2"
     - Name: Item4
       Type: BaseDataVariableType
       DataType: String
       ValueRank: OneDimension
-      ArrayDimensions: [3]
-      Value: ["0","0","0"]
+      ArrayDimensions: [4]
+      Value: ["Viability","%","Last @ 10:05",""]
+    - Name: ItemValue4
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "94.1%"
     - Name: Item5
       Type: BaseDataVariableType
       DataType: String
       ValueRank: OneDimension
-      ArrayDimensions: [3]
-      Value: ["0","0","0"]
+      ArrayDimensions: [4]
+      Value: ["Titer","g/L","Last @ 9:05",""]
+    - Name: ItemValue5
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "2.8"
     - Name: Item6
       Type: BaseDataVariableType
       DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [4]
+      Value: ["Vol. Prod","g/L/day","vs Golden +3%",""]
+    - Name: ItemValue6
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "1.1"
+    - Name: Status
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [6]
+      Value: ["Good","Good","Middle","Good","Middle","Good"]
+    - Name: Images
+      Type: BaseDataVariableType
+      DataType: ResourceUri
+      ValueRank: OneDimension
+      ArrayDimensions: [6]
+      Value: ["ns=7;%PROJECTDIR%/Images/Dashboard/check-circle.svg","ns=7;%PROJECTDIR%/Images/Dashboard/time-circle.svg","ns=7;%PROJECTDIR%/Images/Dashboard/experiment.svg","ns=7;%PROJECTDIR%/Images/Dashboard/experiment.svg","ns=7;%PROJECTDIR%/Images/Dashboard/hourglass.svg","ns=7;%PROJECTDIR%/Images/Dashboard/line chart.svg"]
+  - Name: Parameters
+    Type: BaseObjectType
+    Children:
+    - Name: Item1
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["Record Completeness","OK"]
+    - Name: ItemValue1
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "98%"
+    - Name: Item2
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["e-Signatures","None"]
+    - Name: Images
+      Type: BaseDataVariableType
+      DataType: ResourceUri
       ValueRank: OneDimension
       ArrayDimensions: [3]
       Value: ["0","0","0"]
     - Name: ItemValue2
       Type: BaseDataVariableType
       DataType: String
-    - Name: ItemValue3
-      Type: BaseDataVariableType
-      DataType: String
-    - Name: ItemValue4
-      Type: BaseDataVariableType
-      DataType: String
-    - Name: ItemValue5
-      Type: BaseDataVariableType
-      DataType: String
-    - Name: ItemValue6
-      Type: BaseDataVariableType
-      DataType: String
-  - Name: BatchInfo
+      Value: "0"
+  - Name: Alarm
     Type: BaseObjectType
     Children:
-    - Name: BatchProgress
+    - Name: Alarm1
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["High Temp","High"]
+    - Name: Alarm2
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["DO Low","High"]
+    - Name: Alarm3
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["PH Deviation","Med"]
+    - Name: Status
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["High","High","Middle"]
+    - Name: Values
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["25","10","20"]
+    - Name: Images
+      Type: BaseDataVariableType
+      DataType: ResourceUri
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["ns=7;%PROJECTDIR%/Images/Dashboard/error (1).svg","ns=7;%PROJECTDIR%/Images/Dashboard/error (1).svg","ns=7;%PROJECTDIR%/Images/Dashboard/error 21).svg"]
+  - Name: BatchProgress
+    Type: BaseObjectType
+    Children:
+    - Name: Progress
       Type: BaseDataVariableType
       DataType: Int32
-    - Name: ETA
-      Type: BaseDataVariableType
-      DataType: Int32
+      Value: 62
     - Name: PhaseName
       Type: BaseDataVariableType
       DataType: String
-      Value: "0"
+      Value: "Feed2"
+    - Name: ETA
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "00:47"
+- Name: QualityDashboard
+  Id: g=79e3d82718a97538e960b1f3408f7eed
+  Type: BaseObjectType
+  Children:
+  - Name: BatchInfo
+    Type: BaseObjectType
+    Children:
+    - Name: label1
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "User"
+    - Name: label2
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch"
+    - Name: label3
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Recipe"
+    - Name: label4
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Phase"
+    - Name: label5
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Audit Trail"
+    - Name: Value1
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Sai Shang"
+    - Name: Value2
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "B156"
+    - Name: Value3
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Test_001"
+    - Name: Value4
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Phase_001"
+    - Name: Value5
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Enabled"
+  - Name: KeyParameters
+    Type: BaseObjectType
+    Children:
+    - Name: Item3
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [4]
+      Value: ["Time Sync","","",""]
+    - Name: ItemValue3
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "OK"
+    - Name: Item4
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [4]
+      Value: ["Histirian","","",""]
+    - Name: ItemValue4
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Recording"
+    - Name: Item5
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [4]
+      Value: ["Calibration","","",""]
+    - Name: ItemValue5
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "2 Due"
+    - Name: Item6
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [4]
+      Value: ["User Access","","",""]
+    - Name: ItemValue6
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "RBAC"
+    - Name: Status
+      Type: BaseDataVariableType
+      DataType: Color
+      ValueRank: OneDimension
+      ArrayDimensions: [6]
+      Value: ["#1c5a4c","#1c5a4c","#1c5a4c","#1c5a4c","#f09944","#1c5a4c"]
+    - Name: Images
+      Type: BaseDataVariableType
+      DataType: ResourceUri
+      ValueRank: OneDimension
+      ArrayDimensions: [6]
+      Value: ["ns=7;%PROJECTDIR%/Images/Dashboard/check-circle.svg","ns=7;%PROJECTDIR%/Images/Dashboard/time-circle.svg","ns=7;%PROJECTDIR%/Images/Dashboard/experiment.svg","ns=7;%PROJECTDIR%/Images/Dashboard/experiment.svg","ns=7;%PROJECTDIR%/Images/Dashboard/hourglass.svg","ns=7;%PROJECTDIR%/Images/Dashboard/line chart.svg"]
+    - Name: ItemValue2
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "ON"
+    - Name: Item2
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [4]
+      Value: ["E-Signatures","","",""]
+    - Name: ItemValue1
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "ON"
+    - Name: Item1
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [4]
+      Value: ["Audit Trail","","",""]
+  - Name: Quality
+    Type: BaseObjectType
+    Children:
+    - Name: Item1
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["RFT Yield","96.4%"]
+    - Name: Item2
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["Deviations","1.2%"]
+    - Name: Item3
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["Batch Release","6.5h"]
+    - Name: Status
+      Type: BaseDataVariableType
+      DataType: Color
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["#1c5a4c","#f09944","#1c5a4c"]
+  - Name: Maintenance
+    Type: BaseObjectType
+    Children:
+    - Name: Item1
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["MTBF","312h"]
+    - Name: Item2
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["Cal Accuracy","98.7%"]
+    - Name: Item3
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["Work orders","3 open"]
+    - Name: Status
+      Type: BaseDataVariableType
+      DataType: Color
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["#1c5a4c","#f09944","#1c5a4c"]
+  - Name: MaintenanceInfo
+    Type: BaseObjectType
+    Children:
+    - Name: Item1
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["PH Probe","Cal Due","Last: 2026.5.22"]
+    - Name: Item2
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["DO Sensor","OK","Last: 2026.5.21"]
+    - Name: Item3
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["Temp RTD","Due Soon","Last: 2026.5.21"]
+    - Name: Images
+      Type: BaseDataVariableType
+      DataType: ResourceUri
+      ValueRank: OneDimension
+      ArrayDimensions: [6]
+      Value: ["ns=7;%PROJECTDIR%/Images/Dashboard/check-circle.svg","ns=7;%PROJECTDIR%/Images/Dashboard/time-circle.svg","ns=7;%PROJECTDIR%/Images/Dashboard/experiment.svg","ns=7;%PROJECTDIR%/Images/Dashboard/experiment.svg","ns=7;%PROJECTDIR%/Images/Dashboard/hourglass.svg","ns=7;%PROJECTDIR%/Images/Dashboard/line chart.svg"]
+  - Name: Charts
+    Type: BaseObjectType
+    Children:
+    - Name: Label1
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Historian"
+    - Name: Label2
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Backup"
+    - Name: Label3
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Storage"
+    - Name: Label4
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Clock"
+- Name: SustanabilityDashboard
+  Id: g=c63de5266b473b02336a10c80e2ad905
+  Type: BaseObjectType
+  Children:
+  - Name: BatchInfo
+    Type: BaseObjectType
+    Children:
+    - Name: label1
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "User"
+    - Name: label2
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Batch"
+    - Name: label3
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Recipe"
+    - Name: label4
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Phase"
+    - Name: label5
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Audit Trail"
+    - Name: Value1
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Sai Shang"
+    - Name: Value2
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "B156"
+    - Name: Value3
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Test_001"
+    - Name: Value4
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Phase_001"
+    - Name: Value5
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Enabled"
+  - Name: KeyParameters
+    Type: BaseObjectType
+    Children:
+    - Name: Item3
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [4]
+      Value: ["CO2 Emission","Kg CO2/Batch","+8%","vs last batch"]
+    - Name: ItemValue3
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "45"
+    - Name: Item4
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [4]
+      Value: ["Process Efficiency","kwh/kg product","Below optimal",""]
+    - Name: ItemValue4
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0.75"
+    - Name: Item5
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [4]
+      Value: ["Calibration","","",""]
+    - Name: ItemValue5
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "2 Due"
+    - Name: Item6
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [4]
+      Value: ["User Access","","",""]
+    - Name: ItemValue6
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "RBAC"
+    - Name: Status
+      Type: BaseDataVariableType
+      DataType: Color
+      ValueRank: OneDimension
+      ArrayDimensions: [6]
+      Value: ["#1c5a4c","#1c5a4c","#1c5a4c","#1c5a4c","#f09944","#1c5a4c"]
+    - Name: Images
+      Type: BaseDataVariableType
+      DataType: ResourceUri
+      ValueRank: OneDimension
+      ArrayDimensions: [6]
+      Value: ["ns=7;%PROJECTDIR%/Images/Dashboard/check-circle.svg","ns=7;%PROJECTDIR%/Images/Dashboard/time-circle.svg","ns=7;%PROJECTDIR%/Images/Dashboard/experiment.svg","ns=7;%PROJECTDIR%/Images/Dashboard/experiment.svg","ns=7;%PROJECTDIR%/Images/Dashboard/hourglass.svg","ns=7;%PROJECTDIR%/Images/Dashboard/line chart.svg"]
+    - Name: ItemValue2
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "1200"
+    - Name: Item2
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [4]
+      Value: ["Utilities Consumption","L/h","CIP/SIP/Air/O2",""]
+    - Name: ItemValue1
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "80"
+    - Name: Item1
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [4]
+      Value: ["Energy Usage","KWh/Batch","+12%","vs target"]
+  - Name: ResourceUsage
+    Type: BaseObjectType
+    Children:
+    - Name: Item1
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["CIP Chemicals","50 L/Batch"]
+    - Name: Item2
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["Air Usage","350 Nm3/hr"]
+    - Name: Item3
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["O2 Usage","180 Nm3/hr"]
+    - Name: Status
+      Type: BaseDataVariableType
+      DataType: Color
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["#075982","#075982","#075982"]
+    - Name: Item4
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["CHWR/CHWS","18 L/min"]
+    - Name: Item5
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["SIP Steam","400 kg/Batch"]
+  - Name: Maintenance
+    Type: BaseObjectType
+    Children:
+    - Name: Item1
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["MTBF","312h"]
+    - Name: Item2
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["Cal Accuracy","98.7%"]
+    - Name: Item3
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [2]
+      Value: ["Work orders","3 open"]
+    - Name: Status
+      Type: BaseDataVariableType
+      DataType: Color
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["#1c5a4c","#f09944","#1c5a4c"]
+  - Name: MaintenanceInfo
+    Type: BaseObjectType
+  - Name: Charts
+    Type: BaseObjectType
+    Children:
+    - Name: Label1
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Historian"
+    - Name: Label2
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Backup"
+    - Name: Label3
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Storage"
+    - Name: Label4
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Clock"
+  - Name: AirFlow
+    Type: BaseObjectType
+    Children:
+    - Name: Labels
+      Type: BaseDataVariableType
+      DataType: String
+      ValueRank: OneDimension
+      ArrayDimensions: [3]
+      Value: ["Compressed Air","Oxygen","CHWR/CHWS Flow"]
+  - Name: Label1
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Energy"
+  - Name: Label2
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "CO2"

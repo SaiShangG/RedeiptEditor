@@ -59,7 +59,7 @@ public class AddDialog : BaseNetLogic
             des = (string)desVar.Value;
         }
         string createdBy = ResolveCurrentUserBrowseName();
-        if (type == "Receipt")
+        if (type == "Recipe")
         {
             RecipeDatabaseManager.Instance.AddNewReceipt(name, des, createdBy);
         }

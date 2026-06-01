@@ -166,6 +166,7 @@ async function fetchAndParseData(url) {
               }
             },
             axisLabel: {
+              show: subDataItem?.showAxisLabel,
               distance: subDataItem?.axisLabelDistance || 25,
               color: subDataItem?.axisLabelColor && decimalToHexColor(subDataItem.axisLabelColor) || '#999',
               fontSize: subDataItem?.axisLabelFontSize || 20

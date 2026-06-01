@@ -1,7 +1,7 @@
 Name: PhaseTemplate
 Type: FolderType
 Children:
-- Name: PhaseTemplate1
+- Name: PhaseTemplate
   Id: g=e8e50c22ca31c78601f0cf87585fa07e
   Supertype: Panel
   ReferenceType: HasComponent
@@ -169,110 +169,6 @@ Children:
           DataType: DynamicLinkMode
           ModellingRule: Optional
           Value: 2
-    - Class: Method
-      Name: RedrawPhaseParameterUI
-- Name: PhaseParasWindow1
-  Id: g=7357972ee656644e82e18a03a588a320
-  Supertype: Panel
-  ReferenceType: HasComponent
-  Children:
-  - Name: Width
-    Type: BaseVariableType
-    DataType: Size
-    ModellingRule: Optional
-    Value: 1440.0
-  - Name: Height
-    Type: BaseVariableType
-    DataType: Size
-    ModellingRule: Optional
-    Value: 920.0
-  - Name: HorizontalAlignment
-    Type: BaseVariableType
-    DataType: HorizontalAlignment
-    ModellingRule: Optional
-    Value: 3
-  - Name: VerticalAlignment
-    Type: BaseVariableType
-    DataType: VerticalAlignment
-    ModellingRule: Optional
-    Value: 3
-  - Name: ScrollView1
-    Type: ScrollView
-    Children:
-    - Name: ContentWidth
-      Type: BaseDataVariableType
-      DataType: Size
-      AccessLevel: Read
-    - Name: ContentHeight
-      Type: BaseDataVariableType
-      DataType: Size
-      AccessLevel: Read
-    - Name: ViewWidth
-      Type: BaseDataVariableType
-      DataType: Size
-      AccessLevel: Read
-    - Name: ViewHeight
-      Type: BaseDataVariableType
-      DataType: Size
-      AccessLevel: Read
-    - Name: ContentX
-      Type: BaseDataVariableType
-      DataType: Size
-    - Name: ContentY
-      Type: BaseDataVariableType
-      DataType: Size
-    - Class: Reference
-      Target: ns=3;i=1394
-      Direction: Forward
-    - Name: Width
-      Type: BaseVariableType
-      DataType: Size
-      ModellingRule: Optional
-      Value: 300.0
-    - Name: Height
-      Type: BaseVariableType
-      DataType: Size
-      ModellingRule: Optional
-      Value: 300.0
-    - Name: Rows
-      Type: ColumnLayout
-      Children:
-      - Name: Width
-        Type: BaseVariableType
-        DataType: Size
-        ModellingRule: Optional
-        Value: 1440.0
-      - Name: Height
-        Type: BaseVariableType
-        DataType: Size
-        ModellingRule: Optional
-        Value: -1.0
-      - Name: HorizontalAlignment
-        Type: BaseVariableType
-        DataType: HorizontalAlignment
-        ModellingRule: Optional
-        Value: 3
-      - Name: VerticalAlignment
-        Type: BaseVariableType
-        DataType: VerticalAlignment
-        ModellingRule: Optional
-      - Name: ContentAlignment
-        Type: BaseVariableType
-        DataType: ContentVerticalAlignment
-        ModellingRule: Optional
-    - Name: HorizontalAlignment
-      Type: BaseVariableType
-      DataType: HorizontalAlignment
-      ModellingRule: Optional
-      Value: 3
-    - Name: VerticalAlignment
-      Type: BaseVariableType
-      DataType: VerticalAlignment
-      ModellingRule: Optional
-      Value: 3
-  - Name: PhaseManager
-    Type: NetLogic
-    Children:
     - Class: Method
       Name: RedrawPhaseParameterUI
 - File: PhaseParaTemplateUnit/PhaseParaTemplateUnit.yaml

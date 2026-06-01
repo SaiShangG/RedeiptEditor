@@ -1,0 +1,6 @@
+Name: UIConfigurator
+Type: FolderType
+Children:
+- Name: ENdConditionItemSelectedValue
+  Type: BaseDataVariableType
+  DataType: Int32

@@ -15,7 +15,6 @@
           "widgetType": "PhaseSinglePara",
           "label": "Para1",
           "bind": {
-            "uiProperty": "Text",
             "sourceTagPath": "PP.FixedSetPointValue[0]"
           }
         },
@@ -24,7 +23,6 @@
           "widgetType": "PhaseSinglePara",
           "label": "Para2",
           "bind": {
-            "uiProperty": "Text",
             "sourceTagPath": "PP.ControllerSetPointValue[0]"
           }
         },
@@ -33,7 +31,6 @@
           "widgetType": "PhaseSinglePara",
           "label": "Para3",
           "bind": {
-            "uiProperty": "Text",
             "sourceTagPath": "EC.EC1Selected"
           }
         },
@@ -42,7 +39,6 @@
           "widgetType": "PhaseSinglePara",
           "label": "Para4",
           "bind": {
-            "uiProperty": "Text",
             "sourceTagPath": "EC.EC2Selected"
           }
         },
@@ -51,7 +47,6 @@
           "widgetType": "PhaseSinglePara",
           "label": "Para5",
           "bind": {
-            "uiProperty": "Text",
             "sourceTagPath": "EC.EC2Selected"
           }
         },
@@ -60,7 +55,6 @@
           "widgetType": "PhaseSinglePara",
           "label": "Para6",
           "bind": {
-            "uiProperty": "Text",
             "sourceTagPath": "EC.EC2Selected"
           }
         },
@@ -69,7 +63,6 @@
           "widgetType": "PhaseSinglePara",
           "label": "Para7",
           "bind": {
-            "uiProperty": "Text",
             "sourceTagPath": "EC.EC2Selected"
           }
         }
@@ -88,7 +81,6 @@
           "widgetType": "PhaseValvePanel",
           "label": "Pump101",
           "bind": {
-            "uiProperty": "Checked",
             "sourceTagPath": "PP.Pump[0]"
           }
         },
@@ -97,7 +89,6 @@
           "widgetType": "PhaseValvePanel",
           "label": "Pump102",
           "bind": {
-            "uiProperty": "Checked",
             "sourceTagPath": "PP.Pump[1]"
           }
         },
@@ -106,7 +97,6 @@
           "widgetType": "PhaseValvePanel",
           "label": "Pump103",
           "bind": {
-            "uiProperty": "Checked",
             "sourceTagPath": "PP.Pump[2]"
           }
         },
@@ -115,7 +105,6 @@
           "widgetType": "PhaseValvePanel",
           "label": "Pump104",
           "bind": {
-            "uiProperty": "Checked",
             "sourceTagPath": "PP.Pump[3]"
           }
         },
@@ -124,7 +113,6 @@
           "widgetType": "PhaseValvePanel",
           "label": "Valve0",
           "bind": {
-            "uiProperty": "Checked",
             "sourceTagPath": "PP.Valve[0]"
           }
         },
@@ -133,7 +121,6 @@
           "widgetType": "PhaseValvePanel",
           "label": "Valve1",
           "bind": {
-            "uiProperty": "Checked",
             "sourceTagPath": "PP.Valve[1]"
           }
         },
@@ -142,7 +129,6 @@
           "widgetType": "PhaseValvePanel",
           "label": "Valve2",
           "bind": {
-            "uiProperty": "Checked",
             "sourceTagPath": "PP.Valve[2]"
           }
         }
@@ -160,7 +146,7 @@
           "id": "ECGroup1",
           "widgetType": "PanelEndConditionGroup",
           "label": "EC1",
-          "slots": {
+          "bindings": {
             "enableSwitch": {
               "sourceTagPath": "EC.EC1Enable"
             },
@@ -173,7 +159,8 @@
               "items": [
                 {
                   "label": "Time",
-                  "value": "1",
+                  "value": 1,
+                  "unit": "",
                   "bindings": {
                     "timeHr": {
                       "sourceTagPath": "EC.RunningTimeHr"
@@ -188,7 +175,8 @@
                 },
                 {
                   "label": "Weight",
-                  "value": "2",
+                  "value": 2,
+                  "unit": "kg",
                   "bindings": {
                     "weightValue": {
                       "sourceTagPath": "EC.EC1SP"
@@ -200,7 +188,8 @@
                 },
                 {
                   "label": "pH",
-                  "value": "3",
+                  "value": 3,
+                  "unit": "pH",
                   "bindings": {
                     "phValue": {
                       "sourceTagPath": "EC.EC1SP"
@@ -212,7 +201,8 @@
                 },
                 {
                   "label": "Oxygen",
-                  "value": "4",
+                  "value": 4,
+                  "unit": "%",
                   "bindings": {
                     "oxygenValue": {
                       "sourceTagPath": "EC.EC1SP"
@@ -224,7 +214,8 @@
                 },
                 {
                   "label": "Temp",
-                  "value": "5",
+                  "value": 5,
+                  "unit": "°C",
                   "bindings": {
                     "tempValue": {
                       "sourceTagPath": "EC.EC1SP"
@@ -242,8 +233,6 @@
           "id": "ECLogicOperator1",
           "widgetType": "PanelEndConditionsOperator",
           "bind": {
-            "uiPath": "Rectangle_Border/Switch_AndOr",
-            "uiProperty": "Checked",
             "sourceTagPath": "EC.LogicOperator1"
           }
         },
@@ -251,7 +240,7 @@
           "id": "ECGroup2",
           "widgetType": "PanelEndConditionGroup",
           "label": "EC2",
-          "slots": {
+          "bindings": {
             "enableSwitch": {
               "sourceTagPath": "EC.EC2Enable"
             },
@@ -264,7 +253,8 @@
               "items": [
                 {
                   "label": "Time",
-                  "value": "1",
+                  "value": 1,
+                  "unit": "",
                   "bindings": {
                     "timeHr": {
                       "sourceTagPath": "EC.RunningTimeHr"
@@ -279,7 +269,8 @@
                 },
                 {
                   "label": "Weight",
-                  "value": "2",
+                  "value": 2,
+                  "unit": "kg",
                   "bindings": {
                     "weightValue": {
                       "sourceTagPath": "EC.EC2SP"
@@ -291,7 +282,8 @@
                 },
                 {
                   "label": "pH",
-                  "value": "3",
+                  "value": 3,
+                  "unit": "pH",
                   "bindings": {
                     "phValue": {
                       "sourceTagPath": "EC.EC2SP"
@@ -303,7 +295,8 @@
                 },
                 {
                   "label": "Oxygen",
-                  "value": "4",
+                  "value": 4,
+                  "unit": "%",
                   "bindings": {
                     "oxygenValue": {
                       "sourceTagPath": "EC.EC2SP"
@@ -315,7 +308,8 @@
                 },
                 {
                   "label": "Temp",
-                  "value": "5",
+                  "value": 5,
+                  "unit": "°C",
                   "bindings": {
                     "tempValue": {
                       "sourceTagPath": "EC.EC2SP"
@@ -333,8 +327,6 @@
           "id": "ECLogicOperator2",
           "widgetType": "PanelEndConditionsOperator",
           "bind": {
-            "uiPath": "Rectangle_Border/Switch_AndOr",
-            "uiProperty": "Checked",
             "sourceTagPath": "EC.LogicOperator2"
           }
         },
@@ -342,7 +334,7 @@
           "id": "ECGroup3",
           "widgetType": "PanelEndConditionGroup",
           "label": "EC3",
-          "slots": {
+          "bindings": {
             "enableSwitch": {
               "sourceTagPath": "EC.EC3Enable"
             },
@@ -355,7 +347,8 @@
               "items": [
                 {
                   "label": "Time",
-                  "value": "1",
+                  "value": 1,
+                  "unit": "",
                   "bindings": {
                     "timeHr": {
                       "sourceTagPath": "EC.RunningTimeHr"
@@ -370,7 +363,8 @@
                 },
                 {
                   "label": "Weight",
-                  "value": "2",
+                  "value": 2,
+                  "unit": "kg",
                   "bindings": {
                     "weightValue": {
                       "sourceTagPath": "EC.EC3SP"
@@ -382,7 +376,8 @@
                 },
                 {
                   "label": "pH",
-                  "value": "3",
+                  "value": 3,
+                  "unit": "pH",
                   "bindings": {
                     "phValue": {
                       "sourceTagPath": "EC.EC3SP"
@@ -393,25 +388,26 @@
                   }
                 },
                 {
-                  "label": "Oxygen",
-                  "value": "4",
-                  "bindings": {
-                    "oxygenValue": {
-                      "sourceTagPath": "EC.EC3SP"
-                    },
-                    "oxygenOperator": {
-                      "sourceTagPath": "EC.EC3Operator"
-                    }
-                  }
-                },
-                {
                   "label": "Temp",
-                  "value": "5",
+                  "value": 5,
+                  "unit": "°C",
                   "bindings": {
                     "tempValue": {
                       "sourceTagPath": "EC.EC3SP"
                     },
                     "tempOperator": {
+                      "sourceTagPath": "EC.EC3Operator"
+                    }
+                  }
+                },
+                {
+                  "label": "test",
+                  "value": 6,
+                  "bindings": {
+                    "test": {
+                      "sourceTagPath": "EC.EC3SP"
+                    },
+                    "test2": {
                       "sourceTagPath": "EC.EC3Operator"
                     }
                   }

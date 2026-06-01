@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { flushSync } from 'react-dom'
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { createPortal, flushSync } from 'react-dom'
 import { Tree } from 'react-arborist'
-import samplePhaseLayout from '../phase_ui_layout.sample.json'
 
 const defaultPanelTemplate = {
   panelType: 'PhaseParasPanel',
@@ -18,32 +17,100 @@ const defaultDocumentTemplate = {
   sections: [],
 }
 
-const childWidgetPresets = [
-  {
-    widgetType: 'PhaseSinglePara',
-    label: 'Para',
-    bind: {
-      uiProperty: 'Text',
-      sourceTagPath: 'PP.FixedSetPointValue[0]',
+/** 注册表内定义的全部 widgetType */
+const widgetTypeRegistry = {
+  PhaseSinglePara: {
+    label: 'Single Parameter',
+    createItem(document) {
+      const index = getNextItemSequence(document, /^Para(\d+)$/)
+      return {
+        id: `Para${index}`,
+        widgetType: 'PhaseSinglePara',
+        label: `Para${index + 1}`,
+        bind: {
+          sourceTagPath: `PP.FixedSetPointValue[${index}]`,
+        },
+      }
     },
   },
-  {
-    widgetType: 'PhaseValvePanel',
-    label: 'Valve',
-    bind: {
-      uiProperty: 'Checked',
-      sourceTagPath: 'PP.Valve[0]',
+  PhaseValvePanel: {
+    label: 'Valve Panel',
+    createItem(document) {
+      const index = getNextItemSequence(document, /^ValveSetting(\d+)$/)
+      return {
+        id: `ValveSetting${index}`,
+        widgetType: 'PhaseValvePanel',
+        label: `Valve${index + 1}`,
+        bind: {
+          sourceTagPath: `PP.Valve[${index}]`,
+        },
+      }
     },
   },
-]
+  PanelEndConditionGroup: {
+    label: 'End Condition Group',
+    createItem(document) {
+      const groupNo = getNextItemSequence(document, /^ECGroup(\d+)$/, 1)
+      return {
+        id: `ECGroup${groupNo}`,
+        widgetType: 'PanelEndConditionGroup',
+        label: `EC${groupNo}`,
+        bindings: {
+          enableSwitch: {
+            sourceTagPath: `EC.EC${groupNo}Enable`,
+          },
+          conditionSelector: {
+            sourceTagPath: `EC.EC${groupNo}Selected`,
+          },
+        },
+        config: {
+          conditionSelector: {
+            items: [
+              {
+                label: 'Time',
+                value: 0,
+                unit: '',
+                bindings: {
+                  timeHr: { sourceTagPath: 'EC.RunningTimeHr' },
+                  timeMin: { sourceTagPath: 'EC.RunningTimeMin' },
+                  timeSec: { sourceTagPath: 'EC.RunningTimeSec' },
+                },
+              },
+            ],
+          },
+        },
+      }
+    },
+  },
+  PanelEndConditionsOperator: {
+    label: 'End Condition Operator',
+    createItem(document) {
+      const operatorNo = getNextItemSequence(document, /^ECLogicOperator(\d+)$/, 1)
+      return {
+        id: `ECLogicOperator${operatorNo}`,
+        widgetType: 'PanelEndConditionsOperator',
+        bind: {
+          sourceTagPath: `EC.LogicOperator${operatorNo}`,
+        },
+      }
+    },
+  },
+}
 
-const panelEndConditionOptionPresets = [
-  { label: 'Time', value: '1', bindingSlots: ['timeHr', 'timeMin', 'timeSec'] },
-  { label: 'Weight', value: '2', bindingSlots: ['weightValue', 'weightOperator'] },
-  { label: 'pH', value: '3', bindingSlots: ['phValue', 'phOperator'] },
-  { label: 'Oxygen', value: '4', bindingSlots: ['oxygenValue', 'oxygenOperator'] },
-  { label: 'Temp', value: '5', bindingSlots: ['tempValue', 'tempOperator'] },
-]
+const defaultWidgetBindingGuides = {
+  PhaseSinglePara: {
+    uiPath: 'VerticalLayout1/ParaValue/TextBox1',
+    uiProperty: 'Text',
+  },
+  PhaseValvePanel: {
+    uiPath: 'VerticalLayout1/ParaValue/Switch1',
+    uiProperty: 'Checked',
+  },
+  PanelEndConditionsOperator: {
+    uiPath: 'Rectangle_Border/Switch_AndOr',
+    uiProperty: 'Checked',
+  },
+}
 
 function createOptionBindings(slotKeys, sourceTagPaths = {}) {
   return Object.fromEntries(
@@ -145,18 +212,43 @@ const compositeWidgetSchemas = {
         uiProperty: 'Checked',
       },
     },
-    optionBindingMap: {
-      '1': ['timeHr', 'timeMin', 'timeSec'],
-      '2': ['weightValue', 'weightOperator'],
-      '3': ['phValue', 'phOperator'],
-      '4': ['oxygenValue', 'oxygenOperator'],
-      '5': ['tempValue', 'tempOperator'],
-    },
   },
 }
 
 function getCompositeWidgetSchema(widgetType) {
   return compositeWidgetSchemas[widgetType] ?? null
+}
+
+function getDefaultBindingGuide(widgetType) {
+  if (typeof widgetType !== 'string' || widgetType.length === 0) {
+    return null
+  }
+
+  return defaultWidgetBindingGuides[widgetType] ?? defaultWidgetBindingGuides[`${widgetType}1`] ?? null
+}
+
+function getResolvedBindingGuide(widgetType, binding) {
+  const defaultGuide = getDefaultBindingGuide(widgetType)
+  const explicitUiPath = typeof binding?.uiPath === 'string' ? binding.uiPath.trim() : ''
+  const explicitUiProperty = typeof binding?.uiProperty === 'string' ? binding.uiProperty.trim() : ''
+
+  return {
+    uiPath: explicitUiPath || defaultGuide?.uiPath || '',
+    uiProperty: explicitUiProperty || defaultGuide?.uiProperty || '',
+  }
+}
+
+function formatBindingGuide(widgetType, binding) {
+  const guide = getResolvedBindingGuide(widgetType, binding)
+  if (!guide.uiPath && !guide.uiProperty) {
+    return 'No mapped target.'
+  }
+
+  if (!guide.uiPath) {
+    return guide.uiProperty
+  }
+
+  return `${guide.uiPath} -> ${guide.uiProperty}`
 }
 
 function isCompositeWidget(itemOrWidgetType) {
@@ -168,39 +260,63 @@ function widgetTypeRequiresLabel(widgetType) {
   return widgetType !== 'PanelEndConditionsOperator'
 }
 
-function createConditionSelectorConfig(items = panelEndConditionOptionPresets) {
+function createConditionSelectorConfig(items = []) {
   return {
     items: items.map((item) => ({
       label: item.label,
       value: item.value,
-      bindings: createOptionBindings(Array.isArray(item.bindingSlots) ? item.bindingSlots : []),
+      unit: typeof item.unit === 'string' ? item.unit : '',
+      bindings: item.bindings && typeof item.bindings === 'object' && !Array.isArray(item.bindings)
+        ? item.bindings
+        : {},
     })),
   }
 }
 
-function getPresetConditionOption(value) {
-  return panelEndConditionOptionPresets.find((item) => item.value === value) ?? null
+function getConditionOptionBindings(schema, option) {
+  const configuredBindings = option?.bindings && typeof option.bindings === 'object' && !Array.isArray(option.bindings)
+    ? option.bindings
+    : {}
+
+  return Object.keys(configuredBindings).map((slotKey) => ({
+    slotKey,
+    sourceTagPath: typeof configuredBindings[slotKey]?.sourceTagPath === 'string' ? configuredBindings[slotKey].sourceTagPath : '',
+  }))
 }
 
-function getConditionOptionBindings(schema, option) {
-  if (option?.bindings && typeof option.bindings === 'object' && !Array.isArray(option.bindings)) {
-    const slotKeys = Object.keys(option.bindings).filter((slotKey) => schema?.slots?.[slotKey])
+function optionUsesFixedMappedBindings(schema, option) {
+  return false
+}
 
-    return slotKeys.map((slotKey) => ({
-      slotKey,
-      sourceTagPath: typeof option.bindings[slotKey]?.sourceTagPath === 'string' ? option.bindings[slotKey].sourceTagPath : '',
-    }))
+function formatMappedTagKeyLabel(slotKey) {
+  if (typeof slotKey !== 'string' || slotKey.length === 0) {
+    return ''
   }
 
-  if (Array.isArray(option?.bindingSlots) && option.bindingSlots.length > 0) {
-    return option.bindingSlots
-      .filter((slotKey) => typeof slotKey === 'string' && schema?.slots?.[slotKey])
-      .map((slotKey) => ({ slotKey, sourceTagPath: '' }))
+  return slotKey
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .replace(/[_-]+/g, ' ')
+    .replace(/^./, (char) => char.toUpperCase())
+}
+
+function isValidConditionOptionValue(value) {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return true
   }
 
-  return Array.isArray(schema?.optionBindingMap?.[option?.value])
-    ? schema.optionBindingMap[option.value].map((slotKey) => ({ slotKey, sourceTagPath: '' }))
-    : []
+  if (typeof value === 'string' && value.trim() !== '') {
+    return Number.isFinite(Number.parseInt(value, 10))
+  }
+
+  return false
+}
+
+function getCompositeBindingsState(item) {
+  if (item?.bindings && typeof item.bindings === 'object' && !Array.isArray(item.bindings)) {
+    return item.bindings
+  }
+
+  return {}
 }
 
 function getCompositeSlotBindings(item) {
@@ -209,9 +325,11 @@ function getCompositeSlotBindings(item) {
     return []
   }
 
+  const bindingsState = getCompositeBindingsState(item)
+
   return schema.slotOrder.map((slotKey) => {
     const slot = schema.slots[slotKey]
-    const slotState = item.slots?.[slotKey]
+    const slotState = bindingsState[slotKey]
 
     return {
       slotKey,
@@ -231,7 +349,7 @@ function getCompositeSlotBinding(item, slotKey) {
     return null
   }
 
-  const slotState = item.slots?.[slotKey]
+  const slotState = getCompositeBindingsState(item)[slotKey]
 
   return {
     slotKey,
@@ -272,8 +390,14 @@ function getCompositeOptionBindingGroups(item) {
               ...slotBinding,
               sourceTagPath,
             }
-          : null
-      }).filter(Boolean),
+          : {
+              slotKey,
+              label: formatMappedTagKeyLabel(slotKey),
+              uiPath: '',
+              uiProperty: '',
+              sourceTagPath,
+            }
+      }),
     }
   })
 }
@@ -301,8 +425,8 @@ function getItemBindingCount(item) {
 function updateCompositeSlotBinding(item, slotKey, sourceTagPath) {
   return {
     ...item,
-    slots: {
-      ...(item.slots && typeof item.slots === 'object' && !Array.isArray(item.slots) ? item.slots : {}),
+    bindings: {
+      ...getCompositeBindingsState(item),
       [slotKey]: {
         sourceTagPath,
       },
@@ -342,8 +466,8 @@ function updateConditionOptionBinding(item, slotKey, optionIndex, bindingSlotKey
   }
 }
 
-function addConditionOptionBinding(item, slotKey, optionIndex, bindingSlotKey) {
-  return updateConditionOptionBinding(item, slotKey, optionIndex, bindingSlotKey, '')
+function addConditionOptionBinding(item, slotKey, optionIndex, bindingSlotKey, sourceTagPath = '') {
+  return updateConditionOptionBinding(item, slotKey, optionIndex, bindingSlotKey, sourceTagPath)
 }
 
 function removeConditionOptionBinding(item, slotKey, optionIndex, bindingSlotKey) {
@@ -378,7 +502,7 @@ function removeConditionOptionBinding(item, slotKey, optionIndex, bindingSlotKey
 
 function getAvailableConditionOptionSlotKeys(item, option) {
   const schema = getCompositeWidgetSchema(item.widgetType)
-  if (!schema) {
+  if (!schema || optionUsesFixedMappedBindings(schema, option)) {
     return []
   }
 
@@ -388,22 +512,17 @@ function getAvailableConditionOptionSlotKeys(item, option) {
   return schema.slotOrder.filter((slotKey) => !fixedSlotKeys.has(slotKey) && !usedSlotKeys.has(slotKey))
 }
 
+function isFixedConditionSelectorOption(option) {
+  return false
+}
+
 function updateDropdownItem(item, slotKey, optionIndex, field, value) {
   const nextItems = getDropdownItems(item, slotKey).map((entry, index) => (
     index === optionIndex
-      ? (() => {
-          const nextEntry = {
-            ...entry,
-            [field]: value,
-          }
-
-          if (field === 'value') {
-            const preset = getPresetConditionOption(value)
-            nextEntry.bindings = createOptionBindings(preset ? preset.bindingSlots : [])
-          }
-
-          return nextEntry
-        })()
+      ? {
+          ...entry,
+          [field]: value,
+        }
       : entry
   ))
 
@@ -418,8 +537,17 @@ function updateDropdownItem(item, slotKey, optionIndex, field, value) {
   }
 }
 
+function getNextDropdownItemValue(item, slotKey) {
+  const numericValues = getDropdownItems(item, slotKey)
+    .map((entry) => Number.parseInt(entry?.value, 10))
+    .filter((value) => Number.isFinite(value) && value >= 0)
+
+  const maxValue = numericValues.length > 0 ? Math.max(...numericValues) : -1
+  return maxValue + 1
+}
+
 function addDropdownItem(item, slotKey) {
-  const nextItems = [...getDropdownItems(item, slotKey), { label: '', value: '', bindings: {} }]
+  const nextItems = [...getDropdownItems(item, slotKey), { label: '', value: getNextDropdownItemValue(item, slotKey), unit: '', bindings: {} }]
 
   return {
     ...item,
@@ -473,12 +601,12 @@ function createDefaultDocument() {
   }
 }
 
-function getNextChildIndex(document) {
-  let maxIndex = -1
+function getNextItemSequence(document, idPattern, startIndex = 0) {
+  let maxIndex = startIndex - 1
 
   for (const panel of document.sections) {
     for (const item of panel.items) {
-      const match = /^Para(\d+)$/.exec(item.id)
+      const match = idPattern.exec(item.id)
       if (match) {
         maxIndex = Math.max(maxIndex, Number(match[1]))
       }
@@ -488,18 +616,39 @@ function getNextChildIndex(document) {
   return maxIndex + 1
 }
 
-function createChildItem(document) {
-  const index = getNextChildIndex(document)
-  const preset = childWidgetPresets[index % childWidgetPresets.length]
+function getConfiguredWidgetTypes(document) {
+  const types = new Set()
 
+  for (const panel of document?.sections ?? []) {
+    for (const item of panel?.items ?? []) {
+      if (typeof item?.widgetType === 'string' && item.widgetType.length > 0) {
+        types.add(item.widgetType)
+      }
+    }
+  }
+
+  return types
+}
+
+function getAvailableWidgetTypes(document) {
+  const registryTypes = Object.keys(widgetTypeRegistry)
+  const configuredTypes = getConfiguredWidgetTypes(document)
+  const mergedTypes = new Set([...registryTypes, ...configuredTypes])
+  return [...mergedTypes].sort((left, right) => left.localeCompare(right))
+}
+
+function createChildItem(document, widgetType = 'PhaseSinglePara') {
+  const factory = widgetTypeRegistry[widgetType]
+  if (factory?.createItem) {
+    return factory.createItem(document)
+  }
+
+  const index = getNextItemSequence(document, /^Para(\d+)$/)
   return {
     id: `Para${index}`,
-    widgetType: preset.widgetType,
-    label: `${preset.label}${index + 1}`,
-    bind: {
-      uiProperty: preset.bind.uiProperty,
-      sourceTagPath: preset.bind.sourceTagPath,
-    },
+    widgetType,
+    label: `${widgetType}${index + 1}`,
+    bind: createDefaultBinding(),
   }
 }
 
@@ -525,9 +674,117 @@ function getItemBindings(item) {
 
 function createDefaultBinding() {
   return {
-    uiProperty: 'Text',
     sourceTagPath: '',
   }
+}
+
+function normalizeBindingForSave(widgetType, binding) {
+  if (!isBindingObject(binding)) {
+    return binding
+  }
+
+  const guide = getDefaultBindingGuide(widgetType)
+  const nextBinding = { ...binding }
+
+  if (!nextBinding.sourceTagPath) {
+    nextBinding.sourceTagPath = ''
+  }
+
+  if (guide) {
+    if (typeof nextBinding.uiPath !== 'string' || nextBinding.uiPath.trim() === '' || nextBinding.uiPath.trim() === guide.uiPath) {
+      delete nextBinding.uiPath
+    }
+
+    if (typeof nextBinding.uiProperty !== 'string' || nextBinding.uiProperty.trim() === '' || nextBinding.uiProperty.trim() === guide.uiProperty) {
+      delete nextBinding.uiProperty
+    }
+
+    return nextBinding
+  }
+
+  if (typeof nextBinding.uiPath !== 'string' || nextBinding.uiPath.trim() === '') {
+    delete nextBinding.uiPath
+  }
+  if (typeof nextBinding.uiProperty !== 'string' || nextBinding.uiProperty.trim() === '') {
+    delete nextBinding.uiProperty
+  }
+
+  return nextBinding
+}
+
+function normalizeConditionOptionValue(value) {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value
+  }
+
+  if (typeof value === 'string' && value.trim() !== '') {
+    const parsed = Number.parseInt(value, 10)
+    if (Number.isFinite(parsed)) {
+      return parsed
+    }
+  }
+
+  return value
+}
+
+function normalizeConditionSelectorConfig(item) {
+  const schema = getCompositeWidgetSchema(item.widgetType)
+  const slotKey = schema?.dropdownSlotKey
+  if (!slotKey) {
+    return item.config
+  }
+
+  const items = getDropdownItems(item, slotKey).map((entry) => ({
+    ...entry,
+    value: normalizeConditionOptionValue(entry.value),
+    unit: typeof entry.unit === 'string' ? entry.unit : '',
+  }))
+
+  return {
+    ...(item.config && typeof item.config === 'object' && !Array.isArray(item.config) ? item.config : {}),
+    [slotKey]: {
+      items,
+    },
+  }
+}
+
+function createSerializedDocumentLayout(document) {
+  const normalizedDocument = {
+    ...document,
+    sections: document.sections.map((panel) => ({
+      ...panel,
+      items: panel.items.map((item) => {
+        if (isCompositeWidget(item)) {
+          const nextItem = { ...item }
+          const compositeBindings = getCompositeBindingsState(item)
+
+          nextItem.bindings = Object.fromEntries(
+            Object.entries(compositeBindings).map(([slotKey, binding]) => [
+              slotKey,
+              normalizeBindingForSave(item.widgetType, binding),
+            ]),
+          )
+          nextItem.config = normalizeConditionSelectorConfig(item)
+
+          return nextItem
+        }
+
+        const nextItem = { ...item }
+
+        if (isBindingObject(item.bind)) {
+          nextItem.bind = normalizeBindingForSave(item.widgetType, item.bind)
+        }
+
+        if (Array.isArray(item.binds)) {
+          nextItem.binds = item.binds.filter(isBindingObject).map((binding) => normalizeBindingForSave(item.widgetType, binding))
+        }
+
+        return nextItem
+      }),
+    })),
+  }
+
+  return JSON.stringify(normalizedDocument, null, 2)
 }
 
 function updateItemBinding(item, bindingIndex, field, value) {
@@ -638,17 +895,150 @@ const CanvasItemCard = React.memo(function CanvasItemCard({ item, isSelected, on
       </div>
       <div className="canvas-child-body compact-item-body">
         <span>{item.id}</span>
-        <small>{isCompositeWidget(item) ? `Tag slots: ${bindingCount}, Options: ${optionCount}` : `Tag bind number: ${bindingCount}`}</small>
+        <small>{isCompositeWidget(item) ? `Tag bindings: ${bindingCount}, Options: ${optionCount}` : `Tag bind number: ${bindingCount}`}</small>
       </div>
     </div>
   )
 }, (previousProps, nextProps) => previousProps.item === nextProps.item && previousProps.isSelected === nextProps.isSelected)
+
+const CanvasAddChildCard = React.memo(function CanvasAddChildCard({
+  panelId,
+  availableWidgetTypes,
+  onAddChild,
+}) {
+  const [widgetType, setWidgetType] = useState(availableWidgetTypes[0] ?? 'PhaseSinglePara')
+  const [isTypeMenuOpen, setIsTypeMenuOpen] = useState(false)
+  const [menuStyle, setMenuStyle] = useState(null)
+  const pickerRef = useRef(null)
+  const triggerRef = useRef(null)
+
+  useEffect(() => {
+    if (availableWidgetTypes.length === 0) {
+      return
+    }
+
+    if (!availableWidgetTypes.includes(widgetType)) {
+      setWidgetType(availableWidgetTypes[0])
+    }
+  }, [availableWidgetTypes, widgetType])
+
+  useLayoutEffect(() => {
+    if (!isTypeMenuOpen || !triggerRef.current) {
+      setMenuStyle(null)
+      return undefined
+    }
+
+    function updateMenuPosition() {
+      const triggerRect = triggerRef.current.getBoundingClientRect()
+      setMenuStyle({
+        position: 'fixed',
+        top: triggerRect.bottom + 4,
+        left: triggerRect.left,
+        width: triggerRect.width,
+        zIndex: 1000,
+      })
+    }
+
+    updateMenuPosition()
+    window.addEventListener('resize', updateMenuPosition)
+    window.addEventListener('scroll', updateMenuPosition, true)
+    return () => {
+      window.removeEventListener('resize', updateMenuPosition)
+      window.removeEventListener('scroll', updateMenuPosition, true)
+    }
+  }, [isTypeMenuOpen, availableWidgetTypes.length])
+
+  useEffect(() => {
+    if (!isTypeMenuOpen) {
+      return undefined
+    }
+
+    function handlePointerDown(event) {
+      if (pickerRef.current?.contains(event.target)) {
+        return
+      }
+
+      if (event.target.closest('.canvas-add-type-menu-portal')) {
+        return
+      }
+
+      setIsTypeMenuOpen(false)
+    }
+
+    document.addEventListener('mousedown', handlePointerDown)
+    return () => document.removeEventListener('mousedown', handlePointerDown)
+  }, [isTypeMenuOpen])
+
+  const typeMenu = isTypeMenuOpen && menuStyle
+    ? createPortal(
+        <ul className="canvas-add-type-menu canvas-add-type-menu-portal" role="listbox" style={menuStyle}>
+          {availableWidgetTypes.map((typeName) => (
+            <li key={typeName}>
+              <button
+                type="button"
+                role="option"
+                aria-selected={widgetType === typeName}
+                className={`canvas-add-type-option${widgetType === typeName ? ' is-selected' : ''}`}
+                onClick={() => {
+                  setWidgetType(typeName)
+                  setIsTypeMenuOpen(false)
+                }}
+              >
+                {typeName}
+              </button>
+            </li>
+          ))}
+        </ul>,
+        document.body,
+      )
+    : null
+
+  return (
+    <div
+      ref={pickerRef}
+      className={`canvas-add-card-wrap canvas-add-card-wrap--picker${isTypeMenuOpen ? ' is-open' : ''}`}
+      onClick={(event) => event.stopPropagation()}
+      onMouseDown={(event) => event.stopPropagation()}
+    >
+      <div className="canvas-add-type-field">
+        <span className="canvas-add-type-label">Type</span>
+        <div className="canvas-add-type-picker">
+          <button
+            ref={triggerRef}
+            type="button"
+            className="canvas-add-type-trigger"
+            aria-haspopup="listbox"
+            aria-expanded={isTypeMenuOpen}
+            onClick={() => setIsTypeMenuOpen((current) => !current)}
+          >
+            <span className="canvas-add-type-trigger-text">{widgetType}</span>
+            <span className="canvas-add-type-trigger-arrow" aria-hidden="true">▾</span>
+          </button>
+        </div>
+      </div>
+      <button
+        type="button"
+        className="canvas-add-card"
+        onClick={(event) => {
+          event.stopPropagation()
+          onAddChild(panelId, widgetType)
+        }}
+        aria-label={`Add ${widgetType} to ${panelId}`}
+        title="Add Child Object"
+      >
+        + Add
+      </button>
+      {typeMenu}
+    </div>
+  )
+})
 
 const CanvasPanelCard = React.memo(function CanvasPanelCard({
   panel,
   isSelected,
   isCollapsed,
   selectedItemId,
+  availableWidgetTypes,
   onSelectPanel,
   onToggleCollapsed,
   onDeletePanel,
@@ -660,18 +1050,20 @@ const CanvasPanelCard = React.memo(function CanvasPanelCard({
 
   return (
     <div
-      role="button"
-      tabIndex={0}
       className={`canvas-child canvas-root-panel ${isSelected ? 'selected-canvas-node' : ''}`}
-      onClick={() => onSelectPanel(panel.id)}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault()
-          onSelectPanel(panel.id)
-        }
-      }}
     >
-      <div className="canvas-panel-toolbar">
+      <div
+        className="canvas-panel-toolbar canvas-panel-toolbar--selectable"
+        role="button"
+        tabIndex={0}
+        onClick={() => onSelectPanel(panel.id)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault()
+            onSelectPanel(panel.id)
+          }
+        }}
+      >
         <div
           className="tree-toggle canvas-collapse-toggle"
           role="button"
@@ -737,20 +1129,11 @@ const CanvasPanelCard = React.memo(function CanvasPanelCard({
             />
           )) : null}
 
-          <div className="canvas-add-card-wrap">
-            <button
-              type="button"
-              className="canvas-add-card"
-              onClick={(event) => {
-                event.stopPropagation()
-                onAddChild(panel.id)
-              }}
-              aria-label={`Add child to ${panel.id}`}
-              title="Add Child Object"
-            >
-              + Add
-            </button>
-          </div>
+          <CanvasAddChildCard
+            panelId={panel.id}
+            availableWidgetTypes={availableWidgetTypes}
+            onAddChild={onAddChild}
+          />
         </div>
       )}
     </div>
@@ -760,6 +1143,7 @@ const CanvasPanelCard = React.memo(function CanvasPanelCard({
   && previousProps.isSelected === nextProps.isSelected
   && previousProps.isCollapsed === nextProps.isCollapsed
   && previousProps.selectedItemId === nextProps.selectedItemId
+  && previousProps.availableWidgetTypes === nextProps.availableWidgetTypes
 ))
 
 const TreeRow = React.memo(function TreeRow({
@@ -1012,14 +1396,15 @@ function validateDocumentLayout(document) {
 
       if (isCompositeWidget(item)) {
         const schema = getCompositeWidgetSchema(item.widgetType)
+        const bindingsState = getCompositeBindingsState(item)
 
-        if (!item.slots || typeof item.slots !== 'object' || Array.isArray(item.slots)) {
-          issues.push(`item ${item.id || `[${itemIndex}]`} 缺少 slots 对象。`)
+        if (Object.keys(bindingsState).length === 0) {
+          issues.push(`item ${item.id || `[${itemIndex}]`} 缺少 bindings 对象。`)
           return
         }
 
         ;(schema.fixedSlotKeys ?? []).forEach((slotKey) => {
-          const slotState = item.slots[slotKey]
+          const slotState = bindingsState[slotKey]
           if (!slotState || typeof slotState !== 'object' || Array.isArray(slotState)) {
             issues.push(`item ${item.id || `[${itemIndex}]`} 缺少 slot ${slotKey}。`)
             return
@@ -1040,7 +1425,7 @@ function validateDocumentLayout(document) {
             issues.push(`item ${item.id || `[${itemIndex}]`} 的 ${schema.dropdownSlotKey}.items[${optionIndex}] 缺少 label。`)
           }
 
-          if (!entry.value || typeof entry.value !== 'string') {
+          if (!isValidConditionOptionValue(entry.value)) {
             issues.push(`item ${item.id || `[${itemIndex}]`} 的 ${schema.dropdownSlotKey}.items[${optionIndex}] 缺少 value。`)
             return
           }
@@ -1071,8 +1456,10 @@ function validateDocumentLayout(document) {
       bindings.forEach((binding, bindingIndex) => {
         const bindingPath = Array.isArray(item.binds) ? `binds[${bindingIndex}]` : 'bind'
 
-        if (!binding.uiProperty || typeof binding.uiProperty !== 'string') {
-          issues.push(`item ${item.id || `[${itemIndex}]`} 缺少 ${bindingPath}.uiProperty。`)
+        const bindingGuide = getResolvedBindingGuide(item.widgetType, binding)
+
+        if (!bindingGuide.uiProperty) {
+          issues.push(`item ${item.id || `[${itemIndex}]`} 缺少 ${bindingPath} 的默认或显式 UI 映射。`)
         }
 
         if (!binding.sourceTagPath || typeof binding.sourceTagPath !== 'string') {
@@ -1100,47 +1487,13 @@ const phaseConfigOptions = [
 
 const phaseConfigApiBaseUrl = 'http://127.0.0.1:8099/api/phase-config'
 
-async function saveJsonToLocalFile(fileName, serializedLayout) {
-  if (typeof window !== 'undefined' && 'showSaveFilePicker' in window) {
-    const fileHandle = await window.showSaveFilePicker({
-      suggestedName: fileName,
-      types: [
-        {
-          description: 'JSON Files',
-          accept: {
-            'application/json': ['.json'],
-          },
-        },
-      ],
-    })
-
-    const writable = await fileHandle.createWritable()
-    await writable.write(serializedLayout)
-    await writable.close()
-    return 'file-system-access'
-  }
-
-  const blob = new Blob([serializedLayout], { type: 'application/json;charset=utf-8' })
-  const downloadUrl = URL.createObjectURL(blob)
-  const anchor = document.createElement('a')
-
-  anchor.href = downloadUrl
-  anchor.download = fileName
-  anchor.style.display = 'none'
-  document.body.append(anchor)
-  anchor.click()
-  anchor.remove()
-  URL.revokeObjectURL(downloadUrl)
-
-  return 'download'
-}
-
 export default function App() {
   const [documentLayout, setDocumentLayout] = useState(createDefaultDocument)
   const [selectedKey, setSelectedKey] = useState('panel:ParaPanel1')
   const [notice, setNotice] = useState('Switched to document + sections structure. You can add multiple root panels.')
   const [selectedConfigFile, setSelectedConfigFile] = useState(phaseConfigOptions[0])
   const [isRequestPending, setIsRequestPending] = useState(false)
+  const [pendingConditionOptionBindings, setPendingConditionOptionBindings] = useState({})
   const [collapsedNodes, setCollapsedNodes] = useState({
     document: false,
   })
@@ -1177,6 +1530,10 @@ export default function App() {
   }, [documentLayout])
 
   const selection = useMemo(() => getSelection(documentLayout, selectedKey), [documentLayout, selectedKey])
+  const availableWidgetTypes = useMemo(
+    () => getAvailableWidgetTypes(documentLayout),
+    [documentLayout],
+  )
 
   useEffect(() => {
     const element = treeContainerRef.current
@@ -1240,20 +1597,20 @@ export default function App() {
     setNotice(`Added root panel ${nextPanel.id}.`)
   }
 
-  function addChildToPanel(panelId) {
+  function addChildToPanel(panelId, widgetType = 'PhaseSinglePara') {
     const panel = findPanelById(documentLayout, panelId)
     if (!panel) {
       setNotice('Target panel not found.')
       return
     }
 
-    const nextChild = createChildItem(documentLayout)
+    const nextChild = createChildItem(documentLayout, widgetType)
     setDocumentLayout(updatePanel(documentLayout, panelId, (currentPanel) => ({
       ...currentPanel,
       items: [...currentPanel.items, nextChild],
     })))
     setSelectedKey(`item:${nextChild.id}`)
-    setNotice(`Added child object ${nextChild.id} under ${panelId}.`)
+    setNotice(`Added ${widgetType} ${nextChild.id} under ${panelId}.`)
   }
 
   function deletePanelById(panelId) {
@@ -1482,14 +1839,44 @@ export default function App() {
     setDocumentLayout(updateItem(documentLayout, selection.node.id, (item) => updateConditionOptionBinding(item, 'conditionSelector', optionIndex, slotKey, value)))
   }
 
-  function addConditionOptionBindingField(optionIndex, slotKey) {
-    setDocumentLayout(updateItem(documentLayout, selection.node.id, (item) => addConditionOptionBinding(item, 'conditionSelector', optionIndex, slotKey)))
-    setNotice(`Added tag binding ${slotKey} for option ${optionIndex + 1} in ${selection.node.id}.`)
+  function addConditionOptionBindingField(optionIndex, slotKey, sourceTagPath) {
+    const normalizedSlotKey = typeof slotKey === 'string' ? slotKey.trim() : ''
+    const normalizedSourceTagPath = typeof sourceTagPath === 'string' ? sourceTagPath.trim() : ''
+    const currentOption = getDropdownItems(selection.node, 'conditionSelector')[optionIndex]
+    const currentBindings = currentOption?.bindings && typeof currentOption.bindings === 'object' && !Array.isArray(currentOption.bindings)
+      ? currentOption.bindings
+      : {}
+
+    if (!normalizedSlotKey) {
+      setNotice('Mapped tag key is required.')
+      return
+    }
+
+    if (Object.prototype.hasOwnProperty.call(currentBindings, normalizedSlotKey)) {
+      setNotice(`Mapped tag key ${normalizedSlotKey} already exists.`)
+      return
+    }
+
+    if (!normalizedSourceTagPath) {
+      setNotice('sourceTagPath is required.')
+      return
+    }
+
+    setDocumentLayout(updateItem(documentLayout, selection.node.id, (item) => addConditionOptionBinding(item, 'conditionSelector', optionIndex, normalizedSlotKey, normalizedSourceTagPath)))
+    setPendingConditionOptionBindings((current) => ({
+      ...current,
+      [`${selection.node.id}:${optionIndex}`]: {
+        isEditing: false,
+        slotKey: '',
+        sourceTagPath: '',
+      },
+    }))
+    setNotice(`Added mapped tag binding ${normalizedSlotKey} for option ${optionIndex + 1} in ${selection.node.id}.`)
   }
 
   function removeConditionOptionBindingField(optionIndex, slotKey) {
     setDocumentLayout(updateItem(documentLayout, selection.node.id, (item) => removeConditionOptionBinding(item, 'conditionSelector', optionIndex, slotKey)))
-    setNotice(`Removed tag binding ${slotKey} from option ${optionIndex + 1} in ${selection.node.id}.`)
+    setNotice(`Removed mapped tag binding ${slotKey} from option ${optionIndex + 1} in ${selection.node.id}.`)
   }
 
   function updateConditionSelectorItemField(optionIndex, field, value) {
@@ -1626,7 +2013,11 @@ export default function App() {
     setIsRequestPending(true)
 
     try {
-      const parsedLayout = structuredClone(samplePhaseLayout)
+      const result = await postPhaseConfig('get-json', {
+        fileName: selectedConfigFile || fixedPhaseConfigFileName,
+      })
+
+      const parsedLayout = JSON.parse(result.json)
       const issues = validateDocumentLayout(parsedLayout)
 
       if (issues.length > 0) {
@@ -1635,8 +2026,8 @@ export default function App() {
 
       setDocumentLayout(parsedLayout)
       setSelectedKey(parsedLayout.sections[0] ? `panel:${parsedLayout.sections[0].id}` : 'document')
-      setSelectedConfigFile(fixedPhaseConfigFileName)
-      setNotice(`Loaded ${fixedPhaseConfigFileName}.`)
+      setSelectedConfigFile(result.fileName || selectedConfigFile || fixedPhaseConfigFileName)
+      setNotice(`Loaded ${result.fileName || selectedConfigFile || fixedPhaseConfigFileName} from backend.`)
     } catch (error) {
       setNotice(`Get Json failed: ${error.message}`)
     } finally {
@@ -1661,14 +2052,14 @@ export default function App() {
     setIsRequestPending(true)
 
     try {
-      const serializedLayout = JSON.stringify(latestDocumentLayout, null, 2)
-      const saveMode = await saveJsonToLocalFile(selectedConfigFile || fixedPhaseConfigFileName, serializedLayout)
+      const serializedLayout = createSerializedDocumentLayout(latestDocumentLayout)
+      const result = await postPhaseConfig('save', {
+        fileName: selectedConfigFile || fixedPhaseConfigFileName,
+        json: serializedLayout,
+      })
 
-      if (saveMode === 'file-system-access') {
-        setNotice(`Saved ${selectedConfigFile || fixedPhaseConfigFileName} to a local file.`)
-      } else {
-        setNotice(`Downloaded ${selectedConfigFile || fixedPhaseConfigFileName}.`)
-      }
+      setSelectedConfigFile(result.fileName || selectedConfigFile || fixedPhaseConfigFileName)
+      setNotice(result.message || `Saved ${result.fileName || selectedConfigFile || fixedPhaseConfigFileName} to backend.`)
     } catch (error) {
       if (error?.name === 'AbortError') {
         setNotice('Save cancelled.')
@@ -1764,6 +2155,7 @@ export default function App() {
                       isSelected={selectedPanelId === panel.id}
                       isCollapsed={isCollapsed(`canvas-panel:${panel.id}`)}
                       selectedItemId={selectedPanelId === panel.id ? selectedItemId : null}
+                      availableWidgetTypes={availableWidgetTypes}
                       onSelectPanel={selectPanelById}
                       onToggleCollapsed={toggleCollapsed}
                       onDeletePanel={deletePanelById}
@@ -1844,10 +2236,6 @@ export default function App() {
                               value={binding.sourceTagPath}
                               onChange={(value) => updateCompositeSlotField(binding.slotKey, value)}
                             />
-                            <div style={{ fontSize: '11px', lineHeight: 1.5, color: '#64748b' }}>
-                              <div>{`UI Property: ${binding.uiProperty}`}</div>
-                              <div>{`UI Path: ${binding.uiPath}`}</div>
-                            </div>
                           </div>
                         ))}
                       </div>
@@ -1855,7 +2243,10 @@ export default function App() {
                       <div style={{ marginTop: '18px', paddingTop: '14px', borderTop: '1px solid #e3ebf5' }}>
                         <strong style={{ display: 'block', marginBottom: '10px', fontSize: '13px', color: '#1f2937' }}>Condition Selector Items</strong>
                         {selectionCompositeOptionGroups.map(({ option, optionIndex, bindings, slotKeys }) => {
-                          const availableSlotKeys = getAvailableConditionOptionSlotKeys(selection.node, option)
+                          const schema = getCompositeWidgetSchema(selection.node.widgetType)
+                          const usesFixedBindings = optionUsesFixedMappedBindings(schema, option)
+                          const addSlotStateKey = `${selection.node.id}:${optionIndex}`
+                          const pendingBinding = pendingConditionOptionBindings[addSlotStateKey] ?? { isEditing: false, slotKey: '', sourceTagPath: '' }
 
                           return (
                           <div key={`condition-option-${optionIndex}`} style={{ marginTop: optionIndex === 0 ? '0' : '14px', paddingTop: optionIndex === 0 ? '0' : '14px', borderTop: optionIndex === 0 ? 'none' : '1px solid #e3ebf5' }}>
@@ -1865,33 +2256,90 @@ export default function App() {
                               onChange={(value) => updateConditionSelectorItemField(optionIndex, 'label', value)}
                             />
                             <PropertyInput
-                              label={`Option ${optionIndex + 1} Value`}
-                              value={option.value}
-                              onChange={(value) => updateConditionSelectorItemField(optionIndex, 'value', value)}
+                              label={`Option ${optionIndex + 1} Unit`}
+                              value={typeof option.unit === 'string' ? option.unit : ''}
+                              onChange={(value) => updateConditionSelectorItemField(optionIndex, 'unit', value)}
                             />
                             <div style={{ marginTop: '6px', fontSize: '11px', lineHeight: 1.5, color: '#64748b' }}>
-                              {`slots: ${slotKeys.join(', ') || 'none'}`}
+                              {`bindings: ${slotKeys.join(', ') || 'none'}${typeof option.unit === 'string' && option.unit ? ` | unit: ${option.unit}` : ''}`}
                             </div>
-                            {availableSlotKeys.length > 0 ? (
+                            {!usesFixedBindings ? (
                               <div style={{ marginTop: '8px' }}>
-                                <div style={{ marginBottom: '6px', fontSize: '11px', lineHeight: 1.5, color: '#64748b' }}>Add Tag Binding</div>
-                                <div className="action-list" style={{ gap: '6px', alignItems: 'center' }}>
-                                  {availableSlotKeys.map((slotKey) => {
-                                    const slotDefinition = getCompositeWidgetSchema(selection.node.widgetType)?.slots?.[slotKey]
-
-                                    return (
+                                {!pendingBinding.isEditing ? (
+                                  <button
+                                    type="button"
+                                    className="ghost-button"
+                                    style={{ fontSize: '12px' }}
+                                    onClick={() => {
+                                      setPendingConditionOptionBindings((current) => ({
+                                        ...current,
+                                        [addSlotStateKey]: {
+                                          isEditing: true,
+                                          slotKey: '',
+                                          sourceTagPath: '',
+                                        },
+                                      }))
+                                    }}
+                                  >
+                                    Add Mapped Tag Binding
+                                  </button>
+                                ) : (
+                                  <div style={{ display: 'grid', gap: '8px' }}>
+                                    <PropertyInput
+                                      label="Mapped Tag Key"
+                                      value={pendingBinding.slotKey}
+                                      onChange={(value) => {
+                                        setPendingConditionOptionBindings((current) => ({
+                                          ...current,
+                                          [addSlotStateKey]: {
+                                            ...pendingBinding,
+                                            slotKey: value,
+                                          },
+                                        }))
+                                      }}
+                                    />
+                                    <PropertyInput
+                                      label="Mapped Tag Source"
+                                      value={pendingBinding.sourceTagPath}
+                                      onChange={(value) => {
+                                        setPendingConditionOptionBindings((current) => ({
+                                          ...current,
+                                          [addSlotStateKey]: {
+                                            ...pendingBinding,
+                                            sourceTagPath: value,
+                                          },
+                                        }))
+                                      }}
+                                    />
+                                    <div className="action-list" style={{ gap: '8px', alignItems: 'center' }}>
                                       <button
-                                        key={`${optionIndex}-add-${slotKey}`}
                                         type="button"
                                         className="ghost-button"
                                         style={{ fontSize: '12px' }}
-                                        onClick={() => addConditionOptionBindingField(optionIndex, slotKey)}
+                                        onClick={() => addConditionOptionBindingField(optionIndex, pendingBinding.slotKey, pendingBinding.sourceTagPath)}
                                       >
-                                        {`Add ${slotDefinition?.label || slotKey}`}
+                                        Add
                                       </button>
-                                    )
-                                  })}
-                                </div>
+                                      <button
+                                        type="button"
+                                        className="ghost-button"
+                                        style={{ fontSize: '12px' }}
+                                        onClick={() => {
+                                          setPendingConditionOptionBindings((current) => ({
+                                            ...current,
+                                            [addSlotStateKey]: {
+                                              isEditing: false,
+                                              slotKey: '',
+                                              sourceTagPath: '',
+                                            },
+                                          }))
+                                        }}
+                                      >
+                                        Cancel
+                                      </button>
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             ) : null}
                             {bindings.length > 0 ? (
@@ -1904,13 +2352,11 @@ export default function App() {
                                       value={binding.sourceTagPath}
                                       onChange={(value) => updateConditionOptionBindingField(optionIndex, binding.slotKey, value)}
                                     />
-                                    <div style={{ fontSize: '11px', lineHeight: 1.5, color: '#64748b' }}>
-                                      <div>{`UI Property: ${binding.uiProperty}`}</div>
-                                      <div>{`UI Path: ${binding.uiPath}`}</div>
-                                    </div>
-                                    <div className="action-list" style={{ marginTop: '6px', flexWrap: 'nowrap', alignItems: 'center' }}>
-                                      <button type="button" className="ghost-button" style={{ fontSize: '12px' }} onClick={() => removeConditionOptionBindingField(optionIndex, binding.slotKey)}>Delete Binding</button>
-                                    </div>
+                                    {!usesFixedBindings ? (
+                                      <div className="action-list" style={{ marginTop: '6px', flexWrap: 'nowrap', alignItems: 'center' }}>
+                                        <button type="button" className="ghost-button" style={{ fontSize: '12px' }} onClick={() => removeConditionOptionBindingField(optionIndex, binding.slotKey)}>Delete Binding</button>
+                                      </div>
+                                    ) : null}
                                   </div>
                                 ))}
                               </div>
@@ -1920,8 +2366,6 @@ export default function App() {
                               </div>
                             )}
                             <div className="action-list" style={{ marginTop: '8px', flexWrap: 'nowrap', alignItems: 'center' }}>
-                              <button type="button" className="ghost-button" style={{ fontSize: '12px' }} onClick={() => moveConditionSelectorItem(optionIndex, -1)} disabled={optionIndex === 0}>Move Up</button>
-                              <button type="button" className="ghost-button" style={{ fontSize: '12px' }} onClick={() => moveConditionSelectorItem(optionIndex, 1)} disabled={optionIndex === selectionCompositeOptionGroups.length - 1}>Move Down</button>
                               <button type="button" className="ghost-button" style={{ fontSize: '12px' }} onClick={() => removeConditionSelectorItem(optionIndex)}>Delete Item</button>
                             </div>
                           </div>
@@ -1935,20 +2379,18 @@ export default function App() {
                     selectionItemBindings.map((binding, bindingIndex) => {
                       const bindingLabel = Array.isArray(selection.node.binds) ? `binds[${bindingIndex}]` : 'bind'
                       const isLastBinding = bindingIndex === selectionItemBindings.length - 1
+                      const bindingGuideText = formatBindingGuide(selection.node.widgetType, binding)
 
                       return (
                         <div key={bindingLabel} style={{ marginTop: bindingIndex === 0 ? '0' : '14px', paddingTop: bindingIndex === 0 ? '0' : '14px', borderTop: bindingIndex === 0 ? 'none' : '1px solid #e3ebf5' }}>
-                          <PropertyInput
-                            label={`${bindingLabel}.uiProperty`}
-                            value={binding.uiProperty}
-                            onChange={(value) => updateItemBindField(bindingIndex, 'uiProperty', value)}
-                            disabled
-                          />
                           <PropertyInput
                             label={`${bindingLabel}.sourceTagPath`}
                             value={binding.sourceTagPath}
                             onChange={(value) => updateItemBindField(bindingIndex, 'sourceTagPath', value)}
                           />
+                          <div style={{ fontSize: '11px', lineHeight: 1.5, color: '#64748b' }}>
+                            <div>{`Mapped Target: ${bindingGuideText}`}</div>
+                          </div>
                           <div className="action-list" style={{ marginTop: '8px', flexWrap: 'nowrap', alignItems: 'center' }}>
                             <button type="button" className="ghost-button" style={{ fontSize: '12px' }} onClick={() => removeItemBinding(bindingIndex)}>Delete Binding</button>
                             {isLastBinding ? <button type="button" className="primary-button" style={{ fontSize: '12px' }} onClick={addItemBinding}>Add Binding</button> : null}
@@ -1960,12 +2402,6 @@ export default function App() {
                 </>
               ) : null}
 
-              {selection.type !== 'document' && (
-                <div className="action-list" style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid #e3ebf5' }}>
-                  <button type="button" className="ghost-button" onClick={() => moveSelected(-1)}>Move Up</button>
-                  <button type="button" className="ghost-button" onClick={() => moveSelected(1)}>Move Down</button>
-                </div>
-              )}
             </div>
 
             <div className="notice-box" style={{ 

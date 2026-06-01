@@ -4559,7 +4559,7 @@ Children:
                   - Name: Panel
                     Type: NodePointer
                     DataType: NodeId
-                    Value: "/Objects/RedeiptEditor/UI/Templates/PhaseTemplate/PhaseTemplate1"
+                    Value: "/Objects/RedeiptEditor/UI/Templates/PhaseTemplate/PhaseTemplate"
                     Children:
                     - Name: Kind
                       Type: PropertyType
@@ -14110,7 +14110,7 @@ Children:
           - Name: URL
             Type: BaseDataVariableType
             DataType: ResourceUri
-            Value: "ns=7;%PROJECTDIR%/PhaseConfiguratorTool/index.html"
+            Value: "http://localhost:5173/"
           - Class: Reference
             Target: ns=3;i=354
             Direction: Forward

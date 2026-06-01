@@ -144,7 +144,7 @@ Children:
   - Name: Type
     Type: BaseDataVariableType
     DataType: String
-    Value: "Receipt"
+    Value: "Recipe"
   - Class: Method
     Name: OnClickOpenDialog
     Children:
