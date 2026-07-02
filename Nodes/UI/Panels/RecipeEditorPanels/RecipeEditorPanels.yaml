@@ -3136,6 +3136,7 @@ Children:
                             Type: BaseVariableType
                             DataType: Size
                             ModellingRule: Optional
+                            Value: -6.0
                           - Name: LeftMargin
                             Type: BaseVariableType
                             DataType: Size
@@ -7092,7 +7093,7 @@ Children:
                       - Name: DynamicLink
                         Type: DynamicLink
                         DataType: NodePath
-                        Value: "{Loader}@NodeId"
+                        Value: "{PanelLoader2}@NodeId"
                         Children:
                         - Name: Mode
                           Type: BaseVariableType
@@ -7110,7 +7111,7 @@ Children:
                         Type: BaseDataVariableType
                         DataType: NodeId
                         Description: {"NamespaceIndex":3,"TextId":"ChangePanelNewPanelDescription"}
-                        Value: "/Objects/RedeiptEditor/UI/Panels/OperationPanels/UnitOperationDashboard"
+                        Value: "/Objects/RedeiptEditor/UI/Panels/OperationPanels/UnitMainDashboard"
                       - Name: AliasNode
                         Type: BaseDataVariableType
                         DataType: NodeId

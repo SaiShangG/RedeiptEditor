@@ -161,7 +161,7 @@ Children:
                           - Name: DynamicLink
                             Type: DynamicLink
                             DataType: NodePath
-                            Value: "{Loader}@NodeId"
+                            Value: "{DashboardLoader}@NodeId"
                             Children:
                             - Name: Mode
                               Type: BaseVariableType
@@ -318,7 +318,7 @@ Children:
                           - Name: DynamicLink
                             Type: DynamicLink
                             DataType: NodePath
-                            Value: "{Loader}@NodeId"
+                            Value: "{DashboardLoader}@NodeId"
                             Children:
                             - Name: Mode
                               Type: BaseVariableType
@@ -474,7 +474,7 @@ Children:
                           - Name: DynamicLink
                             Type: DynamicLink
                             DataType: NodePath
-                            Value: "{Loader}@NodeId"
+                            Value: "{DashboardLoader}@NodeId"
                             Children:
                             - Name: Mode
                               Type: BaseVariableType
@@ -630,7 +630,7 @@ Children:
                           - Name: DynamicLink
                             Type: DynamicLink
                             DataType: NodePath
-                            Value: "{Loader}@NodeId"
+                            Value: "{DashboardLoader}@NodeId"
                             Children:
                             - Name: Mode
                               Type: BaseVariableType
@@ -1086,7 +1086,7 @@ Children:
           Type: BaseVariableType
           DataType: VerticalAlignment
           ModellingRule: Optional
-      - Name: Loader
+      - Name: DashboardLoader
         Type: PanelLoader
         Children:
         - Name: Panel
@@ -2063,6 +2063,12 @@ Children:
                     Children:
                     - Name: TopStatusBG
                       Type: Rectangle
+                      Children:
+                      - Name: FillColor
+                        Type: BaseDataVariableType
+                        DataType: Color
+                        ModellingRule: Optional
+                        Value: "#1c5a4c"
                     - Name: HL
                       Type: RowLayout
                       Children:
@@ -2558,6 +2564,12 @@ Children:
                     Children:
                     - Name: Label1
                       Type: Label
+                      Children:
+                      - Name: Text
+                        Type: BaseDataVariableType
+                        DataType: LocalizedText
+                        ModellingRule: Optional
+                        Value: {"LocaleId":"en-US","Text":"Batch Progress"}
                   - Name: BatchProgress1
                     Type: BatchProgress
                     Children:
@@ -2632,8 +2644,20 @@ Children:
                         Children:
                         - Name: Label1
                           Type: Label
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            ModellingRule: Optional
+                            Value: {"LocaleId":"en-US","Text":"Phase: None"}
                         - Name: Label2
                           Type: Label
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            ModellingRule: Optional
+                            Value: {"LocaleId":"en-US","Text":"ETA: 00:00"}
                     - Name: VerticalAlignment
                       Type: BaseVariableType
                       DataType: VerticalAlignment
@@ -2933,53 +2957,6 @@ Children:
                     DataType: Size
                     ModellingRule: Optional
                     Value: 8.0
-                  - Name: ButtonWithIcon1
-                    Type: ButtonWithIcon
-                    Children:
-                    - Name: VerticalAlignment
-                      Type: BaseVariableType
-                      DataType: VerticalAlignment
-                      ModellingRule: Optional
-                    - Name: Rectangle2
-                      Type: Rectangle
-                      Children:
-                      - Name: Button1
-                        Type: Button
-                        Children:
-                        - Name: Text
-                          Type: BaseDataVariableType
-                          DataType: LocalizedText
-                          ModellingRule: Optional
-                          Value: {"LocaleId":"en-US","Text":"Open eBR"}
-                        - Name: ImagePath
-                          Type: BaseDataVariableType
-                          DataType: ResourceUri
-                          ModellingRule: Optional
-                          Value: "ns=7;%PROJECTDIR%/Images/editor.svg"
-                        - Name: FontSize
-                          Type: BaseDataVariableType
-                          DataType: Size
-                          ModellingRule: Optional
-                          Value: 18.0
-                        - Name: BackgroundColor
-                          Type: BaseDataVariableType
-                          DataType: Color
-                          ModellingRule: Optional
-                        - Name: TextColor
-                          Type: BaseDataVariableType
-                          DataType: Color
-                          ModellingRule: Optional
-                          Value: "#075982"
-                      - Name: BorderColor
-                        Type: BaseDataVariableType
-                        DataType: Color
-                        ModellingRule: Optional
-                        Value: "#07598226"
-                      - Name: CornerRadius
-                        Type: BaseDataVariableType
-                        DataType: Size
-                        ModellingRule: Optional
-                        Value: 5.0
                   - Name: ButtonWithIcon2
                     Type: ButtonWithIcon
                     Children:
@@ -3018,6 +2995,81 @@ Children:
                           DataType: Color
                           ModellingRule: Optional
                           Value: "#075982"
+                        - Name: MouseClickEventHandler1
+                          Type: EventHandler
+                          Children:
+                          - Name: ListenEventType
+                            Type: PropertyType
+                            DataType: NodeId
+                            Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
+                          - Name: MethodsToCall
+                            Type: BaseObjectType
+                            Children:
+                            - Name: MethodContainer1
+                              Type: BaseObjectType
+                              Children:
+                              - Name: ns=2;ObjectPointer
+                                Type: NodePointer
+                                DataType: NodeId
+                                Children:
+                                - Name: Kind
+                                  Type: PropertyType
+                                  DataType: NodeId
+                                  Value: "/Types/ObjectTypes/BaseObjectType"
+                                - Name: DynamicLink
+                                  Type: DynamicLink
+                                  DataType: NodePath
+                                  Value: "{DashboardLoader}@NodeId"
+                                  Children:
+                                  - Name: Mode
+                                    Type: BaseVariableType
+                                    DataType: DynamicLinkMode
+                                    ModellingRule: Optional
+                                    Value: 2
+                              - Name: ns=2;Method
+                                Type: BaseDataVariableType
+                                DataType: String
+                                Value: "ChangePanel"
+                              - Name: InputArguments
+                                Type: BaseObjectType
+                                Children:
+                                - Name: NewPanel
+                                  Type: BaseDataVariableType
+                                  DataType: NodeId
+                                  Description: {"NamespaceIndex":3,"TextId":"ChangePanelNewPanelDescription"}
+                                  Value: "/Objects/RedeiptEditor/UI/Panels/RecipeEditorPanels/AuditPanel"
+                                - Name: AliasNode
+                                  Type: BaseDataVariableType
+                                  DataType: NodeId
+                                  Description: {"NamespaceIndex":3,"TextId":"ChangePanelAliasNodeDescription"}
+                                  ValueRank: ScalarOrOneDimension
+                          - Name: EventArguments
+                            Type: MouseClickEvent
+                            Children:
+                            - Name: EventId
+                              Type: PropertyType
+                              DataType: ByteString
+                            - Name: EventType
+                              Type: PropertyType
+                              DataType: NodeId
+                            - Name: SourceNode
+                              Type: PropertyType
+                              DataType: NodeId
+                            - Name: SourceName
+                              Type: PropertyType
+                              DataType: String
+                            - Name: Time
+                              Type: PropertyType
+                              DataType: UtcTime
+                            - Name: ReceiveTime
+                              Type: PropertyType
+                              DataType: UtcTime
+                            - Name: Message
+                              Type: PropertyType
+                              DataType: LocalizedText
+                            - Name: Severity
+                              Type: PropertyType
+                              DataType: UInt16
                       - Name: BorderColor
                         Type: BaseDataVariableType
                         DataType: Color
@@ -4769,7 +4821,7 @@ Children:
                         Type: BaseDataVariableType
                         DataType: LocalizedText
                         ModellingRule: Optional
-                        Value: {"LocaleId":"en-US","Text":"Electronic Batch Records"}
+                        Value: {"LocaleId":"en-US","Text":"Batch Quality"}
                   - Name: HL
                     Type: RowLayout
                     Children:
@@ -4949,6 +5001,12 @@ Children:
                     Children:
                     - Name: Label1
                       Type: Label
+                      Children:
+                      - Name: Text
+                        Type: BaseDataVariableType
+                        DataType: LocalizedText
+                        ModellingRule: Optional
+                        Value: {"LocaleId":"en-US","Text":"Maintenance Overview\n"}
                   - Name: HL
                     Type: RowLayout
                     Children:
@@ -7641,7 +7699,12 @@ Children:
                         Type: BaseDataVariableType
                         DataType: LocalizedText
                         ModellingRule: Optional
-                        Value: {"LocaleId":"en-US","Text":"Maintenance Insights"}
+                        Value: {"LocaleId":"en-US","Text":"Energy Data"}
+                      - Name: LeftMargin
+                        Type: BaseVariableType
+                        DataType: Size
+                        ModellingRule: Optional
+                        Value: 19.0
                     - Name: Visible
                       Type: BaseDataVariableType
                       DataType: Boolean
@@ -7681,7 +7744,7 @@ Children:
                         - Name: DynamicLink
                           Type: DynamicLink
                           DataType: NodePath
-                          Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineCharts/LineChart1/URL"
+                          Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineCharts/LineChart8/URL"
                       - Class: Reference
                         Target: ns=3;i=354
                         Direction: Forward
@@ -8493,7 +8556,7 @@ Children:
                 - Name: DynamicLink
                   Type: DynamicLink
                   DataType: NodePath
-                  Value: "{ControlDashboard}/BatchInfo/Value2"
+                  Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/BatchDownloadToPlcData/Recipe"
         - Name: IconLabelValue3
           Type: IconLabelValue
           Children:
@@ -8541,7 +8604,7 @@ Children:
                 - Name: DynamicLink
                   Type: DynamicLink
                   DataType: NodePath
-                  Value: "{ControlDashboard}/BatchInfo/Value3"
+                  Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/BatchDownloadToPlcData/OperationName"
         - Name: IconLabelValue4
           Type: IconLabelValue
           Children:
@@ -8589,7 +8652,7 @@ Children:
                 - Name: DynamicLink
                   Type: DynamicLink
                   DataType: NodePath
-                  Value: "{ControlDashboard}/BatchInfo/Value4"
+                  Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/BatchDownloadToPlcData/PhaseName"
         - Name: IconLabelValue5
           Type: IconLabelValue
           Children:
@@ -8747,7 +8810,7 @@ Children:
             Type: BaseVariableType
             DataType: Size
             ModellingRule: Optional
-            Value: 400.0
+            Value: 450.0
           - Name: Height
             Type: BaseVariableType
             DataType: Size
@@ -8807,9 +8870,47 @@ Children:
                           Type: DynamicLink
                           DataType: NodePath
                           Value: "{ControlDashboard}/KeyParameters/Item1[0]"
+                      - Name: TopMargin
+                        Type: BaseVariableType
+                        DataType: Size
+                        ModellingRule: Optional
+                        Value: -4.0
+                      - Name: BottomMargin
+                        Type: BaseVariableType
+                        DataType: Size
+                        ModellingRule: Optional
                     - Name: Row1
                       Type: RowLayout
                       Children:
+                      - Name: TextBox1
+                        Type: TextBox
+                        Children:
+                        - Name: Text
+                          Type: BaseDataVariableType
+                          DataType: LocalizedText
+                          Value: {"LocaleId":"en-US","Text":"37"}
+                          Children:
+                          - Name: DynamicLink
+                            Type: DynamicLink
+                            DataType: NodePath
+                            Value: "{ControlDashboard}/KeyParameters/ItemValue1[0]"
+                        - Name: Enabled
+                          Type: BaseDataVariableType
+                          DataType: Boolean
+                          Value: true
+                          Children:
+                          - Name: ExpressionEvaluator1
+                            Type: ExpressionEvaluator
+                            Children:
+                            - Name: Source0
+                              Type: BaseDataVariableType
+                              DataType: BaseDataType
+                              ReferenceType: HasSource
+                              Children:
+                              - Name: DynamicLink
+                                Type: DynamicLink
+                                DataType: NodePath
+                                Value: "../../../../../Row/Row1/ComboBox1/UISelectedValue@Value"
                       - Name: Value
                         Type: Label
                         Children:
@@ -8821,6 +8922,10 @@ Children:
                             Type: DynamicLink
                             DataType: NodePath
                             Value: "{ControlDashboard}/KeyParameters/ItemValue1[0]"
+                        - Name: Enabled
+                          Type: BaseDataVariableType
+                          DataType: Boolean
+                          Value: true
                       - Name: Label
                         Type: Label
                         Children:
@@ -8867,8 +8972,62 @@ Children:
                         Children:
                         - Name: Label
                           Type: Label
-                        - Name: Value
-                          Type: Label
+                        - Name: ComboBox1
+                          Type: ComboBox
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                          - Name: Model
+                            Type: NodePointer
+                            DataType: NodeId
+                            Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module"
+                            Children:
+                            - Name: ItemKind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                          - Name: SelectedValue
+                            Type: BaseDataVariableType
+                            DataType: BaseDataType
+                          - Name: SelectedItem
+                            Type: NodePointer
+                            DataType: NodeId
+                            Children:
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                          - Name: UISelectedItem
+                            Type: BaseDataVariableType
+                            DataType: NodeId
+                            AccessLevel: Read
+                          - Name: UISelectedValue
+                            Type: BaseDataVariableType
+                            DataType: BaseDataType
+                            AccessLevel: Read
+                          - Class: Reference
+                            Target: ns=3;i=480
+                            Direction: Forward
+                          - Name: Item
+                            Type: Alias
+                            DataType: NodeId
+                            Children:
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                          - Name: DisplayValuePath
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{Item}@Value"
                 - Name: State
                   Type: Ellipse
             - Name: ControlFaceplates2
@@ -8897,6 +9056,35 @@ Children:
                     - Name: Row1
                       Type: RowLayout
                       Children:
+                      - Name: TextBox1
+                        Type: TextBox
+                        Children:
+                        - Name: Text
+                          Type: BaseDataVariableType
+                          DataType: LocalizedText
+                          Value: {"LocaleId":"en-US","Text":"37"}
+                          Children:
+                          - Name: DynamicLink
+                            Type: DynamicLink
+                            DataType: NodePath
+                            Value: "{ControlDashboard}/KeyParameters/ItemValue2[0]"
+                        - Name: Enabled
+                          Type: BaseDataVariableType
+                          DataType: Boolean
+                          Value: true
+                          Children:
+                          - Name: ExpressionEvaluator1
+                            Type: ExpressionEvaluator
+                            Children:
+                            - Name: Source0
+                              Type: BaseDataVariableType
+                              DataType: BaseDataType
+                              ReferenceType: HasSource
+                              Children:
+                              - Name: DynamicLink
+                                Type: DynamicLink
+                                DataType: NodePath
+                                Value: "../../../../../Row/Row1/ComboBox1/UISelectedValue@Value"
                       - Name: Value
                         Type: Label
                         Children:
@@ -8908,6 +9096,10 @@ Children:
                             Type: DynamicLink
                             DataType: NodePath
                             Value: "{ControlDashboard}/KeyParameters/ItemValue2[0]"
+                        - Name: Enabled
+                          Type: BaseDataVariableType
+                          DataType: Boolean
+                          Value: true
                       - Name: Label
                         Type: Label
                         Children:
@@ -8954,8 +9146,62 @@ Children:
                         Children:
                         - Name: Label
                           Type: Label
-                        - Name: Value
-                          Type: Label
+                        - Name: ComboBox1
+                          Type: ComboBox
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                          - Name: Model
+                            Type: NodePointer
+                            DataType: NodeId
+                            Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module"
+                            Children:
+                            - Name: ItemKind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                          - Name: SelectedValue
+                            Type: BaseDataVariableType
+                            DataType: BaseDataType
+                          - Name: SelectedItem
+                            Type: NodePointer
+                            DataType: NodeId
+                            Children:
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                          - Name: UISelectedItem
+                            Type: BaseDataVariableType
+                            DataType: NodeId
+                            AccessLevel: Read
+                          - Name: UISelectedValue
+                            Type: BaseDataVariableType
+                            DataType: BaseDataType
+                            AccessLevel: Read
+                          - Class: Reference
+                            Target: ns=3;i=480
+                            Direction: Forward
+                          - Name: Item
+                            Type: Alias
+                            DataType: NodeId
+                            Children:
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                          - Name: DisplayValuePath
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{Item}@Value"
                 - Name: State
                   Type: Ellipse
                   Children:
@@ -8995,6 +9241,35 @@ Children:
                     - Name: Row1
                       Type: RowLayout
                       Children:
+                      - Name: TextBox1
+                        Type: TextBox
+                        Children:
+                        - Name: Text
+                          Type: BaseDataVariableType
+                          DataType: LocalizedText
+                          Value: {"LocaleId":"en-US","Text":"37"}
+                          Children:
+                          - Name: DynamicLink
+                            Type: DynamicLink
+                            DataType: NodePath
+                            Value: "{ControlDashboard}/KeyParameters/ItemValue3[0]"
+                        - Name: Enabled
+                          Type: BaseDataVariableType
+                          DataType: Boolean
+                          Value: true
+                          Children:
+                          - Name: ExpressionEvaluator1
+                            Type: ExpressionEvaluator
+                            Children:
+                            - Name: Source0
+                              Type: BaseDataVariableType
+                              DataType: BaseDataType
+                              ReferenceType: HasSource
+                              Children:
+                              - Name: DynamicLink
+                                Type: DynamicLink
+                                DataType: NodePath
+                                Value: "../../../../../Row/Row1/ComboBox1/UISelectedValue@Value"
                       - Name: Value
                         Type: Label
                         Children:
@@ -9006,6 +9281,10 @@ Children:
                             Type: DynamicLink
                             DataType: NodePath
                             Value: "{ControlDashboard}/KeyParameters/ItemValue3[0]"
+                        - Name: Enabled
+                          Type: BaseDataVariableType
+                          DataType: Boolean
+                          Value: true
                       - Name: Label
                         Type: Label
                         Children:
@@ -9052,8 +9331,62 @@ Children:
                         Children:
                         - Name: Label
                           Type: Label
-                        - Name: Value
-                          Type: Label
+                        - Name: ComboBox1
+                          Type: ComboBox
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                          - Name: Model
+                            Type: NodePointer
+                            DataType: NodeId
+                            Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module"
+                            Children:
+                            - Name: ItemKind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                          - Name: SelectedValue
+                            Type: BaseDataVariableType
+                            DataType: BaseDataType
+                          - Name: SelectedItem
+                            Type: NodePointer
+                            DataType: NodeId
+                            Children:
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                          - Name: UISelectedItem
+                            Type: BaseDataVariableType
+                            DataType: NodeId
+                            AccessLevel: Read
+                          - Name: UISelectedValue
+                            Type: BaseDataVariableType
+                            DataType: BaseDataType
+                            AccessLevel: Read
+                          - Class: Reference
+                            Target: ns=3;i=480
+                            Direction: Forward
+                          - Name: Item
+                            Type: Alias
+                            DataType: NodeId
+                            Children:
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                          - Name: DisplayValuePath
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{Item}@Value"
                 - Name: State
                   Type: Ellipse
                   Children:
@@ -9093,6 +9426,35 @@ Children:
                     - Name: Row1
                       Type: RowLayout
                       Children:
+                      - Name: TextBox1
+                        Type: TextBox
+                        Children:
+                        - Name: Text
+                          Type: BaseDataVariableType
+                          DataType: LocalizedText
+                          Value: {"LocaleId":"en-US","Text":"37"}
+                          Children:
+                          - Name: DynamicLink
+                            Type: DynamicLink
+                            DataType: NodePath
+                            Value: "{ControlDashboard}/KeyParameters/ItemValue4[0]"
+                        - Name: Enabled
+                          Type: BaseDataVariableType
+                          DataType: Boolean
+                          Value: true
+                          Children:
+                          - Name: ExpressionEvaluator1
+                            Type: ExpressionEvaluator
+                            Children:
+                            - Name: Source0
+                              Type: BaseDataVariableType
+                              DataType: BaseDataType
+                              ReferenceType: HasSource
+                              Children:
+                              - Name: DynamicLink
+                                Type: DynamicLink
+                                DataType: NodePath
+                                Value: "../../../../../Row/Row1/ComboBox1/UISelectedValue@Value"
                       - Name: Value
                         Type: Label
                         Children:
@@ -9104,6 +9466,10 @@ Children:
                             Type: DynamicLink
                             DataType: NodePath
                             Value: "{ControlDashboard}/KeyParameters/ItemValue4[0]"
+                        - Name: Enabled
+                          Type: BaseDataVariableType
+                          DataType: Boolean
+                          Value: true
                       - Name: Label
                         Type: Label
                         Children:
@@ -9150,8 +9516,62 @@ Children:
                         Children:
                         - Name: Label
                           Type: Label
-                        - Name: Value
-                          Type: Label
+                        - Name: ComboBox1
+                          Type: ComboBox
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                          - Name: Model
+                            Type: NodePointer
+                            DataType: NodeId
+                            Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module"
+                            Children:
+                            - Name: ItemKind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                          - Name: SelectedValue
+                            Type: BaseDataVariableType
+                            DataType: BaseDataType
+                          - Name: SelectedItem
+                            Type: NodePointer
+                            DataType: NodeId
+                            Children:
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                          - Name: UISelectedItem
+                            Type: BaseDataVariableType
+                            DataType: NodeId
+                            AccessLevel: Read
+                          - Name: UISelectedValue
+                            Type: BaseDataVariableType
+                            DataType: BaseDataType
+                            AccessLevel: Read
+                          - Class: Reference
+                            Target: ns=3;i=480
+                            Direction: Forward
+                          - Name: Item
+                            Type: Alias
+                            DataType: NodeId
+                            Children:
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                          - Name: DisplayValuePath
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{Item}@Value"
                 - Name: State
                   Type: Ellipse
             - Name: ControlFaceplates5
@@ -9180,6 +9600,35 @@ Children:
                     - Name: Row1
                       Type: RowLayout
                       Children:
+                      - Name: TextBox1
+                        Type: TextBox
+                        Children:
+                        - Name: Text
+                          Type: BaseDataVariableType
+                          DataType: LocalizedText
+                          Value: {"LocaleId":"en-US","Text":"37"}
+                          Children:
+                          - Name: DynamicLink
+                            Type: DynamicLink
+                            DataType: NodePath
+                            Value: "{ControlDashboard}/KeyParameters/ItemValue4[0]"
+                        - Name: Enabled
+                          Type: BaseDataVariableType
+                          DataType: Boolean
+                          Value: true
+                          Children:
+                          - Name: ExpressionEvaluator1
+                            Type: ExpressionEvaluator
+                            Children:
+                            - Name: Source0
+                              Type: BaseDataVariableType
+                              DataType: BaseDataType
+                              ReferenceType: HasSource
+                              Children:
+                              - Name: DynamicLink
+                                Type: DynamicLink
+                                DataType: NodePath
+                                Value: "../../../../../Row/Row1/ComboBox1/UISelectedValue@Value"
                       - Name: Value
                         Type: Label
                         Children:
@@ -9191,6 +9640,10 @@ Children:
                             Type: DynamicLink
                             DataType: NodePath
                             Value: "{ControlDashboard}/KeyParameters/ItemValue4[0]"
+                        - Name: Enabled
+                          Type: BaseDataVariableType
+                          DataType: Boolean
+                          Value: true
                       - Name: Label
                         Type: Label
                         Children:
@@ -9237,8 +9690,62 @@ Children:
                         Children:
                         - Name: Label
                           Type: Label
-                        - Name: Value
-                          Type: Label
+                        - Name: ComboBox1
+                          Type: ComboBox
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                          - Name: Model
+                            Type: NodePointer
+                            DataType: NodeId
+                            Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module"
+                            Children:
+                            - Name: ItemKind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                          - Name: SelectedValue
+                            Type: BaseDataVariableType
+                            DataType: BaseDataType
+                          - Name: SelectedItem
+                            Type: NodePointer
+                            DataType: NodeId
+                            Children:
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                          - Name: UISelectedItem
+                            Type: BaseDataVariableType
+                            DataType: NodeId
+                            AccessLevel: Read
+                          - Name: UISelectedValue
+                            Type: BaseDataVariableType
+                            DataType: BaseDataType
+                            AccessLevel: Read
+                          - Class: Reference
+                            Target: ns=3;i=480
+                            Direction: Forward
+                          - Name: Item
+                            Type: Alias
+                            DataType: NodeId
+                            Children:
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                          - Name: DisplayValuePath
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{Item}@Value"
                 - Name: State
                   Type: Ellipse
             - Name: VerticalGap
@@ -9396,6 +9903,150 @@ Children:
             DataType: Size
             ModellingRule: Optional
             Value: 5.0
+          - Name: Panel1
+            Type: Panel
+            Children:
+            - Name: Width
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 300.0
+            - Name: Height
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 666.0
+            - Name: VerticalAlignment
+              Type: BaseVariableType
+              DataType: VerticalAlignment
+              ModellingRule: Optional
+              Value: 3
+            - Name: ScrollView1
+              Type: ScrollView
+              Children:
+              - Name: ContentWidth
+                Type: BaseDataVariableType
+                DataType: Size
+                AccessLevel: Read
+              - Name: ContentHeight
+                Type: BaseDataVariableType
+                DataType: Size
+                AccessLevel: Read
+              - Name: ViewWidth
+                Type: BaseDataVariableType
+                DataType: Size
+                AccessLevel: Read
+              - Name: ViewHeight
+                Type: BaseDataVariableType
+                DataType: Size
+                AccessLevel: Read
+              - Name: ContentX
+                Type: BaseDataVariableType
+                DataType: Size
+              - Name: ContentY
+                Type: BaseDataVariableType
+                DataType: Size
+              - Class: Reference
+                Target: ns=3;i=1394
+                Direction: Forward
+              - Name: Width
+                Type: BaseVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 300.0
+              - Name: Height
+                Type: BaseVariableType
+                DataType: Size
+                ModellingRule: Optional
+                Value: 300.0
+              - Name: HorizontalAlignment
+                Type: BaseVariableType
+                DataType: HorizontalAlignment
+                ModellingRule: Optional
+                Value: 3
+              - Name: VerticalAlignment
+                Type: BaseVariableType
+                DataType: VerticalAlignment
+                ModellingRule: Optional
+                Value: 3
+              - Name: VLContainerWithBG1
+                Type: VLContainerWithBG
+                Children:
+                - Name: VLContainer1
+                  Type: VLContainer
+                  Children:
+                  - Name: TitleBG
+                    Type: Rectangle
+                    Children:
+                    - Name: Label1
+                      Type: Label
+                      Children:
+                      - Name: Text
+                        Type: BaseDataVariableType
+                        DataType: LocalizedText
+                        ModellingRule: Optional
+                        Value: {"LocaleId":"en-US","Text":"Batch Status"}
+                  - Name: RecipeFlowTitle1
+                    Type: RecipeFlowTitle
+                    Children:
+                    - Name: HL
+                      Type: RowLayout
+                      Children:
+                      - Name: HL1
+                        Type: RowLayout
+                        Children:
+                        - Name: Label1
+                          Type: Label
+                        - Name: Label2
+                          Type: Label
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/BatchDownloadToPlcData/Recipe"
+                      - Name: HL2
+                        Type: RowLayout
+                        Children:
+                        - Name: Label1
+                          Type: Label
+                        - Name: Label2
+                          Type: Label
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/BatchDownloadToPlcData/Name"
+                    - Name: HorizontalAlignment
+                      Type: BaseVariableType
+                      DataType: HorizontalAlignment
+                      ModellingRule: Optional
+                      Value: 3
+                    - Name: VerticalAlignment
+                      Type: BaseVariableType
+                      DataType: VerticalAlignment
+                      ModellingRule: Optional
+                    - Name: Height
+                      Type: BaseVariableType
+                      DataType: Size
+                      ModellingRule: Optional
+                      Value: 60.0
+                  - Name: GenerateBatchRunFlow
+                    Type: NetLogic
+                    Children:
+                    - Class: Method
+                      Name: Regenerate
+                    - Class: Method
+                      Name: StartDemoRun
+                    - Class: Method
+                      Name: StopDemoRun
         - Name: HorizontalGap
           Type: BaseDataVariableType
           DataType: Size
@@ -9408,7 +10059,7 @@ Children:
             Type: BaseVariableType
             DataType: Size
             ModellingRule: Optional
-            Value: 300.0
+            Value: 450.0
           - Name: Height
             Type: BaseVariableType
             DataType: Size
@@ -9510,6 +10161,28 @@ Children:
                               Type: DynamicLink
                               DataType: NodePath
                               Value: "{ControlDashboard}/Parameters/ItemValue1"
+                          - Name: Enabled
+                            Type: BaseDataVariableType
+                            DataType: Boolean
+                            Value: true
+                            Children:
+                            - Name: ExpressionEvaluator1
+                              Type: ExpressionEvaluator
+                              Children:
+                              - Name: Expression
+                                Type: BaseDataVariableType
+                                DataType: String
+                                ReferenceType: HasParameter
+                                Value: "{0}!=\"Auto\""
+                              - Name: Source0
+                                Type: BaseDataVariableType
+                                DataType: BaseDataType
+                                ReferenceType: HasSource
+                                Children:
+                                - Name: DynamicLink
+                                  Type: DynamicLink
+                                  DataType: NodePath
+                                  Value: "../../../../../Row1/ComboBox1/UISelectedValue@Value"
                         - Name: Label
                           Type: Label
                           Children:
@@ -9521,6 +10194,99 @@ Children:
                               Type: DynamicLink
                               DataType: NodePath
                               Value: "{ControlDashboard}/Parameters/Item1[1]"
+                      - Name: Row1
+                        Type: RowLayout
+                        Children:
+                        - Name: Label
+                          Type: Label
+                        - Name: ComboBox1
+                          Type: ComboBox
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                          - Name: Model
+                            Type: NodePointer
+                            DataType: NodeId
+                            Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module"
+                            Children:
+                            - Name: ItemKind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                          - Name: SelectedValue
+                            Type: BaseDataVariableType
+                            DataType: BaseDataType
+                          - Name: SelectedItem
+                            Type: NodePointer
+                            DataType: NodeId
+                            Children:
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                          - Name: UISelectedItem
+                            Type: BaseDataVariableType
+                            DataType: NodeId
+                            AccessLevel: Read
+                          - Name: UISelectedValue
+                            Type: BaseDataVariableType
+                            DataType: BaseDataType
+                            AccessLevel: Read
+                          - Class: Reference
+                            Target: ns=3;i=480
+                            Direction: Forward
+                          - Name: Item
+                            Type: Alias
+                            DataType: NodeId
+                            Children:
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                          - Name: DisplayValuePath
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{Item}@Value"
+                      - Name: Row2
+                        Type: RowLayout
+                        Children:
+                        - Name: Switch1
+                          Type: Switch
+                          Children:
+                          - Name: Checked
+                            Type: BaseDataVariableType
+                            DataType: Boolean
+                            Value: true
+                          - Name: Enabled
+                            Type: BaseDataVariableType
+                            DataType: Boolean
+                            Value: true
+                            Children:
+                            - Name: ExpressionEvaluator1
+                              Type: ExpressionEvaluator
+                              Children:
+                              - Name: Expression
+                                Type: BaseDataVariableType
+                                DataType: String
+                                ReferenceType: HasParameter
+                                Value: "{0}!=\"Auto\""
+                              - Name: Source0
+                                Type: BaseDataVariableType
+                                DataType: BaseDataType
+                                ReferenceType: HasSource
+                                Children:
+                                - Name: DynamicLink
+                                  Type: DynamicLink
+                                  DataType: NodePath
+                                  Value: "../../../../../Row1/ComboBox1/UISelectedValue@Value"
                 - Name: State
                   Type: Ellipse
             - Name: ParameterWithStatus2
@@ -9563,6 +10329,28 @@ Children:
                               Type: DynamicLink
                               DataType: NodePath
                               Value: "{ControlDashboard}/Parameters/ItemValue2"
+                          - Name: Enabled
+                            Type: BaseDataVariableType
+                            DataType: Boolean
+                            Value: true
+                            Children:
+                            - Name: ExpressionEvaluator1
+                              Type: ExpressionEvaluator
+                              Children:
+                              - Name: Expression
+                                Type: BaseDataVariableType
+                                DataType: String
+                                ReferenceType: HasParameter
+                                Value: "{0}!=\"Auto\""
+                              - Name: Source0
+                                Type: BaseDataVariableType
+                                DataType: BaseDataType
+                                ReferenceType: HasSource
+                                Children:
+                                - Name: DynamicLink
+                                  Type: DynamicLink
+                                  DataType: NodePath
+                                  Value: "../../../../../Row1/ComboBox1/UISelectedValue@Value"
                         - Name: Label
                           Type: Label
                           Children:
@@ -9574,6 +10362,99 @@ Children:
                               Type: DynamicLink
                               DataType: NodePath
                               Value: "{ControlDashboard}/Parameters/Item2[1]"
+                      - Name: Row1
+                        Type: RowLayout
+                        Children:
+                        - Name: Label
+                          Type: Label
+                        - Name: ComboBox1
+                          Type: ComboBox
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                          - Name: Model
+                            Type: NodePointer
+                            DataType: NodeId
+                            Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module"
+                            Children:
+                            - Name: ItemKind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                          - Name: SelectedValue
+                            Type: BaseDataVariableType
+                            DataType: BaseDataType
+                          - Name: SelectedItem
+                            Type: NodePointer
+                            DataType: NodeId
+                            Children:
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                          - Name: UISelectedItem
+                            Type: BaseDataVariableType
+                            DataType: NodeId
+                            AccessLevel: Read
+                          - Name: UISelectedValue
+                            Type: BaseDataVariableType
+                            DataType: BaseDataType
+                            AccessLevel: Read
+                          - Class: Reference
+                            Target: ns=3;i=480
+                            Direction: Forward
+                          - Name: Item
+                            Type: Alias
+                            DataType: NodeId
+                            Children:
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                          - Name: DisplayValuePath
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{Item}@Value"
+                      - Name: Row2
+                        Type: RowLayout
+                        Children:
+                        - Name: Switch1
+                          Type: Switch
+                          Children:
+                          - Name: Checked
+                            Type: BaseDataVariableType
+                            DataType: Boolean
+                            Value: true
+                          - Name: Enabled
+                            Type: BaseDataVariableType
+                            DataType: Boolean
+                            Value: true
+                            Children:
+                            - Name: ExpressionEvaluator1
+                              Type: ExpressionEvaluator
+                              Children:
+                              - Name: Expression
+                                Type: BaseDataVariableType
+                                DataType: String
+                                ReferenceType: HasParameter
+                                Value: "{0}!=\"Auto\""
+                              - Name: Source0
+                                Type: BaseDataVariableType
+                                DataType: BaseDataType
+                                ReferenceType: HasSource
+                                Children:
+                                - Name: DynamicLink
+                                  Type: DynamicLink
+                                  DataType: NodePath
+                                  Value: "../../../../../Row1/ComboBox1/UISelectedValue@Value"
                 - Name: State
                   Type: Ellipse
             - Name: ParameterWithStatus3
@@ -9616,6 +10497,28 @@ Children:
                               Type: DynamicLink
                               DataType: NodePath
                               Value: "{ControlDashboard}/Parameters/ItemValue3"
+                          - Name: Enabled
+                            Type: BaseDataVariableType
+                            DataType: Boolean
+                            Value: true
+                            Children:
+                            - Name: ExpressionEvaluator1
+                              Type: ExpressionEvaluator
+                              Children:
+                              - Name: Expression
+                                Type: BaseDataVariableType
+                                DataType: String
+                                ReferenceType: HasParameter
+                                Value: "{0}!=\"Auto\""
+                              - Name: Source0
+                                Type: BaseDataVariableType
+                                DataType: BaseDataType
+                                ReferenceType: HasSource
+                                Children:
+                                - Name: DynamicLink
+                                  Type: DynamicLink
+                                  DataType: NodePath
+                                  Value: "../../../../../Row1/ComboBox1/UISelectedValue@Value"
                         - Name: Label
                           Type: Label
                           Children:
@@ -9627,6 +10530,99 @@ Children:
                               Type: DynamicLink
                               DataType: NodePath
                               Value: "{ControlDashboard}/Parameters/Item3[1]"
+                      - Name: Row1
+                        Type: RowLayout
+                        Children:
+                        - Name: Label
+                          Type: Label
+                        - Name: ComboBox1
+                          Type: ComboBox
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                          - Name: Model
+                            Type: NodePointer
+                            DataType: NodeId
+                            Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module"
+                            Children:
+                            - Name: ItemKind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                          - Name: SelectedValue
+                            Type: BaseDataVariableType
+                            DataType: BaseDataType
+                          - Name: SelectedItem
+                            Type: NodePointer
+                            DataType: NodeId
+                            Children:
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                          - Name: UISelectedItem
+                            Type: BaseDataVariableType
+                            DataType: NodeId
+                            AccessLevel: Read
+                          - Name: UISelectedValue
+                            Type: BaseDataVariableType
+                            DataType: BaseDataType
+                            AccessLevel: Read
+                          - Class: Reference
+                            Target: ns=3;i=480
+                            Direction: Forward
+                          - Name: Item
+                            Type: Alias
+                            DataType: NodeId
+                            Children:
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                          - Name: DisplayValuePath
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{Item}@Value"
+                      - Name: Row2
+                        Type: RowLayout
+                        Children:
+                        - Name: Switch1
+                          Type: Switch
+                          Children:
+                          - Name: Checked
+                            Type: BaseDataVariableType
+                            DataType: Boolean
+                            Value: true
+                          - Name: Enabled
+                            Type: BaseDataVariableType
+                            DataType: Boolean
+                            Value: true
+                            Children:
+                            - Name: ExpressionEvaluator1
+                              Type: ExpressionEvaluator
+                              Children:
+                              - Name: Expression
+                                Type: BaseDataVariableType
+                                DataType: String
+                                ReferenceType: HasParameter
+                                Value: "{0}!=\"Auto\""
+                              - Name: Source0
+                                Type: BaseDataVariableType
+                                DataType: BaseDataType
+                                ReferenceType: HasSource
+                                Children:
+                                - Name: DynamicLink
+                                  Type: DynamicLink
+                                  DataType: NodePath
+                                  Value: "../../../../../Row1/ComboBox1/UISelectedValue@Value"
                 - Name: State
                   Type: Ellipse
             - Name: ParameterWithStatus4
@@ -9669,6 +10665,28 @@ Children:
                               Type: DynamicLink
                               DataType: NodePath
                               Value: "{ControlDashboard}/Parameters/ItemValue4"
+                          - Name: Enabled
+                            Type: BaseDataVariableType
+                            DataType: Boolean
+                            Value: true
+                            Children:
+                            - Name: ExpressionEvaluator1
+                              Type: ExpressionEvaluator
+                              Children:
+                              - Name: Expression
+                                Type: BaseDataVariableType
+                                DataType: String
+                                ReferenceType: HasParameter
+                                Value: "{0}!=\"Auto\""
+                              - Name: Source0
+                                Type: BaseDataVariableType
+                                DataType: BaseDataType
+                                ReferenceType: HasSource
+                                Children:
+                                - Name: DynamicLink
+                                  Type: DynamicLink
+                                  DataType: NodePath
+                                  Value: "../../../../../Row1/ComboBox1/UISelectedValue@Value"
                         - Name: Label
                           Type: Label
                           Children:
@@ -9685,6 +10703,99 @@ Children:
                               Type: DynamicLink
                               DataType: NodePath
                               Value: "{ControlDashboard}/Parameters/Item4[1]"
+                      - Name: Row1
+                        Type: RowLayout
+                        Children:
+                        - Name: Label
+                          Type: Label
+                        - Name: ComboBox1
+                          Type: ComboBox
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                          - Name: Model
+                            Type: NodePointer
+                            DataType: NodeId
+                            Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module"
+                            Children:
+                            - Name: ItemKind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                          - Name: SelectedValue
+                            Type: BaseDataVariableType
+                            DataType: BaseDataType
+                          - Name: SelectedItem
+                            Type: NodePointer
+                            DataType: NodeId
+                            Children:
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                          - Name: UISelectedItem
+                            Type: BaseDataVariableType
+                            DataType: NodeId
+                            AccessLevel: Read
+                          - Name: UISelectedValue
+                            Type: BaseDataVariableType
+                            DataType: BaseDataType
+                            AccessLevel: Read
+                          - Class: Reference
+                            Target: ns=3;i=480
+                            Direction: Forward
+                          - Name: Item
+                            Type: Alias
+                            DataType: NodeId
+                            Children:
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                          - Name: DisplayValuePath
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{Item}@Value"
+                      - Name: Row2
+                        Type: RowLayout
+                        Children:
+                        - Name: Switch1
+                          Type: Switch
+                          Children:
+                          - Name: Checked
+                            Type: BaseDataVariableType
+                            DataType: Boolean
+                            Value: true
+                          - Name: Enabled
+                            Type: BaseDataVariableType
+                            DataType: Boolean
+                            Value: true
+                            Children:
+                            - Name: ExpressionEvaluator1
+                              Type: ExpressionEvaluator
+                              Children:
+                              - Name: Expression
+                                Type: BaseDataVariableType
+                                DataType: String
+                                ReferenceType: HasParameter
+                                Value: "{0}!=\"Auto\""
+                              - Name: Source0
+                                Type: BaseDataVariableType
+                                DataType: BaseDataType
+                                ReferenceType: HasSource
+                                Children:
+                                - Name: DynamicLink
+                                  Type: DynamicLink
+                                  DataType: NodePath
+                                  Value: "../../../../../Row1/ComboBox1/UISelectedValue@Value"
                 - Name: State
                   Type: Ellipse
             - Name: ParameterWithStatus5
@@ -9727,6 +10838,28 @@ Children:
                               Type: DynamicLink
                               DataType: NodePath
                               Value: "{ControlDashboard}/Parameters/ItemValue5"
+                          - Name: Enabled
+                            Type: BaseDataVariableType
+                            DataType: Boolean
+                            Value: true
+                            Children:
+                            - Name: ExpressionEvaluator1
+                              Type: ExpressionEvaluator
+                              Children:
+                              - Name: Expression
+                                Type: BaseDataVariableType
+                                DataType: String
+                                ReferenceType: HasParameter
+                                Value: "{0}!=\"Auto\""
+                              - Name: Source0
+                                Type: BaseDataVariableType
+                                DataType: BaseDataType
+                                ReferenceType: HasSource
+                                Children:
+                                - Name: DynamicLink
+                                  Type: DynamicLink
+                                  DataType: NodePath
+                                  Value: "../../../../../Row1/ComboBox1/UISelectedValue@Value"
                         - Name: Label
                           Type: Label
                           Children:
@@ -9738,6 +10871,99 @@ Children:
                               Type: DynamicLink
                               DataType: NodePath
                               Value: "{ControlDashboard}/Parameters/Item5[1]"
+                      - Name: Row1
+                        Type: RowLayout
+                        Children:
+                        - Name: Label
+                          Type: Label
+                        - Name: ComboBox1
+                          Type: ComboBox
+                          Children:
+                          - Name: Text
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                          - Name: Model
+                            Type: NodePointer
+                            DataType: NodeId
+                            Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module"
+                            Children:
+                            - Name: ItemKind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                          - Name: SelectedValue
+                            Type: BaseDataVariableType
+                            DataType: BaseDataType
+                          - Name: SelectedItem
+                            Type: NodePointer
+                            DataType: NodeId
+                            Children:
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                          - Name: UISelectedItem
+                            Type: BaseDataVariableType
+                            DataType: NodeId
+                            AccessLevel: Read
+                          - Name: UISelectedValue
+                            Type: BaseDataVariableType
+                            DataType: BaseDataType
+                            AccessLevel: Read
+                          - Class: Reference
+                            Target: ns=3;i=480
+                            Direction: Forward
+                          - Name: Item
+                            Type: Alias
+                            DataType: NodeId
+                            Children:
+                            - Name: Kind
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Objects/RedeiptEditor/Model/DashboardData/ControlDashboard/Module/Auto"
+                          - Name: DisplayValuePath
+                            Type: BaseDataVariableType
+                            DataType: LocalizedText
+                            Children:
+                            - Name: DynamicLink
+                              Type: DynamicLink
+                              DataType: NodePath
+                              Value: "{Item}@Value"
+                      - Name: Row2
+                        Type: RowLayout
+                        Children:
+                        - Name: Switch1
+                          Type: Switch
+                          Children:
+                          - Name: Checked
+                            Type: BaseDataVariableType
+                            DataType: Boolean
+                            Value: true
+                          - Name: Enabled
+                            Type: BaseDataVariableType
+                            DataType: Boolean
+                            Value: true
+                            Children:
+                            - Name: ExpressionEvaluator1
+                              Type: ExpressionEvaluator
+                              Children:
+                              - Name: Expression
+                                Type: BaseDataVariableType
+                                DataType: String
+                                ReferenceType: HasParameter
+                                Value: "{0}!=\"Auto\""
+                              - Name: Source0
+                                Type: BaseDataVariableType
+                                DataType: BaseDataType
+                                ReferenceType: HasSource
+                                Children:
+                                - Name: DynamicLink
+                                  Type: DynamicLink
+                                  DataType: NodePath
+                                  Value: "../../../../../Row1/ComboBox1/UISelectedValue@Value"
                 - Name: State
                   Type: Ellipse
             - Name: VerticalGap
@@ -9874,7 +11100,7 @@ Children:
             - Name: DynamicLink
               Type: DynamicLink
               DataType: NodePath
-              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineCharts/LineChart1/URL"
+              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineCharts/LineChart6/URL"
           - Class: Reference
             Target: ns=3;i=354
             Direction: Forward
@@ -10063,7 +11289,7 @@ Children:
             - Name: DynamicLink
               Type: DynamicLink
               DataType: NodePath
-              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineCharts/LineChart5/URL"
+              Value: "/Objects/RedeiptEditor/Model/EchartLibrary/LineCharts/LineChart7/URL"
           - Class: Reference
             Target: ns=3;i=354
             Direction: Forward

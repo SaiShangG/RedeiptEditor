@@ -1,0 +1,40 @@
+Name: SimulateData
+Type: FolderType
+Children:
+- Name: Temp
+  Type: BaseDataVariableType
+  DataType: Float
+  Value: 37.0
+- Name: RandomData
+  Type: NetLogic
+  Children:
+  - Class: Method
+    Name: StartTimer
+- Name: DO
+  Type: BaseDataVariableType
+  DataType: Float
+  Value: 38.0
+- Name: PH
+  Type: BaseDataVariableType
+  DataType: Float
+  Value: 7.119999885559082
+- Name: Pressure
+  Type: BaseDataVariableType
+  DataType: Float
+  Value: 0.09000000357627869
+- Name: RPM
+  Type: BaseDataVariableType
+  DataType: Float
+  Value: 420.0
+- Name: Energy
+  Type: BaseDataVariableType
+  DataType: Float
+  Value: 150.0
+- Name: CO2
+  Type: BaseDataVariableType
+  DataType: Float
+  Value: 90.0
+- Name: Air
+  Type: BaseDataVariableType
+  DataType: Float
+  Value: 210.0

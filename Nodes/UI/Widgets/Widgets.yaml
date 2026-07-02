@@ -1563,6 +1563,7 @@ Children:
             Type: BaseVariableType
             DataType: Size
             ModellingRule: Optional
+            Value: -6.0
           - Name: BottomMargin
             Type: BaseVariableType
             DataType: Size
@@ -1571,6 +1572,7 @@ Children:
             Type: BaseVariableType
             DataType: Size
             ModellingRule: Optional
+            Value: -1.0
           - Name: UserSelectionChangedHandler1
             Type: EventHandler
             Children:
@@ -12270,3 +12272,4 @@ Children:
       DataType: Size
       ModellingRule: Optional
       Value: 10.0
+- File: RecipeFlow/RecipeFlow.yaml

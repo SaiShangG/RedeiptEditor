@@ -18,6 +18,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text.Json;
 using FTOptix.WebUI;
+using FTOptix.DataLogger;
+using FTOptix.ODBCStore;
 #endregion
 
 /// <summary>
@@ -32,6 +34,9 @@ public class BatchInforToPLC : BaseNetLogic
 
     /// <summary>PLC <c>BatchID</c> 为 DINT；超出 Int32 时只保留十进制绝对值的末尾这么多位。</summary>
     private const int PlcBatchIdSuffixDigits = 9;
+
+    /// <summary>最近一次成功下载到 PLC 的 Batch/Recipe 快照。</summary>
+    private const string BatchDownloadToPlcDataPath = "Model/UIData/BatchesEditorData/BatchDownloadToPlcData";
 
     private IUAVariable _statusText;
 
@@ -77,6 +82,22 @@ public class BatchInforToPLC : BaseNetLogic
     private int _flowCurrentOpIndex;
     private bool _flowActive;
 
+    private PeriodicTask _builtInDemoTimer;
+    private bool _builtInDemoActive;
+    private int _builtInDemoStepIndex;
+    private readonly List<BuiltInDemoStep> _builtInDemoSteps = new List<BuiltInDemoStep>();
+    private IUAVariable _plcOpDisplayName;
+    private IUAVariable _plcRecipeRunning;
+    private IUAVariable _plcBatchRunning;
+
+    private struct BuiltInDemoStep
+    {
+        public int OpIndex;
+        public int PhaseIndex;
+        public string OpName;
+        public string PhaseName;
+    }
+
     public override void Start()
     {
         _statusText = LogicObject.GetVariable("StatusText");
@@ -100,6 +121,7 @@ public class BatchInforToPLC : BaseNetLogic
 
     public override void Stop()
     {
+        StopBuiltInDemo();
         SetStatus("Stopped");
         _statusText = null;
 
@@ -155,6 +177,12 @@ public class BatchInforToPLC : BaseNetLogic
     [ExportMethod]
     public void StartRunFlow()
     {
+        if (IsDemoSimulationEnabled())
+        {
+            InvokeDemoStart();
+            return;
+        }
+
         if (_sm == null)
             InitStateMachine();
         if (_sm?.Current == null)
@@ -211,6 +239,7 @@ public class BatchInforToPLC : BaseNetLogic
 
         string batchName = ReadStringVariable(editor, "Name");
         string recipeName = ReadStringVariable(editor, "Recipe");
+        string comments = ReadStringVariable(editor, "Comments");
 
         if (string.IsNullOrWhiteSpace(batchName))
         {
@@ -239,6 +268,8 @@ public class BatchInforToPLC : BaseNetLogic
         TrySetString(_plcRecipeName, recipeName ?? "");
         TrySetInt32(_plcRecipeId, recipeId);
         TrySetInt32(_plcRecipeNoOfOperations, noOfOperations);
+
+        SaveDownloadedBatchToPlcModel(batchName, recipeName, comments, batchId, PlcBatchStatusReady, recipeId, noOfOperations);
 
         Log.Info(LogCategory, $"DownloadBatchToPlc：已写入 BatchName='{batchName}', RecipeName='{recipeName}', BatchID={batchId}, Recipe.ID={recipeId}, Recipe.NoOfOperations={noOfOperations}.");
         SetStatus("Download successful");
@@ -434,6 +465,7 @@ public class BatchInforToPLC : BaseNetLogic
             {
                 _flowActive = false;
                 SetStatus("Run finished");
+                PublishFlowSnapshot(-1, -1, "", "", false);
             },
             onExit: _ => { },
             onRun: _ => { });
@@ -773,6 +805,8 @@ public class BatchInforToPLC : BaseNetLogic
 
         string phaseName = op.Phases[phaseIndex]?.Name ?? "";
         WriteRunningPhaseNameIfChanged(phaseName);
+        string opName = op?.Name ?? "";
+        PublishFlowSnapshot(opIndex, phaseIndex, opName, phaseName, true);
     }
 
     private void WriteRunningPhaseNameIfChanged(string newName)
@@ -823,6 +857,18 @@ public class BatchInforToPLC : BaseNetLogic
         int m = _flowOpCount;
         string safeName = string.IsNullOrWhiteSpace(opName) ? "-" : opName;
         SetStatus($"[OP {n}/{m}] [{safeName}] {actionText}");
+
+        string phaseName = "";
+        if (_flowReceipt?.Operations != null
+            && _flowCurrentOpIndex >= 0
+            && _flowCurrentOpIndex < _flowReceipt.Operations.Count)
+        {
+            var op = _flowReceipt.Operations[_flowCurrentOpIndex];
+            if (op?.Phases != null && op.Phases.Count > 0)
+                phaseName = op.Phases[0]?.Name ?? "";
+        }
+        bool running = actionText.IndexOf("Running", StringComparison.OrdinalIgnoreCase) >= 0;
+        PublishFlowSnapshot(_flowCurrentOpIndex, 0, safeName, phaseName, running);
     }
 
     private IUANode GetPlcPhaseNodeByIndex(int index)
@@ -841,6 +887,66 @@ public class BatchInforToPLC : BaseNetLogic
 
     private static IUAObject GetBatchEditorDataNode()
         => Project.Current?.GetObject("Model/UIData/BatchesEditorData/BatchEditorData") as IUAObject;
+
+    private static IUAObject GetBatchDownloadToPlcDataNode()
+        => Project.Current?.GetObject(BatchDownloadToPlcDataPath) as IUAObject;
+
+    /// <summary>将本次实际写入 PLC 的 Batch/Recipe 信息保存到中间 Model，供 UI 或其它逻辑读取。</summary>
+    private static void SaveDownloadedBatchToPlcModel(
+        string batchName,
+        string recipeName,
+        string comments,
+        int batchId,
+        int batchStatus,
+        int recipeId,
+        int noOfOperations)
+    {
+        var snapshot = GetBatchDownloadToPlcDataNode();
+        if (snapshot == null)
+        {
+            Log.Warning(LogCategory, $"SaveDownloadedBatchToPlcModel：未找到 {BatchDownloadToPlcDataPath}。");
+            return;
+        }
+
+        TrySetString(snapshot.GetVariable("Name"), batchName ?? "");
+        TrySetString(snapshot.GetVariable("Recipe"), recipeName ?? "");
+        TrySetString(snapshot.GetVariable("Comments"), comments ?? "");
+        TrySetInt32(snapshot.GetVariable("BatchID"), batchId);
+        TrySetInt32(snapshot.GetVariable("BatchStatus"), batchStatus);
+        TrySetInt32(snapshot.GetVariable("RecipeID"), recipeId);
+        TrySetInt32(snapshot.GetVariable("NoOfOperations"), noOfOperations);
+        TrySetString(snapshot.GetVariable("DownloadDateTime"), RecipeDatabaseTreeLoader.FormatStoredCreatedDateTimeNow());
+        TrySetString(snapshot.GetVariable("DownloadedBy"), ResolveDownloadUserBrowseName());
+        TrySetBoolean(snapshot.GetVariable("FlowBatchFinished"), false);
+        BumpFlowRefreshTick(snapshot);
+    }
+
+    private static void BumpFlowRefreshTick(IUAObject snapshot)
+    {
+        var tickVar = snapshot?.GetVariable("FlowRefreshTick");
+        if (tickVar == null) return;
+        int tick = 0;
+        try
+        {
+            if (tickVar.Value?.Value != null)
+                tick = Convert.ToInt32(tickVar.Value.Value, CultureInfo.InvariantCulture);
+        }
+        catch { }
+        TrySetInt32(tickVar, tick + 1);
+    }
+
+    private static string ResolveDownloadUserBrowseName()
+    {
+        string fromLogin = LoginButtonLogic.CurrentLoginUserBrowseName;
+        if (!string.IsNullOrWhiteSpace(fromLogin))
+            return fromLogin.Trim();
+
+        string fromManager = RecipeDatabaseManager.TryGetInstanceUserBrowseName();
+        if (!string.IsNullOrEmpty(fromManager))
+            return fromManager;
+
+        return "";
+    }
 
     private static string ReadStringVariable(IUAObject owner, string browseName)
     {
@@ -1309,5 +1415,201 @@ public class BatchInforToPLC : BaseNetLogic
         {
             // 状态文本不应影响主流程
         }
+    }
+
+    /// <summary>为 true 时 Start 走 Optix 演示模拟（每 Phase 间隔 3s），不启动 PLC 状态机。</summary>
+    private bool IsDemoSimulationEnabled()
+    {
+        var v = LogicObject.GetVariable("UseDemoSimulation");
+        if (v?.Value == null)
+            return true;
+        try
+        {
+            object raw = v.Value.Value;
+            if (raw is bool b) return b;
+            if (raw is int i) return i != 0;
+            return string.Equals(raw?.ToString(), "true", StringComparison.OrdinalIgnoreCase)
+                   || string.Equals(raw?.ToString(), "1", StringComparison.OrdinalIgnoreCase);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private void InvokeDemoStart()
+    {
+        StopBuiltInDemo();
+        if (!TryEnsureBatchTagReferences() || !TryEnsureOperationHandshakeReferences())
+        {
+            SetStatus("演示失败：PLC 标签未绑定");
+            return;
+        }
+        if (!TryEnsureRecipeTagReferences())
+            Log.Warning(LogCategory, "演示：Recipe 标签未绑定，部分显示可能不完整");
+        ResolveDemoDisplayTags();
+        if (!TryBuildBuiltInDemoSteps(out string err))
+        {
+            SetStatus(err);
+            return;
+        }
+
+        _builtInDemoStepIndex = 0;
+        _builtInDemoActive = true;
+        ApplyBuiltInDemoStep();
+        _builtInDemoTimer = new PeriodicTask(OnBuiltInDemoTick, 3000, LogicObject);
+        _builtInDemoTimer.Start();
+    }
+
+    private void ResolveDemoDisplayTags()
+    {
+        var opNode = Project.Current?.GetObject(
+            "CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OP");
+        _plcOpDisplayName = opNode?.GetVariable("Name");
+        _plcBatchRunning = _batchRoot?.GetVariable("BatchRunning");
+        var runOp = _recipeRoot?.Get("RunningOperation") as IUANode;
+        _plcRecipeRunning = runOp?.GetVariable("Running");
+    }
+
+    private void OnBuiltInDemoTick()
+    {
+        if (!_builtInDemoActive)
+            return;
+
+        _builtInDemoStepIndex++;
+        if (_builtInDemoStepIndex >= _builtInDemoSteps.Count)
+        {
+            StopBuiltInDemo();
+            PublishFlowSnapshot(-1, -1, "", "", false);
+            GenerateBatchRunFlow.NotifyRunStep(0, 0, false);
+            SetStatus("演示完成");
+            return;
+        }
+
+        ApplyBuiltInDemoStep();
+    }
+
+    private void ApplyBuiltInDemoStep()
+    {
+        if (_builtInDemoStepIndex < 0 || _builtInDemoStepIndex >= _builtInDemoSteps.Count)
+            return;
+
+        var step = _builtInDemoSteps[_builtInDemoStepIndex];
+        TrySetInt32(LogicObject.GetVariable("RunningOpIndex"), step.OpIndex);
+        TrySetInt32(_plcCmdSeq, step.PhaseIndex);
+        TrySetString(_plcOp1Name, step.OpName ?? "");
+        TrySetString(_plcOpDisplayName, step.OpName ?? "");
+        TrySetString(_plcRunningPhaseName, step.PhaseName ?? "");
+        TrySetBoolean(_plcBatchRunning, true);
+        TrySetBoolean(_plcRecipeRunning, true);
+        PublishFlowSnapshot(step.OpIndex, step.PhaseIndex, step.OpName, step.PhaseName, true);
+        GenerateBatchRunFlow.NotifyRunStep(step.OpIndex, step.PhaseIndex, true);
+
+        SetStatus($"演示 {step.OpName} / {step.PhaseName} ({_builtInDemoStepIndex + 1}/{_builtInDemoSteps.Count})");
+    }
+
+    private void StopBuiltInDemo()
+    {
+        _builtInDemoTimer?.Dispose();
+        _builtInDemoTimer = null;
+        _builtInDemoActive = false;
+        _builtInDemoSteps.Clear();
+        _builtInDemoStepIndex = 0;
+    }
+
+    private bool TryBuildBuiltInDemoSteps(out string error)
+    {
+        error = "";
+        _builtInDemoSteps.Clear();
+
+        string recipeName = ReadStringVariableValue(_plcBatchRecipeName);
+        if (string.IsNullOrWhiteSpace(recipeName))
+            recipeName = ReadStringVariable(GetBatchDownloadToPlcDataNode(), "Recipe");
+
+        if (string.IsNullOrWhiteSpace(recipeName))
+        {
+            error = "演示失败：请先 Download to PLC";
+            return false;
+        }
+
+        var loader = RecipeDatabaseTreeLoader.Instance;
+        if (loader == null)
+        {
+            error = "演示失败：配方树未加载";
+            return false;
+        }
+
+        if (loader.Tree == null || loader.Tree.Count == 0)
+        {
+            try { loader.LoadAllToTree(); }
+            catch (Exception ex)
+            {
+                error = $"演示失败：{ex.Message}";
+                return false;
+            }
+        }
+
+        RecipeDatabaseTreeLoader.ReceiptNode receipt = null;
+        foreach (var r in loader.Tree)
+        {
+            if (string.Equals(r?.Name, recipeName.Trim(), StringComparison.OrdinalIgnoreCase))
+            {
+                receipt = r;
+                break;
+            }
+        }
+
+        if (receipt?.Operations == null || receipt.Operations.Count == 0)
+        {
+            error = $"演示失败：配方 {recipeName} 无 Operation";
+            return false;
+        }
+
+        for (int oi = 0; oi < receipt.Operations.Count; oi++)
+        {
+            var op = receipt.Operations[oi];
+            string opName = op?.Name ?? $"Operation_{oi + 1}";
+            int phaseCount = op?.Phases?.Count ?? 0;
+            if (phaseCount == 0)
+            {
+                _builtInDemoSteps.Add(new BuiltInDemoStep { OpIndex = oi, PhaseIndex = 0, OpName = opName, PhaseName = "" });
+                continue;
+            }
+            for (int pi = 0; pi < phaseCount; pi++)
+            {
+                string phaseName = op.Phases[pi]?.Name ?? $"Phase_{pi + 1}";
+                _builtInDemoSteps.Add(new BuiltInDemoStep { OpIndex = oi, PhaseIndex = pi, OpName = opName, PhaseName = phaseName });
+            }
+        }
+
+        if (_builtInDemoSteps.Count == 0)
+        {
+            error = "演示失败：无 Phase 步骤";
+            return false;
+        }
+
+        return true;
+    }
+
+    private void PublishFlowSnapshot(int opIndex, int phaseIndex, string opName, string phaseName, bool isRunning)
+    {
+        var snapshot = GetBatchDownloadToPlcDataNode();
+        if (snapshot == null) return;
+        TrySetString(snapshot.GetVariable("OperationName"), opName ?? "");
+        TrySetString(snapshot.GetVariable("PhaseName"), phaseName ?? "");
+        if (opIndex >= 0)
+            TrySetInt32(snapshot.GetVariable("RunningOpIndex"), opIndex);
+        if (phaseIndex >= 0)
+            TrySetInt32(snapshot.GetVariable("RunningPhaseIndex"), phaseIndex);
+        TrySetBoolean(snapshot.GetVariable("FlowIsRunning"), isRunning);
+        if (!isRunning && opIndex < 0)
+        {
+            TrySetInt32(snapshot.GetVariable("RunningOpIndex"), -1);
+            TrySetInt32(snapshot.GetVariable("RunningPhaseIndex"), -1);
+            TrySetBoolean(snapshot.GetVariable("FlowBatchFinished"), true);
+        }
+        else if (isRunning)
+            TrySetBoolean(snapshot.GetVariable("FlowBatchFinished"), false);
+        BumpFlowRefreshTick(snapshot);
     }
 }

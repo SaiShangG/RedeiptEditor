@@ -19,3 +19,45 @@ Children:
     Type: BaseDataVariableType
     DataType: String
     Value: "None"
+- Name: BatchDownloadToPlcData
+  Type: BaseObjectType
+  Children:
+  - Name: Name
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "None"
+  - Name: Comments
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "None"
+  - Name: Recipe
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "None"
+  - Name: BatchID
+    Type: BaseDataVariableType
+    DataType: Int32
+  - Name: BatchStatus
+    Type: BaseDataVariableType
+    DataType: Int32
+  - Name: RecipeID
+    Type: BaseDataVariableType
+    DataType: Int32
+  - Name: NoOfOperations
+    Type: BaseDataVariableType
+    DataType: Int32
+  - Name: DownloadDateTime
+    Type: BaseDataVariableType
+    DataType: DateTime
+  - Name: DownloadedBy
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "0"
+  - Name: OperationName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "0"
+  - Name: PhaseName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "0"

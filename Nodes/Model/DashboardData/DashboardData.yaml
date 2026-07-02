@@ -15,11 +15,11 @@ Children:
     - Name: label2
       Type: BaseDataVariableType
       DataType: String
-      Value: "Batch"
+      Value: "Recipe"
     - Name: label3
       Type: BaseDataVariableType
       DataType: String
-      Value: "Recipe"
+      Value: "Operation"
     - Name: label4
       Type: BaseDataVariableType
       DataType: String
@@ -68,7 +68,7 @@ Children:
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [3]
-      Value: ["PH","0","PV"]
+      Value: ["PH","","PV"]
     - Name: ItemValue2
       Type: BaseDataVariableType
       DataType: String
@@ -80,7 +80,7 @@ Children:
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [3]
-      Value: ["DO","0","PV"]
+      Value: ["DO","%","PV"]
     - Name: ItemValue3
       Type: BaseDataVariableType
       DataType: String
@@ -92,7 +92,7 @@ Children:
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [3]
-      Value: ["Agitator RPM","0","PV"]
+      Value: ["Agitator RPM","PRM","PV"]
     - Name: ItemValue4
       Type: BaseDataVariableType
       DataType: String
@@ -104,13 +104,13 @@ Children:
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [3]
-      Value: ["Pressure","0","PV"]
+      Value: ["Pressure","MPa","PV"]
     - Name: ItemValue5
       Type: BaseDataVariableType
       DataType: String
       ValueRank: OneDimension
       ArrayDimensions: [3]
-      Value: ["0.35","0.35","Auto"]
+      Value: ["0.9","1","Auto"]
   - Name: Parameters
     Type: BaseObjectType
     Children:
@@ -187,6 +187,19 @@ Children:
       Type: BaseDataVariableType
       DataType: String
       Value: "Air"
+  - Name: Module
+    Id: g=e24d70dc96b6b174ee43bca3702145fc
+    Type: BaseObjectType
+    Children:
+    - Name: Auto
+      Id: g=fd949f8b1199c7f2aa78d23647a29a7e
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Auto"
+    - Name: Manual
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Manual"
 - Name: ProductionDashboard
   Type: BaseObjectType
   Children:
@@ -382,15 +395,15 @@ Children:
     - Name: Progress
       Type: BaseDataVariableType
       DataType: Int32
-      Value: 62
+      Value: 100
     - Name: PhaseName
       Type: BaseDataVariableType
       DataType: String
-      Value: "Feed2"
+      Value: "Grow Parameter Romp"
     - Name: ETA
       Type: BaseDataVariableType
       DataType: String
-      Value: "00:47"
+      Value: "00:00"
 - Name: QualityDashboard
   Id: g=79e3d82718a97538e960b1f3408f7eed
   Type: BaseObjectType
@@ -486,7 +499,7 @@ Children:
       DataType: Color
       ValueRank: OneDimension
       ArrayDimensions: [6]
-      Value: ["#1c5a4c","#1c5a4c","#1c5a4c","#1c5a4c","#f09944","#1c5a4c"]
+      Value: ["#1c5a4c","#ba1125","#1c5a4c","#1c5a4c","#f09944","#1c5a4c"]
     - Name: Images
       Type: BaseDataVariableType
       DataType: ResourceUri
@@ -496,7 +509,7 @@ Children:
     - Name: ItemValue2
       Type: BaseDataVariableType
       DataType: String
-      Value: "ON"
+      Value: "OFF"
     - Name: Item2
       Type: BaseDataVariableType
       DataType: String
@@ -834,7 +847,7 @@ Children:
   - Name: Label1
     Type: BaseDataVariableType
     DataType: String
-    Value: "Energy"
+    Value: "Temperature"
   - Name: Label2
     Type: BaseDataVariableType
     DataType: String

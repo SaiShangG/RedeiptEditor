@@ -8,6 +8,8 @@ using FTOptix.HMIProject;
 using FTOptix.Core;
 using FTOptix.WebUI;
 using FTOptix.EventLogger;
+using FTOptix.DataLogger;
+using FTOptix.ODBCStore;
 #endregion
 
 /// <summary>

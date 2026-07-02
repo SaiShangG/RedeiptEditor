@@ -7,6 +7,8 @@ using FTOptix.Core;
 using UAManagedCore;
 using FTOptix.WebUI;
 using FTOptix.EventLogger;
+using FTOptix.DataLogger;
+using FTOptix.ODBCStore;
 #endregion
 
 /// <summary>NetLogic JsonFile（ResourceUri）变量 → 磁盘路径；加载 JSON 请用 <see cref="PhaseUILayoutModel"/>。</summary>

@@ -90,16 +90,24 @@ Project:
    Uri: 'urn:FTOptix:CommunicationDriver:Net'
    Module: FTOptix.CommunicationDriver.Net
    Version: 4.0
+  25:
+   Uri: 'urn:FTOptix:DataLogger'
+   Module: FTOptix.DataLogger
+   Version: 2.0
+  26:
+   Uri: 'urn:FTOptix:DataLogger:Net'
+   Module: FTOptix.DataLogger.Net
+   Version: 1.0
  Statistics:
-  TotalNodeCount: 15883
-  Objects: 3135
-  ObjectTypes: 80
-  Variables: 12567
+  TotalNodeCount: 16545
+  Objects: 3240
+  ObjectTypes: 83
+  Variables: 13105
   VariableTypes: 11
   DataTypes: 22
-  Methods: 68
-  References: 213
+  Methods: 84
+  References: 245
   ReferenceTypes: 0
-  Files: 63
+  Files: 65
  Nodes:
  - File: Nodes/RedeiptEditor.yaml

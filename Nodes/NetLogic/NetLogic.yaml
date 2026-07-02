@@ -278,6 +278,10 @@ Children:
   - Name: RunningOpIndex
     Type: BaseDataVariableType
     DataType: Int32
+  - Name: UseDemoSimulation
+    Type: BaseDataVariableType
+    DataType: Boolean
+    Value: true
 - Name: DeletePanelGeneralLogic
   Id: g=ae87e35871563e13d7977ee326beadfd
   Type: NetLogic

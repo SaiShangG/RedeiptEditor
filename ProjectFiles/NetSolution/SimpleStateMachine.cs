@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using FTOptix.WebUI;
 using FTOptix.EventLogger;
+using FTOptix.DataLogger;
+using FTOptix.ODBCStore;
 
 namespace RedeiptEditor.NetSolution
 {
