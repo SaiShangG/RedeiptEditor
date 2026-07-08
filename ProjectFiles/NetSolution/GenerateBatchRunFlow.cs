@@ -52,7 +52,7 @@ public class GenerateBatchRunFlow : BaseNetLogic
 
     // Optix Color 构造函数为 (Alpha, Red, Green, Blue)。#1c5a4c → A=255, R=0x1c, G=0x5a, B=0x4c。
     // 若写成 (0x1c,0x5a,0x4c,0xff) 会被当成 A=28,R=90,G=76,B=255，界面呈淡紫/紫蓝而非绿色。
-    /// <summary>当前执行步文字色（亮绿，便于演示区分）。</summary>
+    /// <summary>当前执行步文字色（亮绿，便于和普通步骤区分）。</summary>
     private static readonly Color HighlightTextColor = BatchRunFlowHighlight.RunningTextColor;
     private static readonly Color FlowTextColor = new Color(255, 0x33, 0x33, 0x33);
     private static readonly Color FlowFinishedFooterColor = new Color(255, 0x1c, 0x5a, 0x4c);
@@ -102,93 +102,15 @@ public class GenerateBatchRunFlow : BaseNetLogic
     public static GenerateBatchRunFlow Instance { get; private set; }
     private static GenerateBatchRunFlow _instance;
 
-    private bool _forcedStepActive;
-    private int _forcedOpIndex;
-    private int _forcedPhaseIndex = -1;
-    private bool _forcedRunning;
     private bool _skipTickRegenerate;
-    private PeriodicTask _demoStepTimer;
-    private bool _demoActive;
-    private int _demoStepIndex;
-    private int _phaseIntervalMs = 3000;
-    private readonly List<FlowDemoStep> _demoSteps = new List<FlowDemoStep>();
-
-    private struct FlowDemoStep
-    {
-        public int OpIndex;
-        public int PhaseIndex;
-        public string OpName;
-        public string PhaseName;
-    }
 
     private NodeId _operationItemTypeId = NodeId.Empty;
     private NodeId _phaseItemTypeId = NodeId.Empty;
-
-    /// <summary>由 BatchInforToPLC 演示步进调用，不依赖 PLC 索引。</summary>
-    public static void NotifyRunStep(int opIndex, int phaseIndex, bool isRunning)
-    {
-        if (_instance != null)
-        {
-            _instance._forcedStepActive = true;
-            _instance._forcedOpIndex = opIndex;
-            _instance._forcedPhaseIndex = phaseIndex;
-            _instance._forcedRunning = isRunning;
-            _instance._skipTickRegenerate = true;
-            _instance.RefreshStatuses();
-            return;
-        }
-        BatchRunFlowHighlight.ApplyOnProject(opIndex, phaseIndex, isRunning);
-    }
-
-    /// <summary>由 Start / BatchInforToPLC 演示模式调用。</summary>
-    public static void RequestStartDemo()
-    {
-        if (_instance != null)
-            _instance.StartDemoRun();
-        else
-            TryExecuteStartDemoOnNode();
-    }
-
-    private static void TryExecuteStartDemoOnNode()
-    {
-        var nl = FindNetLogicNode(Project.Current, "GenerateBatchRunFlow");
-        if (nl == null)
-            return;
-        try
-        {
-            nl.ExecuteMethod("StartDemoRun", Array.Empty<object>());
-        }
-        catch (Exception ex)
-        {
-            Log.Warning(LogCategory, $"ExecuteMethod StartDemoRun 失败: {ex.Message}");
-        }
-    }
-
-    private static IUAObject FindNetLogicNode(IUANode root, string browseName)
-    {
-        if (root == null) return null;
-        if (root.BrowseName == browseName && root is IUAObject obj)
-            return obj;
-        foreach (var ch in root.Children)
-        {
-            var found = FindNetLogicNode(ch, browseName);
-            if (found != null) return found;
-        }
-        return null;
-    }
 
     public override void Start()
     {
         _instance = this;
         Instance = this;
-        try
-        {
-            var ms = LogicObject.GetVariable("PhaseIntervalMs");
-            if (ms?.Value != null)
-                _phaseIntervalMs = Math.Max(500, Convert.ToInt32(ms.Value.Value, CultureInfo.InvariantCulture));
-        }
-        catch { }
-
         try
         {
             var logVar = LogicObject.GetVariable("EnableLog");
@@ -219,7 +141,6 @@ public class GenerateBatchRunFlow : BaseNetLogic
             _instance = null;
             Instance = null;
         }
-        StopDemoInternal();
         _refreshTask?.Dispose();
         _refreshTask = null;
         _snapshotReg?.Dispose();
@@ -229,30 +150,6 @@ public class GenerateBatchRunFlow : BaseNetLogic
 
     [ExportMethod]
     public void Regenerate() => Generate();
-
-    [ExportMethod]
-    public void StartDemoRun()
-    {
-        if (_demoActive)
-            return;
-
-        if (!TryBuildDemoSteps(out string err))
-        {
-            SetBatchInforStatus(string.IsNullOrEmpty(err) ? "演示失败：无步骤" : err);
-            Log.Warning(LogCategory, err);
-            return;
-        }
-
-        ClearFlowFinishedSnapshot();
-        _demoStepIndex = 0;
-        _demoActive = true;
-        ApplyDemoStep(_demoSteps[0]);
-        NotifyRunStep(_demoSteps[0].OpIndex, _demoSteps[0].PhaseIndex, true);
-        ScheduleDemoStep();
-    }
-
-    [ExportMethod]
-    public void StopDemoRun() => StopDemoInternal();
 
     #region 生成列表
 
@@ -897,7 +794,7 @@ public class GenerateBatchRunFlow : BaseNetLogic
         _plcRunningOpIndex = _batchInforLogic?.GetVariable("RunningOpIndex");
     }
 
-    /// <summary>解析当前高亮步：演示步 &gt; Model 快照 &gt; 名称匹配 &gt; PLC 索引。</summary>
+    /// <summary>解析当前高亮步：Model 快照 &gt; 名称匹配 &gt; PLC 索引。</summary>
     private void TryResolveCurrentStep(
         RecipeDatabaseTreeLoader.ReceiptNode receipt,
         out int runningOp,
@@ -911,23 +808,6 @@ public class GenerateBatchRunFlow : BaseNetLogic
         running = false;
         held = ReadBooleanTag(_plcHeld);
         idle = ReadBooleanTag(_plcIdle);
-
-        if (_forcedStepActive)
-        {
-            runningOp = _forcedOpIndex;
-            cmdSeq = Math.Max(0, _forcedPhaseIndex);
-            running = _forcedRunning;
-            return;
-        }
-
-        if (_demoActive && _demoStepIndex >= 0 && _demoStepIndex < _demoSteps.Count)
-        {
-            var step = _demoSteps[_demoStepIndex];
-            runningOp = step.OpIndex;
-            cmdSeq = step.PhaseIndex;
-            running = true;
-            return;
-        }
 
         int snapOp = ReadSnapshotInt("RunningOpIndex", -1);
         int snapPhase = ReadSnapshotInt("RunningPhaseIndex", -1);
@@ -967,8 +847,7 @@ public class GenerateBatchRunFlow : BaseNetLogic
     {
         var st = _batchInforLogic?.GetVariable("StatusText");
         string text = ReadStringTag(st);
-        return text.IndexOf("Running", StringComparison.OrdinalIgnoreCase) >= 0
-               || text.IndexOf("演示", StringComparison.OrdinalIgnoreCase) >= 0;
+        return text.IndexOf("Running", StringComparison.OrdinalIgnoreCase) >= 0;
     }
 
     private bool IsBatchInforStatusFinished()
@@ -990,12 +869,6 @@ public class GenerateBatchRunFlow : BaseNetLogic
         if (ReadBooleanTag(_plcEvtBatchDone))
             return true;
         return IsBatchInforStatusFinished();
-    }
-
-    private static void ClearFlowFinishedSnapshot()
-    {
-        var snapshot = GetBatchDownloadToPlcDataNode();
-        TrySetBoolean(snapshot?.GetVariable("FlowBatchFinished"), false);
     }
 
     private void UpdateFinishedFooter(IUAObject host, bool visible)
@@ -1124,126 +997,7 @@ public class GenerateBatchRunFlow : BaseNetLogic
         }
     }
 
-    #region 演示步进（每 Phase 3 秒，直接驱动高亮）
-
-    private void ScheduleDemoStep()
-    {
-        _demoStepTimer?.Dispose();
-        _demoStepTimer = new PeriodicTask(OnDemoStepTimer, _phaseIntervalMs, LogicObject);
-        _demoStepTimer.Start();
-    }
-
-    private void OnDemoStepTimer()
-    {
-        if (!_demoActive)
-            return;
-
-        _demoStepIndex++;
-        if (_demoStepIndex >= _demoSteps.Count)
-        {
-            StopDemoInternal();
-            PublishFlowSnapshot(-1, -1, "", "", false);
-            SetBatchInforStatus("Finish");
-            RefreshStatuses();
-            return;
-        }
-
-        ApplyDemoStep(_demoSteps[_demoStepIndex]);
-        NotifyRunStep(_demoSteps[_demoStepIndex].OpIndex, _demoSteps[_demoStepIndex].PhaseIndex, true);
-    }
-
-    private void ApplyDemoStep(FlowDemoStep step)
-    {
-        PublishFlowSnapshot(step.OpIndex, step.PhaseIndex, step.OpName, step.PhaseName, true);
-        TrySetInt32(_batchInforLogic?.GetVariable("RunningOpIndex"), step.OpIndex);
-        TrySetInt32(_plcCmdSeq, step.PhaseIndex);
-        TrySetString(_plcOpName, step.OpName ?? "");
-        TrySetString(_plcRunningPhaseName, step.PhaseName ?? "");
-        TrySetBoolean(_plcBatchRunning, true);
-        TrySetBoolean(_plcOpRunning, true);
-        TrySetBoolean(_plcRunning, true);
-        TrySetBoolean(_plcHeld, false);
-        TrySetBoolean(_plcIdle, false);
-        SetBatchInforStatus($"Start [{step.OpIndex + 1}] {step.OpName} / {step.PhaseName}");
-    }
-
-    private void StopDemoInternal()
-    {
-        _demoStepTimer?.Dispose();
-        _demoStepTimer = null;
-        _demoActive = false;
-        _demoSteps.Clear();
-        _demoStepIndex = 0;
-    }
-
-    private bool TryBuildDemoSteps(out string error)
-    {
-        error = "";
-        _demoSteps.Clear();
-        string recipeName = ResolveActiveRecipeName();
-        var receipt = FindReceiptForFlow(recipeName);
-        if (receipt?.Operations == null || receipt.Operations.Count == 0)
-        {
-            error = "失败：无配方步骤";
-            Log.Warning(LogCategory, error);
-            return false;
-        }
-
-        for (int oi = 0; oi < receipt.Operations.Count; oi++)
-        {
-            var op = receipt.Operations[oi];
-            string opName = op?.Name ?? $"Operation_{oi + 1}";
-            int phaseCount = op?.Phases?.Count ?? 0;
-            if (phaseCount == 0)
-            {
-                _demoSteps.Add(new FlowDemoStep { OpIndex = oi, PhaseIndex = 0, OpName = opName, PhaseName = "" });
-                continue;
-            }
-            for (int pi = 0; pi < phaseCount; pi++)
-            {
-                string phaseName = op.Phases[pi]?.Name ?? $"Phase_{pi + 1}";
-                _demoSteps.Add(new FlowDemoStep { OpIndex = oi, PhaseIndex = pi, OpName = opName, PhaseName = phaseName });
-            }
-        }
-
-        return _demoSteps.Count > 0;
-    }
-
-    private static void PublishFlowSnapshot(int opIndex, int phaseIndex, string opName, string phaseName, bool isRunning)
-    {
-        var snapshot = GetBatchDownloadToPlcDataNode();
-        if (snapshot == null) return;
-        TrySetString(snapshot.GetVariable("OperationName"), opName ?? "");
-        TrySetString(snapshot.GetVariable("PhaseName"), phaseName ?? "");
-        if (opIndex >= 0)
-            TrySetInt32(snapshot.GetVariable("RunningOpIndex"), opIndex);
-        if (phaseIndex >= 0)
-            TrySetInt32(snapshot.GetVariable("RunningPhaseIndex"), phaseIndex);
-        TrySetBoolean(snapshot.GetVariable("FlowIsRunning"), isRunning);
-        if (!isRunning && opIndex < 0)
-        {
-            TrySetInt32(snapshot.GetVariable("RunningOpIndex"), -1);
-            TrySetInt32(snapshot.GetVariable("RunningPhaseIndex"), -1);
-            TrySetBoolean(snapshot.GetVariable("FlowBatchFinished"), true);
-        }
-        else if (isRunning)
-            TrySetBoolean(snapshot.GetVariable("FlowBatchFinished"), false);
-        BumpFlowRefreshTick(snapshot);
-    }
-
-    private static void BumpFlowRefreshTick(IUAObject snapshot)
-    {
-        var tickVar = snapshot?.GetVariable("FlowRefreshTick");
-        if (tickVar == null) return;
-        int tick = 0;
-        try
-        {
-            if (tickVar.Value?.Value != null)
-                tick = Convert.ToInt32(tickVar.Value.Value, CultureInfo.InvariantCulture);
-        }
-        catch { }
-        TrySetInt32(tickVar, tick + 1);
-    }
+    #region Utility setters
 
     private static void TrySetInt32(IUAVariable v, int value)
     {
@@ -1261,13 +1015,6 @@ public class GenerateBatchRunFlow : BaseNetLogic
     {
         if (v == null) return;
         try { v.Value = value ?? ""; } catch { }
-    }
-
-    private void SetBatchInforStatus(string text)
-    {
-        var v = _batchInforLogic?.GetVariable("StatusText");
-        if (v == null) return;
-        try { v.Value = text ?? ""; } catch { }
     }
 
     #endregion

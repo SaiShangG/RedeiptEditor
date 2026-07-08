@@ -10,7 +10,7 @@ using FTOptix.Core;
 /// <summary>批次运行列表高亮（GenerateBatchRunFlow 未启动时也可扫描 UI 树着色）。</summary>
 internal static class BatchRunFlowHighlight
 {
-    /// <summary>演示用亮绿色，与默认深灰区分明显。</summary>
+    /// <summary>当前运行步亮绿色，与默认深灰区分明显。</summary>
     public static readonly Color RunningTextColor = new Color(255, 0, 0x9a, 0x3c);
     public static readonly Color DefaultTextColor = new Color(255, 0x33, 0x33, 0x33);
     public static readonly Color TransparentBg = new Color(0, 0xe4, 0xe4, 0xe4);
