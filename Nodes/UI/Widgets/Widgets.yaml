@@ -9668,7 +9668,7 @@ Children:
                     - Name: DynamicLink
                       Type: DynamicLink
                       DataType: NodePath
-                      Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Recipe/Name"
+                      Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/CurrentBatchData/Recipe/RecipeName"
                   - Name: HorizontalAlignment
                     Type: BaseVariableType
                     DataType: HorizontalAlignment
@@ -9831,7 +9831,7 @@ Children:
                     - Name: DynamicLink
                       Type: DynamicLink
                       DataType: NodePath
-                      Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OP/Name"
+                      Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/CurrentBatchData/Operation/OperationName"
                   - Name: VerticalAlignment
                     Type: BaseVariableType
                     DataType: VerticalAlignment
@@ -9948,7 +9948,7 @@ Children:
                     - Name: DynamicLink
                       Type: DynamicLink
                       DataType: NodePath
-                      Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/RunningPhaseName"
+                      Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/CurrentBatchData/Batch/RunningPhaseName"
                   - Name: FontSize
                     Type: BaseDataVariableType
                     DataType: Size
@@ -10445,7 +10445,7 @@ Children:
                           Type: BaseDataVariableType
                           DataType: VariablePointer
                           Description: {"NamespaceIndex":2,"TextId":"SetVariableToModifyDescription"}
-                          Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchStart"
+                          Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/CurrentBatchData/Batch/BatchStart"
                         - Name: Value
                           Type: BaseDataVariableType
                           DataType: Boolean
@@ -11327,7 +11327,7 @@ Children:
                     - Name: DynamicLink
                       Type: DynamicLink
                       DataType: NodePath
-                      Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchName"
+                      Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/CurrentBatchData/Batch/BatchName"
                   - Name: FontSize
                     Type: BaseDataVariableType
                     DataType: Size

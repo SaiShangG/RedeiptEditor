@@ -24,9 +24,12 @@ public class GenerateRunningTreeList : BaseNetLogic
 {
     private const string LogCategory = nameof(GenerateRunningTreeList);
     private const string BatchDownloadToPlcDataPath = "Model/UIData/BatchesEditorData/BatchDownloadToPlcData";
+    private const string CurrentBatchDataBatchPath = "Model/UIData/BatchesEditorData/CurrentBatchData/Batch";
+    private const string CurrentBatchDataOperationPath = "Model/UIData/BatchesEditorData/CurrentBatchData/Operation";
     private const string ComponentsFolderPath = "UI/Widgets/Components";
     private const string OperationOptionsObjectName = "JumpOperationOptions";
     private const string PhaseOptionsObjectName = "JumpPhaseOptions";
+    private const int DisabledOptionIndex = 0;
 
     private const float RowHeight = 26f;
     private const float FontSize = 14f;
@@ -40,6 +43,8 @@ public class GenerateRunningTreeList : BaseNetLogic
     private static readonly Color JumpTargetTextColor = new Color(255, 0xff, 0x69, 0xb4);
     private static readonly Color NormalTextColor = new Color(255, 0x33, 0x33, 0x33);
     private static readonly Color MessageTextColor = new Color(255, 0x66, 0x66, 0x66);
+    private static readonly Color RunningBackgroundColor = new Color(255, 0xd9, 0xf4, 0xe3);
+    private static readonly Color JumpTargetBackgroundColor = new Color(255, 0xff, 0xe4, 0xf1);
     private static readonly Color TransparentBg = new Color(0, 0xe4, 0xe4, 0xe4);
     private static readonly Color BorderNone = new Color(0, 0, 0, 0);
 
@@ -108,13 +113,23 @@ public class GenerateRunningTreeList : BaseNetLogic
         }
 
         var statusObserver = new CallbackVariableChangeObserver((variable, newValue, oldValue, eventType, senderId) => RefreshRunningStatus());
-        foreach (string name in new[] { "RunningOpIndex", "RunningPhaseIndex", "FlowIsRunning", "FlowBatchFinished", "FlowRefreshTick" })
+        foreach (string name in new[] { "OperationName", "PhaseName", "RecipeIsRunning", "RecipeFinished", "RecipeRefreshTick", "FlowIsRunning", "FlowBatchFinished", "FlowRefreshTick" })
         {
             var variable = snapshot.GetVariable(name);
             if (variable == null) continue;
             try { _snapshotRegs.Add(variable.RegisterEventObserver(statusObserver, EventType.VariableValueChanged, _observerAffinityId)); }
             catch { }
         }
+
+        RegisterStatusObserver(GetCurrentBatchDataOperationNode()?.GetVariable("OperationName"), statusObserver);
+        RegisterStatusObserver(GetCurrentBatchDataBatchNode()?.GetVariable("RunningPhaseName"), statusObserver);
+    }
+
+    private void RegisterStatusObserver(IUAVariable variable, CallbackVariableChangeObserver observer)
+    {
+        if (variable == null || observer == null) return;
+        try { _snapshotRegs.Add(variable.RegisterEventObserver(observer, EventType.VariableValueChanged, _observerAffinityId)); }
+        catch { }
     }
 
     private void UnregisterSnapshotObservers()
@@ -204,7 +219,7 @@ public class GenerateRunningTreeList : BaseNetLogic
             var receiptItem = InformationModel.MakeObject(SafeName(receipt.Name) + "_Receipt", _receiptItemTypeId) as Container;
             if (receiptItem != null)
             {
-                ConfigureRow(receiptItem, rowWidth, receipt.Name ?? recipeName, -1, -1, receipt.ReceiptID, 0, 0, TreeRowKind.Receipt);
+                ConfigureRow(receiptItem, rowWidth, receipt.Name ?? recipeName, "", "", -1, -1, receipt.ReceiptID, 0, 0, TreeRowKind.Receipt);
                 treeContainer.Add(receiptItem);
                 rows++;
             }
@@ -216,7 +231,7 @@ public class GenerateRunningTreeList : BaseNetLogic
                 var opItem = InformationModel.MakeObject(SafeName(opName) + "_Operation", _operationItemTypeId) as Container;
                 if (opItem != null)
                 {
-                    ConfigureRow(opItem, rowWidth, opName, opIndex, -1, receipt.ReceiptID, op?.OperationID ?? 0, 0, TreeRowKind.Operation);
+                    ConfigureRow(opItem, rowWidth, opName, opName, "", opIndex, -1, receipt.ReceiptID, op?.OperationID ?? 0, 0, TreeRowKind.Operation);
                     treeContainer.Add(opItem);
                     rows++;
                 }
@@ -227,7 +242,7 @@ public class GenerateRunningTreeList : BaseNetLogic
                     string phaseName = phase?.Name ?? $"Phase_{phaseIndex + 1}";
                     var phaseItem = InformationModel.MakeObject(SafeName(phaseName) + "_Phase", _phaseItemTypeId) as Container;
                     if (phaseItem == null) continue;
-                    ConfigureRow(phaseItem, rowWidth, phaseName, opIndex, phaseIndex, receipt.ReceiptID, op?.OperationID ?? 0, phase?.PhaseID ?? 0, TreeRowKind.Phase);
+                    ConfigureRow(phaseItem, rowWidth, phaseName, opName, phaseName, opIndex, phaseIndex, receipt.ReceiptID, op?.OperationID ?? 0, phase?.PhaseID ?? 0, TreeRowKind.Phase);
                     treeContainer.Add(phaseItem);
                     rows++;
                 }
@@ -276,29 +291,33 @@ public class GenerateRunningTreeList : BaseNetLogic
         }
         _lastFlowRefreshTick = tick;
 
-        ResolveCurrentStep(out int runningOpIndex, out int runningPhaseIndex, out bool isRunning);
+        ResolveCurrentStep(out string runningOperationName, out string runningPhaseName, out bool isRunning);
         foreach (var row in treeContainer.Children.OfType<Container>())
         {
             if (!IsGeneratedRow(row)) continue;
             if (!TryGetFlowIndices(row, out int opIndex, out int phaseIndex)) continue;
+            if (!TryGetFlowNames(row, out string rowOperationName, out string rowPhaseName)) continue;
 
-            bool highlight = isRunning && opIndex >= 0 && opIndex == runningOpIndex
-                && (phaseIndex < 0 || phaseIndex == runningPhaseIndex);
+            bool highlight = isRunning && IsRunningRowByName(rowOperationName, rowPhaseName, phaseIndex, runningOperationName, runningPhaseName);
             bool jumpTarget = IsJumpTargetRow(opIndex, phaseIndex);
-            ApplyRowColors(row, jumpTarget ? JumpTargetTextColor : highlight ? RunningTextColor : NormalTextColor);
+            ApplyRowColors(
+                row,
+                jumpTarget ? JumpTargetTextColor : highlight ? RunningTextColor : NormalTextColor,
+                jumpTarget ? JumpTargetBackgroundColor : highlight ? RunningBackgroundColor : TransparentBg);
         }
     }
 
-    private void ResolveCurrentStep(out int runningOpIndex, out int runningPhaseIndex, out bool isRunning)
+    private void ResolveCurrentStep(out string operationName, out string phaseName, out bool isRunning)
     {
-        runningOpIndex = ReadSnapshotInt("RunningOpIndex", -1);
-        runningPhaseIndex = ReadSnapshotInt("RunningPhaseIndex", -1);
-        isRunning = ReadSnapshotBool("FlowIsRunning");
+        operationName = ReadCurrentOperationName();
+        phaseName = ReadCurrentPhaseName();
+        isRunning = IsCurrentNameMeaningful(operationName);
     }
 
     private void PopulateJumpComboBoxes(RecipeDatabaseTreeLoader.ReceiptNode receipt)
     {
         _currentJumpReceipt = receipt;
+        ClearJumpTarget();
         ApplyJumpPanelText();
         WireJumpButtons();
 
@@ -309,11 +328,10 @@ public class GenerateRunningTreeList : BaseNetLogic
             operationComboBox.UAEvent += OnOperationComboUserSelectionChanged;
 
             var operationOptions = BuildOperationOptions(receipt);
-            int selectedOperationOptionIndex = ResolveDefaultOperationOptionIndex(receipt);
             _suppressOperationSelectionRefresh = true;
             try
             {
-                SetComboOptions(operationComboBox, OperationOptionsObjectName, operationOptions, selectedOperationOptionIndex);
+                SetComboOptions(operationComboBox, OperationOptionsObjectName, operationOptions, DisabledOptionIndex);
             }
             finally
             {
@@ -336,8 +354,8 @@ public class GenerateRunningTreeList : BaseNetLogic
     {
         _currentJumpReceipt = null;
         ClearJumpTarget();
-        SetComboOptions(GetJumpOperationComboBox(), OperationOptionsObjectName, new List<JumpComboOption>(), 0);
-        SetComboOptions(GetJumpPhaseComboBox(), PhaseOptionsObjectName, new List<JumpComboOption>(), 0);
+        SetComboOptions(GetJumpOperationComboBox(), OperationOptionsObjectName, new List<JumpComboOption>(), DisabledOptionIndex);
+        SetComboOptions(GetJumpPhaseComboBox(), PhaseOptionsObjectName, new List<JumpComboOption>(), DisabledOptionIndex);
         RefreshJumpButtonEnabled();
     }
 
@@ -416,7 +434,7 @@ public class GenerateRunningTreeList : BaseNetLogic
     {
         var phaseComboBox = GetJumpPhaseComboBox();
         var phaseOptions = BuildPhaseOptions(_currentJumpReceipt, operationIndex);
-        SetComboOptions(phaseComboBox, PhaseOptionsObjectName, phaseOptions, ResolveDefaultPhaseOptionIndex(operationIndex, phaseOptions));
+        SetComboOptions(phaseComboBox, PhaseOptionsObjectName, phaseOptions, DisabledOptionIndex);
         RefreshJumpButtonEnabled();
     }
 
@@ -551,30 +569,17 @@ public class GenerateRunningTreeList : BaseNetLogic
         }
     }
 
-    private int ResolveDefaultOperationOptionIndex(RecipeDatabaseTreeLoader.ReceiptNode receipt)
-    {
-        return 0;
-    }
-
-    private int ResolveDefaultPhaseOptionIndex(int operationIndex, List<JumpComboOption> phaseOptions)
-    {
-        if (phaseOptions == null || phaseOptions.Count == 0)
-            return 0;
-
-        return 0;
-    }
-
     private int ResolveSelectedOperationIndex(ComboBox operationComboBox)
     {
         if (operationComboBox == null)
-            return ResolveDefaultOperationOptionIndex(_currentJumpReceipt);
+            return -1;
 
         var selectedOption = GetSelectedComboOption(operationComboBox);
         int operationIndex = ReadIntVariable(selectedOption?.GetVariable("OpIndex"), -1);
         if (operationIndex >= 0)
             return operationIndex;
 
-        return ResolveDefaultOperationOptionIndex(_currentJumpReceipt);
+        return -1;
     }
 
     private IUANode GetSelectedComboOption(ComboBox comboBox)
@@ -799,8 +804,33 @@ public class GenerateRunningTreeList : BaseNetLogic
     private static bool IsMeaningfulName(string name)
         => !string.IsNullOrWhiteSpace(name) && !string.Equals(name.Trim(), "None", StringComparison.OrdinalIgnoreCase);
 
+    private static bool IsCurrentNameMeaningful(string name)
+    {
+        if (!IsMeaningfulName(name))
+            return false;
+        return !string.Equals(name.Trim(), "0", StringComparison.OrdinalIgnoreCase);
+    }
+
     private static IUAObject GetBatchDownloadToPlcDataNode()
         => Project.Current?.GetObject(BatchDownloadToPlcDataPath) as IUAObject;
+
+    private static IUAObject GetCurrentBatchDataBatchNode()
+        => Project.Current?.GetObject(CurrentBatchDataBatchPath) as IUAObject;
+
+    private static IUAObject GetCurrentBatchDataOperationNode()
+        => Project.Current?.GetObject(CurrentBatchDataOperationPath) as IUAObject;
+
+    private static string ReadCurrentOperationName()
+    {
+        string value = ReadStringVariable(GetCurrentBatchDataOperationNode(), "OperationName");
+        return string.IsNullOrWhiteSpace(value) ? "" : value.Trim();
+    }
+
+    private static string ReadCurrentPhaseName()
+    {
+        string value = ReadStringVariable(GetCurrentBatchDataBatchNode(), "RunningPhaseName");
+        return string.IsNullOrWhiteSpace(value) ? "" : value.Trim();
+    }
 
     private static string ReadSnapshotBatchName()
     {
@@ -814,10 +844,24 @@ public class GenerateRunningTreeList : BaseNetLogic
         return string.IsNullOrWhiteSpace(value) ? "" : value.Trim();
     }
 
-    private static int ReadSnapshotFlowRefreshTick() => ReadSnapshotInt("FlowRefreshTick", 0);
+    private static int ReadSnapshotFlowRefreshTick()
+    {
+        var snapshot = GetBatchDownloadToPlcDataNode();
+        if (snapshot == null)
+            return 0;
+
+        var variable = snapshot.GetVariable("FlowRefreshTick") ?? snapshot.GetVariable("RecipeRefreshTick");
+        return ReadIntVariable(variable, 0);
+    }
 
     private static int ReadSnapshotInt(string variableName, int defaultValue)
         => ReadIntVariable(GetBatchDownloadToPlcDataNode()?.GetVariable(variableName), defaultValue);
+
+    private static string ReadSnapshotText(string variableName)
+    {
+        string value = ReadStringVariable(GetBatchDownloadToPlcDataNode(), variableName);
+        return string.IsNullOrWhiteSpace(value) ? "" : value.Trim();
+    }
 
     private static bool ReadSnapshotBool(string variableName)
         => ReadBooleanVariable(GetBatchDownloadToPlcDataNode()?.GetVariable(variableName));
@@ -882,6 +926,8 @@ public class GenerateRunningTreeList : BaseNetLogic
         Container item,
         float rowWidth,
         string text,
+        string operationName,
+        string phaseName,
         int opIndex,
         int phaseIndex,
         int receiptId,
@@ -895,6 +941,7 @@ public class GenerateRunningTreeList : BaseNetLogic
         item.HorizontalAlignment = HorizontalAlignment.Stretch;
         SetItemButtonText(item, text);
         SetFlowIndices(item, opIndex, phaseIndex);
+        SetFlowNames(item, operationName, phaseName);
         EnsureIntVar(item, "ReceiptID", receiptId);
         EnsureIntVar(item, "OperationID", operationId);
         EnsureIntVar(item, "PhaseID", phaseId);
@@ -907,10 +954,24 @@ public class GenerateRunningTreeList : BaseNetLogic
     {
         var row = InformationModel.MakeObject("RunningTreeMessage", _phaseItemTypeId) as Container;
         if (row == null) return;
-        ConfigureRow(row, rowWidth, message, -1, -1, 0, 0, 0, TreeRowKind.Message);
-        ApplyRowColors(row, MessageTextColor);
+        ConfigureRow(row, rowWidth, message, "", "", -1, -1, 0, 0, 0, TreeRowKind.Message);
+        ApplyRowColors(row, MessageTextColor, TransparentBg);
         host.Add(row);
     }
+
+    private static bool IsRunningRowByName(string rowOperationName, string rowPhaseName, int phaseIndex, string runningOperationName, string runningPhaseName)
+    {
+        if (!NameEquals(rowOperationName, runningOperationName))
+            return false;
+
+        if (phaseIndex < 0)
+            return true;
+
+        return !string.IsNullOrWhiteSpace(runningPhaseName) && NameEquals(rowPhaseName, runningPhaseName);
+    }
+
+    private static bool NameEquals(string left, string right)
+        => string.Equals((left ?? "").Trim(), (right ?? "").Trim(), StringComparison.OrdinalIgnoreCase);
 
     private static Container GetRowHost(Container item) => item?.Get<Container>("Container");
     private static Container GetItemContainer(Container item) => GetRowHost(item)?.Get<Container>("ItemContainer");
@@ -973,12 +1034,19 @@ public class GenerateRunningTreeList : BaseNetLogic
         ClearBorder(itemContainer);
     }
 
-    private static void ApplyRowColors(Container row, Color textColor)
+    private static void ApplyRowColors(Container row, Color textColor, Color backgroundColor)
     {
         var button = GetItemButton(row);
+        var host = GetRowHost(row);
+        var itemContainer = GetItemContainer(row);
+
+        ApplyNodeBackground(row, backgroundColor);
+        ApplyNodeBackground(host, backgroundColor);
+        ApplyNodeBackground(itemContainer, backgroundColor);
+
         if (button == null) return;
-        ApplyButtonLook(button, TransparentBg, textColor);
-        ClearBorder(button);
+        ApplyButtonLook(button, backgroundColor, textColor);
+        ClearBorderOnly(button);
     }
 
     private static void ApplyButtonLook(Button button, Color background, Color textColor)
@@ -989,6 +1057,15 @@ public class GenerateRunningTreeList : BaseNetLogic
         SetNodeColor(button, "Color", background);
         SetNodeColor(button, "FillColor", background);
         SetNodeColor(button, "TextColor", textColor);
+    }
+
+    private static void ApplyNodeBackground(IUANode node, Color background)
+    {
+        if (node == null) return;
+        SetNodeColor(node, "BackgroundColor", background);
+        SetNodeColor(node, "Color", background);
+        SetNodeColor(node, "FillColor", background);
+        ClearBorderOnly(node);
     }
 
     private static void HideExpandButton(Container item)
@@ -1007,6 +1084,12 @@ public class GenerateRunningTreeList : BaseNetLogic
         EnsureIntVar(item, "FlowPhaseIndex", phaseIndex);
     }
 
+    private static void SetFlowNames(Container item, string operationName, string phaseName)
+    {
+        EnsureStringVar(item, "FlowOperationName", operationName ?? "");
+        EnsureStringVar(item, "FlowPhaseName", phaseName ?? "");
+    }
+
     private static bool TryGetFlowIndices(Container item, out int opIndex, out int phaseIndex)
     {
         opIndex = -1;
@@ -1015,6 +1098,19 @@ public class GenerateRunningTreeList : BaseNetLogic
         {
             opIndex = ReadIntVariable(item?.GetVariable("FlowOpIndex"), -1);
             phaseIndex = ReadIntVariable(item?.GetVariable("FlowPhaseIndex"), -1);
+            return true;
+        }
+        catch { return false; }
+    }
+
+    private static bool TryGetFlowNames(Container item, out string operationName, out string phaseName)
+    {
+        operationName = "";
+        phaseName = "";
+        try
+        {
+            operationName = ReadStringVariable(item?.GetVariable("FlowOperationName"));
+            phaseName = ReadStringVariable(item?.GetVariable("FlowPhaseName"));
             return true;
         }
         catch { return false; }
@@ -1044,6 +1140,18 @@ public class GenerateRunningTreeList : BaseNetLogic
         variable.Value = value;
     }
 
+    private static void EnsureStringVar(IUANode owner, string name, string value)
+    {
+        if (owner == null) return;
+        var variable = owner.GetVariable(name);
+        if (variable == null)
+        {
+            variable = InformationModel.MakeVariable(name, OpcUa.DataTypes.String);
+            owner.Add(variable);
+        }
+        variable.Value = value ?? "";
+    }
+
     private static void SetNodeColor(IUANode node, string variableName, Color color)
     {
         if (node == null) return;
@@ -1068,9 +1176,14 @@ public class GenerateRunningTreeList : BaseNetLogic
 
     private static void ClearBorder(IUANode node)
     {
+        ClearBorderOnly(node);
+        SetNodeColor(node, "FillColor", TransparentBg);
+    }
+
+    private static void ClearBorderOnly(IUANode node)
+    {
         SetNodeColor(node, "BorderColor", BorderNone);
         SetNodeSize(node, "BorderThickness", 0f);
-        SetNodeColor(node, "FillColor", TransparentBg);
     }
 
     private static void ApplyHostLayout(IUANode host)

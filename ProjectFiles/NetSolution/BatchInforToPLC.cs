@@ -2,24 +2,14 @@
 using System;
 using UAManagedCore;
 using OpcUa = UAManagedCore.OpcUa;
-using FTOptix.UI;
 using FTOptix.HMIProject;
-using FTOptix.EventLogger;
 using FTOptix.NetLogic;
-using FTOptix.NativeUI;
-using FTOptix.SQLiteStore;
 using FTOptix.Store;
-using FTOptix.RAEtherNetIP;
-using FTOptix.Retentivity;
 using FTOptix.CoreBase;
-using FTOptix.CommunicationDriver;
 using FTOptix.Core;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.Json;
-using FTOptix.WebUI;
-using FTOptix.DataLogger;
-using FTOptix.ODBCStore;
 #endregion
 
 /// <summary>
@@ -68,10 +58,9 @@ public class BatchInforToPLC : BaseNetLogic
 
     private IUANode _phasesRoot;
 
-    private IUANode _operationHandshakeRoot;
-    private IUAVariable _plcEvtDone;
-    private IUAVariable _plcCmdStart;
-    private IUAVariable _plcCmdSeq;
+    private IUAVariable _handshakeEvtDone;
+    private IUAVariable _handshakeCmdStart;
+    private IUAVariable _handshakeCmdSeq;
     private PeriodicTask _evtDoneTimer;
     private object _lastEvtDoneValue;
     private bool _hasLastEvtDoneValue;
@@ -81,6 +70,7 @@ public class BatchInforToPLC : BaseNetLogic
     private int _flowOpCount;
     private int _flowCurrentOpIndex;
     private bool _flowActive;
+    private string _flowPhaseWriteSummary;
 
     public override void Start()
     {
@@ -140,10 +130,9 @@ public class BatchInforToPLC : BaseNetLogic
         _evtDoneTimer = null;
         _lastEvtDoneValue = null;
         _hasLastEvtDoneValue = false;
-        _operationHandshakeRoot = null;
-        _plcEvtDone = null;
-        _plcCmdStart = null;
-        _plcCmdSeq = null;
+        _handshakeEvtDone = null;
+        _handshakeCmdStart = null;
+        _handshakeCmdSeq = null;
 
         _flowReceipt = null;
         _flowRecipeName = null;
@@ -183,11 +172,12 @@ public class BatchInforToPLC : BaseNetLogic
     }
 
     /// <summary>
-    /// 将当前批次编辑器中的元数据写入 PLC <c>Batch</c> 结构（不写 OP1 / Phases / 不置启动沿）。
+    /// 将当前批次编辑器中的元数据写入 PLC <c>Batch</c> 结构，并预写第一个 Operation（不写 Phases / 不置启动沿）。
     /// </summary>
     [ExportMethod]
     public void DownloadBatchToPlc()
     {
+        _flowPhaseWriteSummary = "";
         SetStatus("Downloading...");
         TryTransitionTo(_stDownload);
         if (!TryEnsureBatchTagReferences())
@@ -201,6 +191,13 @@ public class BatchInforToPLC : BaseNetLogic
         {
             Log.Error(LogCategory, "DownloadBatchToPlc：无法解析 Recipe NodeId 或子标签。");
             SetStatus("Download failed: invalid Recipe reference");
+            TryTransitionTo(_stIdle);
+            return;
+        }
+        if (!TryEnsureOp1TagReferences())
+        {
+            Log.Error(LogCategory, "DownloadBatchToPlc：无法解析 Operation NodeId 或子标签。");
+            SetStatus("Download failed: invalid Operation reference");
             TryTransitionTo(_stIdle);
             return;
         }
@@ -245,12 +242,35 @@ public class BatchInforToPLC : BaseNetLogic
         TrySetString(_plcRecipeName, recipeName ?? "");
         TrySetInt32(_plcRecipeId, recipeId);
         TrySetInt32(_plcRecipeNoOfOperations, noOfOperations);
+        string defaultOperationName = WriteDefaultOperationToModel(recipeNode);
 
         SaveDownloadedBatchToPlcModel(batchName, recipeName, comments, batchId, PlcBatchStatusReady, recipeId, noOfOperations);
+        SaveDownloadedDefaultOperationToModel(defaultOperationName);
 
-        Log.Info(LogCategory, $"DownloadBatchToPlc：已写入 BatchName='{batchName}', RecipeName='{recipeName}', BatchID={batchId}, Recipe.ID={recipeId}, Recipe.NoOfOperations={noOfOperations}.");
+        Log.Info(LogCategory, $"DownloadBatchToPlc：已写入 BatchName='{batchName}', RecipeName='{recipeName}', BatchID={batchId}, Recipe.ID={recipeId}, Recipe.NoOfOperations={noOfOperations}, DefaultOperation='{defaultOperationName}'.");
         SetStatus("Download successful");
         TryTransitionTo(_stIdle);
+    }
+
+    private string WriteDefaultOperationToModel(RecipeDatabaseTreeLoader.ReceiptNode recipeNode)
+    {
+        int opId = 0;
+        string opName = "";
+        int noOfPhases = 0;
+
+        if (recipeNode?.Operations != null && recipeNode.Operations.Count > 0)
+        {
+            var operation = recipeNode.Operations[0];
+            opId = ToPlcDintId(operation?.OperationID ?? 0);
+            opName = operation?.Name ?? "";
+            noOfPhases = operation?.Phases?.Count ?? 0;
+        }
+
+        TrySetInt32(_plcOp1Id, opId);
+        TrySetString(_plcOp1Name, opName);
+        TrySetInt32(_plcOp1NoOfPhases, noOfPhases);
+        TrySetInt32(LogicObject.GetVariable("RunningOpIndex"), 0);
+        return opName;
     }
 
 
@@ -329,6 +349,7 @@ public class BatchInforToPLC : BaseNetLogic
         _flowOpCount = opCount;
         _flowCurrentOpIndex = runningIndex;
         _flowActive = true;
+        _flowPhaseWriteSummary = "";
         TrySetInt32(LogicObject.GetVariable("RunningOpIndex"), _flowCurrentOpIndex);
         return true;
     }
@@ -378,7 +399,8 @@ public class BatchInforToPLC : BaseNetLogic
             loadedPhases++;
         }
 
-        Log.Info(LogCategory, $"FlowDownload：Recipe='{_flowRecipeName}', OpIndex={_flowCurrentOpIndex}, OP1.ID={opId}, OP1.Name='{opName}', OP1.NoOfPhases={noOfPhases}, 已下载Phase={loadedPhases}/{noOfPhases}, 写入字段总数={totalWritten}.");
+        _flowPhaseWriteSummary = BuildPhaseWriteSummary(loadedPhases, noOfPhases, totalWritten);
+        Log.Info(LogCategory, $"FlowDownload：Recipe='{_flowRecipeName}', OpIndex={_flowCurrentOpIndex}, OP1.ID={opId}, OP1.Name='{opName}', OP1.NoOfPhases={noOfPhases}, {_flowPhaseWriteSummary}.");
         if (_flowActive)
             SetFlowStatus(opName, "Downloading");
         else
@@ -529,8 +551,8 @@ public class BatchInforToPLC : BaseNetLogic
         }
 
         _op1Root = node;
-        _plcOp1Id = node.GetVariable("ID");
-        _plcOp1Name = node.GetVariable("Name");
+        _plcOp1Id = node.GetVariable("ID") ?? node.GetVariable("OperationID");
+        _plcOp1Name = node.GetVariable("Name") ?? node.GetVariable("OperationName");
         _plcOp1NoOfPhases = node.GetVariable("NoOfPhases");
 
         if (_plcOp1Id == null || _plcOp1Name == null || _plcOp1NoOfPhases == null)
@@ -594,8 +616,8 @@ public class BatchInforToPLC : BaseNetLogic
         }
 
         _recipeRoot = node;
-        _plcRecipeName = node.GetVariable("Name");
-        _plcRecipeId = node.GetVariable("ID");
+        _plcRecipeName = node.GetVariable("Name") ?? node.GetVariable("RecipeName");
+        _plcRecipeId = node.GetVariable("ID") ?? node.GetVariable("RecipeID");
         _plcRecipeNoOfOperations = node.GetVariable("NoOfOperations");
 
         if (_plcRecipeName == null || _plcRecipeId == null || _plcRecipeNoOfOperations == null)
@@ -608,11 +630,11 @@ public class BatchInforToPLC : BaseNetLogic
     }
 
     /// <summary>
-    /// 从脚本对象读取 <c>OperationHandshake</c> 指针并缓存 <c>EvtDone</c> 子变量。
+    /// 从脚本对象读取 <c>OperationHandshake</c> 指针并缓存中间 Model 的握手子变量。
     /// </summary>
     private bool TryEnsureOperationHandshakeReferences()
     {
-        if (_operationHandshakeRoot != null && _plcEvtDone != null && _plcCmdStart != null)
+        if (_handshakeEvtDone != null && _handshakeCmdStart != null)
             return true;
 
         var handshakePtr = LogicObject.GetVariable("OperationHandshake");
@@ -629,22 +651,39 @@ public class BatchInforToPLC : BaseNetLogic
             return false;
         }
 
-        _operationHandshakeRoot = node;
-        _plcEvtDone = node.GetVariable("EvtDone");
-        _plcCmdStart = node.GetVariable("CmdStart");
-        _plcCmdSeq = node.GetVariable("CmdSeq");
-        if (_plcEvtDone == null)
+        _handshakeEvtDone = GetOperationHandshakeVariable(node, "EvtDone", "OperationHandshakeEvtDone", "OperationHandShakeEvtDone");
+        _handshakeCmdStart = GetOperationHandshakeVariable(node, "CmdStart", "OperationHandshakeCmdStart", "OperationHandShakeCmdStart");
+        _handshakeCmdSeq = GetOperationHandshakeVariable(node, "CmdSeq", "OperationHandshakeCmdSeq", "OperationHandShakeCmdSeq");
+
+        if (_handshakeEvtDone == null)
         {
             Log.Error(LogCategory, "OperationHandshake 根节点下缺少 EvtDone 子变量。");
             return false;
         }
-        if (_plcCmdStart == null)
+        if (_handshakeCmdStart == null)
         {
             Log.Error(LogCategory, "OperationHandshake 根节点下缺少 CmdStart 子变量。");
             return false;
         }
 
         return true;
+    }
+
+    private static IUAVariable GetOperationHandshakeVariable(IUANode node, params string[] names)
+    {
+        if (node == null || names == null)
+            return null;
+
+        foreach (string name in names)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                continue;
+            var variable = node.GetVariable(name);
+            if (variable != null)
+                return variable;
+        }
+
+        return null;
     }
 
     private void SetupEvtDoneTimer()
@@ -663,15 +702,14 @@ public class BatchInforToPLC : BaseNetLogic
 
     private void PollEvtDoneValue()
     {
-        if (_plcEvtDone == null) return;
+        if (_handshakeEvtDone == null) return;
         object current = null;
-        try { current = _plcEvtDone.Value?.Value; } catch { return; }
+        try { current = _handshakeEvtDone.Value?.Value; } catch { return; }
 
         if (!_hasLastEvtDoneValue)
         {
             _lastEvtDoneValue = current;
             _hasLastEvtDoneValue = true;
-            return;
         }
 
         bool same = (_lastEvtDoneValue == null && current == null)
@@ -727,7 +765,7 @@ public class BatchInforToPLC : BaseNetLogic
     /// </summary>
     private void UpdateRunningPhaseNameFromCmdSeqCurrentZeroBased()
     {
-        if (_plcRunningPhaseName == null || _plcBatchRecipeName == null || _plcCmdSeq == null)
+        if (_plcRunningPhaseName == null || _plcBatchRecipeName == null || _handshakeCmdSeq == null)
             return;
 
         string recipeName = ReadStringVariableValue(_plcBatchRecipeName);
@@ -743,7 +781,7 @@ public class BatchInforToPLC : BaseNetLogic
         int phaseIndex;
         try
         {
-            object raw = _plcCmdSeq.Value?.Value;
+            object raw = _handshakeCmdSeq.Value?.Value;
             if (raw == null)
                 return;
             phaseIndex = Convert.ToInt32(raw, CultureInfo.InvariantCulture);
@@ -805,8 +843,9 @@ public class BatchInforToPLC : BaseNetLogic
             return;
         }
 
-        TrySetBoolean(_plcCmdStart, true);
-        TrySetBoolean(_plcEvtDone, false);
+        TryWriteHandshakeBoolean(_handshakeCmdStart, false, "CmdStart reset");
+        TryWriteHandshakeBoolean(_handshakeEvtDone, false, "EvtDone reset");
+        TryWriteHandshakeBoolean(_handshakeCmdStart, true, "CmdStart start");
         if (_flowActive)
             SetFlowStatus(GetCurrentFlowOpName(), "Running, waiting for completion");
         else
@@ -833,7 +872,8 @@ public class BatchInforToPLC : BaseNetLogic
         int n = _flowCurrentOpIndex + 1;
         int m = _flowOpCount;
         string safeName = string.IsNullOrWhiteSpace(opName) ? "-" : opName;
-        SetStatus($"[OP {n}/{m}] [{safeName}] {actionText}");
+        string phaseWriteText = string.IsNullOrWhiteSpace(_flowPhaseWriteSummary) ? "" : $" | {_flowPhaseWriteSummary}";
+        SetStatus($"[OP {n}/{m}] [{safeName}] {actionText}{phaseWriteText}");
 
         string phaseName = "";
         if (_flowReceipt?.Operations != null
@@ -846,6 +886,24 @@ public class BatchInforToPLC : BaseNetLogic
         }
         bool running = actionText.IndexOf("Running", StringComparison.OrdinalIgnoreCase) >= 0;
         PublishFlowSnapshot(_flowCurrentOpIndex, 0, safeName, phaseName, running);
+    }
+
+    private static string BuildPhaseWriteSummary(int loadedPhases, int noOfPhases, int totalWritten)
+    {
+        if (noOfPhases <= 0)
+            return "Phase write: no phases";
+
+        string result;
+        if (loadedPhases >= noOfPhases && totalWritten > 0)
+            result = "OK";
+        else if (loadedPhases >= noOfPhases)
+            result = "NO FIELDS";
+        else if (loadedPhases > 0)
+            result = "PARTIAL";
+        else
+            result = "NOT WRITTEN";
+
+        return $"Phase write: {result} ({loadedPhases}/{noOfPhases}), Fields={totalWritten}";
     }
 
     private IUANode GetPlcPhaseNodeByIndex(int index)
@@ -898,9 +956,25 @@ public class BatchInforToPLC : BaseNetLogic
         BumpFlowRefreshTick(snapshot);
     }
 
+    private static void SaveDownloadedDefaultOperationToModel(string operationName)
+    {
+        var snapshot = GetBatchDownloadToPlcDataNode();
+        if (snapshot == null)
+            return;
+
+        bool hasOperation = !string.IsNullOrWhiteSpace(operationName);
+        TrySetString(snapshot.GetVariable("OperationName"), operationName ?? "");
+        TrySetString(snapshot.GetVariable("PhaseName"), "");
+        TrySetInt32(snapshot.GetVariable("RunningOpIndex"), hasOperation ? 0 : -1);
+        TrySetInt32(snapshot.GetVariable("RunningPhaseIndex"), -1);
+        TrySetBoolean(snapshot.GetVariable("FlowIsRunning"), false);
+        TrySetBoolean(snapshot.GetVariable("FlowBatchFinished"), false);
+        BumpFlowRefreshTick(snapshot);
+    }
+
     private static void BumpFlowRefreshTick(IUAObject snapshot)
     {
-        var tickVar = snapshot?.GetVariable("FlowRefreshTick");
+        var tickVar = snapshot?.GetVariable("FlowRefreshTick") ?? snapshot?.GetVariable("RecipeRefreshTick");
         if (tickVar == null) return;
         int tick = 0;
         try
@@ -1365,6 +1439,18 @@ public class BatchInforToPLC : BaseNetLogic
         {
             Log.Warning(LogCategory, $"写入 Boolean（{v.BrowseName}）失败：{ex.Message}");
         }
+    }
+
+    private static void TryWriteHandshakeBoolean(IUAVariable variable, bool value, string description)
+    {
+        if (variable == null)
+        {
+            Log.Warning(LogCategory, $"写入 OperationHandshake Model Boolean（{description}）失败：变量为空。");
+            return;
+        }
+
+        TrySetBoolean(variable, value);
+        Log.Info(LogCategory, $"OperationHandshake Model Boolean 写入：{description}, Variable='{variable.BrowseName}', Value={value}.");
     }
 
     private static void TrySetString(IUAVariable v, string value)

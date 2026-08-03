@@ -70,6 +70,17 @@ Children:
   - Name: RecipeIsRunning
     Type: BaseDataVariableType
     DataType: Boolean
+    Value: true
+    Children:
+    - Name: DynamicLink
+      Type: DynamicLink
+      DataType: NodePath
+      Value: "../../CurrentBatchData/Batch/BatchStart"
+      Children:
+      - Name: Mode
+        Type: BaseVariableType
+        DataType: DynamicLinkMode
+        Value: 2
   - Name: RecipeFinished
     Type: BaseDataVariableType
     DataType: Boolean
@@ -82,64 +93,11 @@ Children:
 - Name: CurrentBatchData
   Type: BaseObjectType
   Children:
-  - Name: Batch
-    Type: BaseDataVariableType
-    DataType: UDT_Batch
-    Children:
-    - Name: DynamicLink
-      Type: DynamicLink
-      DataType: NodePath
-      Value: "../../../../../CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch"
-      Children:
-      - Name: Mode
-        Type: BaseVariableType
-        DataType: DynamicLinkMode
-        Value: 2
-  - Name: Recipe
-    Type: BaseDataVariableType
-    DataType: UDT_Recipe
-    Children:
-    - Name: DynamicLink
-      Type: DynamicLink
-      DataType: NodePath
-      Value: "../../../../../CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Recipe"
-      Children:
-      - Name: Mode
-        Type: BaseVariableType
-        DataType: DynamicLinkMode
-        Value: 2
-  - Name: Operation
-    Type: BaseDataVariableType
-    DataType: UDT_Operation
-    Children:
-    - Name: DynamicLink
-      Type: DynamicLink
-      DataType: NodePath
-      Value: "../../../../../CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OP"
-      Children:
-      - Name: Mode
-        Type: BaseVariableType
-        DataType: DynamicLinkMode
-        Value: 2
-  - Name: OperationHandShake
-    Type: BaseDataVariableType
-    DataType: UDT_RecipeHandshake
-    Children:
-    - Name: DynamicLink
-      Type: DynamicLink
-      DataType: NodePath
-      Value: "../../../../../CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OperationHandshake"
-      Children:
-      - Name: Mode
-        Type: BaseVariableType
-        DataType: DynamicLinkMode
-        Value: 2
   - Name: Phases
     Type: BaseDataVariableType
     DataType: UDT_Phase
     ValueRank: OneDimension
     ArrayDimensions: [20]
-    Value: [{"TypeId":{"IdType":2,"Id":"04440f024acdd3cb7fed520fd002b371","Namespace":7},"Body":{"PP":{"TypeId":{"IdType":2,"Id":"11fd0520c5654d52bd14cc940a7c76ad","Namespace":7},"Body":{"Valve":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"Pump":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"ControllerEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"ControllerSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"EC":{"TypeId":{"IdType":2,"Id":"52c136c61bb6b2955657d6b83ebc49d4","Namespace":7},"Body":{"LogicOperator1":false,"LogicOperator2":false,"EC1Operator":false,"EC2Operator":false,"EC3Operator":false,"EC1Enable":false,"EC2Enable":false,"EC3Enable":false,"EC1Selected":0,"EC2Selected":0,"EC3Selected":0,"RunningTimeHr":0,"RunningTimeMin":0,"RunningTimeSec":0,"EC1SP":0.0,"EC2SP":0.0,"EC3SP":0.0}}}},{"TypeId":{"IdType":2,"Id":"04440f024acdd3cb7fed520fd002b371","Namespace":7},"Body":{"PP":{"TypeId":{"IdType":2,"Id":"11fd0520c5654d52bd14cc940a7c76ad","Namespace":7},"Body":{"Valve":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"Pump":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"ControllerEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"ControllerSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"EC":{"TypeId":{"IdType":2,"Id":"52c136c61bb6b2955657d6b83ebc49d4","Namespace":7},"Body":{"LogicOperator1":false,"LogicOperator2":false,"EC1Operator":false,"EC2Operator":false,"EC3Operator":false,"EC1Enable":false,"EC2Enable":false,"EC3Enable":false,"EC1Selected":0,"EC2Selected":0,"EC3Selected":0,"RunningTimeHr":0,"RunningTimeMin":0,"RunningTimeSec":0,"EC1SP":0.0,"EC2SP":0.0,"EC3SP":0.0}}}},{"TypeId":{"IdType":2,"Id":"04440f024acdd3cb7fed520fd002b371","Namespace":7},"Body":{"PP":{"TypeId":{"IdType":2,"Id":"11fd0520c5654d52bd14cc940a7c76ad","Namespace":7},"Body":{"Valve":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"Pump":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"ControllerEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"ControllerSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"EC":{"TypeId":{"IdType":2,"Id":"52c136c61bb6b2955657d6b83ebc49d4","Namespace":7},"Body":{"LogicOperator1":false,"LogicOperator2":false,"EC1Operator":false,"EC2Operator":false,"EC3Operator":false,"EC1Enable":false,"EC2Enable":false,"EC3Enable":false,"EC1Selected":0,"EC2Selected":0,"EC3Selected":0,"RunningTimeHr":0,"RunningTimeMin":0,"RunningTimeSec":0,"EC1SP":0.0,"EC2SP":0.0,"EC3SP":0.0}}}},{"TypeId":{"IdType":2,"Id":"04440f024acdd3cb7fed520fd002b371","Namespace":7},"Body":{"PP":{"TypeId":{"IdType":2,"Id":"11fd0520c5654d52bd14cc940a7c76ad","Namespace":7},"Body":{"Valve":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"Pump":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"ControllerEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"ControllerSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"EC":{"TypeId":{"IdType":2,"Id":"52c136c61bb6b2955657d6b83ebc49d4","Namespace":7},"Body":{"LogicOperator1":false,"LogicOperator2":false,"EC1Operator":false,"EC2Operator":false,"EC3Operator":false,"EC1Enable":false,"EC2Enable":false,"EC3Enable":false,"EC1Selected":0,"EC2Selected":0,"EC3Selected":0,"RunningTimeHr":0,"RunningTimeMin":0,"RunningTimeSec":0,"EC1SP":0.0,"EC2SP":0.0,"EC3SP":0.0}}}},{"TypeId":{"IdType":2,"Id":"04440f024acdd3cb7fed520fd002b371","Namespace":7},"Body":{"PP":{"TypeId":{"IdType":2,"Id":"11fd0520c5654d52bd14cc940a7c76ad","Namespace":7},"Body":{"Valve":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"Pump":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"ControllerEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"ControllerSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"EC":{"TypeId":{"IdType":2,"Id":"52c136c61bb6b2955657d6b83ebc49d4","Namespace":7},"Body":{"LogicOperator1":false,"LogicOperator2":false,"EC1Operator":false,"EC2Operator":false,"EC3Operator":false,"EC1Enable":false,"EC2Enable":false,"EC3Enable":false,"EC1Selected":0,"EC2Selected":0,"EC3Selected":0,"RunningTimeHr":0,"RunningTimeMin":0,"RunningTimeSec":0,"EC1SP":0.0,"EC2SP":0.0,"EC3SP":0.0}}}},{"TypeId":{"IdType":2,"Id":"04440f024acdd3cb7fed520fd002b371","Namespace":7},"Body":{"PP":{"TypeId":{"IdType":2,"Id":"11fd0520c5654d52bd14cc940a7c76ad","Namespace":7},"Body":{"Valve":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"Pump":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"ControllerEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"ControllerSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"EC":{"TypeId":{"IdType":2,"Id":"52c136c61bb6b2955657d6b83ebc49d4","Namespace":7},"Body":{"LogicOperator1":false,"LogicOperator2":false,"EC1Operator":false,"EC2Operator":false,"EC3Operator":false,"EC1Enable":false,"EC2Enable":false,"EC3Enable":false,"EC1Selected":0,"EC2Selected":0,"EC3Selected":0,"RunningTimeHr":0,"RunningTimeMin":0,"RunningTimeSec":0,"EC1SP":0.0,"EC2SP":0.0,"EC3SP":0.0}}}},{"TypeId":{"IdType":2,"Id":"04440f024acdd3cb7fed520fd002b371","Namespace":7},"Body":{"PP":{"TypeId":{"IdType":2,"Id":"11fd0520c5654d52bd14cc940a7c76ad","Namespace":7},"Body":{"Valve":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"Pump":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"ControllerEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"ControllerSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"EC":{"TypeId":{"IdType":2,"Id":"52c136c61bb6b2955657d6b83ebc49d4","Namespace":7},"Body":{"LogicOperator1":false,"LogicOperator2":false,"EC1Operator":false,"EC2Operator":false,"EC3Operator":false,"EC1Enable":false,"EC2Enable":false,"EC3Enable":false,"EC1Selected":0,"EC2Selected":0,"EC3Selected":0,"RunningTimeHr":0,"RunningTimeMin":0,"RunningTimeSec":0,"EC1SP":0.0,"EC2SP":0.0,"EC3SP":0.0}}}},{"TypeId":{"IdType":2,"Id":"04440f024acdd3cb7fed520fd002b371","Namespace":7},"Body":{"PP":{"TypeId":{"IdType":2,"Id":"11fd0520c5654d52bd14cc940a7c76ad","Namespace":7},"Body":{"Valve":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"Pump":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"ControllerEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"ControllerSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"EC":{"TypeId":{"IdType":2,"Id":"52c136c61bb6b2955657d6b83ebc49d4","Namespace":7},"Body":{"LogicOperator1":false,"LogicOperator2":false,"EC1Operator":false,"EC2Operator":false,"EC3Operator":false,"EC1Enable":false,"EC2Enable":false,"EC3Enable":false,"EC1Selected":0,"EC2Selected":0,"EC3Selected":0,"RunningTimeHr":0,"RunningTimeMin":0,"RunningTimeSec":0,"EC1SP":0.0,"EC2SP":0.0,"EC3SP":0.0}}}},{"TypeId":{"IdType":2,"Id":"04440f024acdd3cb7fed520fd002b371","Namespace":7},"Body":{"PP":{"TypeId":{"IdType":2,"Id":"11fd0520c5654d52bd14cc940a7c76ad","Namespace":7},"Body":{"Valve":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"Pump":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"ControllerEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"ControllerSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"EC":{"TypeId":{"IdType":2,"Id":"52c136c61bb6b2955657d6b83ebc49d4","Namespace":7},"Body":{"LogicOperator1":false,"LogicOperator2":false,"EC1Operator":false,"EC2Operator":false,"EC3Operator":false,"EC1Enable":false,"EC2Enable":false,"EC3Enable":false,"EC1Selected":0,"EC2Selected":0,"EC3Selected":0,"RunningTimeHr":0,"RunningTimeMin":0,"RunningTimeSec":0,"EC1SP":0.0,"EC2SP":0.0,"EC3SP":0.0}}}},{"TypeId":{"IdType":2,"Id":"04440f024acdd3cb7fed520fd002b371","Namespace":7},"Body":{"PP":{"TypeId":{"IdType":2,"Id":"11fd0520c5654d52bd14cc940a7c76ad","Namespace":7},"Body":{"Valve":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"Pump":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"ControllerEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"ControllerSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"EC":{"TypeId":{"IdType":2,"Id":"52c136c61bb6b2955657d6b83ebc49d4","Namespace":7},"Body":{"LogicOperator1":false,"LogicOperator2":false,"EC1Operator":false,"EC2Operator":false,"EC3Operator":false,"EC1Enable":false,"EC2Enable":false,"EC3Enable":false,"EC1Selected":0,"EC2Selected":0,"EC3Selected":0,"RunningTimeHr":0,"RunningTimeMin":0,"RunningTimeSec":0,"EC1SP":0.0,"EC2SP":0.0,"EC3SP":0.0}}}},{"TypeId":{"IdType":2,"Id":"04440f024acdd3cb7fed520fd002b371","Namespace":7},"Body":{"PP":{"TypeId":{"IdType":2,"Id":"11fd0520c5654d52bd14cc940a7c76ad","Namespace":7},"Body":{"Valve":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"Pump":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"ControllerEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"ControllerSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"EC":{"TypeId":{"IdType":2,"Id":"52c136c61bb6b2955657d6b83ebc49d4","Namespace":7},"Body":{"LogicOperator1":false,"LogicOperator2":false,"EC1Operator":false,"EC2Operator":false,"EC3Operator":false,"EC1Enable":false,"EC2Enable":false,"EC3Enable":false,"EC1Selected":0,"EC2Selected":0,"EC3Selected":0,"RunningTimeHr":0,"RunningTimeMin":0,"RunningTimeSec":0,"EC1SP":0.0,"EC2SP":0.0,"EC3SP":0.0}}}},{"TypeId":{"IdType":2,"Id":"04440f024acdd3cb7fed520fd002b371","Namespace":7},"Body":{"PP":{"TypeId":{"IdType":2,"Id":"11fd0520c5654d52bd14cc940a7c76ad","Namespace":7},"Body":{"Valve":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"Pump":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"ControllerEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"ControllerSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"EC":{"TypeId":{"IdType":2,"Id":"52c136c61bb6b2955657d6b83ebc49d4","Namespace":7},"Body":{"LogicOperator1":false,"LogicOperator2":false,"EC1Operator":false,"EC2Operator":false,"EC3Operator":false,"EC1Enable":false,"EC2Enable":false,"EC3Enable":false,"EC1Selected":0,"EC2Selected":0,"EC3Selected":0,"RunningTimeHr":0,"RunningTimeMin":0,"RunningTimeSec":0,"EC1SP":0.0,"EC2SP":0.0,"EC3SP":0.0}}}},{"TypeId":{"IdType":2,"Id":"04440f024acdd3cb7fed520fd002b371","Namespace":7},"Body":{"PP":{"TypeId":{"IdType":2,"Id":"11fd0520c5654d52bd14cc940a7c76ad","Namespace":7},"Body":{"Valve":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"Pump":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"ControllerEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"ControllerSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"EC":{"TypeId":{"IdType":2,"Id":"52c136c61bb6b2955657d6b83ebc49d4","Namespace":7},"Body":{"LogicOperator1":false,"LogicOperator2":false,"EC1Operator":false,"EC2Operator":false,"EC3Operator":false,"EC1Enable":false,"EC2Enable":false,"EC3Enable":false,"EC1Selected":0,"EC2Selected":0,"EC3Selected":0,"RunningTimeHr":0,"RunningTimeMin":0,"RunningTimeSec":0,"EC1SP":0.0,"EC2SP":0.0,"EC3SP":0.0}}}},{"TypeId":{"IdType":2,"Id":"04440f024acdd3cb7fed520fd002b371","Namespace":7},"Body":{"PP":{"TypeId":{"IdType":2,"Id":"11fd0520c5654d52bd14cc940a7c76ad","Namespace":7},"Body":{"Valve":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"Pump":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"ControllerEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"ControllerSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"EC":{"TypeId":{"IdType":2,"Id":"52c136c61bb6b2955657d6b83ebc49d4","Namespace":7},"Body":{"LogicOperator1":false,"LogicOperator2":false,"EC1Operator":false,"EC2Operator":false,"EC3Operator":false,"EC1Enable":false,"EC2Enable":false,"EC3Enable":false,"EC1Selected":0,"EC2Selected":0,"EC3Selected":0,"RunningTimeHr":0,"RunningTimeMin":0,"RunningTimeSec":0,"EC1SP":0.0,"EC2SP":0.0,"EC3SP":0.0}}}},{"TypeId":{"IdType":2,"Id":"04440f024acdd3cb7fed520fd002b371","Namespace":7},"Body":{"PP":{"TypeId":{"IdType":2,"Id":"11fd0520c5654d52bd14cc940a7c76ad","Namespace":7},"Body":{"Valve":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"Pump":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"ControllerEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"ControllerSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"EC":{"TypeId":{"IdType":2,"Id":"52c136c61bb6b2955657d6b83ebc49d4","Namespace":7},"Body":{"LogicOperator1":false,"LogicOperator2":false,"EC1Operator":false,"EC2Operator":false,"EC3Operator":false,"EC1Enable":false,"EC2Enable":false,"EC3Enable":false,"EC1Selected":0,"EC2Selected":0,"EC3Selected":0,"RunningTimeHr":0,"RunningTimeMin":0,"RunningTimeSec":0,"EC1SP":0.0,"EC2SP":0.0,"EC3SP":0.0}}}},{"TypeId":{"IdType":2,"Id":"04440f024acdd3cb7fed520fd002b371","Namespace":7},"Body":{"PP":{"TypeId":{"IdType":2,"Id":"11fd0520c5654d52bd14cc940a7c76ad","Namespace":7},"Body":{"Valve":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"Pump":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"ControllerEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"ControllerSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"EC":{"TypeId":{"IdType":2,"Id":"52c136c61bb6b2955657d6b83ebc49d4","Namespace":7},"Body":{"LogicOperator1":false,"LogicOperator2":false,"EC1Operator":false,"EC2Operator":false,"EC3Operator":false,"EC1Enable":false,"EC2Enable":false,"EC3Enable":false,"EC1Selected":0,"EC2Selected":0,"EC3Selected":0,"RunningTimeHr":0,"RunningTimeMin":0,"RunningTimeSec":0,"EC1SP":0.0,"EC2SP":0.0,"EC3SP":0.0}}}},{"TypeId":{"IdType":2,"Id":"04440f024acdd3cb7fed520fd002b371","Namespace":7},"Body":{"PP":{"TypeId":{"IdType":2,"Id":"11fd0520c5654d52bd14cc940a7c76ad","Namespace":7},"Body":{"Valve":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"Pump":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"ControllerEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"ControllerSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"EC":{"TypeId":{"IdType":2,"Id":"52c136c61bb6b2955657d6b83ebc49d4","Namespace":7},"Body":{"LogicOperator1":false,"LogicOperator2":false,"EC1Operator":false,"EC2Operator":false,"EC3Operator":false,"EC1Enable":false,"EC2Enable":false,"EC3Enable":false,"EC1Selected":0,"EC2Selected":0,"EC3Selected":0,"RunningTimeHr":0,"RunningTimeMin":0,"RunningTimeSec":0,"EC1SP":0.0,"EC2SP":0.0,"EC3SP":0.0}}}},{"TypeId":{"IdType":2,"Id":"04440f024acdd3cb7fed520fd002b371","Namespace":7},"Body":{"PP":{"TypeId":{"IdType":2,"Id":"11fd0520c5654d52bd14cc940a7c76ad","Namespace":7},"Body":{"Valve":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"Pump":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"ControllerEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"ControllerSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"EC":{"TypeId":{"IdType":2,"Id":"52c136c61bb6b2955657d6b83ebc49d4","Namespace":7},"Body":{"LogicOperator1":false,"LogicOperator2":false,"EC1Operator":false,"EC2Operator":false,"EC3Operator":false,"EC1Enable":false,"EC2Enable":false,"EC3Enable":false,"EC1Selected":0,"EC2Selected":0,"EC3Selected":0,"RunningTimeHr":0,"RunningTimeMin":0,"RunningTimeSec":0,"EC1SP":0.0,"EC2SP":0.0,"EC3SP":0.0}}}},{"TypeId":{"IdType":2,"Id":"04440f024acdd3cb7fed520fd002b371","Namespace":7},"Body":{"PP":{"TypeId":{"IdType":2,"Id":"11fd0520c5654d52bd14cc940a7c76ad","Namespace":7},"Body":{"Valve":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"Pump":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"FixedSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"ControllerEbl":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"ControllerSetPointValue":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"EC":{"TypeId":{"IdType":2,"Id":"52c136c61bb6b2955657d6b83ebc49d4","Namespace":7},"Body":{"LogicOperator1":false,"LogicOperator2":false,"EC1Operator":false,"EC2Operator":false,"EC3Operator":false,"EC1Enable":false,"EC2Enable":false,"EC3Enable":false,"EC1Selected":0,"EC2Selected":0,"EC3Selected":0,"RunningTimeHr":0,"RunningTimeMin":0,"RunningTimeSec":0,"EC1SP":0.0,"EC2SP":0.0,"EC3SP":0.0}}}},{"TypeId":{"IdType":0,"Id":0,"Namespace":-1},"Body":{}}]
     Children:
     - Name: DynamicLink
       Type: DynamicLink
@@ -150,3 +108,251 @@ Children:
         Type: BaseVariableType
         DataType: DynamicLinkMode
         Value: 2
+  - Name: Batch
+    Id: g=b1b1ebd19a526e6b474409342d85475d
+    Type: BaseObjectType
+    Children:
+    - Name: BatchID
+      Type: BaseDataVariableType
+      DataType: Int32
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../../../../../CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchID"
+        Children:
+        - Name: Mode
+          Type: BaseVariableType
+          DataType: DynamicLinkMode
+          Value: 2
+    - Name: BatchStatus
+      Type: BaseDataVariableType
+      DataType: Int32
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../../../../../CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchStatus"
+        Children:
+        - Name: Mode
+          Type: BaseVariableType
+          DataType: DynamicLinkMode
+          Value: 2
+    - Name: EvtBatchDone
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../../../../../CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/EvtBatchDone"
+        Children:
+        - Name: Mode
+          Type: BaseVariableType
+          DataType: DynamicLinkMode
+          Value: 2
+    - Name: BatchName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../../../../../CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchName"
+        Children:
+        - Name: Mode
+          Type: BaseVariableType
+          DataType: DynamicLinkMode
+          Value: 2
+    - Name: RunningPhaseName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../../../../../CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/RunningPhaseName"
+        Children:
+        - Name: Mode
+          Type: BaseVariableType
+          DataType: DynamicLinkMode
+          Value: 2
+    - Name: BatchStart
+      Id: g=3d015761c8a580d4a613927bddf5981f
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../../../../../CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchStart"
+        Children:
+        - Name: Mode
+          Type: BaseVariableType
+          DataType: DynamicLinkMode
+          Value: 2
+    - Name: RecipeName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../../../../../CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/RecipeName"
+        Children:
+        - Name: Mode
+          Type: BaseVariableType
+          DataType: DynamicLinkMode
+          Value: 2
+  - Name: Recipe
+    Id: g=e5e3996f30b2fffd4063264042468352
+    Type: BaseObjectType
+    Children:
+    - Name: RecipeID
+      Type: BaseDataVariableType
+      DataType: Int32
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../../../../../CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Recipe/ID"
+        Children:
+        - Name: Mode
+          Type: BaseVariableType
+          DataType: DynamicLinkMode
+          Value: 2
+    - Name: NoOfOperations
+      Type: BaseDataVariableType
+      DataType: Int32
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../../../../../CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Recipe/NoOfOperations"
+        Children:
+        - Name: Mode
+          Type: BaseVariableType
+          DataType: DynamicLinkMode
+          Value: 2
+    - Name: RecipeName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../../../../../CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Recipe/Name"
+        Children:
+        - Name: Mode
+          Type: BaseVariableType
+          DataType: DynamicLinkMode
+          Value: 2
+  - Name: Operation
+    Id: g=c7a6dd9840bea458a0bf260ca0a489d9
+    Type: BaseObjectType
+    Children:
+    - Name: OperationID
+      Type: BaseDataVariableType
+      DataType: Int32
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../../../../../CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OP/ID"
+        Children:
+        - Name: Mode
+          Type: BaseVariableType
+          DataType: DynamicLinkMode
+          Value: 2
+    - Name: OperationName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "0"
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../../../../../CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OP/Name"
+        Children:
+        - Name: Mode
+          Type: BaseVariableType
+          DataType: DynamicLinkMode
+          Value: 2
+    - Name: NoOfPhases
+      Type: BaseDataVariableType
+      DataType: Int32
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../../../../../CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OP/NoOfPhases"
+        Children:
+        - Name: Mode
+          Type: BaseVariableType
+          DataType: DynamicLinkMode
+          Value: 2
+  - Name: OperationHandshake
+    Id: g=d941b61db85bbf7e7e2674c1cc1568ab
+    Type: BaseObjectType
+    Children:
+    - Name: OperationHandShakeEvtDone
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../../../../../CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OperationHandshake/EvtDone"
+        Children:
+        - Name: Mode
+          Type: BaseVariableType
+          DataType: DynamicLinkMode
+          Value: 2
+    - Name: OperationHandShakeCmdStart
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../../../../../CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OperationHandshake/CmdStart"
+        Children:
+        - Name: Mode
+          Type: BaseVariableType
+          DataType: DynamicLinkMode
+          Value: 2
+    - Name: OperationHandShakeCmdSeq
+      Type: BaseDataVariableType
+      DataType: Int32
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../../../../../CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OperationHandshake/CmdSeq"
+        Children:
+        - Name: Mode
+          Type: BaseVariableType
+          DataType: DynamicLinkMode
+          Value: 2
+  - Name: Phase
+    Type: BaseObjectType
+    Children:
+    - Name: Phases
+      Type: BaseDataVariableType
+      DataType: UDT_Phase
+      ValueRank: OneDimension
+      ArrayDimensions: [20]
+      Children:
+      - Name: DynamicLink
+        Type: DynamicLink
+        DataType: NodePath
+        Value: "../../../../../../CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Phases"
+        Children:
+        - Name: Mode
+          Type: BaseVariableType
+          DataType: DynamicLinkMode
+          Value: 2

@@ -250,7 +250,7 @@ Children:
   - Name: Operation
     Type: BaseDataVariableType
     DataType: NodeId
-    Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OP"
+    Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/CurrentBatchData/Operation"
   - Name: Phases
     Type: BaseDataVariableType
     DataType: NodeId
@@ -258,11 +258,11 @@ Children:
   - Name: Batch
     Type: BaseDataVariableType
     DataType: NodeId
-    Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch"
+    Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/CurrentBatchData/Batch"
   - Name: OperationHandshake
     Type: BaseDataVariableType
     DataType: NodeId
-    Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OperationHandshake"
+    Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/CurrentBatchData/OperationHandshake"
   - Class: Method
     Name: DownloadBatchToPlc
   - Name: StatusText
@@ -274,7 +274,7 @@ Children:
   - Name: Recipe
     Type: BaseDataVariableType
     DataType: NodeId
-    Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Recipe"
+    Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/CurrentBatchData/Recipe"
   - Name: RunningOpIndex
     Type: BaseDataVariableType
     DataType: Int32
