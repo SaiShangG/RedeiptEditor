@@ -172,7 +172,7 @@ public class BatchInforToPLC : BaseNetLogic
     }
 
     /// <summary>
-    /// 将当前批次编辑器中的元数据写入 PLC <c>Batch</c> 结构，并预写第一个 Operation（不写 Phases / 不置启动沿）。
+    /// 将当前批次编辑器中的元数据写入 PLC <c>Batch</c>、<c>Recipe</c>、<c>Operation</c> 和第一个 Operation 的 Phases（不置启动沿）。
     /// </summary>
     [ExportMethod]
     public void DownloadBatchToPlc()
@@ -198,6 +198,13 @@ public class BatchInforToPLC : BaseNetLogic
         {
             Log.Error(LogCategory, "DownloadBatchToPlc：无法解析 Operation NodeId 或子标签。");
             SetStatus("Download failed: invalid Operation reference");
+            TryTransitionTo(_stIdle);
+            return;
+        }
+        if (!TryEnsurePhasesTagReferences())
+        {
+            Log.Error(LogCategory, "DownloadBatchToPlc：无法解析 Phases NodeId。");
+            SetStatus("Download failed: invalid Phases reference");
             TryTransitionTo(_stIdle);
             return;
         }
@@ -244,10 +251,15 @@ public class BatchInforToPLC : BaseNetLogic
         TrySetInt32(_plcRecipeNoOfOperations, noOfOperations);
         string defaultOperationName = WriteDefaultOperationToModel(recipeNode);
 
+        var firstOperation = recipeNode?.Operations != null && recipeNode.Operations.Count > 0
+            ? recipeNode.Operations[0]
+            : null;
+        var phaseWrite = WriteOperationPhases(firstOperation);
+
         SaveDownloadedBatchToPlcModel(batchName, recipeName, comments, batchId, PlcBatchStatusReady, recipeId, noOfOperations);
         SaveDownloadedDefaultOperationToModel(defaultOperationName);
 
-        Log.Info(LogCategory, $"DownloadBatchToPlc：已写入 BatchName='{batchName}', RecipeName='{recipeName}', BatchID={batchId}, Recipe.ID={recipeId}, Recipe.NoOfOperations={noOfOperations}, DefaultOperation='{defaultOperationName}'.");
+        Log.Info(LogCategory, $"DownloadBatchToPlc：已写入 BatchName='{batchName}', RecipeName='{recipeName}', BatchID={batchId}, Recipe.ID={recipeId}, Recipe.NoOfOperations={noOfOperations}, DefaultOperation='{defaultOperationName}', {phaseWrite.Summary}.");
         SetStatus("Download successful");
         TryTransitionTo(_stIdle);
     }
@@ -375,11 +387,27 @@ public class BatchInforToPLC : BaseNetLogic
         TrySetString(_plcOp1Name, opName);
         TrySetInt32(_plcOp1NoOfPhases, noOfPhases);
 
+        var phaseWrite = WriteOperationPhases(op);
+        _flowPhaseWriteSummary = phaseWrite.Summary;
+        Log.Info(LogCategory, $"FlowDownload：Recipe='{_flowRecipeName}', OpIndex={_flowCurrentOpIndex}, OP1.ID={opId}, OP1.Name='{opName}', OP1.NoOfPhases={noOfPhases}, {_flowPhaseWriteSummary}.");
+        if (_flowActive)
+            SetFlowStatus(opName, "Downloading");
+        else
+            SetStatus("Download successful");
+        TryTransitionTo(_stWriteRun);
+        return true;
+    }
+
+    private (int LoadedPhases, int NoOfPhases, int TotalWritten, string Summary) WriteOperationPhases(RecipeDatabaseTreeLoader.OperationNode operation)
+    {
+        int noOfPhases = operation?.Phases?.Count ?? 0;
         int totalWritten = 0;
         int loadedPhases = 0;
+        var loader = RecipeDatabaseTreeLoader.Instance;
+
         for (int i = 0; i < noOfPhases; i++)
         {
-            var phase = op.Phases[i];
+            var phase = operation.Phases[i];
             if (phase == null) continue;
             var targetPhaseNode = GetPlcPhaseNodeByIndex(i);
             if (targetPhaseNode == null) break;
@@ -399,14 +427,7 @@ public class BatchInforToPLC : BaseNetLogic
             loadedPhases++;
         }
 
-        _flowPhaseWriteSummary = BuildPhaseWriteSummary(loadedPhases, noOfPhases, totalWritten);
-        Log.Info(LogCategory, $"FlowDownload：Recipe='{_flowRecipeName}', OpIndex={_flowCurrentOpIndex}, OP1.ID={opId}, OP1.Name='{opName}', OP1.NoOfPhases={noOfPhases}, {_flowPhaseWriteSummary}.");
-        if (_flowActive)
-            SetFlowStatus(opName, "Downloading");
-        else
-            SetStatus("Download successful");
-        TryTransitionTo(_stWriteRun);
-        return true;
+        return (loadedPhases, noOfPhases, totalWritten, BuildPhaseWriteSummary(loadedPhases, noOfPhases, totalWritten));
     }
 
     private void InitStateMachine()
