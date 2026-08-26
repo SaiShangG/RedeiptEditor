@@ -171,6 +171,37 @@ public class BatchInforToPLC : BaseNetLogic
         TryTransitionTo(_stDownload);
     }
 
+    [ExportMethod]
+    public void RequestJumpOperation(int targetOperationIndex)
+    {
+        if (!_flowActive || _flowReceipt?.Operations == null || _sm?.Current != _stWait)
+        {
+            SetStatus("Jump failed: operation flow is not running");
+            return;
+        }
+
+        if (targetOperationIndex < 0 || targetOperationIndex >= _flowOpCount)
+        {
+            SetStatus($"Jump failed: operation index {targetOperationIndex} is out of range");
+            return;
+        }
+
+        if (!TryEnsureOperationHandshakeReferences())
+        {
+            SetStatus("Jump failed: invalid OperationHandshake reference");
+            return;
+        }
+
+        TryWriteHandshakeBoolean(_handshakeCmdStart, false, "CmdStart jump reset");
+        _flowCurrentOpIndex = targetOperationIndex;
+        TrySetInt32(LogicObject.GetVariable("RunningOpIndex"), _flowCurrentOpIndex);
+
+        string operationName = GetCurrentFlowOpName();
+        Log.Info(LogCategory, $"Jump Operation requested: OpIndex={_flowCurrentOpIndex}, Operation='{operationName}'.");
+        SetFlowStatus(operationName, "Jump requested");
+        TryTransitionTo(_stDownload);
+    }
+
     /// <summary>
     /// 将当前批次编辑器中的元数据写入 PLC <c>Batch</c>、<c>Recipe</c>、<c>Operation</c> 和第一个 Operation 的 Phases（不置启动沿）。
     /// </summary>

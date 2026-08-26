@@ -11273,6 +11273,32 @@ Children:
                           DataType: Float
                           ModellingRule: Optional
                           Value: 100.0
+                      - Name: Label1
+                        Type: Label
+                        Children:
+                        - Name: Text
+                          Type: BaseDataVariableType
+                          DataType: LocalizedText
+                          Children:
+                          - Name: DynamicLink
+                            Type: DynamicLink
+                            DataType: NodePath
+                            Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/CurrentBatchData/OperationHandshake/OperationHandShakeEvtDone"
+                        - Name: Height
+                          Type: BaseVariableType
+                          DataType: Size
+                          ModellingRule: Optional
+                          Value: 82.0
+                        - Name: LeftMargin
+                          Type: BaseVariableType
+                          DataType: Size
+                          ModellingRule: Optional
+                          Value: -49.0
+                        - Name: Width
+                          Type: BaseVariableType
+                          DataType: Size
+                          ModellingRule: Optional
+                          Value: 84.0
                   - Name: Rectangle3
                     Type: Rectangle
                     Children:
@@ -11757,7 +11783,7 @@ Children:
                                 - Name: DynamicLink
                                   Type: DynamicLink
                                   DataType: NodePath
-                                  Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchPause"
+                                  Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchAbort"
                         - Name: MouseDownEventHandler1
                           Type: EventHandler
                           Children:
@@ -11911,6 +11937,19 @@ Children:
                             Type: BaseDataVariableType
                             DataType: Color
                             Value: "#f8fafc"
+                            Children:
+                            - Name: ConditionalConverter1
+                              Type: ConditionalConverter
+                              Children:
+                              - Name: Condition
+                                Type: BaseDataVariableType
+                                DataType: Boolean
+                                ReferenceType: HasSource
+                                Children:
+                                - Name: DynamicLink
+                                  Type: DynamicLink
+                                  DataType: NodePath
+                                  Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/EvtBatchDone"
                           - Name: MouseDownEventHandler1
                             Type: EventHandler
                             Children:

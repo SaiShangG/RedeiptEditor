@@ -387,10 +387,37 @@ public class GenerateRunningTreeList : BaseNetLogic
             return;
         }
 
+        var batchInforLogic = Project.Current?.GetObject("NetLogic/BatchInforToPLC") as IUAObject;
+        if (batchInforLogic == null)
+        {
+            if (_enableLog)
+                Log.Error(LogCategory, "Jump Operation failed: BatchInforToPLC not found.");
+            return;
+        }
+
+        try
+        {
+            batchInforLogic.ExecuteMethod("RequestJumpOperation", new object[] { opIndex });
+        }
+        catch (Exception ex)
+        {
+            if (_enableLog)
+                Log.Error(LogCategory, $"Jump Operation failed: {ex.Message}");
+            return;
+        }
+
+        string jumpStatus = batchInforLogic.GetVariable("StatusText")?.Value?.Value?.ToString() ?? "";
+        if (jumpStatus.StartsWith("Jump failed:", StringComparison.OrdinalIgnoreCase))
+        {
+            if (_enableLog)
+                Log.Warning(LogCategory, jumpStatus);
+            return;
+        }
+
         _jumpTargetOpIndex = opIndex;
         _jumpTargetPhaseIndex = -1;
         if (_enableLog)
-            Log.Info(LogCategory, $"Jump target operation selected: OpIndex={_jumpTargetOpIndex}");
+            Log.Info(LogCategory, $"Jump Operation requested: OpIndex={_jumpTargetOpIndex}");
         RefreshRunningStatus();
     }
 
