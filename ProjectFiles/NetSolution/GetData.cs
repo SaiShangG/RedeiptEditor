@@ -446,10 +446,6 @@ public class GetData : BaseNetLogic
 
 
 
-        Log.Info(LogCategory, sql);
-
-
-
         try
 
         {
