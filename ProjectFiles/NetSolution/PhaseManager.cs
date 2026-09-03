@@ -36,6 +36,17 @@ public class PhaseManager : BaseNetLogic
     #region 输入变更订阅
     private uint _phaseInputAffinityId;
     private readonly List<IEventRegistration> _phaseInputRegs = new List<IEventRegistration>();
+    private readonly List<EndConditionGroupState> _endConditionGroups = new List<EndConditionGroupState>();
+    private bool _refreshingEndConditionOptions;
+
+    private sealed class EndConditionGroupState
+    {
+        public IUAObject Widget { get; set; }
+        public PhaseUILayoutItem LayoutItem { get; set; }
+        public IUAVariable EnableVariable { get; set; }
+        public IUAVariable SelectedValueVariable { get; set; }
+        public string LogTag { get; set; }
+    }
 
     private void EnsurePhaseInputAffinity()
     {
@@ -48,6 +59,8 @@ public class PhaseManager : BaseNetLogic
         foreach (var r in _phaseInputRegs)
             r?.Dispose();
         _phaseInputRegs.Clear();
+        _endConditionGroups.Clear();
+        _refreshingEndConditionOptions = false;
     }
 
     private void RegisterPhaseParaValueEditors(IUAObject widget, string tag)
@@ -126,6 +139,7 @@ public class PhaseManager : BaseNetLogic
     {
         if (owner == null || root?.Sections == null || _phaseInputAffinityId == 0) return;
         if (owner.Get(ScrollRowsPath) == null) return;
+        _endConditionGroups.Clear();
         foreach (var sec in root.Sections)
         {
             if (sec?.Items == null) continue;
@@ -137,8 +151,116 @@ public class PhaseManager : BaseNetLogic
                 RegisterPhaseParaValueEditors(w, sec.Id + "/" + item.Id);
 
                 if (WidgetTypeIs(item.WidgetType, "PanelEndConditionGroup"))
+                {
                     RegisterEndConditionUnitLabelObserver(w, item, sec.Id + "/" + item.Id);
+                    RegisterEndConditionMutualExclusion(w, item, sec.Id + "/" + item.Id);
+                }
             }
+        }
+        RefreshEndConditionOptions();
+    }
+
+    private void RegisterEndConditionMutualExclusion(IUAObject groupWidget, PhaseUILayoutItem item, string logTag)
+    {
+        if (groupWidget == null || item == null || _phaseInputAffinityId == 0) return;
+
+        var enableSwitch = groupWidget.Get<Switch>("VL/PanelEndConditionsEnable/Rectangle_Border/HorizontalLayout1/Switch_Vlv1");
+        var comboBox = groupWidget.Get<ComboBox>("VL/PanelEndConditionSelection/Rectangle_Border/Panel2/ComboBox1");
+        var enableVariable = enableSwitch?.GetVariable("Checked");
+        var selectedValueVariable = comboBox?.GetVariable("SelectedValue");
+        if (enableVariable == null || selectedValueVariable == null)
+        {
+            Log.Warning(nameof(PhaseManager), $"EndCondition 互斥订阅失败 {logTag}: 未找到 Enable 或 SelectedValue 变量。");
+            return;
+        }
+
+        _endConditionGroups.Add(new EndConditionGroupState
+        {
+            Widget = groupWidget,
+            LayoutItem = item,
+            EnableVariable = enableVariable,
+            SelectedValueVariable = selectedValueVariable,
+            LogTag = logTag
+        });
+
+        try
+        {
+            var enableObserver = new CallbackVariableChangeObserver((iv, nv, ov, access, sender) => RefreshEndConditionOptions());
+            var selectionObserver = new CallbackVariableChangeObserver((iv, nv, ov, access, sender) => RefreshEndConditionOptions());
+            _phaseInputRegs.Add(enableVariable.RegisterEventObserver(enableObserver, EventType.VariableValueChanged, _phaseInputAffinityId));
+            _phaseInputRegs.Add(selectedValueVariable.RegisterEventObserver(selectionObserver, EventType.VariableValueChanged, _phaseInputAffinityId));
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(nameof(PhaseManager), $"EndCondition 互斥订阅失败 {logTag}: {ex.Message}");
+        }
+    }
+
+    private void RefreshEndConditionOptions()
+    {
+        if (_refreshingEndConditionOptions) return;
+        _refreshingEndConditionOptions = true;
+        try
+        {
+            var claimedValues = new HashSet<int>();
+            foreach (var group in _endConditionGroups)
+            {
+                if (!ReadBoolean(group.EnableVariable) || !TryReadInt32(group.SelectedValueVariable, out int selectedValue) || selectedValue == -1)
+                    continue;
+
+                if (claimedValues.Add(selectedValue))
+                    continue;
+
+                group.SelectedValueVariable.Value = -1;
+                Log.Warning(nameof(PhaseManager), $"EndCondition 选择冲突 {group.LogTag}: 值 {selectedValue} 已被前序启用组占用，已重置为空选项。");
+            }
+
+            foreach (var group in _endConditionGroups)
+            {
+                var excludedValues = new HashSet<int>();
+                foreach (var other in _endConditionGroups)
+                {
+                    if (ReferenceEquals(group, other) || !ReadBoolean(other.EnableVariable))
+                        continue;
+                    if (TryReadInt32(other.SelectedValueVariable, out int otherValue) && otherValue != -1)
+                        excludedValues.Add(otherValue);
+                }
+
+                if (TryReadInt32(group.SelectedValueVariable, out int currentValue))
+                    excludedValues.Remove(currentValue);
+                RebuildEndConditionItems(group.Widget, group.LayoutItem, excludedValues);
+            }
+        }
+        finally
+        {
+            _refreshingEndConditionOptions = false;
+        }
+    }
+
+    private static bool ReadBoolean(IUAVariable variable)
+    {
+        try
+        {
+            return variable?.Value?.Value != null && Convert.ToBoolean(variable.Value.Value);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static bool TryReadInt32(IUAVariable variable, out int value)
+    {
+        value = -1;
+        try
+        {
+            if (variable?.Value?.Value == null) return false;
+            value = Convert.ToInt32(variable.Value.Value);
+            return true;
+        }
+        catch
+        {
+            return false;
         }
     }
 
@@ -667,7 +789,7 @@ public class PhaseManager : BaseNetLogic
     /// <summary>
     /// 按 JSON 重建 ComboBox 的 EndConditionItems 选项变量；下拉下方的 SelectItemTemplatePanel 由 Optix 模板静态实例提供，此处不再创建/删除面板。
     /// </summary>
-    private static void RebuildEndConditionItems(IUAObject groupWidget, PhaseUILayoutItem item)
+    private static void RebuildEndConditionItems(IUAObject groupWidget, PhaseUILayoutItem item, ISet<int> excludedValues = null)
     {
         if (groupWidget == null || item?.Config?.ConditionSelector?.Items == null) return;
 
@@ -675,6 +797,9 @@ public class PhaseManager : BaseNetLogic
         if (endConditionItems == null) return;
 
         var usedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var comboBox = groupWidget.Get<ComboBox>("VL/PanelEndConditionSelection/Rectangle_Border/Panel2/ComboBox1");
+        bool hasSelectedValue = TryReadInt32(comboBox?.GetVariable("SelectedValue"), out int selectedValue);
+        bool retainedSelectedItem = false;
 
         var oldChildren = new List<IUANode>();
         if (endConditionItems.Children != null)
@@ -683,13 +808,27 @@ public class PhaseManager : BaseNetLogic
                 oldChildren.Add(child);
         }
         foreach (var child in oldChildren)
+        {
+            if (!retainedSelectedItem && hasSelectedValue && child is IUAVariable optionVariable
+                && TryReadInt32(optionVariable, out int optionValue) && optionValue == selectedValue)
+            {
+                usedNames.Add(child.BrowseName);
+                retainedSelectedItem = true;
+                continue;
+            }
             child.Delete();
+        }
 
-        AddEmptyConditionSelectorOption(endConditionItems, usedNames);
+        if (!retainedSelectedItem || selectedValue != -1)
+            AddEmptyConditionSelectorOption(endConditionItems, usedNames);
 
         foreach (var option in item.Config.ConditionSelector.Items)
         {
             if (option == null || string.IsNullOrWhiteSpace(option.Label))
+                continue;
+            if (excludedValues != null && excludedValues.Contains(option.Value))
+                continue;
+            if (retainedSelectedItem && option.Value == selectedValue)
                 continue;
 
             string safeName = MakeUniqueNodeName(usedNames, option.Label);
