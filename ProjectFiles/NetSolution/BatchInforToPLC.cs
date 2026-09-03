@@ -290,6 +290,7 @@ public class BatchInforToPLC : BaseNetLogic
         SaveDownloadedBatchToPlcModel(batchName, recipeName, comments, batchId, PlcBatchStatusReady, recipeId, noOfOperations);
         SaveDownloadedDefaultOperationToModel(defaultOperationName);
 
+        LogDownloadHeaderValues();
         Log.Info(LogCategory, $"DownloadBatchToPlc：已写入 BatchName='{batchName}', RecipeName='{recipeName}', BatchID={batchId}, Recipe.ID={recipeId}, Recipe.NoOfOperations={noOfOperations}, DefaultOperation='{defaultOperationName}', {phaseWrite.Summary}.");
         SetStatus("Download successful");
         TryTransitionTo(_stIdle);
@@ -419,6 +420,7 @@ public class BatchInforToPLC : BaseNetLogic
         TrySetInt32(_plcOp1NoOfPhases, noOfPhases);
 
         var phaseWrite = WriteOperationPhases(op);
+        LogDownloadOperationValues();
         _flowPhaseWriteSummary = phaseWrite.Summary;
         Log.Info(LogCategory, $"FlowDownload：Recipe='{_flowRecipeName}', OpIndex={_flowCurrentOpIndex}, OP1.ID={opId}, OP1.Name='{opName}', OP1.NoOfPhases={noOfPhases}, {_flowPhaseWriteSummary}.");
         if (_flowActive)
@@ -454,7 +456,9 @@ public class BatchInforToPLC : BaseNetLogic
                 }
             }
             loader?.ApplyResolvedParameter123ToColumnCopy(phase, resolvedCols);
-            totalWritten += WritePhaseColumnsToPlcPhaseNode(targetPhaseNode, resolvedCols);
+            var writtenValues = new List<string>();
+            totalWritten += WritePhaseColumnsToPlcPhaseNode(targetPhaseNode, resolvedCols, writtenValues);
+            Log.Info(LogCategory, $"DownloadToPLC values [Phase {i}]: {string.Join("; ", writtenValues)}");
             loadedPhases++;
         }
 
@@ -1123,20 +1127,24 @@ public class BatchInforToPLC : BaseNetLogic
         return null;
     }
 
-    private int WritePhaseColumnsToPlcPhaseNode(IUANode phaseNode, Dictionary<string, object> cols)
+    private int WritePhaseColumnsToPlcPhaseNode(IUANode phaseNode, Dictionary<string, object> cols, List<string> writtenValues)
     {
         if (phaseNode == null || cols == null || cols.Count == 0)
             return 0;
 
         int written = 0;
-        WritePhaseColumnsRecursive(phaseNode, cols, ref written);
+        WritePhaseColumnsRecursive(phaseNode, cols, "", writtenValues, ref written);
         return written;
     }
 
-    private void WritePhaseColumnsRecursive(IUANode node, Dictionary<string, object> cols, ref int written)
+    private void WritePhaseColumnsRecursive(IUANode node, Dictionary<string, object> cols, string parentPath, List<string> writtenValues, ref int written)
     {
         if (node == null)
             return;
+
+        string nodePath = string.IsNullOrEmpty(parentPath)
+            ? node.BrowseName
+            : parentPath + "." + node.BrowseName;
 
         if (node is IUAVariable v)
         {
@@ -1146,8 +1154,11 @@ public class BatchInforToPLC : BaseNetLogic
                 && cols.TryGetValue(key, out var raw)
                 && TryConvertPhaseColumnValueForVariable(v, raw, out object converted))
             {
-                TrySetVariable(v, converted);
-                written++;
+                if (TrySetVariable(v, converted))
+                {
+                    writtenValues?.Add(nodePath + "=" + FormatDownloadLogValue(converted));
+                    written++;
+                }
             }
         }
 
@@ -1157,8 +1168,40 @@ public class BatchInforToPLC : BaseNetLogic
         {
             if (child == null || IsPhaseMetaFieldName(child.BrowseName))
                 continue;
-            WritePhaseColumnsRecursive(child, cols, ref written);
+            WritePhaseColumnsRecursive(child, cols, nodePath, writtenValues, ref written);
         }
+    }
+
+    private void LogDownloadHeaderValues()
+    {
+        Log.Info(LogCategory,
+            $"DownloadToPLC values [Batch]: BatchID={ReadDownloadLogValue(_plcBatchId)}; BatchStatus={ReadDownloadLogValue(_plcBatchStatus)}; EvtBatchDone={ReadDownloadLogValue(_plcEvtBatchDone)}; BatchName={ReadDownloadLogValue(_plcBatchName)}; RunningPhaseName={ReadDownloadLogValue(_plcRunningPhaseName)}; BatchStart={ReadDownloadLogValue(_plcBatchStart)}; RecipeName={ReadDownloadLogValue(_plcBatchRecipeName)}");
+        Log.Info(LogCategory,
+            $"DownloadToPLC values [Recipe]: Name={ReadDownloadLogValue(_plcRecipeName)}; ID={ReadDownloadLogValue(_plcRecipeId)}; NoOfOperations={ReadDownloadLogValue(_plcRecipeNoOfOperations)}");
+        LogDownloadOperationValues();
+    }
+
+    private void LogDownloadOperationValues()
+    {
+        Log.Info(LogCategory,
+            $"DownloadToPLC values [Operation]: ID={ReadDownloadLogValue(_plcOp1Id)}; Name={ReadDownloadLogValue(_plcOp1Name)}; NoOfPhases={ReadDownloadLogValue(_plcOp1NoOfPhases)}");
+    }
+
+    private static string ReadDownloadLogValue(IUAVariable variable)
+        => FormatDownloadLogValue(variable?.Value?.Value);
+
+    private static string FormatDownloadLogValue(object value)
+    {
+        if (value == null) return "<null>";
+        if (value is LocalizedText localizedText) return localizedText.Text ?? string.Empty;
+        if (value is Array array)
+        {
+            var values = new string[array.Length];
+            for (int index = 0; index < array.Length; index++)
+                values[index] = Convert.ToString(array.GetValue(index), CultureInfo.InvariantCulture) ?? string.Empty;
+            return "[" + string.Join(",", values) + "]";
+        }
+        return Convert.ToString(value, CultureInfo.InvariantCulture) ?? string.Empty;
     }
 
     private static bool IsPhaseMetaFieldName(string name)
@@ -1399,16 +1442,18 @@ public class BatchInforToPLC : BaseNetLogic
         return false;
     }
 
-    private static void TrySetVariable(IUAVariable v, object value)
+    private static bool TrySetVariable(IUAVariable v, object value)
     {
-        if (v == null) return;
+        if (v == null) return false;
         try
         {
             v.Value = new UAValue(value);
+            return true;
         }
         catch (Exception ex)
         {
             Log.Warning(LogCategory, $"写入变量（{v.BrowseName}）失败：{ex.Message}");
+            return false;
         }
     }
 
