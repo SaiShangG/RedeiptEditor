@@ -15,6 +15,8 @@ using FTOptix.CoreBase;
 using FTOptix.CommunicationDriver;
 using FTOptix.Core;
 using FTOptix.WebUI;
+using FTOptix.DataLogger;
+using FTOptix.ODBCStore;
 #endregion
 
 public class GeneratePhaseTemplateUIFromJson : BaseNetLogic

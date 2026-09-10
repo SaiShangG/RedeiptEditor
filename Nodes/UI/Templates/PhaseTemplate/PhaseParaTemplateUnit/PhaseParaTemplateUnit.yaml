@@ -1143,7 +1143,7 @@ Children:
               - Name: DynamicLink
                 Type: DynamicLink
                 DataType: NodePath
-                Value: "{Item}@BrowseName"
+                Value: "{Item}@DisplayName"
             - Name: SelectedValuePath
               Type: BaseDataVariableType
               DataType: Int32
@@ -1157,46 +1157,6 @@ Children:
               DataType: Size
               ModellingRule: Optional
               Value: 40.0
-          - Name: Label3
-            Type: Label
-            Children:
-            - Name: Visible
-              Type: BaseDataVariableType
-              DataType: Boolean
-              Value: true
-            - Name: RightMargin
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-              Value: 158.0
-            - Name: LeftMargin
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-              Value: 228.0
-            - Name: TopMargin
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-              Value: 10.0
-            - Name: Width
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-              Value: 40.0
-            - Name: Height
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-              Value: 20.0
-            - Name: Text
-              Type: BaseDataVariableType
-              DataType: LocalizedText
-              Children:
-              - Name: DynamicLink
-                Type: DynamicLink
-                DataType: NodePath
-                Value: "/Objects/RedeiptEditor/Model/UIData/PhaseData/UDT_PhaseTemplateUIBuffer1/EC/EC1SP"
           - Name: TimeContainer
             Type: RowLayout
             Children:

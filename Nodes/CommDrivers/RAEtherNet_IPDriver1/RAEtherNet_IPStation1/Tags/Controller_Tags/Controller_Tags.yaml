@@ -597,601 +597,6 @@ Children:
         Type: BaseDataVariableType
         DataType: String
         Value: "OP.Oper.@Description"
-- Name: OP2
-  Type: UDT_Operation
-  DataType: UDT_Operation
-  Children:
-  - Name: SymbolName
-    Type: BaseDataVariableType
-    DataType: String
-    Value: "OP2"
-  - Name: BlockRead
-    Type: BaseDataVariableType
-    DataType: Boolean
-    Value: true
-  - Name: Description
-    Type: RAEtherNetIPMetaTag
-    DataType: String
-    Value: "Operation"
-    Children:
-    - Name: SymbolName
-      Type: BaseDataVariableType
-      DataType: String
-      Value: "OP2.@Description"
-  - Name: Name
-    Type: RAEtherNetIPTag
-    DataType: String
-    Children:
-    - Name: SymbolName
-      Type: BaseDataVariableType
-      DataType: String
-      Value: "OP2.Name"
-    - Name: Description
-      Type: RAEtherNetIPMetaTag
-      DataType: String
-      Value: "Operation Name"
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "OP2.Name.@Description"
-  - Name: ID
-    Type: RAEtherNetIPTag
-    DataType: Int32
-    Children:
-    - Name: SymbolName
-      Type: BaseDataVariableType
-      DataType: String
-      Value: "OP2.ID"
-  - Name: NoOfPhases
-    Type: RAEtherNetIPTag
-    DataType: Int32
-    Children:
-    - Name: SymbolName
-      Type: BaseDataVariableType
-      DataType: String
-      Value: "OP2.NoOfPhases"
-  - Name: RunningPhase
-    Type: UDT_Phase
-    DataType: UDT_Phase
-    Children:
-    - Name: SymbolName
-      Type: BaseDataVariableType
-      DataType: String
-      Value: "OP2.RunningPhase"
-    - Name: BlockRead
-      Type: BaseDataVariableType
-      DataType: Boolean
-      Value: true
-    - Name: PP
-      Type: UDT_PhaseParameters
-      DataType: UDT_PhaseParameters
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "OP2.RunningPhase.PP"
-      - Name: BlockRead
-        Type: BaseDataVariableType
-        DataType: Boolean
-        Value: true
-      - Name: Description
-        Type: RAEtherNetIPMetaTag
-        DataType: String
-        Value: "Phase Parameters"
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.PP.@Description"
-      - Name: Valve
-        Type: RAEtherNetIPTag
-        DataType: Boolean
-        ValueRank: OneDimension
-        ArrayDimensions: [32]
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.PP.Valve"
-        - Name: Description
-          Type: RAEtherNetIPMetaTag
-          DataType: String
-          Value: "Valves to be activated while phase is running"
-          Children:
-          - Name: SymbolName
-            Type: BaseDataVariableType
-            DataType: String
-            Value: "OP2.RunningPhase.PP.Valve.@Description"
-      - Name: Pump
-        Type: RAEtherNetIPTag
-        DataType: Boolean
-        ValueRank: OneDimension
-        ArrayDimensions: [32]
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.PP.Pump"
-        - Name: Description
-          Type: RAEtherNetIPMetaTag
-          DataType: String
-          Value: "Pumps to be running while phase is running"
-          Children:
-          - Name: SymbolName
-            Type: BaseDataVariableType
-            DataType: String
-            Value: "OP2.RunningPhase.PP.Pump.@Description"
-      - Name: FixedSetPointEbl
-        Type: RAEtherNetIPTag
-        DataType: Boolean
-        ValueRank: OneDimension
-        ArrayDimensions: [32]
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.PP.FixedSetPointEbl"
-        - Name: Description
-          Type: RAEtherNetIPMetaTag
-          DataType: String
-          Value: "Pump / Valve Fixed Set Point Enable"
-          Children:
-          - Name: SymbolName
-            Type: BaseDataVariableType
-            DataType: String
-            Value: "OP2.RunningPhase.PP.FixedSetPointEbl.@Description"
-      - Name: FixedSetPointValue
-        Type: RAEtherNetIPTag
-        DataType: Float
-        ValueRank: OneDimension
-        ArrayDimensions: [10]
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.PP.FixedSetPointValue"
-        - Name: Description
-          Type: RAEtherNetIPMetaTag
-          DataType: String
-          Value: "Pump / Valve Fixed Set Point Value"
-          Children:
-          - Name: SymbolName
-            Type: BaseDataVariableType
-            DataType: String
-            Value: "OP2.RunningPhase.PP.FixedSetPointValue.@Description"
-      - Name: ControllerEbl
-        Type: RAEtherNetIPTag
-        DataType: Boolean
-        ValueRank: OneDimension
-        ArrayDimensions: [32]
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.PP.ControllerEbl"
-        - Name: Description
-          Type: RAEtherNetIPMetaTag
-          DataType: String
-          Value: "Pump / Valve Controller Enable"
-          Children:
-          - Name: SymbolName
-            Type: BaseDataVariableType
-            DataType: String
-            Value: "OP2.RunningPhase.PP.ControllerEbl.@Description"
-      - Name: ControllerSetPointValue
-        Type: RAEtherNetIPTag
-        DataType: Float
-        ValueRank: OneDimension
-        ArrayDimensions: [10]
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.PP.ControllerSetPointValue"
-        - Name: Description
-          Type: RAEtherNetIPMetaTag
-          DataType: String
-          Value: "Pump / Valve Controller Set Point Value"
-          Children:
-          - Name: SymbolName
-            Type: BaseDataVariableType
-            DataType: String
-            Value: "OP2.RunningPhase.PP.ControllerSetPointValue.@Description"
-    - Name: EC
-      Type: UDT_EndConditions
-      DataType: UDT_EndConditions
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "OP2.RunningPhase.EC"
-      - Name: BlockRead
-        Type: BaseDataVariableType
-        DataType: Boolean
-        Value: true
-      - Name: Description
-        Type: RAEtherNetIPMetaTag
-        DataType: String
-        Value: "Phase End Conditions"
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.EC.@Description"
-      - Name: LogicOperator1
-        Type: RAEtherNetIPTag
-        DataType: Boolean
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.EC.LogicOperator1"
-        - Name: Description
-          Type: RAEtherNetIPMetaTag
-          DataType: String
-          Value: "Logical operator for End conditions\r\n1 = AND\r\n0 = OR"
-          Children:
-          - Name: SymbolName
-            Type: BaseDataVariableType
-            DataType: String
-            Value: "OP2.RunningPhase.EC.LogicOperator1.@Description"
-      - Name: LogicOperator2
-        Type: RAEtherNetIPTag
-        DataType: Boolean
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.EC.LogicOperator2"
-        - Name: Description
-          Type: RAEtherNetIPMetaTag
-          DataType: String
-          Value: "Logical operator for End conditions\r\n1 = AND\r\n0 = OR"
-          Children:
-          - Name: SymbolName
-            Type: BaseDataVariableType
-            DataType: String
-            Value: "OP2.RunningPhase.EC.LogicOperator2.@Description"
-      - Name: EC1Operator
-        Type: RAEtherNetIPTag
-        DataType: Boolean
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.EC.EC1Operator"
-        - Name: Description
-          Type: RAEtherNetIPMetaTag
-          DataType: String
-          Value: "Logical operator for End Condition 1\r\n1 = >=\r\n0 = <="
-          Children:
-          - Name: SymbolName
-            Type: BaseDataVariableType
-            DataType: String
-            Value: "OP2.RunningPhase.EC.EC1Operator.@Description"
-      - Name: EC2Operator
-        Type: RAEtherNetIPTag
-        DataType: Boolean
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.EC.EC2Operator"
-        - Name: Description
-          Type: RAEtherNetIPMetaTag
-          DataType: String
-          Value: "Logical operator for End Condition 2\r\n1 = >=\r\n0 = <="
-          Children:
-          - Name: SymbolName
-            Type: BaseDataVariableType
-            DataType: String
-            Value: "OP2.RunningPhase.EC.EC2Operator.@Description"
-      - Name: EC3Operator
-        Type: RAEtherNetIPTag
-        DataType: Boolean
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.EC.EC3Operator"
-        - Name: Description
-          Type: RAEtherNetIPMetaTag
-          DataType: String
-          Value: "Logical operator for End Condition 3\r\n1 = >=\r\n0 = <="
-          Children:
-          - Name: SymbolName
-            Type: BaseDataVariableType
-            DataType: String
-            Value: "OP2.RunningPhase.EC.EC3Operator.@Description"
-      - Name: EC1Enable
-        Type: RAEtherNetIPTag
-        DataType: Boolean
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.EC.EC1Enable"
-        - Name: Description
-          Type: RAEtherNetIPMetaTag
-          DataType: String
-          Value: "End Condition 1\r\nEnable"
-          Children:
-          - Name: SymbolName
-            Type: BaseDataVariableType
-            DataType: String
-            Value: "OP2.RunningPhase.EC.EC1Enable.@Description"
-      - Name: EC2Enable
-        Type: RAEtherNetIPTag
-        DataType: Boolean
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.EC.EC2Enable"
-        - Name: Description
-          Type: RAEtherNetIPMetaTag
-          DataType: String
-          Value: "End Condition 2\r\nEnable"
-          Children:
-          - Name: SymbolName
-            Type: BaseDataVariableType
-            DataType: String
-            Value: "OP2.RunningPhase.EC.EC2Enable.@Description"
-      - Name: EC3Enable
-        Type: RAEtherNetIPTag
-        DataType: Boolean
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.EC.EC3Enable"
-        - Name: Description
-          Type: RAEtherNetIPMetaTag
-          DataType: String
-          Value: "End Condition 3\r\nEnable"
-          Children:
-          - Name: SymbolName
-            Type: BaseDataVariableType
-            DataType: String
-            Value: "OP2.RunningPhase.EC.EC3Enable.@Description"
-      - Name: EC1Selected
-        Type: RAEtherNetIPTag
-        DataType: Int32
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.EC.EC1Selected"
-        - Name: Description
-          Type: RAEtherNetIPMetaTag
-          DataType: String
-          Value: "End Condition 1\r\nSelected Condition"
-          Children:
-          - Name: SymbolName
-            Type: BaseDataVariableType
-            DataType: String
-            Value: "OP2.RunningPhase.EC.EC1Selected.@Description"
-      - Name: EC2Selected
-        Type: RAEtherNetIPTag
-        DataType: Int32
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.EC.EC2Selected"
-        - Name: Description
-          Type: RAEtherNetIPMetaTag
-          DataType: String
-          Value: "End Condition 2\r\nSelected Condition"
-          Children:
-          - Name: SymbolName
-            Type: BaseDataVariableType
-            DataType: String
-            Value: "OP2.RunningPhase.EC.EC2Selected.@Description"
-      - Name: EC3Selected
-        Type: RAEtherNetIPTag
-        DataType: Int32
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.EC.EC3Selected"
-        - Name: Description
-          Type: RAEtherNetIPMetaTag
-          DataType: String
-          Value: "End Condition 3\r\nSelected Condition"
-          Children:
-          - Name: SymbolName
-            Type: BaseDataVariableType
-            DataType: String
-            Value: "OP2.RunningPhase.EC.EC3Selected.@Description"
-      - Name: RunningTimeHr
-        Type: RAEtherNetIPTag
-        DataType: Int32
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.EC.RunningTimeHr"
-        - Name: Description
-          Type: RAEtherNetIPMetaTag
-          DataType: String
-          Value: "End Condition\r\nPhase Running Time Hour Setpoint"
-          Children:
-          - Name: SymbolName
-            Type: BaseDataVariableType
-            DataType: String
-            Value: "OP2.RunningPhase.EC.RunningTimeHr.@Description"
-      - Name: RunningTimeMin
-        Type: RAEtherNetIPTag
-        DataType: Int32
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.EC.RunningTimeMin"
-        - Name: Description
-          Type: RAEtherNetIPMetaTag
-          DataType: String
-          Value: "End Condition\r\nPhase Running Time Minute Setpoint"
-          Children:
-          - Name: SymbolName
-            Type: BaseDataVariableType
-            DataType: String
-            Value: "OP2.RunningPhase.EC.RunningTimeMin.@Description"
-      - Name: RunningTimeSec
-        Type: RAEtherNetIPTag
-        DataType: Int32
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.EC.RunningTimeSec"
-        - Name: Description
-          Type: RAEtherNetIPMetaTag
-          DataType: String
-          Value: "End Condition\r\nPhase Running Time Second Setpoint"
-          Children:
-          - Name: SymbolName
-            Type: BaseDataVariableType
-            DataType: String
-            Value: "OP2.RunningPhase.EC.RunningTimeSec.@Description"
-      - Name: EC1SP
-        Type: RAEtherNetIPTag
-        DataType: Float
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.EC.EC1SP"
-        - Name: Description
-          Type: RAEtherNetIPMetaTag
-          DataType: String
-          Value: "End Condition 1 \r\nSelected Parameter Setpoint"
-          Children:
-          - Name: SymbolName
-            Type: BaseDataVariableType
-            DataType: String
-            Value: "OP2.RunningPhase.EC.EC1SP.@Description"
-      - Name: EC2SP
-        Type: RAEtherNetIPTag
-        DataType: Float
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.EC.EC2SP"
-        - Name: Description
-          Type: RAEtherNetIPMetaTag
-          DataType: String
-          Value: "End Condition 2 \r\nSelected Parameter Setpoint"
-          Children:
-          - Name: SymbolName
-            Type: BaseDataVariableType
-            DataType: String
-            Value: "OP2.RunningPhase.EC.EC2SP.@Description"
-      - Name: EC3SP
-        Type: RAEtherNetIPTag
-        DataType: Float
-        Children:
-        - Name: SymbolName
-          Type: BaseDataVariableType
-          DataType: String
-          Value: "OP2.RunningPhase.EC.EC3SP"
-        - Name: Description
-          Type: RAEtherNetIPMetaTag
-          DataType: String
-          Value: "End Condition 3 \r\nSelected Parameter Setpoint"
-          Children:
-          - Name: SymbolName
-            Type: BaseDataVariableType
-            DataType: String
-            Value: "OP2.RunningPhase.EC.EC3SP.@Description"
-  - Name: OperationComplete
-    Type: RAEtherNetIPTag
-    DataType: Boolean
-    Children:
-    - Name: SymbolName
-      Type: BaseDataVariableType
-      DataType: String
-      Value: "OP2.OperationComplete"
-  - Name: PhaseComplete
-    Type: RAEtherNetIPTag
-    DataType: Boolean
-    Children:
-    - Name: SymbolName
-      Type: BaseDataVariableType
-      DataType: String
-      Value: "OP2.PhaseComplete"
-  - Name: Idle
-    Type: RAEtherNetIPTag
-    DataType: Boolean
-    Children:
-    - Name: SymbolName
-      Type: BaseDataVariableType
-      DataType: String
-      Value: "OP2.Idle"
-    - Name: Description
-      Type: RAEtherNetIPMetaTag
-      DataType: String
-      Value: "Operation Idle"
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "OP2.Idle.@Description"
-  - Name: Running
-    Type: RAEtherNetIPTag
-    DataType: Boolean
-    Children:
-    - Name: SymbolName
-      Type: BaseDataVariableType
-      DataType: String
-      Value: "OP2.Running"
-    - Name: Description
-      Type: RAEtherNetIPMetaTag
-      DataType: String
-      Value: "Operation Running"
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "OP2.Running.@Description"
-  - Name: Held
-    Type: RAEtherNetIPTag
-    DataType: Boolean
-    Children:
-    - Name: SymbolName
-      Type: BaseDataVariableType
-      DataType: String
-      Value: "OP2.Held"
-    - Name: Description
-      Type: RAEtherNetIPMetaTag
-      DataType: String
-      Value: "Operation Held"
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "OP2.Held.@Description"
-  - Name: Oper
-    Type: RAEtherNetIPTag
-    DataType: Boolean
-    Children:
-    - Name: SymbolName
-      Type: BaseDataVariableType
-      DataType: String
-      Value: "OP2.Oper"
-    - Name: Description
-      Type: RAEtherNetIPMetaTag
-      DataType: String
-      Value: "Operation in Operation"
-      Children:
-      - Name: SymbolName
-        Type: BaseDataVariableType
-        DataType: String
-        Value: "OP2.Oper.@Description"
 - Name: Phases
   Id: g=66b9d1da9630c73024dfd35d49ab999f
   Type: UDT_Phase
@@ -5777,8 +5182,1584 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[9].EC.EC3SP.@Description"
+  - Name: 10
+    Type: UDT_Phase
+    DataType: UDT_Phase
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Phases[10]"
+    - Name: BlockRead
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: PP
+      Type: UDT_PhaseParameters
+      DataType: UDT_PhaseParameters
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[10].PP"
+      - Name: BlockRead
+        Type: BaseDataVariableType
+        DataType: Boolean
+        Value: true
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Parameters"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].PP.@Description"
+      - Name: Valve
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        ValueRank: OneDimension
+        ArrayDimensions: [32]
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].PP.Valve"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Valves to be activated while phase is running"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[10].PP.Valve.@Description"
+      - Name: Pump
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        ValueRank: OneDimension
+        ArrayDimensions: [32]
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].PP.Pump"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Pumps to be running while phase is running"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[10].PP.Pump.@Description"
+      - Name: FixedSetPointEbl
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        ValueRank: OneDimension
+        ArrayDimensions: [32]
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].PP.FixedSetPointEbl"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Pump / Valve Fixed Set Point Enable"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[10].PP.FixedSetPointEbl.@Description"
+      - Name: FixedSetPointValue
+        Type: RAEtherNetIPTag
+        DataType: Float
+        ValueRank: OneDimension
+        ArrayDimensions: [10]
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].PP.FixedSetPointValue"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Pump / Valve Fixed Set Point Value"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[10].PP.FixedSetPointValue.@Description"
+      - Name: ControllerEbl
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        ValueRank: OneDimension
+        ArrayDimensions: [32]
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].PP.ControllerEbl"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Pump / Valve Controller Enable"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[10].PP.ControllerEbl.@Description"
+      - Name: ControllerSetPointValue
+        Type: RAEtherNetIPTag
+        DataType: Float
+        ValueRank: OneDimension
+        ArrayDimensions: [10]
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].PP.ControllerSetPointValue"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Pump / Valve Controller Set Point Value"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[10].PP.ControllerSetPointValue.@Description"
+    - Name: EC
+      Type: UDT_EndConditions
+      DataType: UDT_EndConditions
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[10].EC"
+      - Name: BlockRead
+        Type: BaseDataVariableType
+        DataType: Boolean
+        Value: true
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase End Conditions"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].EC.@Description"
+      - Name: LogicOperator1
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].EC.LogicOperator1"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Logical operator for End conditions\r\n1 = AND\r\n0 = OR"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[10].EC.LogicOperator1.@Description"
+      - Name: LogicOperator2
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].EC.LogicOperator2"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Logical operator for End conditions\r\n1 = AND\r\n0 = OR"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[10].EC.LogicOperator2.@Description"
+      - Name: EC1Operator
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].EC.EC1Operator"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Logical operator for End Condition 1\r\n1 = >=\r\n0 = <="
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[10].EC.EC1Operator.@Description"
+      - Name: EC2Operator
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].EC.EC2Operator"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Logical operator for End Condition 2\r\n1 = >=\r\n0 = <="
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[10].EC.EC2Operator.@Description"
+      - Name: EC3Operator
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].EC.EC3Operator"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Logical operator for End Condition 3\r\n1 = >=\r\n0 = <="
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[10].EC.EC3Operator.@Description"
+      - Name: EC1Enable
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].EC.EC1Enable"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 1\r\nEnable"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[10].EC.EC1Enable.@Description"
+      - Name: EC2Enable
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].EC.EC2Enable"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 2\r\nEnable"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[10].EC.EC2Enable.@Description"
+      - Name: EC3Enable
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].EC.EC3Enable"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 3\r\nEnable"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[10].EC.EC3Enable.@Description"
+      - Name: EC1Selected
+        Type: RAEtherNetIPTag
+        DataType: Int32
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].EC.EC1Selected"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 1\r\nSelected Condition"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[10].EC.EC1Selected.@Description"
+      - Name: EC2Selected
+        Type: RAEtherNetIPTag
+        DataType: Int32
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].EC.EC2Selected"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 2\r\nSelected Condition"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[10].EC.EC2Selected.@Description"
+      - Name: EC3Selected
+        Type: RAEtherNetIPTag
+        DataType: Int32
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].EC.EC3Selected"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 3\r\nSelected Condition"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[10].EC.EC3Selected.@Description"
+      - Name: RunningTimeHr
+        Type: RAEtherNetIPTag
+        DataType: Int32
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].EC.RunningTimeHr"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition\r\nPhase Running Time Hour Setpoint"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[10].EC.RunningTimeHr.@Description"
+      - Name: RunningTimeMin
+        Type: RAEtherNetIPTag
+        DataType: Int32
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].EC.RunningTimeMin"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition\r\nPhase Running Time Minute Setpoint"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[10].EC.RunningTimeMin.@Description"
+      - Name: RunningTimeSec
+        Type: RAEtherNetIPTag
+        DataType: Int32
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].EC.RunningTimeSec"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition\r\nPhase Running Time Second Setpoint"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[10].EC.RunningTimeSec.@Description"
+      - Name: EC1SP
+        Type: RAEtherNetIPTag
+        DataType: Float
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].EC.EC1SP"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 1 \r\nSelected Parameter Setpoint"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[10].EC.EC1SP.@Description"
+      - Name: EC2SP
+        Type: RAEtherNetIPTag
+        DataType: Float
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].EC.EC2SP"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 2 \r\nSelected Parameter Setpoint"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[10].EC.EC2SP.@Description"
+      - Name: EC3SP
+        Type: RAEtherNetIPTag
+        DataType: Float
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].EC.EC3SP"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 3 \r\nSelected Parameter Setpoint"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[10].EC.EC3SP.@Description"
+  - Name: 11
+    Type: UDT_Phase
+    DataType: UDT_Phase
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Phases[11]"
+    - Name: BlockRead
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: PP
+      Type: UDT_PhaseParameters
+      DataType: UDT_PhaseParameters
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[11].PP"
+      - Name: BlockRead
+        Type: BaseDataVariableType
+        DataType: Boolean
+        Value: true
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Parameters"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].PP.@Description"
+      - Name: Valve
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        ValueRank: OneDimension
+        ArrayDimensions: [32]
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].PP.Valve"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Valves to be activated while phase is running"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[11].PP.Valve.@Description"
+      - Name: Pump
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        ValueRank: OneDimension
+        ArrayDimensions: [32]
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].PP.Pump"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Pumps to be running while phase is running"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[11].PP.Pump.@Description"
+      - Name: FixedSetPointEbl
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        ValueRank: OneDimension
+        ArrayDimensions: [32]
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].PP.FixedSetPointEbl"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Pump / Valve Fixed Set Point Enable"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[11].PP.FixedSetPointEbl.@Description"
+      - Name: FixedSetPointValue
+        Type: RAEtherNetIPTag
+        DataType: Float
+        ValueRank: OneDimension
+        ArrayDimensions: [10]
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].PP.FixedSetPointValue"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Pump / Valve Fixed Set Point Value"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[11].PP.FixedSetPointValue.@Description"
+      - Name: ControllerEbl
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        ValueRank: OneDimension
+        ArrayDimensions: [32]
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].PP.ControllerEbl"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Pump / Valve Controller Enable"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[11].PP.ControllerEbl.@Description"
+      - Name: ControllerSetPointValue
+        Type: RAEtherNetIPTag
+        DataType: Float
+        ValueRank: OneDimension
+        ArrayDimensions: [10]
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].PP.ControllerSetPointValue"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Pump / Valve Controller Set Point Value"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[11].PP.ControllerSetPointValue.@Description"
+    - Name: EC
+      Type: UDT_EndConditions
+      DataType: UDT_EndConditions
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[11].EC"
+      - Name: BlockRead
+        Type: BaseDataVariableType
+        DataType: Boolean
+        Value: true
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase End Conditions"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].EC.@Description"
+      - Name: LogicOperator1
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].EC.LogicOperator1"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Logical operator for End conditions\r\n1 = AND\r\n0 = OR"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[11].EC.LogicOperator1.@Description"
+      - Name: LogicOperator2
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].EC.LogicOperator2"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Logical operator for End conditions\r\n1 = AND\r\n0 = OR"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[11].EC.LogicOperator2.@Description"
+      - Name: EC1Operator
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].EC.EC1Operator"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Logical operator for End Condition 1\r\n1 = >=\r\n0 = <="
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[11].EC.EC1Operator.@Description"
+      - Name: EC2Operator
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].EC.EC2Operator"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Logical operator for End Condition 2\r\n1 = >=\r\n0 = <="
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[11].EC.EC2Operator.@Description"
+      - Name: EC3Operator
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].EC.EC3Operator"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Logical operator for End Condition 3\r\n1 = >=\r\n0 = <="
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[11].EC.EC3Operator.@Description"
+      - Name: EC1Enable
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].EC.EC1Enable"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 1\r\nEnable"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[11].EC.EC1Enable.@Description"
+      - Name: EC2Enable
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].EC.EC2Enable"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 2\r\nEnable"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[11].EC.EC2Enable.@Description"
+      - Name: EC3Enable
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].EC.EC3Enable"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 3\r\nEnable"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[11].EC.EC3Enable.@Description"
+      - Name: EC1Selected
+        Type: RAEtherNetIPTag
+        DataType: Int32
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].EC.EC1Selected"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 1\r\nSelected Condition"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[11].EC.EC1Selected.@Description"
+      - Name: EC2Selected
+        Type: RAEtherNetIPTag
+        DataType: Int32
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].EC.EC2Selected"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 2\r\nSelected Condition"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[11].EC.EC2Selected.@Description"
+      - Name: EC3Selected
+        Type: RAEtherNetIPTag
+        DataType: Int32
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].EC.EC3Selected"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 3\r\nSelected Condition"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[11].EC.EC3Selected.@Description"
+      - Name: RunningTimeHr
+        Type: RAEtherNetIPTag
+        DataType: Int32
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].EC.RunningTimeHr"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition\r\nPhase Running Time Hour Setpoint"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[11].EC.RunningTimeHr.@Description"
+      - Name: RunningTimeMin
+        Type: RAEtherNetIPTag
+        DataType: Int32
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].EC.RunningTimeMin"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition\r\nPhase Running Time Minute Setpoint"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[11].EC.RunningTimeMin.@Description"
+      - Name: RunningTimeSec
+        Type: RAEtherNetIPTag
+        DataType: Int32
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].EC.RunningTimeSec"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition\r\nPhase Running Time Second Setpoint"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[11].EC.RunningTimeSec.@Description"
+      - Name: EC1SP
+        Type: RAEtherNetIPTag
+        DataType: Float
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].EC.EC1SP"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 1 \r\nSelected Parameter Setpoint"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[11].EC.EC1SP.@Description"
+      - Name: EC2SP
+        Type: RAEtherNetIPTag
+        DataType: Float
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].EC.EC2SP"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 2 \r\nSelected Parameter Setpoint"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[11].EC.EC2SP.@Description"
+      - Name: EC3SP
+        Type: RAEtherNetIPTag
+        DataType: Float
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].EC.EC3SP"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 3 \r\nSelected Parameter Setpoint"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[11].EC.EC3SP.@Description"
+  - Name: 12
+    Type: UDT_Phase
+    DataType: UDT_Phase
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Phases[12]"
+    - Name: BlockRead
+      Type: BaseDataVariableType
+      DataType: Boolean
+      Value: true
+    - Name: PP
+      Type: UDT_PhaseParameters
+      DataType: UDT_PhaseParameters
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[12].PP"
+      - Name: BlockRead
+        Type: BaseDataVariableType
+        DataType: Boolean
+        Value: true
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Parameters"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].PP.@Description"
+      - Name: Valve
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        ValueRank: OneDimension
+        ArrayDimensions: [32]
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].PP.Valve"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Valves to be activated while phase is running"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[12].PP.Valve.@Description"
+      - Name: Pump
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        ValueRank: OneDimension
+        ArrayDimensions: [32]
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].PP.Pump"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Pumps to be running while phase is running"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[12].PP.Pump.@Description"
+      - Name: FixedSetPointEbl
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        ValueRank: OneDimension
+        ArrayDimensions: [32]
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].PP.FixedSetPointEbl"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Pump / Valve Fixed Set Point Enable"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[12].PP.FixedSetPointEbl.@Description"
+      - Name: FixedSetPointValue
+        Type: RAEtherNetIPTag
+        DataType: Float
+        ValueRank: OneDimension
+        ArrayDimensions: [10]
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].PP.FixedSetPointValue"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Pump / Valve Fixed Set Point Value"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[12].PP.FixedSetPointValue.@Description"
+      - Name: ControllerEbl
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        ValueRank: OneDimension
+        ArrayDimensions: [32]
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].PP.ControllerEbl"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Pump / Valve Controller Enable"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[12].PP.ControllerEbl.@Description"
+      - Name: ControllerSetPointValue
+        Type: RAEtherNetIPTag
+        DataType: Float
+        ValueRank: OneDimension
+        ArrayDimensions: [10]
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].PP.ControllerSetPointValue"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Pump / Valve Controller Set Point Value"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[12].PP.ControllerSetPointValue.@Description"
+    - Name: EC
+      Type: UDT_EndConditions
+      DataType: UDT_EndConditions
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[12].EC"
+      - Name: BlockRead
+        Type: BaseDataVariableType
+        DataType: Boolean
+        Value: true
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase End Conditions"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].EC.@Description"
+      - Name: LogicOperator1
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].EC.LogicOperator1"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Logical operator for End conditions\r\n1 = AND\r\n0 = OR"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[12].EC.LogicOperator1.@Description"
+      - Name: LogicOperator2
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].EC.LogicOperator2"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Logical operator for End conditions\r\n1 = AND\r\n0 = OR"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[12].EC.LogicOperator2.@Description"
+      - Name: EC1Operator
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].EC.EC1Operator"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Logical operator for End Condition 1\r\n1 = >=\r\n0 = <="
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[12].EC.EC1Operator.@Description"
+      - Name: EC2Operator
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].EC.EC2Operator"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Logical operator for End Condition 2\r\n1 = >=\r\n0 = <="
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[12].EC.EC2Operator.@Description"
+      - Name: EC3Operator
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].EC.EC3Operator"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Logical operator for End Condition 3\r\n1 = >=\r\n0 = <="
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[12].EC.EC3Operator.@Description"
+      - Name: EC1Enable
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].EC.EC1Enable"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 1\r\nEnable"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[12].EC.EC1Enable.@Description"
+      - Name: EC2Enable
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].EC.EC2Enable"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 2\r\nEnable"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[12].EC.EC2Enable.@Description"
+      - Name: EC3Enable
+        Type: RAEtherNetIPTag
+        DataType: Boolean
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].EC.EC3Enable"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 3\r\nEnable"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[12].EC.EC3Enable.@Description"
+      - Name: EC1Selected
+        Type: RAEtherNetIPTag
+        DataType: Int32
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].EC.EC1Selected"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 1\r\nSelected Condition"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[12].EC.EC1Selected.@Description"
+      - Name: EC2Selected
+        Type: RAEtherNetIPTag
+        DataType: Int32
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].EC.EC2Selected"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 2\r\nSelected Condition"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[12].EC.EC2Selected.@Description"
+      - Name: EC3Selected
+        Type: RAEtherNetIPTag
+        DataType: Int32
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].EC.EC3Selected"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 3\r\nSelected Condition"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[12].EC.EC3Selected.@Description"
+      - Name: RunningTimeHr
+        Type: RAEtherNetIPTag
+        DataType: Int32
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].EC.RunningTimeHr"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition\r\nPhase Running Time Hour Setpoint"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[12].EC.RunningTimeHr.@Description"
+      - Name: RunningTimeMin
+        Type: RAEtherNetIPTag
+        DataType: Int32
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].EC.RunningTimeMin"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition\r\nPhase Running Time Minute Setpoint"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[12].EC.RunningTimeMin.@Description"
+      - Name: RunningTimeSec
+        Type: RAEtherNetIPTag
+        DataType: Int32
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].EC.RunningTimeSec"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition\r\nPhase Running Time Second Setpoint"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[12].EC.RunningTimeSec.@Description"
+      - Name: EC1SP
+        Type: RAEtherNetIPTag
+        DataType: Float
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].EC.EC1SP"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 1 \r\nSelected Parameter Setpoint"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[12].EC.EC1SP.@Description"
+      - Name: EC2SP
+        Type: RAEtherNetIPTag
+        DataType: Float
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].EC.EC2SP"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 2 \r\nSelected Parameter Setpoint"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[12].EC.EC2SP.@Description"
+      - Name: EC3SP
+        Type: RAEtherNetIPTag
+        DataType: Float
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].EC.EC3SP"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "End Condition 3 \r\nSelected Parameter Setpoint"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Phases[12].EC.EC3SP.@Description"
+  - Name: PP
+    Id: g=5146e2c39a6d8f459a64656d120c341e
+    Type: UDT_PhaseParameters
+    DataType: UDT_PhaseParameters
+    Children:
+    - Name: Valve
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      ValueRank: OneDimension
+      ArrayDimensions: [32]
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Valve"
+    - Name: Pump
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      ValueRank: OneDimension
+      ArrayDimensions: [32]
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Pump"
+    - Name: FixedSetPointEbl
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      ValueRank: OneDimension
+      ArrayDimensions: [32]
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "FixedSetPointEbl"
+    - Name: FixedSetPointValue
+      Type: RAEtherNetIPTag
+      DataType: Float
+      ValueRank: OneDimension
+      ArrayDimensions: [10]
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "FixedSetPointValue"
+    - Name: ControllerEbl
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      ValueRank: OneDimension
+      ArrayDimensions: [32]
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "ControllerEbl"
+    - Name: ControllerSetPointValue
+      Type: RAEtherNetIPTag
+      DataType: Float
+      ValueRank: OneDimension
+      ArrayDimensions: [10]
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "ControllerSetPointValue"
+  - Name: EC
+    Id: g=7e58d7b21b00db0c35028a41404d2986
+    Type: UDT_EndConditions
+    DataType: UDT_EndConditions
+    Children:
+    - Name: LogicOperator1
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "LogicOperator1"
+    - Name: LogicOperator2
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "LogicOperator2"
+    - Name: EC1Operator
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC1Operator"
+    - Name: EC2Operator
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC2Operator"
+    - Name: EC3Operator
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC3Operator"
+    - Name: EC1Enable
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC1Enable"
+    - Name: EC2Enable
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC2Enable"
+    - Name: EC3Enable
+      Type: RAEtherNetIPTag
+      DataType: Boolean
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC3Enable"
+    - Name: EC1Selected
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC1Selected"
+    - Name: EC2Selected
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC2Selected"
+    - Name: EC3Selected
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC3Selected"
+    - Name: RunningTimeHr
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "RunningTimeHr"
+    - Name: RunningTimeMin
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "RunningTimeMin"
+    - Name: RunningTimeSec
+      Type: RAEtherNetIPTag
+      DataType: Int32
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "RunningTimeSec"
+    - Name: EC1SP
+      Type: RAEtherNetIPTag
+      DataType: Float
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC1SP"
+    - Name: EC2SP
+      Type: RAEtherNetIPTag
+      DataType: Float
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC2SP"
+    - Name: EC3SP
+      Type: RAEtherNetIPTag
+      DataType: Float
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "EC3SP"
 - Name: Recipe
-  Id: g=b5b146da4f2e1907129ba888b75e39da
   Type: UDT_Recipe
   DataType: UDT_Recipe
   Children:
@@ -7628,3 +8609,79 @@ Children:
     Type: BaseDataVariableType
     DataType: String
     Value: "ONS"
+- Name: InternalExecPhases
+  Type: RAEtherNetIPTag
+  DataType: Int32
+  Children:
+  - Name: SymbolName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "InternalExecPhases"
+  - Name: Description
+    Type: RAEtherNetIPMetaTag
+    DataType: String
+    Value: "Number of Phases Executed"
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "InternalExecPhases.@Description"
+- Name: InternalNoOfOP
+  Type: RAEtherNetIPTag
+  DataType: Int32
+  Children:
+  - Name: SymbolName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "InternalNoOfOP"
+  - Name: Description
+    Type: RAEtherNetIPMetaTag
+    DataType: String
+    Value: "Total Number of Operations"
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "InternalNoOfOP.@Description"
+- Name: InternalNoOfPhases
+  Type: RAEtherNetIPTag
+  DataType: Int32
+  Children:
+  - Name: SymbolName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "InternalNoOfPhases"
+  - Name: Description
+    Type: RAEtherNetIPMetaTag
+    DataType: String
+    Value: "Total Number of Phases"
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "InternalNoOfPhases.@Description"
+- Name: PhaseEndTrigger
+  Type: RAEtherNetIPTag
+  DataType: Boolean
+  Children:
+  - Name: SymbolName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "PhaseEndTrigger"
+- Name: StartNextOperation
+  Type: RAEtherNetIPTag
+  DataType: Boolean
+  Children:
+  - Name: SymbolName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "StartNextOperation"
+  - Name: Description
+    Type: RAEtherNetIPMetaTag
+    DataType: String
+    Value: "Start Next Operation"
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "StartNextOperation.@Description"

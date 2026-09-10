@@ -41,3 +41,41 @@ Children:
     Type: BaseDataVariableType
     DataType: Boolean
     Value: true
+- Name: RunningRecipeTreeData
+  Type: BaseObjectType
+  Children:
+  - Name: CurrentSelectedItemType
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Receipt"
+  - Name: SelectedReceiptName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "0"
+  - Name: SelectedReceiptCreatedDate
+    Type: BaseDataVariableType
+    DataType: DateTime
+  - Name: SelectedReceiptCreatedBy
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "0"
+  - Name: SelectedReceiptCurrentStatus
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "0"
+  - Name: SelectedOperationName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "0"
+  - Name: SelectedPhaseName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "0"
+  - Name: EnableUp
+    Type: BaseDataVariableType
+    DataType: Boolean
+    Value: true
+  - Name: EnableDown
+    Type: BaseDataVariableType
+    DataType: Boolean
+    Value: true

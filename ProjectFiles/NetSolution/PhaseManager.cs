@@ -17,6 +17,8 @@ using FTOptix.RecipeX;
 using FTOptix.RAEtherNetIP;
 using FTOptix.CommunicationDriver;
 using FTOptix.WebUI;
+using FTOptix.DataLogger;
+using FTOptix.ODBCStore;
 #endregion
 
 public class PhaseManager : BaseNetLogic
@@ -34,6 +36,26 @@ public class PhaseManager : BaseNetLogic
     #region 输入变更订阅
     private uint _phaseInputAffinityId;
     private readonly List<IEventRegistration> _phaseInputRegs = new List<IEventRegistration>();
+    private readonly List<EndConditionGroupState> _endConditionGroups = new List<EndConditionGroupState>();
+    private readonly List<PhaseParameterLogEntry> _phaseParameterLogEntries = new List<PhaseParameterLogEntry>();
+    private bool _refreshingEndConditionOptions;
+
+    private sealed class EndConditionGroupState
+    {
+        public IUAObject Widget { get; set; }
+        public PhaseUILayoutItem LayoutItem { get; set; }
+        public IUAVariable EnableVariable { get; set; }
+        public IUAVariable SelectedValueVariable { get; set; }
+        public string LogTag { get; set; }
+    }
+
+    private sealed class PhaseParameterLogEntry
+    {
+        public string SourceTagPath { get; set; }
+        public string BufferFieldPath { get; set; }
+        public int? ArrayIndex { get; set; }
+        public IUAVariable Variable { get; set; }
+    }
 
     private void EnsurePhaseInputAffinity()
     {
@@ -46,6 +68,9 @@ public class PhaseManager : BaseNetLogic
         foreach (var r in _phaseInputRegs)
             r?.Dispose();
         _phaseInputRegs.Clear();
+        _endConditionGroups.Clear();
+        _phaseParameterLogEntries.Clear();
+        _refreshingEndConditionOptions = false;
     }
 
     private void RegisterPhaseParaValueEditors(IUAObject widget, string tag)
@@ -63,7 +88,6 @@ public class PhaseManager : BaseNetLogic
             {
                 var obs = new CallbackVariableChangeObserver((iv, nv, ov, access, sender) =>
                 {
-                    LogPhaseInputFirstChar(logTag, nv);
                     if (RecipeDatabaseTreeLoader.Instance != null && RecipeDatabaseTreeLoader.Instance.IsPhaseUdtTemplateLoading)
                         return;
                     RecipeDatabaseManager.Instance?.NotifyPhaseParameterBufferEdited();
@@ -99,31 +123,11 @@ public class PhaseManager : BaseNetLogic
         return false;
     }
 
-    private static void LogPhaseInputFirstChar(string tag, UAValue nv)
-    {
-        char c = FirstCharOfValue(nv);
-        Log.Info(nameof(PhaseManager), tag + " → " + c);
-    }
-
-    private static char FirstCharOfValue(UAValue nv)
-    {
-        if (nv?.Value == null) return '_';
-        object val = nv.Value;
-        if (val is bool b) return b ? 'T' : 'F';
-        if (val is string s) return s.Length > 0 ? s[0] : '_';
-        if (val is LocalizedText lt)
-        {
-            string t = lt.Text;
-            return !string.IsNullOrEmpty(t) ? t[0] : '_';
-        }
-        string u = Convert.ToString(val);
-        return !string.IsNullOrEmpty(u) ? u[0] : '_';
-    }
-
     private void WireLayoutPhaseInputObservers(IUAObject owner, PhaseUILayoutRoot root)
     {
         if (owner == null || root?.Sections == null || _phaseInputAffinityId == 0) return;
         if (owner.Get(ScrollRowsPath) == null) return;
+        _endConditionGroups.Clear();
         foreach (var sec in root.Sections)
         {
             if (sec?.Items == null) continue;
@@ -135,8 +139,254 @@ public class PhaseManager : BaseNetLogic
                 RegisterPhaseParaValueEditors(w, sec.Id + "/" + item.Id);
 
                 if (WidgetTypeIs(item.WidgetType, "PanelEndConditionGroup"))
+                {
                     RegisterEndConditionUnitLabelObserver(w, item, sec.Id + "/" + item.Id);
+                    RegisterEndConditionMutualExclusion(w, item, sec.Id + "/" + item.Id);
+                }
             }
+        }
+        RefreshEndConditionOptions();
+        RegisterPhaseParameterSnapshotLogging(root);
+        LogPhaseParameterSnapshot("initial");
+    }
+
+    private void RegisterPhaseParameterSnapshotLogging(PhaseUILayoutRoot root)
+    {
+        _phaseParameterLogEntries.Clear();
+        if (root?.Sections == null || _phaseInputAffinityId == 0) return;
+
+        var sourcePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var section in root.Sections)
+        {
+            if (section?.Items == null) continue;
+            foreach (var item in section.Items)
+            {
+                if (item == null) continue;
+                foreach (var bindSpec in EnumerateAllBindSpecs(item))
+                {
+                    string sourceTagPath = bindSpec?.SourceTagPath?.Trim();
+                    if (string.IsNullOrEmpty(sourceTagPath) || !sourcePaths.Add(sourceTagPath)) continue;
+                    if (!TryResolvePhaseBufferVariable(sourceTagPath, out IUAVariable variable, out string bufferFieldPath, out int? arrayIndex))
+                        continue;
+                    _phaseParameterLogEntries.Add(new PhaseParameterLogEntry
+                    {
+                        SourceTagPath = sourceTagPath,
+                        BufferFieldPath = bufferFieldPath,
+                        ArrayIndex = arrayIndex,
+                        Variable = variable
+                    });
+                }
+            }
+        }
+
+        var observedBufferFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var entry in _phaseParameterLogEntries)
+        {
+            if (!observedBufferFields.Add(entry.BufferFieldPath)) continue;
+            string changedPath = entry.BufferFieldPath;
+            try
+            {
+                var observer = new CallbackVariableChangeObserver((iv, nv, ov, access, sender) =>
+                {
+                    if (RecipeDatabaseTreeLoader.Instance != null && RecipeDatabaseTreeLoader.Instance.IsPhaseUdtTemplateLoading)
+                        return;
+                    LogPhaseParameterSnapshot("changed:" + changedPath);
+                });
+                _phaseInputRegs.Add(entry.Variable.RegisterEventObserver(observer, EventType.VariableValueChanged, _phaseInputAffinityId));
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(nameof(PhaseManager), $"Phase parameter 日志订阅失败 {changedPath}: {ex.Message}");
+            }
+        }
+    }
+
+    private static IEnumerable<PhaseUILayoutBindSpec> EnumerateAllBindSpecs(PhaseUILayoutItem item)
+    {
+        foreach (var entry in EnumerateSlotBindSpecs(item))
+            yield return entry.Value;
+        foreach (var entry in EnumeratePanelEndConditionGroupConfigBindSpecs(item))
+            yield return entry.Value;
+        foreach (var bindSpec in EnumerateBindSpecs(item))
+            yield return bindSpec;
+    }
+
+    private static bool TryResolvePhaseBufferVariable(string sourceTagPath, out IUAVariable variable, out string bufferFieldPath, out int? arrayIndex)
+    {
+        variable = null;
+        if (!TryParseSourceTagPath(sourceTagPath, out bufferFieldPath, out arrayIndex, out _))
+            return false;
+
+        string modelVarPath = UdtPhaseTemplateUiBufferRootPath + "/" + bufferFieldPath.Replace('.', '/');
+        variable = Project.Current.GetVariable(modelVarPath);
+        if (variable == null && arrayIndex.HasValue)
+        {
+            variable = Project.Current.GetVariable(modelVarPath + "[" + arrayIndex.Value + "]");
+            if (variable == null)
+                variable = Project.Current.GetVariable(modelVarPath + "/" + arrayIndex.Value);
+        }
+        return variable != null;
+    }
+
+    private void LogPhaseParameterSnapshot(string reason)
+    {
+        var message = new StringBuilder("Phase parameters [");
+        message.Append(reason).Append("]: ");
+        for (int index = 0; index < _phaseParameterLogEntries.Count; index++)
+        {
+            if (index > 0) message.Append("; ");
+            var entry = _phaseParameterLogEntries[index];
+            message.Append(entry.SourceTagPath).Append('=').Append(ReadPhaseParameterLogValue(entry));
+        }
+        Log.Info(nameof(PhaseManager), message.ToString());
+    }
+
+    private static string ReadPhaseParameterLogValue(PhaseParameterLogEntry entry)
+    {
+        object value = entry?.Variable?.Value?.Value;
+        if (value == null) return "<null>";
+        if (entry.ArrayIndex.HasValue && value is Array array)
+        {
+            int index = entry.ArrayIndex.Value;
+            if (index < 0 || index >= array.Length) return "<index-out-of-range>";
+            value = array.GetValue(index);
+        }
+        if (value is LocalizedText localizedText) return localizedText.Text ?? string.Empty;
+        return Convert.ToString(value) ?? string.Empty;
+    }
+
+    private void RegisterEndConditionMutualExclusion(IUAObject groupWidget, PhaseUILayoutItem item, string logTag)
+    {
+        if (groupWidget == null || item == null || _phaseInputAffinityId == 0) return;
+
+        var enableSwitch = groupWidget.Get<Switch>("VL/PanelEndConditionsEnable/Rectangle_Border/HorizontalLayout1/Switch_Vlv1");
+        var comboBox = groupWidget.Get<ComboBox>("VL/PanelEndConditionSelection/Rectangle_Border/Panel2/ComboBox1");
+        var enableVariable = enableSwitch?.GetVariable("Checked");
+        var selectedValueVariable = comboBox?.GetVariable("SelectedValue");
+        if (enableVariable == null || selectedValueVariable == null)
+        {
+            Log.Warning(nameof(PhaseManager), $"EndCondition 互斥订阅失败 {logTag}: 未找到 Enable 或 SelectedValue 变量。");
+            return;
+        }
+
+        _endConditionGroups.Add(new EndConditionGroupState
+        {
+            Widget = groupWidget,
+            LayoutItem = item,
+            EnableVariable = enableVariable,
+            SelectedValueVariable = selectedValueVariable,
+            LogTag = logTag
+        });
+
+        try
+        {
+            var enableObserver = new CallbackVariableChangeObserver((iv, nv, ov, access, sender) => RefreshEndConditionOptions());
+            var selectionObserver = new CallbackVariableChangeObserver((iv, nv, ov, access, sender) =>
+            {
+                RefreshEndConditionOptions();
+                LogEndConditionSelection(logTag, item, nv);
+                LogPhaseParameterSnapshot("end-condition-selected:" + logTag);
+            });
+            _phaseInputRegs.Add(enableVariable.RegisterEventObserver(enableObserver, EventType.VariableValueChanged, _phaseInputAffinityId));
+            _phaseInputRegs.Add(selectedValueVariable.RegisterEventObserver(selectionObserver, EventType.VariableValueChanged, _phaseInputAffinityId));
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(nameof(PhaseManager), $"EndCondition 互斥订阅失败 {logTag}: {ex.Message}");
+        }
+    }
+
+    private static void LogEndConditionSelection(string logTag, PhaseUILayoutItem item, UAValue selectedValue)
+    {
+        int value = -1;
+        try
+        {
+            if (selectedValue?.Value != null)
+                value = Convert.ToInt32(selectedValue.Value);
+        }
+        catch
+        {
+            value = -1;
+        }
+
+        string label = value == -1 ? "Empty" : "Unknown";
+        if (item?.Config?.ConditionSelector?.Items != null)
+        {
+            foreach (var option in item.Config.ConditionSelector.Items)
+            {
+                if (option == null || option.Value != value) continue;
+                label = option.Label ?? string.Empty;
+                break;
+            }
+        }
+        Log.Info(nameof(PhaseManager), $"End condition selected [{logTag}]: SelectedValue={value}, Label={label}");
+    }
+
+    private void RefreshEndConditionOptions()
+    {
+        if (_refreshingEndConditionOptions) return;
+        _refreshingEndConditionOptions = true;
+        try
+        {
+            var claimedValues = new HashSet<int>();
+            foreach (var group in _endConditionGroups)
+            {
+                if (!ReadBoolean(group.EnableVariable) || !TryReadInt32(group.SelectedValueVariable, out int selectedValue) || selectedValue == -1)
+                    continue;
+
+                if (claimedValues.Add(selectedValue))
+                    continue;
+
+                group.SelectedValueVariable.Value = -1;
+                Log.Warning(nameof(PhaseManager), $"EndCondition 选择冲突 {group.LogTag}: 值 {selectedValue} 已被前序启用组占用，已重置为空选项。");
+            }
+
+            foreach (var group in _endConditionGroups)
+            {
+                var excludedValues = new HashSet<int>();
+                foreach (var other in _endConditionGroups)
+                {
+                    if (ReferenceEquals(group, other) || !ReadBoolean(other.EnableVariable))
+                        continue;
+                    if (TryReadInt32(other.SelectedValueVariable, out int otherValue) && otherValue != -1)
+                        excludedValues.Add(otherValue);
+                }
+
+                if (TryReadInt32(group.SelectedValueVariable, out int currentValue))
+                    excludedValues.Remove(currentValue);
+                RebuildEndConditionItems(group.Widget, group.LayoutItem, excludedValues);
+            }
+        }
+        finally
+        {
+            _refreshingEndConditionOptions = false;
+        }
+    }
+
+    private static bool ReadBoolean(IUAVariable variable)
+    {
+        try
+        {
+            return variable?.Value?.Value != null && Convert.ToBoolean(variable.Value.Value);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static bool TryReadInt32(IUAVariable variable, out int value)
+    {
+        value = -1;
+        try
+        {
+            if (variable?.Value?.Value == null) return false;
+            value = Convert.ToInt32(variable.Value.Value);
+            return true;
+        }
+        catch
+        {
+            return false;
         }
     }
 
@@ -665,7 +915,7 @@ public class PhaseManager : BaseNetLogic
     /// <summary>
     /// 按 JSON 重建 ComboBox 的 EndConditionItems 选项变量；下拉下方的 SelectItemTemplatePanel 由 Optix 模板静态实例提供，此处不再创建/删除面板。
     /// </summary>
-    private static void RebuildEndConditionItems(IUAObject groupWidget, PhaseUILayoutItem item)
+    private static void RebuildEndConditionItems(IUAObject groupWidget, PhaseUILayoutItem item, ISet<int> excludedValues = null)
     {
         if (groupWidget == null || item?.Config?.ConditionSelector?.Items == null) return;
 
@@ -673,6 +923,9 @@ public class PhaseManager : BaseNetLogic
         if (endConditionItems == null) return;
 
         var usedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var comboBox = groupWidget.Get<ComboBox>("VL/PanelEndConditionSelection/Rectangle_Border/Panel2/ComboBox1");
+        bool hasSelectedValue = TryReadInt32(comboBox?.GetVariable("SelectedValue"), out int selectedValue);
+        bool retainedSelectedItem = false;
 
         var oldChildren = new List<IUANode>();
         if (endConditionItems.Children != null)
@@ -681,13 +934,27 @@ public class PhaseManager : BaseNetLogic
                 oldChildren.Add(child);
         }
         foreach (var child in oldChildren)
+        {
+            if (!retainedSelectedItem && hasSelectedValue && child is IUAVariable optionVariable
+                && TryReadInt32(optionVariable, out int optionValue) && optionValue == selectedValue)
+            {
+                usedNames.Add(child.BrowseName);
+                retainedSelectedItem = true;
+                continue;
+            }
             child.Delete();
+        }
 
-        AddEmptyConditionSelectorOption(endConditionItems, usedNames);
+        if (!retainedSelectedItem || selectedValue != -1)
+            AddEmptyConditionSelectorOption(endConditionItems, usedNames);
 
         foreach (var option in item.Config.ConditionSelector.Items)
         {
             if (option == null || string.IsNullOrWhiteSpace(option.Label))
+                continue;
+            if (excludedValues != null && excludedValues.Contains(option.Value))
+                continue;
+            if (retainedSelectedItem && option.Value == selectedValue)
                 continue;
 
             string safeName = MakeUniqueNodeName(usedNames, option.Label);

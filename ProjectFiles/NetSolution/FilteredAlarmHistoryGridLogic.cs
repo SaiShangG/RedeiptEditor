@@ -17,6 +17,8 @@ using FTOptix.RecipeX;
 using FTOptix.RAEtherNetIP;
 using FTOptix.CommunicationDriver;
 using FTOptix.WebUI;
+using FTOptix.DataLogger;
+using FTOptix.ODBCStore;
 #endregion
 
 public class FilteredAlarmHistoryGridLogic : BaseNetLogic

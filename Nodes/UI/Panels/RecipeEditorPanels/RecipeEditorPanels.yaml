@@ -2259,6 +2259,11 @@ Children:
             DataType: VerticalAlignment
             ModellingRule: Optional
             Value: 3
+          - Name: FillColor
+            Type: BaseDataVariableType
+            DataType: Color
+            ModellingRule: Optional
+            Value: "#003c69"
         - Name: VerticalAlignment
           Type: BaseVariableType
           DataType: VerticalAlignment
@@ -3136,6 +3141,7 @@ Children:
                             Type: BaseVariableType
                             DataType: Size
                             ModellingRule: Optional
+                            Value: -6.0
                           - Name: LeftMargin
                             Type: BaseVariableType
                             DataType: Size
@@ -7092,7 +7098,7 @@ Children:
                       - Name: DynamicLink
                         Type: DynamicLink
                         DataType: NodePath
-                        Value: "{Loader}@NodeId"
+                        Value: "{PanelLoader2}@NodeId"
                         Children:
                         - Name: Mode
                           Type: BaseVariableType
@@ -7110,7 +7116,7 @@ Children:
                         Type: BaseDataVariableType
                         DataType: NodeId
                         Description: {"NamespaceIndex":3,"TextId":"ChangePanelNewPanelDescription"}
-                        Value: "/Objects/RedeiptEditor/UI/Panels/OperationPanels/UnitOperationDashboard"
+                        Value: "/Objects/RedeiptEditor/UI/Panels/OperationPanels/UnitMainDashboard"
                       - Name: AliasNode
                         Type: BaseDataVariableType
                         DataType: NodeId
@@ -10412,7 +10418,7 @@ Children:
                                 - Name: DynamicLink
                                   Type: DynamicLink
                                   DataType: NodePath
-                                  Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Recipe/Name"
+                                  Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/CurrentBatchData/Recipe/RecipeName"
                               - Name: LeftMargin
                                 Type: BaseVariableType
                                 DataType: Size
@@ -10443,7 +10449,7 @@ Children:
                                 - Name: DynamicLink
                                   Type: DynamicLink
                                   DataType: NodePath
-                                  Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/OP/Name"
+                                  Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/CurrentBatchData/Operation/OperationName"
                               - Name: LeftMargin
                                 Type: BaseVariableType
                                 DataType: Size
@@ -10479,10 +10485,114 @@ Children:
                                 - Name: DynamicLink
                                   Type: DynamicLink
                                   DataType: NodePath
-                                  Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/RunningPhaseName"
+                                  Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/CurrentBatchData/Batch/RunningPhaseName"
                   - Name: Rectangle2
                     Type: Rectangle
                     Children:
+                    - Name: ButtonWithIcon4
+                      Type: ButtonWithIcon
+                      Children:
+                      - Name: Rectangle1
+                        Type: Rectangle
+                        Children:
+                        - Name: Button1
+                          Type: Button
+                          Children:
+                          - Name: ImagePath
+                            Type: BaseDataVariableType
+                            DataType: ResourceUri
+                            Value: "ns=7;%PROJECTDIR%/Images/start_blck.svg"
+                          - Name: BackgroundColor
+                            Type: BaseDataVariableType
+                            DataType: Color
+                            Value: "#e4e4e400"
+                          - Name: MouseClickEventHandler1
+                            Type: EventHandler
+                            Children:
+                            - Name: ListenEventType
+                              Type: PropertyType
+                              DataType: NodeId
+                              Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseClickEvent"
+                            - Name: MethodsToCall
+                              Type: BaseObjectType
+                              Children:
+                              - Name: MethodContainer1
+                                Type: BaseObjectType
+                                Children:
+                                - Name: ObjectPointer
+                                  Type: NodePointer
+                                  DataType: NodeId
+                                  Value: "/Objects/Commands/UICommands"
+                                  Children:
+                                  - Name: Kind
+                                    Type: PropertyType
+                                    DataType: NodeId
+                                    Value: "/Types/ObjectTypes/BaseObjectType"
+                                - Name: Method
+                                  Type: BaseDataVariableType
+                                  DataType: String
+                                  Value: "OpenDialog"
+                                - Name: InputArguments
+                                  Type: BaseObjectType
+                                  Children:
+                                  - Name: Dialog
+                                    Type: BaseDataVariableType
+                                    DataType: NodeId
+                                    Value: "/Objects/RedeiptEditor/UI/Widgets/OperationPhaseJump"
+                                  - Name: AliasNode
+                                    Type: BaseDataVariableType
+                                    DataType: NodeId
+                                    ValueRank: ScalarOrOneDimension
+                                  - Name: ParentItem
+                                    Type: BaseDataVariableType
+                                    DataType: NodeId
+                                    Children:
+                                    - Name: DynamicLink
+                                      Type: DynamicLink
+                                      DataType: NodePath
+                                      Value: "../../../../..@NodeId"
+                                - Name: OutputArguments
+                                  Type: BaseObjectType
+                                  Children:
+                                  - Name: DialogNodeId
+                                    Type: BaseDataVariableType
+                                    DataType: NodeId
+                            - Name: EventArguments
+                              Type: MouseClickEvent
+                              Children:
+                              - Name: EventId
+                                Type: PropertyType
+                                DataType: ByteString
+                              - Name: EventType
+                                Type: PropertyType
+                                DataType: NodeId
+                              - Name: SourceNode
+                                Type: PropertyType
+                                DataType: NodeId
+                              - Name: SourceName
+                                Type: PropertyType
+                                DataType: String
+                              - Name: Time
+                                Type: PropertyType
+                                DataType: UtcTime
+                              - Name: ReceiveTime
+                                Type: PropertyType
+                                DataType: UtcTime
+                              - Name: Message
+                                Type: PropertyType
+                                DataType: LocalizedText
+                              - Name: Severity
+                                Type: PropertyType
+                                DataType: UInt16
+                        - Name: FillColor
+                          Type: BaseDataVariableType
+                          DataType: Color
+                          Value: "#f8fafc"
+                      - Name: Rectangle2
+                        Type: Rectangle
+                        Children:
+                        - Name: Button1
+                          Type: Button
                     - Name: HorizontalLayout1
                       Type: RowLayout
                       Children:
@@ -10543,7 +10653,7 @@ Children:
                                     - Name: VariableToModify
                                       Type: BaseDataVariableType
                                       DataType: VariablePointer
-                                      Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchStart"
+                                      Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/CurrentBatchData/Batch/BatchStart"
                                     - Name: Value
                                       Type: BaseDataVariableType
                                       DataType: Boolean
@@ -11163,6 +11273,32 @@ Children:
                           DataType: Float
                           ModellingRule: Optional
                           Value: 100.0
+                      - Name: Label1
+                        Type: Label
+                        Children:
+                        - Name: Text
+                          Type: BaseDataVariableType
+                          DataType: LocalizedText
+                          Children:
+                          - Name: DynamicLink
+                            Type: DynamicLink
+                            DataType: NodePath
+                            Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/CurrentBatchData/OperationHandshake/OperationHandShakeEvtDone"
+                        - Name: Height
+                          Type: BaseVariableType
+                          DataType: Size
+                          ModellingRule: Optional
+                          Value: 82.0
+                        - Name: LeftMargin
+                          Type: BaseVariableType
+                          DataType: Size
+                          ModellingRule: Optional
+                          Value: -49.0
+                        - Name: Width
+                          Type: BaseVariableType
+                          DataType: Size
+                          ModellingRule: Optional
+                          Value: 84.0
                   - Name: Rectangle3
                     Type: Rectangle
                     Children:
@@ -11190,7 +11326,7 @@ Children:
                                 - Name: DynamicLink
                                   Type: DynamicLink
                                   DataType: NodePath
-                                  Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchName"
+                                  Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/CurrentBatchData/Batch/BatchName"
                       - Name: LabelValueHorizontal2
                         Type: LabelValueHorizontal
                         Children:
@@ -11647,7 +11783,7 @@ Children:
                                 - Name: DynamicLink
                                   Type: DynamicLink
                                   DataType: NodePath
-                                  Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchPause"
+                                  Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchAbort"
                         - Name: MouseDownEventHandler1
                           Type: EventHandler
                           Children:
@@ -11801,6 +11937,19 @@ Children:
                             Type: BaseDataVariableType
                             DataType: Color
                             Value: "#f8fafc"
+                            Children:
+                            - Name: ConditionalConverter1
+                              Type: ConditionalConverter
+                              Children:
+                              - Name: Condition
+                                Type: BaseDataVariableType
+                                DataType: Boolean
+                                ReferenceType: HasSource
+                                Children:
+                                - Name: DynamicLink
+                                  Type: DynamicLink
+                                  DataType: NodePath
+                                  Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/EvtBatchDone"
                           - Name: MouseDownEventHandler1
                             Type: EventHandler
                             Children:

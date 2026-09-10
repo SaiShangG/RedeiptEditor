@@ -9,6 +9,8 @@ using FTOptix.Core;
 using FTOptix.UI;
 using FTOptix.WebUI;
 using FTOptix.EventLogger;
+using FTOptix.DataLogger;
+using FTOptix.ODBCStore;
 #endregion
 
 public class LoginButtonLogic : BaseNetLogic
