@@ -37,6 +37,7 @@ public class PhaseManager : BaseNetLogic
     private uint _phaseInputAffinityId;
     private readonly List<IEventRegistration> _phaseInputRegs = new List<IEventRegistration>();
     private readonly List<EndConditionGroupState> _endConditionGroups = new List<EndConditionGroupState>();
+    private readonly object _endConditionGroupsLock = new object();
     private readonly List<PhaseParameterLogEntry> _phaseParameterLogEntries = new List<PhaseParameterLogEntry>();
     private bool _refreshingEndConditionOptions;
 
@@ -65,12 +66,15 @@ public class PhaseManager : BaseNetLogic
 
     private void ClearPhaseInputRegs()
     {
-        foreach (var r in _phaseInputRegs)
-            r?.Dispose();
-        _phaseInputRegs.Clear();
-        _endConditionGroups.Clear();
-        _phaseParameterLogEntries.Clear();
-        _refreshingEndConditionOptions = false;
+        lock (_endConditionGroupsLock)
+        {
+            foreach (var r in _phaseInputRegs)
+                r?.Dispose();
+            _phaseInputRegs.Clear();
+            _endConditionGroups.Clear();
+            _phaseParameterLogEntries.Clear();
+            _refreshingEndConditionOptions = false;
+        }
     }
 
     private void RegisterPhaseParaValueEditors(IUAObject widget, string tag)
@@ -127,25 +131,28 @@ public class PhaseManager : BaseNetLogic
     {
         if (owner == null || root?.Sections == null || _phaseInputAffinityId == 0) return;
         if (owner.Get(ScrollRowsPath) == null) return;
-        _endConditionGroups.Clear();
-        foreach (var sec in root.Sections)
+        lock (_endConditionGroupsLock)
         {
-            if (sec?.Items == null) continue;
-            string rp = string.IsNullOrEmpty(sec.RowLayoutPath) ? "VL/HL" : sec.RowLayoutPath;
-            foreach (var item in sec.Items)
+            _endConditionGroups.Clear();
+            foreach (var sec in root.Sections)
             {
-                if (string.IsNullOrEmpty(item?.Id)) continue;
-                var w = owner.GetObject(ScrollRowsPath + "/" + sec.Id + "/" + rp + "/" + item.Id) as IUAObject;
-                RegisterPhaseParaValueEditors(w, sec.Id + "/" + item.Id);
-
-                if (WidgetTypeIs(item.WidgetType, "PanelEndConditionGroup"))
+                if (sec?.Items == null) continue;
+                string rp = string.IsNullOrEmpty(sec.RowLayoutPath) ? "VL/HL" : sec.RowLayoutPath;
+                foreach (var item in sec.Items)
                 {
-                    RegisterEndConditionUnitLabelObserver(w, item, sec.Id + "/" + item.Id);
-                    RegisterEndConditionMutualExclusion(w, item, sec.Id + "/" + item.Id);
+                    if (string.IsNullOrEmpty(item?.Id)) continue;
+                    var w = owner.GetObject(ScrollRowsPath + "/" + sec.Id + "/" + rp + "/" + item.Id) as IUAObject;
+                    RegisterPhaseParaValueEditors(w, sec.Id + "/" + item.Id);
+
+                    if (WidgetTypeIs(item.WidgetType, "PanelEndConditionGroup"))
+                    {
+                        RegisterEndConditionUnitLabelObserver(w, item, sec.Id + "/" + item.Id);
+                        RegisterEndConditionMutualExclusion(w, item, sec.Id + "/" + item.Id);
+                    }
                 }
             }
+            RefreshEndConditionOptions();
         }
-        RefreshEndConditionOptions();
         RegisterPhaseParameterSnapshotLogging(root);
         LogPhaseParameterSnapshot("initial");
     }
@@ -269,14 +276,17 @@ public class PhaseManager : BaseNetLogic
             return;
         }
 
-        _endConditionGroups.Add(new EndConditionGroupState
+        lock (_endConditionGroupsLock)
         {
-            Widget = groupWidget,
-            LayoutItem = item,
-            EnableVariable = enableVariable,
-            SelectedValueVariable = selectedValueVariable,
-            LogTag = logTag
-        });
+            _endConditionGroups.Add(new EndConditionGroupState
+            {
+                Widget = groupWidget,
+                LayoutItem = item,
+                EnableVariable = enableVariable,
+                SelectedValueVariable = selectedValueVariable,
+                LogTag = logTag
+            });
+        }
 
         try
         {
@@ -324,42 +334,45 @@ public class PhaseManager : BaseNetLogic
 
     private void RefreshEndConditionOptions()
     {
-        if (_refreshingEndConditionOptions) return;
-        _refreshingEndConditionOptions = true;
-        try
+        lock (_endConditionGroupsLock)
         {
-            var claimedValues = new HashSet<int>();
-            foreach (var group in _endConditionGroups)
+            if (_refreshingEndConditionOptions) return;
+            _refreshingEndConditionOptions = true;
+            try
             {
-                if (!ReadBoolean(group.EnableVariable) || !TryReadInt32(group.SelectedValueVariable, out int selectedValue) || selectedValue == -1)
-                    continue;
-
-                if (claimedValues.Add(selectedValue))
-                    continue;
-
-                group.SelectedValueVariable.Value = -1;
-                Log.Warning(nameof(PhaseManager), $"EndCondition 选择冲突 {group.LogTag}: 值 {selectedValue} 已被前序启用组占用，已重置为空选项。");
-            }
-
-            foreach (var group in _endConditionGroups)
-            {
-                var excludedValues = new HashSet<int>();
-                foreach (var other in _endConditionGroups)
+                var claimedValues = new HashSet<int>();
+                foreach (var group in _endConditionGroups)
                 {
-                    if (ReferenceEquals(group, other) || !ReadBoolean(other.EnableVariable))
+                    if (!ReadBoolean(group.EnableVariable) || !TryReadInt32(group.SelectedValueVariable, out int selectedValue) || selectedValue == -1)
                         continue;
-                    if (TryReadInt32(other.SelectedValueVariable, out int otherValue) && otherValue != -1)
-                        excludedValues.Add(otherValue);
+
+                    if (claimedValues.Add(selectedValue))
+                        continue;
+
+                    group.SelectedValueVariable.Value = -1;
+                    Log.Warning(nameof(PhaseManager), $"EndCondition 选择冲突 {group.LogTag}: 值 {selectedValue} 已被前序启用组占用，已重置为空选项。");
                 }
 
-                if (TryReadInt32(group.SelectedValueVariable, out int currentValue))
-                    excludedValues.Remove(currentValue);
-                RebuildEndConditionItems(group.Widget, group.LayoutItem, excludedValues);
+                foreach (var group in _endConditionGroups)
+                {
+                    var excludedValues = new HashSet<int>();
+                    foreach (var other in _endConditionGroups)
+                    {
+                        if (ReferenceEquals(group, other) || !ReadBoolean(other.EnableVariable))
+                            continue;
+                        if (TryReadInt32(other.SelectedValueVariable, out int otherValue) && otherValue != -1)
+                            excludedValues.Add(otherValue);
+                    }
+
+                    if (TryReadInt32(group.SelectedValueVariable, out int currentValue))
+                        excludedValues.Remove(currentValue);
+                    RebuildEndConditionItems(group.Widget, group.LayoutItem, excludedValues);
+                }
             }
-        }
-        finally
-        {
-            _refreshingEndConditionOptions = false;
+            finally
+            {
+                _refreshingEndConditionOptions = false;
+            }
         }
     }
 
@@ -960,8 +973,8 @@ public class PhaseManager : BaseNetLogic
             string safeName = MakeUniqueNodeName(usedNames, option.Label);
             int numericValue = option.Value;
             var variable = InformationModel.MakeVariable(safeName, UAManagedCore.OpcUa.DataTypes.Int32);
-            variable.Description = new LocalizedText(option.Label);
-            variable.DisplayName = new LocalizedText(option.Label);
+            variable.Description = new LocalizedText(safeName + "Description", option.Label, "en-US");
+            variable.DisplayName = new LocalizedText(safeName + "DisplayName", option.Label, "en-US");
             variable.Value = numericValue;
             endConditionItems.Add(variable);
         }
