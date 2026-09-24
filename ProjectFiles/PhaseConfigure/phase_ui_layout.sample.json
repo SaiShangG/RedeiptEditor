@@ -158,8 +158,21 @@
             "conditionSelector": {
               "items": [
                 {
-                  "label": "Time",
-                  "value": 0,
+                  "label": "User Acknowledgement",
+                  "value": 1,
+                  "unit": "",
+                  "bindings": {
+                    "UserAckValue": {
+                      "sourceTagPath": "User ACK"
+                    },
+                    "UserAckOperator": {
+                      "sourceTagPath": "User ACK"
+                    }
+                  }
+                },
+                {
+                  "label": "Phase Running Time",
+                  "value": 2,
                   "unit": "",
                   "bindings": {
                     "timeHr": {
@@ -175,8 +188,8 @@
                 },
                 {
                   "label": "Weight",
-                  "value": 1,
-                  "unit": "kg",
+                  "value": 3,
+                  "unit": "Kg",
                   "bindings": {
                     "weightValue": {
                       "sourceTagPath": "EC.EC1SP"
@@ -188,7 +201,7 @@
                 },
                 {
                   "label": "pH",
-                  "value": 2,
+                  "value": 4,
                   "unit": "pH",
                   "bindings": {
                     "phValue": {
@@ -200,8 +213,8 @@
                   }
                 },
                 {
-                  "label": "Oxygen",
-                  "value": 3,
+                  "label": "Dissolved Oxygen",
+                  "value": 5,
                   "unit": "%",
                   "bindings": {
                     "oxygenValue": {
@@ -214,7 +227,7 @@
                 },
                 {
                   "label": "Temp",
-                  "value": 4,
+                  "value": 6,
                   "unit": "°C",
                   "bindings": {
                     "tempValue": {
@@ -252,8 +265,21 @@
             "conditionSelector": {
               "items": [
                 {
-                  "label": "Time",
-                  "value": 0,
+                  "label": "User Acknowledgement",
+                  "value": 1,
+                  "unit": "",
+                  "bindings": {
+                    "UserAckValue": {
+                      "sourceTagPath": "User ACK"
+                    },
+                    "UserAckOperator": {
+                      "sourceTagPath": "User ACK"
+                    }
+                  }
+                },
+                {
+                  "label": "Phase Running Time",
+                  "value": 2,
                   "unit": "",
                   "bindings": {
                     "timeHr": {
@@ -269,7 +295,7 @@
                 },
                 {
                   "label": "Weight",
-                  "value": 1,
+                  "value": 3,
                   "unit": "kg",
                   "bindings": {
                     "weightValue": {
@@ -282,7 +308,7 @@
                 },
                 {
                   "label": "pH",
-                  "value": 2,
+                  "value": 4,
                   "unit": "pH",
                   "bindings": {
                     "phValue": {
@@ -294,8 +320,8 @@
                   }
                 },
                 {
-                  "label": "Oxygen",
-                  "value": 3,
+                  "label": "Dissolved Oxygen",
+                  "value": 5,
                   "unit": "%",
                   "bindings": {
                     "oxygenValue": {
@@ -308,7 +334,7 @@
                 },
                 {
                   "label": "Temp",
-                  "value": 4,
+                  "value": 6,
                   "unit": "°C",
                   "bindings": {
                     "tempValue": {
@@ -346,8 +372,21 @@
             "conditionSelector": {
               "items": [
                 {
+                  "label": "User Acknowledgement",
+                  "value": 1,
+                  "unit": "",
+                  "bindings": {
+                    "UserAckValue": {
+                      "sourceTagPath": "User ACK"
+                    },
+                    "UserAckOperator": {
+                      "sourceTagPath": "User ACK"
+                    }
+                  }
+                },
+                {
                   "label": "Phase Running Time",
-                  "value": 0,
+                  "value": 2,
                   "unit": "",
                   "bindings": {
                     "timeHr": {
@@ -363,8 +402,8 @@
                 },
                 {
                   "label": "Weight",
-                  "value": 1,
-                  "unit": "kg",
+                  "value": 3,
+                  "unit": "Kg",
                   "bindings": {
                     "weightValue": {
                       "sourceTagPath": "EC.EC3SP"
@@ -376,7 +415,7 @@
                 },
                 {
                   "label": "pH",
-                  "value": 2,
+                  "value": 4,
                   "unit": "pH",
                   "bindings": {
                     "phValue": {
@@ -388,8 +427,21 @@
                   }
                 },
                 {
+                  "label": "Dissolved Oxygen",
+                  "value": 5,
+                  "unit": "%",
+                  "bindings": {
+                    "oxygenValue": {
+                      "sourceTagPath": "EC.EC3SP"
+                    },
+                    "oxygenOperator": {
+                      "sourceTagPath": "EC.EC3Operator"
+                    }
+                  }
+                },
+                {
                   "label": "Temp",
-                  "value": 3,
+                  "value": 6,
                   "unit": "°C",
                   "bindings": {
                     "tempValue": {
@@ -399,19 +451,8 @@
                       "sourceTagPath": "EC.EC3Operator"
                     }
                   }
-                },
-                {
-                  "label": "test",
-                  "value": 4,
-                  "bindings": {
-                    "test": {
-                      "sourceTagPath": "EC.EC3SP"
-                    },
-                    "test2": {
-                      "sourceTagPath": "EC.EC3Operator"
-                    }
-                  }
                 }
+
               ]
             }
           }

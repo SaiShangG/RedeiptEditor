@@ -1258,7 +1258,7 @@ Children:
                   DataType: String
                   ReferenceType: HasParameter
                   ModellingRule: Optional
-                  Value: "{0}==0"
+                  Value: "{0}==2"
                 - Name: ns=2;Source0
                   Type: BaseDataVariableType
                   DataType: BaseDataType
@@ -1293,7 +1293,7 @@ Children:
                   DataType: String
                   ReferenceType: HasParameter
                   ModellingRule: Optional
-                  Value: "{0}==0"
+                  Value: "{0}==2"
                 - Name: ns=2;Source0
                   Type: BaseDataVariableType
                   DataType: BaseDataType
@@ -1328,6 +1328,16 @@ Children:
                   Type: BaseDataVariableType
                   DataType: Boolean
                   Value: true
+                - Name: CheckedText
+                  Type: BaseDataVariableType
+                  DataType: LocalizedText
+                  ModellingRule: Optional
+                  Value: {"LocaleId":"en-US","Text":">="}
+                - Name: UncheckedText
+                  Type: BaseDataVariableType
+                  DataType: LocalizedText
+                  ModellingRule: Optional
+                  Value: {"LocaleId":"en-US","Text":"<="}
               - Name: SpinBox
                 Type: SpinBox
                 Children:
@@ -1374,7 +1384,7 @@ Children:
                   DataType: String
                   ReferenceType: HasParameter
                   ModellingRule: Optional
-                  Value: "{0}>0"
+                  Value: "{0}>2"
                 - Name: ns=2;Source0
                   Type: BaseDataVariableType
                   DataType: BaseDataType

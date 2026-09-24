@@ -158,73 +158,87 @@
             "conditionSelector": {
               "items": [
                 {
-                  "label": "Time",
+                  "label": "User Acknowledgement",
                   "value": 1,
                   "unit": "",
                   "bindings": {
-                    "timeHr": {
-                      "sourceTagPath": "EC.RunningTimeHr"
-                    },
-                    "timeMin": {
-                      "sourceTagPath": "EC.RunningTimeMin"
-                    },
-                    "timeSec": {
-                      "sourceTagPath": "EC.RunningTimeSec"
-                    }
-                  }
-                },
-                {
-                  "label": "Weight",
-                  "value": 2,
-                  "unit": "kg",
-                  "bindings": {
                     "weightValue": {
-                      "sourceTagPath": "EC.EC1SP"
+                      "sourceTagPath": ""
                     },
                     "weightOperator": {
-                      "sourceTagPath": "EC.EC1Operator"
+                      "sourceTagPath": ""
                     }
                   }
+
                 },
-                {
-                  "label": "pH",
-                  "value": 3,
-                  "unit": "pH",
-                  "bindings": {
-                    "phValue": {
-                      "sourceTagPath": "EC.EC1SP"
-                    },
-                    "phOperator": {
-                      "sourceTagPath": "EC.EC1Operator"
+                  {
+                    "label": "Time",
+                    "value": 2,
+                    "unit": "",
+                    "bindings": {
+                      "timeHr": {
+                        "sourceTagPath": "EC.RunningTimeHr"
+                      },
+                      "timeMin": {
+                        "sourceTagPath": "EC.RunningTimeMin"
+                      },
+                      "timeSec": {
+                        "sourceTagPath": "EC.RunningTimeSec"
+                      }
+                    }
+                  },
+                  {
+                    "label": "Weight",
+                    "value": 3,
+                    "unit": "Kg",
+                    "bindings": {
+                      "weightValue": {
+                        "sourceTagPath": "EC.EC1SP"
+                      },
+                      "weightOperator": {
+                        "sourceTagPath": "EC.EC1Operator"
+                      }
+                    }
+                  },
+                  {
+                    "label": "pH",
+                    "value": 4,
+                    "unit": "pH",
+                    "bindings": {
+                      "phValue": {
+                        "sourceTagPath": "EC.EC1SP"
+                      },
+                      "phOperator": {
+                        "sourceTagPath": "EC.EC1Operator"
+                      }
+                    }
+                  },
+                  {
+                    "label": "Dissolved Oxygen",
+                    "value": 5,
+                    "unit": "%",
+                    "bindings": {
+                      "oxygenValue": {
+                        "sourceTagPath": "EC.EC1SP"
+                      },
+                      "oxygenOperator": {
+                        "sourceTagPath": "EC.EC1Operator"
+                      }
+                    }
+                  },
+                  {
+                    "label": "Temp",
+                    "value": 6,
+                    "unit": "°C",
+                    "bindings": {
+                      "tempValue": {
+                        "sourceTagPath": "EC.EC1SP"
+                      },
+                      "tempOperator": {
+                        "sourceTagPath": "EC.EC1Operator"
+                      }
                     }
                   }
-                },
-                {
-                  "label": "Oxygen",
-                  "value": 4,
-                  "unit": "%",
-                  "bindings": {
-                    "oxygenValue": {
-                      "sourceTagPath": "EC.EC1SP"
-                    },
-                    "oxygenOperator": {
-                      "sourceTagPath": "EC.EC1Operator"
-                    }
-                  }
-                },
-                {
-                  "label": "Temp",
-                  "value": 5,
-                  "unit": "°C",
-                  "bindings": {
-                    "tempValue": {
-                      "sourceTagPath": "EC.EC1SP"
-                    },
-                    "tempOperator": {
-                      "sourceTagPath": "EC.EC1Operator"
-                    }
-                  }
-                }
               ]
             }
           }
@@ -253,7 +267,7 @@
               "items": [
                 {
                   "label": "Time",
-                  "value": 1,
+                  "value": 2,
                   "unit": "",
                   "bindings": {
                     "timeHr": {
@@ -269,7 +283,7 @@
                 },
                 {
                   "label": "Weight",
-                  "value": 2,
+                  "value": 3,
                   "unit": "kg",
                   "bindings": {
                     "weightValue": {
@@ -282,7 +296,7 @@
                 },
                 {
                   "label": "pH",
-                  "value": 3,
+                  "value": 4,
                   "unit": "pH",
                   "bindings": {
                     "phValue": {
@@ -295,7 +309,7 @@
                 },
                 {
                   "label": "Oxygen",
-                  "value": 4,
+                  "value": 5,
                   "unit": "%",
                   "bindings": {
                     "oxygenValue": {
@@ -308,7 +322,7 @@
                 },
                 {
                   "label": "Temp",
-                  "value": 5,
+                  "value": 6,
                   "unit": "°C",
                   "bindings": {
                     "tempValue": {
@@ -347,7 +361,7 @@
               "items": [
                 {
                   "label": "Time",
-                  "value": 1,
+                  "value": 2,
                   "unit": "",
                   "bindings": {
                     "timeHr": {
@@ -363,7 +377,7 @@
                 },
                 {
                   "label": "Weight",
-                  "value": 2,
+                  "value": 3,
                   "unit": "kg",
                   "bindings": {
                     "weightValue": {
@@ -376,7 +390,7 @@
                 },
                 {
                   "label": "pH",
-                  "value": 3,
+                  "value": 4,
                   "unit": "pH",
                   "bindings": {
                     "phValue": {
@@ -388,9 +402,9 @@
                   }
                 },
                 {
-                  "label": "Temp",
+                  "label": "Oxygen",
                   "value": 5,
-                  "unit": "°C",
+                  "unit": "%",
                   "bindings": {
                     "tempValue": {
                       "sourceTagPath": "EC.EC3SP"
@@ -401,8 +415,9 @@
                   }
                 },
                 {
-                  "label": "test",
+                  "label": "Temp",
                   "value": 6,
+                  "unit": "°C",
                   "bindings": {
                     "test": {
                       "sourceTagPath": "EC.EC3SP"
@@ -419,4 +434,4 @@
       ]
     }
   ]
-}
+} 
