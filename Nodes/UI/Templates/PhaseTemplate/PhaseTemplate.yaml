@@ -171,4 +171,9 @@ Children:
           Value: 2
     - Class: Method
       Name: RedrawPhaseParameterUI
+  - Name: Visible
+    Type: BaseDataVariableType
+    DataType: Boolean
+    ModellingRule: Optional
+    Value: true
 - File: PhaseParaTemplateUnit/PhaseParaTemplateUnit.yaml
