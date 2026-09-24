@@ -71,6 +71,7 @@ public class BatchInforToPLC : BaseNetLogic
     private int _flowCurrentOpIndex;
     private bool _flowActive;
     private string _flowPhaseWriteSummary;
+    private readonly List<string> _downloadedTagValues = new List<string>();
 
     public override void Start()
     {
@@ -209,6 +210,7 @@ public class BatchInforToPLC : BaseNetLogic
     public void DownloadBatchToPlc()
     {
         _flowPhaseWriteSummary = "";
+        BeginDownloadTagLog();
         SetStatus("Downloading...");
         TryTransitionTo(_stDownload);
         if (!TryEnsureBatchTagReferences())
@@ -268,18 +270,18 @@ public class BatchInforToPLC : BaseNetLogic
         int recipeId = recipeNode?.ReceiptID ?? batchId;
         int noOfOperations = recipeNode?.Operations?.Count ?? 0;
 
-        TrySetInt32(_plcBatchId, batchId);
-        TrySetInt32(_plcBatchStatus, PlcBatchStatusReady);
-        TrySetBoolean(_plcEvtBatchDone, false);
-        TrySetString(_plcBatchName, batchName);
-        TrySetString(_plcRunningPhaseName, "");
-        TrySetBoolean(_plcBatchStart, false);
-        TrySetString(_plcBatchRecipeName, recipeName ?? "");
+        WriteDownloadInt32(_plcBatchId, batchId, "Batch.BatchID");
+        WriteDownloadInt32(_plcBatchStatus, PlcBatchStatusReady, "Batch.BatchStatus");
+        WriteDownloadBoolean(_plcEvtBatchDone, false, "Batch.EvtBatchDone");
+        WriteDownloadString(_plcBatchName, batchName, "Batch.BatchName");
+        WriteDownloadString(_plcRunningPhaseName, "", "Batch.RunningPhaseName");
+        WriteDownloadBoolean(_plcBatchStart, false, "Batch.BatchStart");
+        WriteDownloadString(_plcBatchRecipeName, recipeName ?? "", "Batch.RecipeName");
 
         // 仅写入 Recipe 结构的目标字段：Name/ID/NoOfOperations（不写 RunningOperation / RecipeComplete）。
-        TrySetString(_plcRecipeName, recipeName ?? "");
-        TrySetInt32(_plcRecipeId, recipeId);
-        TrySetInt32(_plcRecipeNoOfOperations, noOfOperations);
+        WriteDownloadString(_plcRecipeName, recipeName ?? "", "Recipe.Name");
+        WriteDownloadInt32(_plcRecipeId, recipeId, "Recipe.ID");
+        WriteDownloadInt32(_plcRecipeNoOfOperations, noOfOperations, "Recipe.NoOfOperations");
         string defaultOperationName = WriteDefaultOperationToModel(recipeNode);
 
         var firstOperation = recipeNode?.Operations != null && recipeNode.Operations.Count > 0
@@ -290,7 +292,7 @@ public class BatchInforToPLC : BaseNetLogic
         SaveDownloadedBatchToPlcModel(batchName, recipeName, comments, batchId, PlcBatchStatusReady, recipeId, noOfOperations);
         SaveDownloadedDefaultOperationToModel(defaultOperationName);
 
-        LogDownloadHeaderValues();
+        FlushDownloadTagLog("Batch download");
         Log.Info(LogCategory, $"DownloadBatchToPlc：已写入 BatchName='{batchName}', RecipeName='{recipeName}', BatchID={batchId}, Recipe.ID={recipeId}, Recipe.NoOfOperations={noOfOperations}, DefaultOperation='{defaultOperationName}', {phaseWrite.Summary}.");
         SetStatus("Download successful");
         TryTransitionTo(_stIdle);
@@ -310,9 +312,9 @@ public class BatchInforToPLC : BaseNetLogic
             noOfPhases = operation?.Phases?.Count ?? 0;
         }
 
-        TrySetInt32(_plcOp1Id, opId);
-        TrySetString(_plcOp1Name, opName);
-        TrySetInt32(_plcOp1NoOfPhases, noOfPhases);
+        WriteDownloadInt32(_plcOp1Id, opId, "Operation.ID");
+        WriteDownloadString(_plcOp1Name, opName, "Operation.Name");
+        WriteDownloadInt32(_plcOp1NoOfPhases, noOfPhases, "Operation.NoOfPhases");
         TrySetInt32(LogicObject.GetVariable("RunningOpIndex"), 0);
         return opName;
     }
@@ -413,14 +415,15 @@ public class BatchInforToPLC : BaseNetLogic
         int opId = ToPlcDintId(op?.OperationID ?? 0);
         string opName = op?.Name ?? "";
         int noOfPhases = op?.Phases?.Count ?? 0;
+        BeginDownloadTagLog();
 
         // 先写 Operation 头信息
-        TrySetInt32(_plcOp1Id, opId);
-        TrySetString(_plcOp1Name, opName);
-        TrySetInt32(_plcOp1NoOfPhases, noOfPhases);
+        WriteDownloadInt32(_plcOp1Id, opId, "Operation.ID");
+        WriteDownloadString(_plcOp1Name, opName, "Operation.Name");
+        WriteDownloadInt32(_plcOp1NoOfPhases, noOfPhases, "Operation.NoOfPhases");
 
         var phaseWrite = WriteOperationPhases(op);
-        LogDownloadOperationValues();
+        FlushDownloadTagLog($"Operation download, OpIndex={_flowCurrentOpIndex}");
         _flowPhaseWriteSummary = phaseWrite.Summary;
         Log.Info(LogCategory, $"FlowDownload：Recipe='{_flowRecipeName}', OpIndex={_flowCurrentOpIndex}, OP1.ID={opId}, OP1.Name='{opName}', OP1.NoOfPhases={noOfPhases}, {_flowPhaseWriteSummary}.");
         if (_flowActive)
@@ -456,9 +459,7 @@ public class BatchInforToPLC : BaseNetLogic
                 }
             }
             loader?.ApplyResolvedParameter123ToColumnCopy(phase, resolvedCols);
-            var writtenValues = new List<string>();
-            totalWritten += WritePhaseColumnsToPlcPhaseNode(targetPhaseNode, resolvedCols, writtenValues);
-            Log.Info(LogCategory, $"DownloadToPLC values [Phase {i}]: {string.Join("; ", writtenValues)}");
+            totalWritten += WritePhaseColumnsToPlcPhaseNode(targetPhaseNode, resolvedCols);
             loadedPhases++;
         }
 
@@ -1127,17 +1128,17 @@ public class BatchInforToPLC : BaseNetLogic
         return null;
     }
 
-    private int WritePhaseColumnsToPlcPhaseNode(IUANode phaseNode, Dictionary<string, object> cols, List<string> writtenValues)
+    private int WritePhaseColumnsToPlcPhaseNode(IUANode phaseNode, Dictionary<string, object> cols)
     {
         if (phaseNode == null || cols == null || cols.Count == 0)
             return 0;
 
         int written = 0;
-        WritePhaseColumnsRecursive(phaseNode, cols, "", writtenValues, ref written);
+        WritePhaseColumnsRecursive(phaseNode, cols, "", ref written);
         return written;
     }
 
-    private void WritePhaseColumnsRecursive(IUANode node, Dictionary<string, object> cols, string parentPath, List<string> writtenValues, ref int written)
+    private void WritePhaseColumnsRecursive(IUANode node, Dictionary<string, object> cols, string parentPath, ref int written)
     {
         if (node == null)
             return;
@@ -1156,7 +1157,8 @@ public class BatchInforToPLC : BaseNetLogic
             {
                 if (TrySetVariable(v, converted))
                 {
-                    writtenValues?.Add(nodePath + "=" + FormatDownloadLogValue(converted));
+                    string tagValue = nodePath + "=" + FormatDownloadLogValue(converted);
+                    _downloadedTagValues.Add(tagValue);
                     written++;
                 }
             }
@@ -1168,27 +1170,40 @@ public class BatchInforToPLC : BaseNetLogic
         {
             if (child == null || IsPhaseMetaFieldName(child.BrowseName))
                 continue;
-            WritePhaseColumnsRecursive(child, cols, nodePath, writtenValues, ref written);
+            WritePhaseColumnsRecursive(child, cols, nodePath, ref written);
         }
     }
 
-    private void LogDownloadHeaderValues()
+    private void BeginDownloadTagLog()
     {
-        Log.Info(LogCategory,
-            $"DownloadToPLC values [Batch]: BatchID={ReadDownloadLogValue(_plcBatchId)}; BatchStatus={ReadDownloadLogValue(_plcBatchStatus)}; EvtBatchDone={ReadDownloadLogValue(_plcEvtBatchDone)}; BatchName={ReadDownloadLogValue(_plcBatchName)}; RunningPhaseName={ReadDownloadLogValue(_plcRunningPhaseName)}; BatchStart={ReadDownloadLogValue(_plcBatchStart)}; RecipeName={ReadDownloadLogValue(_plcBatchRecipeName)}");
-        Log.Info(LogCategory,
-            $"DownloadToPLC values [Recipe]: Name={ReadDownloadLogValue(_plcRecipeName)}; ID={ReadDownloadLogValue(_plcRecipeId)}; NoOfOperations={ReadDownloadLogValue(_plcRecipeNoOfOperations)}");
-        LogDownloadOperationValues();
+        _downloadedTagValues.Clear();
     }
 
-    private void LogDownloadOperationValues()
+    private void WriteDownloadInt32(IUAVariable variable, int value, string tagPath)
     {
-        Log.Info(LogCategory,
-            $"DownloadToPLC values [Operation]: ID={ReadDownloadLogValue(_plcOp1Id)}; Name={ReadDownloadLogValue(_plcOp1Name)}; NoOfPhases={ReadDownloadLogValue(_plcOp1NoOfPhases)}");
+        if (TrySetInt32(variable, value))
+            _downloadedTagValues.Add(tagPath + "=" + FormatDownloadLogValue(value));
     }
 
-    private static string ReadDownloadLogValue(IUAVariable variable)
-        => FormatDownloadLogValue(variable?.Value?.Value);
+    private void WriteDownloadBoolean(IUAVariable variable, bool value, string tagPath)
+    {
+        if (TrySetBoolean(variable, value))
+            _downloadedTagValues.Add(tagPath + "=" + FormatDownloadLogValue(value));
+    }
+
+    private void WriteDownloadString(IUAVariable variable, string value, string tagPath)
+    {
+        string normalizedValue = value ?? "";
+        if (TrySetString(variable, normalizedValue))
+            _downloadedTagValues.Add(tagPath + "=" + FormatDownloadLogValue(normalizedValue));
+    }
+
+    private void FlushDownloadTagLog(string context)
+    {
+        for (int index = 0; index < _downloadedTagValues.Count; index++)
+            Log.Info(LogCategory, $"DownloadToPLC TAG [{index + 1}/{_downloadedTagValues.Count}] {_downloadedTagValues[index]}");
+        Log.Info(LogCategory, $"DownloadToPLC TAG summary: Context='{context}', Total={_downloadedTagValues.Count}.");
+    }
 
     private static string FormatDownloadLogValue(object value)
     {
@@ -1512,29 +1527,33 @@ public class BatchInforToPLC : BaseNetLogic
         return s.Replace("'", "''");
     }
 
-    private static void TrySetInt32(IUAVariable v, int value)
+    private static bool TrySetInt32(IUAVariable v, int value)
     {
-        if (v == null) return;
+        if (v == null) return false;
         try
         {
             v.Value = value;
+            return true;
         }
         catch (Exception ex)
         {
             Log.Warning(LogCategory, $"写入 Int32（{v.BrowseName}）失败：{ex.Message}");
+            return false;
         }
     }
 
-    private static void TrySetBoolean(IUAVariable v, bool value)
+    private static bool TrySetBoolean(IUAVariable v, bool value)
     {
-        if (v == null) return;
+        if (v == null) return false;
         try
         {
             v.Value = value;
+            return true;
         }
         catch (Exception ex)
         {
             Log.Warning(LogCategory, $"写入 Boolean（{v.BrowseName}）失败：{ex.Message}");
+            return false;
         }
     }
 
@@ -1550,16 +1569,18 @@ public class BatchInforToPLC : BaseNetLogic
         Log.Info(LogCategory, $"OperationHandshake Model Boolean 写入：{description}, Variable='{variable.BrowseName}', Value={value}.");
     }
 
-    private static void TrySetString(IUAVariable v, string value)
+    private static bool TrySetString(IUAVariable v, string value)
     {
-        if (v == null) return;
+        if (v == null) return false;
         try
         {
             v.Value = value ?? "";
+            return true;
         }
         catch (Exception ex)
         {
             Log.Warning(LogCategory, $"写入 String（{v.BrowseName}）失败：{ex.Message}");
+            return false;
         }
     }
 

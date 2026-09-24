@@ -948,7 +948,7 @@ public class PhaseManager : BaseNetLogic
         }
         foreach (var child in oldChildren)
         {
-            if (!retainedSelectedItem && hasSelectedValue && child is IUAVariable optionVariable
+            if (!retainedSelectedItem && hasSelectedValue && selectedValue >= 0 && child is IUAVariable optionVariable
                 && TryReadInt32(optionVariable, out int optionValue) && optionValue == selectedValue)
             {
                 usedNames.Add(child.BrowseName);
@@ -957,9 +957,6 @@ public class PhaseManager : BaseNetLogic
             }
             child.Delete();
         }
-
-        if (!retainedSelectedItem || selectedValue != -1)
-            AddEmptyConditionSelectorOption(endConditionItems, usedNames);
 
         foreach (var option in item.Config.ConditionSelector.Items)
         {
@@ -978,18 +975,6 @@ public class PhaseManager : BaseNetLogic
             variable.Value = numericValue;
             endConditionItems.Add(variable);
         }
-    }
-
-    private static void AddEmptyConditionSelectorOption(IUAObject endConditionItems, ISet<string> usedNames)
-    {
-        if (endConditionItems == null || usedNames == null) return;
-
-        string safeName = MakeUniqueNodeName(usedNames, "Empty");
-        var variable = InformationModel.MakeVariable(safeName, UAManagedCore.OpcUa.DataTypes.Int32);
-        variable.Description = new LocalizedText(string.Empty);
-        variable.DisplayName = new LocalizedText(string.Empty);
-        variable.Value = -1;
-        endConditionItems.Add(variable);
     }
 
     private static string MakeSafeNodeName(string text)

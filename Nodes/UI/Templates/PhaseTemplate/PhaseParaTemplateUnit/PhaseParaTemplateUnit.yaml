@@ -1337,10 +1337,11 @@ Children:
                 - Name: MinValue
                   Type: BaseDataVariableType
                   DataType: Double
+                  Value: -3.4028234663852886e+38
                 - Name: MaxValue
                   Type: BaseDataVariableType
                   DataType: Double
-                  Value: 14.0
+                  Value: 3.4028234663852886e+38
                 - Name: Enabled
                   Type: BaseDataVariableType
                   DataType: Boolean
