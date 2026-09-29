@@ -11002,7 +11002,7 @@ Children:
                           Type: BaseDataVariableType
                           DataType: NodeId
                           Description: {"NamespaceIndex":3,"TextId":"ChangePanelNewPanelDescription"}
-                          Value: "/Objects/RedeiptEditor/UI/Panels/RecipeEditorPanels/RecipeOverviewPanel"
+                          Value: "/Objects/RedeiptEditor/UI/Panels/RecipeEditorPanels/BatchEditor"
                         - Name: AliasNode
                           Type: BaseDataVariableType
                           DataType: NodeId
@@ -11039,7 +11039,7 @@ Children:
                   Type: BaseDataVariableType
                   DataType: LocalizedText
                   ModellingRule: Optional
-                  Value: {"LocaleId":"en-US","Text":"Recipe Editor"}
+                  Value: {"LocaleId":"en-US","Text":"Batch Editor"}
                 - Name: RightMargin
                   Type: BaseVariableType
                   DataType: Size

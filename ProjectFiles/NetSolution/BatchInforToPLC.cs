@@ -210,26 +210,26 @@ public class BatchInforToPLC : BaseNetLogic
         {
             var pointer = LogicObject.GetVariable("Batch");
             var batchRoot = _batchRoot ?? (pointer == null ? null : InformationModel.Get(pointer.Value));
-            var batchStart = batchRoot?.GetVariable("BatchStart");
-            object value = batchStart?.Value?.Value;
+            var batchRunning = batchRoot?.GetVariable("BatchRunning");
+            object value = batchRunning?.Value?.Value;
             if (value == null)
             {
-                ReportJumpFailure("BatchStart is unavailable / 无法读取 BatchStart");
+                ReportJumpFailure("BatchRunning is unavailable / 无法读取 BatchRunning");
                 return false;
             }
 
             if (!Convert.ToBoolean(value, CultureInfo.InvariantCulture))
             {
-                ReportJumpFailure("BatchStart=false / 批次未启动");
+                ReportJumpFailure("BatchRunning=false / 批次未启动");
                 return false;
             }
 
-            Log.Info(LogCategory, "Jump permitted / 允许跳转: BatchStart=true");
+            Log.Info(LogCategory, "Jump permitted / 允许跳转: BatchRunning=true");
             return true;
         }
         catch (Exception ex)
         {
-            ReportJumpFailure($"BatchStart read failed / BatchStart 读取失败: {ex.Message}");
+            ReportJumpFailure($"BatchRunning read failed / BatchRunning 读取失败: {ex.Message}");
             return false;
         }
     }
@@ -359,7 +359,7 @@ public class BatchInforToPLC : BaseNetLogic
         WriteDownloadInt32(_plcBatchStatus, PlcBatchStatusReady, "Batch.BatchStatus");
         WriteDownloadBoolean(_plcEvtBatchDone, false, "Batch.EvtBatchDone");
         WriteDownloadString(_plcBatchName, batchName, "Batch.BatchName");
-        WriteDownloadString(_plcRunningPhaseName, "", "Batch.RunningPhaseName");
+       // WriteDownloadString(_plcRunningPhaseName, "", "Batch.RunningPhaseName");
         WriteDownloadBoolean(_plcBatchStart, false, "Batch.BatchStart");
         WriteDownloadString(_plcBatchRecipeName, recipeName ?? "", "Batch.RecipeName");
 
@@ -962,12 +962,12 @@ public class BatchInforToPLC : BaseNetLogic
 
         if (phaseIndex < 0 || phaseIndex >= op.Phases.Count)
         {
-            WriteRunningPhaseNameIfChanged("");
+          //  WriteRunningPhaseNameIfChanged("");
             return;
         }
 
         string phaseName = op.Phases[phaseIndex]?.Name ?? "";
-        WriteRunningPhaseNameIfChanged(phaseName);
+       // WriteRunningPhaseNameIfChanged(phaseName);
         string opName = op?.Name ?? "";
         PublishFlowSnapshot(opIndex, phaseIndex, opName, phaseName, true);
     }
