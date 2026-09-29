@@ -5132,11 +5132,6 @@ Children:
               DataType: Size
               ModellingRule: Optional
               Value: -6.0
-            - Name: TopMargin
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-              Value: 8.0
             - Name: Height
               Type: BaseVariableType
               DataType: Size
@@ -5146,12 +5141,7 @@ Children:
               Type: BaseVariableType
               DataType: VerticalAlignment
               ModellingRule: Optional
-              Value: 3
-            - Name: BottomMargin
-              Type: BaseVariableType
-              DataType: Size
-              ModellingRule: Optional
-              Value: 8.0
+              Value: 2
             - Name: RightMargin
               Type: BaseVariableType
               DataType: Size
@@ -5474,7 +5464,7 @@ Children:
                         - Name: DynamicLink
                           Type: DynamicLink
                           DataType: NodePath
-                          Value: "../../../../../../../../../..@NodeId"
+                          Value: "../../../../../../../../../../..@NodeId"
                           Children:
                           - Name: Mode
                             Type: BaseVariableType
@@ -5578,7 +5568,7 @@ Children:
                         - Name: DynamicLink
                           Type: DynamicLink
                           DataType: NodePath
-                          Value: "../../../../../../../../../..@NodeId"
+                          Value: "../../../../../../../../../../..@NodeId"
                           Children:
                           - Name: Mode
                             Type: BaseVariableType
