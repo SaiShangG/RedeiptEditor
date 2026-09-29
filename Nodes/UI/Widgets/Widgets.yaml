@@ -5132,6 +5132,11 @@ Children:
               DataType: Size
               ModellingRule: Optional
               Value: -6.0
+            - Name: TopMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 8.0
             - Name: Height
               Type: BaseVariableType
               DataType: Size
@@ -5141,7 +5146,12 @@ Children:
               Type: BaseVariableType
               DataType: VerticalAlignment
               ModellingRule: Optional
-              Value: 2
+              Value: 3
+            - Name: BottomMargin
+              Type: BaseVariableType
+              DataType: Size
+              ModellingRule: Optional
+              Value: 8.0
             - Name: RightMargin
               Type: BaseVariableType
               DataType: Size
@@ -10184,12 +10194,11 @@ Children:
               Type: BaseVariableType
               DataType: Size
               ModellingRule: Optional
-              Value: -110.0
+              Value: -225.0
           - Name: VerticalAlignment
             Type: BaseVariableType
             DataType: VerticalAlignment
             ModellingRule: Optional
-            Value: 2
           - Name: LeftMargin
             Type: BaseVariableType
             DataType: Size
@@ -10209,7 +10218,6 @@ Children:
             Type: BaseVariableType
             DataType: Size
             ModellingRule: Optional
-            Value: -110.0
           - Name: Rectangle2
             Type: Rectangle
             Children:
@@ -10521,7 +10529,6 @@ Children:
               Type: BaseVariableType
               DataType: VerticalAlignment
               ModellingRule: Optional
-              Value: 2
             - Name: LeftMargin
               Type: BaseVariableType
               DataType: Size
@@ -10539,6 +10546,7 @@ Children:
               Type: BaseVariableType
               DataType: Size
               ModellingRule: Optional
+              Value: 50.0
             - Name: Rectangle2
               Type: Rectangle
               Children:
@@ -10809,7 +10817,6 @@ Children:
               Type: BaseVariableType
               DataType: VerticalAlignment
               ModellingRule: Optional
-              Value: 2
             - Name: LeftMargin
               Type: BaseVariableType
               DataType: Size
@@ -10827,6 +10834,7 @@ Children:
               Type: BaseVariableType
               DataType: Size
               ModellingRule: Optional
+              Value: 50.0
             - Name: Rectangle2
               Type: Rectangle
               Children:
@@ -11097,7 +11105,6 @@ Children:
               Type: BaseVariableType
               DataType: VerticalAlignment
               ModellingRule: Optional
-              Value: 2
             - Name: LeftMargin
               Type: BaseVariableType
               DataType: Size
@@ -11115,6 +11122,7 @@ Children:
               Type: BaseVariableType
               DataType: Size
               ModellingRule: Optional
+              Value: 50.0
             - Name: Rectangle2
               Type: Rectangle
               Children:
@@ -11867,7 +11875,7 @@ Children:
                   Type: BaseDataVariableType
                   DataType: LocalizedText
                   ModellingRule: Optional
-                  Value: {"LocaleId":"en-US","Text":"Stop"}
+                  Value: {"LocaleId":"en-US","Text":"Acknowledge"}
                 - Name: FontSize
                   Type: BaseDataVariableType
                   DataType: Size
@@ -11882,7 +11890,7 @@ Children:
                   Type: BaseDataVariableType
                   DataType: ResourceUri
                   ModellingRule: Optional
-                  Value: "ns=7;%PROJECTDIR%/Images/stop.svg"
+                  Value: "ns=7;%PROJECTDIR%/Images/Dashboard/check-circle.svg"
                 - Name: HorizontalAlignment
                   Type: BaseVariableType
                   DataType: HorizontalAlignment
@@ -11941,11 +11949,12 @@ Children:
                           Type: BaseDataVariableType
                           DataType: VariablePointer
                           Description: {"NamespaceIndex":2,"TextId":"SetVariableToModifyDescription"}
-                          Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchStart"
+                          Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Program&:MainProgram/UserAckConfirm"
                         - Name: Value
                           Type: BaseDataVariableType
                           DataType: Boolean
                           Description: {"NamespaceIndex":2,"TextId":"SetValueDescription"}
+                          Value: true
                         - Name: ArrayIndex
                           Type: BaseDataVariableType
                           DataType: UInt32
@@ -11983,6 +11992,47 @@ Children:
                   DataType: Size
                   ModellingRule: Optional
                   Value: 40.0
+                - Name: Visible
+                  Type: BaseDataVariableType
+                  DataType: Boolean
+                  Value: true
+                  Children:
+                  - Name: ExpressionEvaluator1
+                    Type: ExpressionEvaluator
+                    Children:
+                    - Name: Expression
+                      Type: BaseDataVariableType
+                      DataType: String
+                      ReferenceType: HasParameter
+                      ModellingRule: Optional
+                      Value: "{0} || {1} || {2}"
+                    - Name: ns=2;Source0
+                      Type: BaseDataVariableType
+                      DataType: BaseDataType
+                      ReferenceType: HasSource
+                      Children:
+                      - Name: DynamicLink
+                        Type: DynamicLink
+                        DataType: NodePath
+                        Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Program&:MainProgram/EC1_UA"
+                    - Name: ns=2;Source1
+                      Type: BaseDataVariableType
+                      DataType: BaseDataType
+                      ReferenceType: HasSource
+                      Children:
+                      - Name: DynamicLink
+                        Type: DynamicLink
+                        DataType: NodePath
+                        Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Program&:MainProgram/EC2_UA"
+                    - Name: ns=2;Source2
+                      Type: BaseDataVariableType
+                      DataType: BaseDataType
+                      ReferenceType: HasSource
+                      Children:
+                      - Name: DynamicLink
+                        Type: DynamicLink
+                        DataType: NodePath
+                        Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Program&:MainProgram/EC3_UA"
               - Name: BorderColor
                 Type: BaseDataVariableType
                 DataType: Color
@@ -12002,79 +12052,50 @@ Children:
                 Type: BaseDataVariableType
                 DataType: Color
                 Value: "#f8fafc"
-              - Name: MouseDownEventHandler1
-                Type: EventHandler
-                Children:
-                - Name: ListenEventType
-                  Type: PropertyType
-                  DataType: NodeId
-                  Value: "/Types/EventTypes/BaseEventType/MouseEvent/MouseDownEvent"
-                - Name: MethodsToCall
-                  Type: BaseObjectType
-                  Children:
-                  - Name: MethodContainer1
-                    Type: BaseObjectType
-                    Children:
-                    - Name: ns=2;ObjectPointer
-                      Type: NodePointer
-                      DataType: NodeId
-                      Value: "/Objects/Commands/VariableCommands"
-                      Children:
-                      - Name: Kind
-                        Type: PropertyType
-                        DataType: NodeId
-                        Value: "/Types/ObjectTypes/BaseObjectType"
-                    - Name: ns=2;Method
-                      Type: BaseDataVariableType
-                      DataType: String
-                      Value: "Set"
-                    - Name: InputArguments
-                      Type: BaseObjectType
-                      Children:
-                      - Name: VariableToModify
-                        Type: BaseDataVariableType
-                        DataType: VariablePointer
-                        Description: {"NamespaceIndex":2,"TextId":"SetVariableToModifyDescription"}
-                        Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchStart"
-                      - Name: Value
-                        Type: BaseDataVariableType
-                        DataType: Boolean
-                        Description: {"NamespaceIndex":2,"TextId":"SetValueDescription"}
-                      - Name: ArrayIndex
-                        Type: BaseDataVariableType
-                        DataType: UInt32
-                        Description: {"NamespaceIndex":2,"TextId":"SetArrayIndexDescription"}
-                        ValueRank: ScalarOrOneDimension
-                - Name: EventArguments
-                  Type: MouseDownEvent
-                  Children:
-                  - Name: EventId
-                    Type: PropertyType
-                    DataType: ByteString
-                  - Name: EventType
-                    Type: PropertyType
-                    DataType: NodeId
-                  - Name: SourceNode
-                    Type: PropertyType
-                    DataType: NodeId
-                  - Name: SourceName
-                    Type: PropertyType
-                    DataType: String
-                  - Name: Time
-                    Type: PropertyType
-                    DataType: UtcTime
-                  - Name: ReceiveTime
-                    Type: PropertyType
-                    DataType: UtcTime
-                  - Name: Message
-                    Type: PropertyType
-                    DataType: LocalizedText
-                  - Name: Severity
-                    Type: PropertyType
-                    DataType: UInt16
               - Name: Blink
                 Type: BaseDataVariableType
                 DataType: Boolean
+              - Name: Visible
+                Type: BaseDataVariableType
+                DataType: Boolean
+                Value: true
+                Children:
+                - Name: ExpressionEvaluator1
+                  Type: ExpressionEvaluator
+                  Children:
+                  - Name: Expression
+                    Type: BaseDataVariableType
+                    DataType: String
+                    ReferenceType: HasParameter
+                    ModellingRule: Optional
+                    Value: "{0} || {1} || {2}"
+                  - Name: ns=2;Source0
+                    Type: BaseDataVariableType
+                    DataType: BaseDataType
+                    ReferenceType: HasSource
+                    Children:
+                    - Name: DynamicLink
+                      Type: DynamicLink
+                      DataType: NodePath
+                      Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Program&:MainProgram/EC1_UA"
+                  - Name: ns=2;Source1
+                    Type: BaseDataVariableType
+                    DataType: BaseDataType
+                    ReferenceType: HasSource
+                    Children:
+                    - Name: DynamicLink
+                      Type: DynamicLink
+                      DataType: NodePath
+                      Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Program&:MainProgram/EC2_UA"
+                  - Name: ns=2;Source2
+                    Type: BaseDataVariableType
+                    DataType: BaseDataType
+                    ReferenceType: HasSource
+                    Children:
+                    - Name: DynamicLink
+                      Type: DynamicLink
+                      DataType: NodePath
+                      Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Program&:MainProgram/EC3_UA"
             - Name: VerticalAlignment
               Type: BaseVariableType
               DataType: VerticalAlignment
@@ -12177,7 +12198,7 @@ Children:
                   Type: BaseDataVariableType
                   DataType: LocalizedText
                   ModellingRule: Optional
-                  Value: {"LocaleId":"en-US","Text":"Stop"}
+                  Value: {"LocaleId":"en-US","Text":"Acknowledge"}
                 - Name: BackgroundColor
                   Type: BaseDataVariableType
                   DataType: Color
@@ -12192,7 +12213,7 @@ Children:
                   Type: BaseDataVariableType
                   DataType: ResourceUri
                   ModellingRule: Optional
-                  Value: "ns=7;%PROJECTDIR%/Images/add 1.png"
+                  Value: "ns=7;%PROJECTDIR%/Images/people.svg"
                 - Name: FontSize
                   Type: BaseDataVariableType
                   DataType: Size
@@ -12261,6 +12282,97 @@ Children:
           DataType: Size
           ModellingRule: Optional
           Value: 5.0
+        - Name: Label1
+          Type: Label
+          Children:
+          - Name: Text
+            Type: BaseDataVariableType
+            DataType: LocalizedText
+            ModellingRule: Optional
+            Value: {"LocaleId":"en-US","Text":"Phase Running Time ( Sec ):"}
+          - Name: LeftMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 15.0
+          - Name: TopMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 106.0
+          - Name: FontSize
+            Type: BaseDataVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 16.0
+          - Name: Visible
+            Type: BaseDataVariableType
+            DataType: Boolean
+            Value: true
+            Children:
+            - Name: DynamicLink
+              Type: DynamicLink
+              DataType: NodePath
+              Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Program&:MainProgram/PhaseTimerEnable"
+        - Name: Value
+          Type: Label
+          Children:
+          - Name: Text
+            Type: BaseDataVariableType
+            DataType: LocalizedText
+            Children:
+            - Name: DynamicLink
+              Type: DynamicLink
+              DataType: NodePath
+              Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Execution/Decode/StepActualTime"
+          - Name: HorizontalAlignment
+            Type: BaseVariableType
+            DataType: HorizontalAlignment
+            ModellingRule: Optional
+          - Name: VerticalAlignment
+            Type: BaseVariableType
+            DataType: VerticalAlignment
+            ModellingRule: Optional
+            Value: 3
+          - Name: Width
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 70.0
+          - Name: TextHorizontalAlignment
+            Type: BaseVariableType
+            DataType: TextHorizontalAlignment
+            ModellingRule: Optional
+            Value: 1
+          - Name: TextVerticalAlignment
+            Type: BaseVariableType
+            DataType: TextVerticalAlignment
+            ModellingRule: Optional
+            Value: 1
+          - Name: LeftMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 210.0
+          - Name: TopMargin
+            Type: BaseVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 100.0
+          - Name: FontSize
+            Type: BaseDataVariableType
+            DataType: Size
+            ModellingRule: Optional
+            Value: 16.0
+          - Name: Visible
+            Type: BaseDataVariableType
+            DataType: Boolean
+            Value: true
+            Children:
+            - Name: DynamicLink
+              Type: DynamicLink
+              DataType: NodePath
+              Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Program&:MainProgram/PhaseTimerEnable"
       - Name: Rectangle5
         Type: Rectangle
         Children:
@@ -12550,6 +12662,10 @@ Children:
       DataType: Size
       ModellingRule: Optional
       Value: 10.0
+    - Name: Visible
+      Type: BaseDataVariableType
+      DataType: Boolean
+      ModellingRule: Optional
 - File: RecipeFlow/RecipeFlow.yaml
 - Name: OperationPhaseJump
   Id: g=54d5dfe8c7c62a2e5dcc91054d01fd8a

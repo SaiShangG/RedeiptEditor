@@ -246,6 +246,14 @@ Children:
     - Name: SymbolName
       Type: BaseDataVariableType
       DataType: String
+  - Name: Name
+    Type: RAEtherNetIPTag
+    DataType: String
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Name"
   - Name: SymbolName
     Type: BaseDataVariableType
     DataType: String

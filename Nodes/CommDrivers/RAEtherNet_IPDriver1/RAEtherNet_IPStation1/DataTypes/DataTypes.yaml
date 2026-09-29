@@ -594,6 +594,11 @@ Children:
        "Id": "52c136c61bb6b2955657d6b83ebc49d4",
        "Namespace": 7
       }
+     },{
+      "Name": "Name",
+      "DataType": {
+       "Id": 12
+      }
      }]
    }
   DisplayName: {"LocaleId":"","Text":"UDT_Phase"}
