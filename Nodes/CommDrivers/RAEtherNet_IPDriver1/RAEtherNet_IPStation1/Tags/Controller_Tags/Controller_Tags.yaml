@@ -513,6 +513,23 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "OP.RunningPhase.EC.EC3SP.@Description"
+    - Name: Name
+      Type: RAEtherNetIPTag
+      DataType: String
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "OP.RunningPhase.Name"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Name"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "OP.RunningPhase.Name.@Description"
   - Name: OperationComplete
     Type: RAEtherNetIPTag
     DataType: Boolean
@@ -1069,6 +1086,23 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[0].EC.EC3SP.@Description"
+    - Name: Name
+      Type: RAEtherNetIPTag
+      DataType: String
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[0].Name"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Name"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[0].Name.@Description"
   - Name: 1
     Type: UDT_Phase
     DataType: UDT_Phase
@@ -1526,6 +1560,23 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[1].EC.EC3SP.@Description"
+    - Name: Name
+      Type: RAEtherNetIPTag
+      DataType: String
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[1].Name"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Name"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[1].Name.@Description"
   - Name: 2
     Type: UDT_Phase
     DataType: UDT_Phase
@@ -1983,6 +2034,23 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[2].EC.EC3SP.@Description"
+    - Name: Name
+      Type: RAEtherNetIPTag
+      DataType: String
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[2].Name"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Name"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[2].Name.@Description"
   - Name: 3
     Type: UDT_Phase
     DataType: UDT_Phase
@@ -2440,6 +2508,23 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[3].EC.EC3SP.@Description"
+    - Name: Name
+      Type: RAEtherNetIPTag
+      DataType: String
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[3].Name"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Name"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[3].Name.@Description"
   - Name: 4
     Type: UDT_Phase
     DataType: UDT_Phase
@@ -2897,6 +2982,23 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[4].EC.EC3SP.@Description"
+    - Name: Name
+      Type: RAEtherNetIPTag
+      DataType: String
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[4].Name"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Name"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[4].Name.@Description"
   - Name: 5
     Type: UDT_Phase
     DataType: UDT_Phase
@@ -3354,6 +3456,23 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[5].EC.EC3SP.@Description"
+    - Name: Name
+      Type: RAEtherNetIPTag
+      DataType: String
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[5].Name"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Name"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[5].Name.@Description"
   - Name: 6
     Type: UDT_Phase
     DataType: UDT_Phase
@@ -3811,6 +3930,23 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[6].EC.EC3SP.@Description"
+    - Name: Name
+      Type: RAEtherNetIPTag
+      DataType: String
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[6].Name"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Name"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[6].Name.@Description"
   - Name: 7
     Type: UDT_Phase
     DataType: UDT_Phase
@@ -4268,6 +4404,23 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[7].EC.EC3SP.@Description"
+    - Name: Name
+      Type: RAEtherNetIPTag
+      DataType: String
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[7].Name"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Name"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[7].Name.@Description"
   - Name: 8
     Type: UDT_Phase
     DataType: UDT_Phase
@@ -4725,6 +4878,23 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[8].EC.EC3SP.@Description"
+    - Name: Name
+      Type: RAEtherNetIPTag
+      DataType: String
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[8].Name"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Name"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[8].Name.@Description"
   - Name: 9
     Type: UDT_Phase
     DataType: UDT_Phase
@@ -5182,6 +5352,23 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[9].EC.EC3SP.@Description"
+    - Name: Name
+      Type: RAEtherNetIPTag
+      DataType: String
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[9].Name"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Name"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[9].Name.@Description"
   - Name: 10
     Type: UDT_Phase
     DataType: UDT_Phase
@@ -5639,6 +5826,23 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[10].EC.EC3SP.@Description"
+    - Name: Name
+      Type: RAEtherNetIPTag
+      DataType: String
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[10].Name"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Name"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[10].Name.@Description"
   - Name: 11
     Type: UDT_Phase
     DataType: UDT_Phase
@@ -6096,6 +6300,23 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[11].EC.EC3SP.@Description"
+    - Name: Name
+      Type: RAEtherNetIPTag
+      DataType: String
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[11].Name"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Name"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[11].Name.@Description"
   - Name: 12
     Type: UDT_Phase
     DataType: UDT_Phase
@@ -6553,6 +6774,23 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[12].EC.EC3SP.@Description"
+    - Name: Name
+      Type: RAEtherNetIPTag
+      DataType: String
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[12].Name"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Name"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[12].Name.@Description"
   - Name: 13
     Type: UDT_Phase
     DataType: UDT_Phase
@@ -7010,6 +7248,23 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[13].EC.EC3SP.@Description"
+    - Name: Name
+      Type: RAEtherNetIPTag
+      DataType: String
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[13].Name"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Name"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[13].Name.@Description"
   - Name: 14
     Type: UDT_Phase
     DataType: UDT_Phase
@@ -7467,6 +7722,23 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[14].EC.EC3SP.@Description"
+    - Name: Name
+      Type: RAEtherNetIPTag
+      DataType: String
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[14].Name"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Name"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[14].Name.@Description"
   - Name: 15
     Type: UDT_Phase
     DataType: UDT_Phase
@@ -7924,6 +8196,23 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[15].EC.EC3SP.@Description"
+    - Name: Name
+      Type: RAEtherNetIPTag
+      DataType: String
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[15].Name"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Name"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[15].Name.@Description"
   - Name: 16
     Type: UDT_Phase
     DataType: UDT_Phase
@@ -8381,6 +8670,23 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[16].EC.EC3SP.@Description"
+    - Name: Name
+      Type: RAEtherNetIPTag
+      DataType: String
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[16].Name"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Name"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[16].Name.@Description"
   - Name: 17
     Type: UDT_Phase
     DataType: UDT_Phase
@@ -8838,6 +9144,23 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[17].EC.EC3SP.@Description"
+    - Name: Name
+      Type: RAEtherNetIPTag
+      DataType: String
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[17].Name"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Name"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[17].Name.@Description"
   - Name: 18
     Type: UDT_Phase
     DataType: UDT_Phase
@@ -9295,6 +9618,23 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[18].EC.EC3SP.@Description"
+    - Name: Name
+      Type: RAEtherNetIPTag
+      DataType: String
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[18].Name"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Name"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[18].Name.@Description"
   - Name: 19
     Type: UDT_Phase
     DataType: UDT_Phase
@@ -9752,6 +10092,23 @@ Children:
             Type: BaseDataVariableType
             DataType: String
             Value: "Phases[19].EC.EC3SP.@Description"
+    - Name: Name
+      Type: RAEtherNetIPTag
+      DataType: String
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "Phases[19].Name"
+      - Name: Description
+        Type: RAEtherNetIPMetaTag
+        DataType: String
+        Value: "Phase Name"
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Phases[19].Name.@Description"
 - Name: Recipe
   Type: UDT_Recipe
   DataType: UDT_Recipe
@@ -10308,6 +10665,23 @@ Children:
               Type: BaseDataVariableType
               DataType: String
               Value: "Recipe.RunningOperation.RunningPhase.EC.EC3SP.@Description"
+      - Name: Name
+        Type: RAEtherNetIPTag
+        DataType: String
+        Children:
+        - Name: SymbolName
+          Type: BaseDataVariableType
+          DataType: String
+          Value: "Recipe.RunningOperation.RunningPhase.Name"
+        - Name: Description
+          Type: RAEtherNetIPMetaTag
+          DataType: String
+          Value: "Phase Name"
+          Children:
+          - Name: SymbolName
+            Type: BaseDataVariableType
+            DataType: String
+            Value: "Recipe.RunningOperation.RunningPhase.Name.@Description"
     - Name: OperationComplete
       Type: RAEtherNetIPTag
       DataType: Boolean
@@ -10857,6 +11231,23 @@ Children:
           Type: BaseDataVariableType
           DataType: String
           Value: "ActivePhase.EC.EC3SP.@Description"
+  - Name: Name
+    Type: RAEtherNetIPTag
+    DataType: String
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "ActivePhase.Name"
+    - Name: Description
+      Type: RAEtherNetIPMetaTag
+      DataType: String
+      Value: "Phase Name"
+      Children:
+      - Name: SymbolName
+        Type: BaseDataVariableType
+        DataType: String
+        Value: "ActivePhase.Name.@Description"
 - Name: Batch
   Id: g=ff0803734c73fe6f31a8e07c92872635
   Type: UDT_Batch
@@ -11678,3 +12069,69 @@ Children:
       Type: BaseDataVariableType
       DataType: String
       Value: "StartNextOperation.@Description"
+- Name: CurrentPhaseIndex
+  Type: RAEtherNetIPTag
+  DataType: Int32
+  Children:
+  - Name: SymbolName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "CurrentPhaseIndex"
+- Name: JumpPhaseIndex
+  Type: RAEtherNetIPTag
+  DataType: Int32
+  Children:
+  - Name: SymbolName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "JumpPhaseIndex"
+- Name: CurrentOperationIndex
+  Type: RAEtherNetIPTag
+  DataType: Int32
+  Children:
+  - Name: SymbolName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "CurrentOperationIndex"
+- Name: JumpOperationIndex
+  Type: RAEtherNetIPTag
+  DataType: Int32
+  Children:
+  - Name: SymbolName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "JumpOperationIndex"
+- Name: JumpOperation
+  Type: RAEtherNetIPTag
+  DataType: Boolean
+  Children:
+  - Name: SymbolName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "JumpOperation"
+  - Name: Description
+    Type: RAEtherNetIPMetaTag
+    DataType: String
+    Value: "Jump Operation"
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "JumpOperation.@Description"
+- Name: JumpPhase
+  Type: RAEtherNetIPTag
+  DataType: Boolean
+  Children:
+  - Name: SymbolName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "JumpPhase"
+  - Name: Description
+    Type: RAEtherNetIPMetaTag
+    DataType: String
+    Value: "Jump phase"
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "JumpPhase.@Description"
