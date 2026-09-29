@@ -460,6 +460,12 @@ public class BatchInforToPLC : BaseNetLogic
             }
             loader?.ApplyResolvedParameter123ToColumnCopy(phase, resolvedCols);
             totalWritten += WritePhaseColumnsToPlcPhaseNode(targetPhaseNode, resolvedCols);
+            string phaseName = phase.Name ?? "";
+            if (TrySetString(targetPhaseNode.GetVariable("Name"), phaseName))
+            {
+                _downloadedTagValues.Add($"Phases[{i}].Name=" + FormatDownloadLogValue(phaseName));
+                totalWritten++;
+            }
             loadedPhases++;
         }
 
