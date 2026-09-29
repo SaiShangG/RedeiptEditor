@@ -32,11 +32,15 @@ Project:
    Uri: 'urn:FTOptix:RAEtherNetIPTagImporter'
    Module: FTOptix.RAEtherNetIPTagImporter
    Version: 1.0
+  9:
+   Uri: 'urn:FTOptix:Core:Net'
+   Module: FTOptix.Core.Net
+   Version: 3.0
  Statistics:
-  TotalNodeCount: 4
+  TotalNodeCount: 5
   Objects: 1
   ObjectTypes: 0
-  Variables: 3
+  Variables: 4
   VariableTypes: 0
   DataTypes: 0
   Methods: 0

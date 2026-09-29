@@ -15,4 +15,7 @@ Children:
 - Name: Mode
   Type: BaseDataVariableType
   DataType: FetchModes
-  Value: 1
+- Name: FilePath
+  Type: BaseDataVariableType
+  DataType: AbsoluteResourceUri
+  Value: "file:///D:/Work/2026/Optix/Cytiva/4.15/FlexibleRecipe Working.ACD"
