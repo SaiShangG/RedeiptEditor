@@ -433,11 +433,36 @@ public class GenerateRunningTreeList : BaseNetLogic
             return;
         }
 
+        var batchInforLogic = Project.Current?.GetObject("NetLogic/BatchInforToPLC") as IUAObject;
+        if (batchInforLogic == null)
+        {
+            Log.Error(LogCategory, "Jump Phase failed / Phase 跳转失败: BatchInforToPLC not found / 未找到 BatchInforToPLC.");
+            return;
+        }
+
+        try
+        {
+            batchInforLogic.ExecuteMethod("RequestJumpPhase", new object[] { opIndex, phaseIndex });
+        }
+        catch (Exception ex)
+        {
+            Log.Error(LogCategory, $"Jump Phase failed / Phase 跳转失败: {ex.Message}");
+            return;
+        }
+
+        string jumpStatus = batchInforLogic.GetVariable("StatusText")?.Value?.Value?.ToString() ?? "";
+        if (jumpStatus.StartsWith("Jump failed:", StringComparison.OrdinalIgnoreCase))
+        {
+            Log.Warning(LogCategory, jumpStatus);
+            return;
+        }
+
         _jumpTargetOpIndex = opIndex;
         _jumpTargetPhaseIndex = phaseIndex;
         if (_enableLog)
-            Log.Info(LogCategory, $"Jump target phase selected: OpIndex={_jumpTargetOpIndex}, PhaseIndex={_jumpTargetPhaseIndex}");
+            Log.Info(LogCategory, $"Jump Phase sent / Phase 跳转已发送: OpIndex={_jumpTargetOpIndex}, PhaseIndex={_jumpTargetPhaseIndex}");
         RefreshRunningStatus();
+
     }
 
     private void ClearJumpTarget()
