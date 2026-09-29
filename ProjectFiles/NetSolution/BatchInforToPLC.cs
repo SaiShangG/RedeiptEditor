@@ -42,7 +42,6 @@ public class BatchInforToPLC : BaseNetLogic
     private IUAVariable _plcBatchStatus;
     private IUAVariable _plcEvtBatchDone;
     private IUAVariable _plcBatchName;
-    private IUAVariable _plcRunningPhaseName;
     private IUAVariable _plcBatchStart;
     private IUAVariable _plcBatchRecipeName;
 
@@ -64,6 +63,8 @@ public class BatchInforToPLC : BaseNetLogic
     private PeriodicTask _evtDoneTimer;
     private object _lastEvtDoneValue;
     private bool _hasLastEvtDoneValue;
+    private bool _batchCleanupPending;
+    private bool _batchDoneHandled;
 
     private RecipeDatabaseTreeLoader.ReceiptNode _flowReceipt;
     private string _flowRecipeName;
@@ -96,6 +97,10 @@ public class BatchInforToPLC : BaseNetLogic
 
     public override void Stop()
     {
+        _evtDoneTimer?.Dispose();
+        _evtDoneTimer = null;
+        _batchCleanupPending = false;
+        _batchDoneHandled = false;
         SetStatus("Stopped");
         _statusText = null;
 
@@ -111,7 +116,6 @@ public class BatchInforToPLC : BaseNetLogic
         _plcBatchStatus = null;
         _plcEvtBatchDone = null;
         _plcBatchName = null;
-        _plcRunningPhaseName = null;
         _plcBatchStart = null;
         _plcBatchRecipeName = null;
 
@@ -150,6 +154,11 @@ public class BatchInforToPLC : BaseNetLogic
     [ExportMethod]
     public void StartRunFlow()
     {
+        if (_batchCleanupPending)
+        {
+            SetStatus("Batch cleanup pending / 批次数据清理未完成");
+            return;
+        }
         if (_sm == null)
             InitStateMachine();
         if (_sm?.Current == null)
@@ -294,6 +303,11 @@ public class BatchInforToPLC : BaseNetLogic
     [ExportMethod]
     public void DownloadBatchToPlc()
     {
+        if (_batchCleanupPending)
+        {
+            SetStatus("Batch cleanup pending / 批次数据清理未完成");
+            return;
+        }
         _flowPhaseWriteSummary = "";
         BeginDownloadTagLog();
         SetStatus("Downloading...");
@@ -359,7 +373,6 @@ public class BatchInforToPLC : BaseNetLogic
         WriteDownloadInt32(_plcBatchStatus, PlcBatchStatusReady, "Batch.BatchStatus");
         WriteDownloadBoolean(_plcEvtBatchDone, false, "Batch.EvtBatchDone");
         WriteDownloadString(_plcBatchName, batchName, "Batch.BatchName");
-        WriteDownloadString(_plcRunningPhaseName, "", "Batch.RunningPhaseName");
         WriteDownloadBoolean(_plcBatchStart, false, "Batch.BatchStart");
         WriteDownloadString(_plcBatchRecipeName, recipeName ?? "", "Batch.RecipeName");
 
@@ -663,7 +676,6 @@ public class BatchInforToPLC : BaseNetLogic
         _plcBatchStatus = node.GetVariable("BatchStatus");
         _plcEvtBatchDone = node.GetVariable("EvtBatchDone");
         _plcBatchName = node.GetVariable("BatchName");
-        _plcRunningPhaseName = node.GetVariable("RunningPhaseName");
         _plcBatchStart = node.GetVariable("BatchStart");
         _plcBatchRecipeName = node.GetVariable("RecipeName");
 
@@ -841,15 +853,15 @@ public class BatchInforToPLC : BaseNetLogic
         _lastEvtDoneValue = null;
         _hasLastEvtDoneValue = false;
 
-        if (!TryEnsureOperationHandshakeReferences())
-            return;
-
+        TryEnsureOperationHandshakeReferences();
         _evtDoneTimer = new PeriodicTask(PollEvtDoneValue, 200, LogicObject);
         _evtDoneTimer.Start();
     }
 
     private void PollEvtDoneValue()
     {
+        if (HandleBatchDone())
+            return;
         if (_handshakeEvtDone == null) return;
         object current = null;
         try { current = _handshakeEvtDone.Value?.Value; } catch { return; }
@@ -870,7 +882,7 @@ public class BatchInforToPLC : BaseNetLogic
             _lastEvtDoneValue = current;
         }
 
-        UpdateRunningPhaseNameFromCmdSeqCurrentZeroBased();
+        UpdateFlowSnapshotFromCmdSeqCurrentZeroBased();
 
         // 仅在 Wait 状态消费 EvtDone=1 事件推进流程
         if (_sm?.Current != _stWait)
@@ -908,20 +920,141 @@ public class BatchInforToPLC : BaseNetLogic
         TryTransitionTo(_stFinish);
     }
 
-    /// <summary>
-    /// 将 PLC 握手中的 CmdSeq（0 基，表示当前执行 phase）映射为 Phase 名称并写入 RunningPhaseName。
-    /// </summary>
-    private void UpdateRunningPhaseNameFromCmdSeqCurrentZeroBased()
+    private bool HandleBatchDone()
     {
-        if (_plcRunningPhaseName == null || _plcBatchRecipeName == null || _handshakeCmdSeq == null)
+        try
+        {
+            if (!_batchCleanupPending)
+            {
+                if (!TryEnsureBatchTagReferences() || _plcEvtBatchDone == null)
+                    return false;
+
+                object current = _plcEvtBatchDone.Value?.Value;
+                bool isDone = current is bool done
+                    ? done
+                    : current != null && Convert.ToInt32(current, CultureInfo.InvariantCulture) == 1;
+                if (!isDone)
+                {
+                    _batchDoneHandled = false;
+                    return false;
+                }
+                if (_batchDoneHandled)
+                    return true;
+
+                _batchCleanupPending = true;
+                _flowActive = false;
+                TryTransitionTo(_stFinish);
+            }
+
+            if (!TryClearCompletedBatchData())
+            {
+                SetStatus("Batch cleanup failed, retrying / 批次数据清理失败，正在重试");
+                return true;
+            }
+
+            _batchCleanupPending = false;
+            _batchDoneHandled = true;
+            _flowReceipt = null;
+            _flowRecipeName = null;
+            _flowOpCount = 0;
+            _flowCurrentOpIndex = 0;
+            _flowPhaseWriteSummary = "";
+            TrySetInt32(LogicObject.GetVariable("RunningOpIndex"), 0);
+            PublishFlowSnapshot(-1, -1, "", "", false);
+            TryTransitionTo(_stIdle);
+            SetStatus("Batch finished, PLC data cleared / 批次执行完成，PLC 数据已清空");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(LogCategory, $"Batch cleanup failed / 批次数据清理失败: {ex.Message}");
+            return true;
+        }
+    }
+
+    private bool TryClearCompletedBatchData()
+    {
+        if (!TryEnsureBatchTagReferences() || !TryEnsureRecipeTagReferences()
+            || !TryEnsureOp1TagReferences() || !TryEnsurePhasesTagReferences()
+            || !TryEnsureOperationHandshakeReferences())
+            return false;
+
+        bool cleared = TrySetBoolean(_plcBatchStart, false);
+        cleared &= TrySetBoolean(_handshakeCmdStart, false);
+        if (!cleared)
+            return false;
+
+        cleared &= TrySetInt32(_plcBatchId, 0);
+        cleared &= TrySetInt32(_plcBatchStatus, 0);
+        cleared &= TrySetString(_plcBatchName, "");
+        cleared &= TrySetString(_plcBatchRecipeName, "");
+        cleared &= TrySetString(_plcRecipeName, "");
+        cleared &= TrySetInt32(_plcRecipeId, 0);
+        cleared &= TrySetInt32(_plcRecipeNoOfOperations, 0);
+        cleared &= TrySetInt32(_plcOp1Id, 0);
+        cleared &= TrySetString(_plcOp1Name, "");
+        cleared &= TrySetInt32(_plcOp1NoOfPhases, 0);
+        cleared &= TryClearPhaseData(_phasesRoot);
+        cleared &= TrySetBoolean(_handshakeEvtDone, false);
+        if (_handshakeCmdSeq != null)
+            cleared &= TrySetInt32(_handshakeCmdSeq, 0);
+
+        return cleared && TrySetBoolean(_plcEvtBatchDone, false);
+    }
+
+    private static bool TryClearPhaseData(IUANode node)
+    {
+        if (node == null)
+            return false;
+        if (IsPhaseMetaFieldName(node.BrowseName))
+            return true;
+
+        if (node is IUAVariable variable)
+        {
+            NodeId dataType = variable.DataType;
+            bool isScalarType = dataType == OpcUa.DataTypes.String || dataType == OpcUa.DataTypes.Boolean
+                || dataType == OpcUa.DataTypes.Int16 || dataType == OpcUa.DataTypes.Int32
+                || dataType == OpcUa.DataTypes.Int64 || dataType == OpcUa.DataTypes.UInt16
+                || dataType == OpcUa.DataTypes.UInt32 || dataType == OpcUa.DataTypes.UInt64
+                || dataType == OpcUa.DataTypes.Float || dataType == OpcUa.DataTypes.Double;
+            if (isScalarType)
+            {
+                object emptyValue = ConvertScalarByDataType(variable,
+                    dataType == OpcUa.DataTypes.String ? (object)"" : 0);
+                var dimensions = variable.ArrayDimensions;
+                if (dimensions != null && dimensions.Length > 0)
+                {
+                    if (dimensions.Length != 1 || dimensions[0] == 0)
+                        return false;
+                    var values = Array.CreateInstance(emptyValue.GetType(), checked((int)dimensions[0]));
+                    if (emptyValue is string)
+                    {
+                        for (int index = 0; index < values.Length; index++)
+                            values.SetValue("", index);
+                    }
+                    return TrySetVariable(variable, values);
+                }
+                return TrySetVariable(variable, emptyValue);
+            }
+        }
+
+        bool cleared = true;
+        foreach (var child in node.Children)
+            cleared &= TryClearPhaseData(child);
+        return cleared;
+    }
+
+    /// <summary>
+    /// 将 PLC 握手中的 CmdSeq（0 基，表示当前执行 phase）映射为 Phase 名称并更新流程快照。
+    /// </summary>
+    private void UpdateFlowSnapshotFromCmdSeqCurrentZeroBased()
+    {
+        if (_plcBatchRecipeName == null || _handshakeCmdSeq == null)
             return;
 
         string recipeName = ReadStringVariableValue(_plcBatchRecipeName);
         if (string.IsNullOrWhiteSpace(recipeName))
-        {
-            WriteRunningPhaseNameIfChanged("");
             return;
-        }
 
         if (!TryReadRunningOpIndex(out int opIndex))
             return;
@@ -961,24 +1094,11 @@ public class BatchInforToPLC : BaseNetLogic
             return;
 
         if (phaseIndex < 0 || phaseIndex >= op.Phases.Count)
-        {
-            WriteRunningPhaseNameIfChanged("");
             return;
-        }
 
         string phaseName = op.Phases[phaseIndex]?.Name ?? "";
-        WriteRunningPhaseNameIfChanged(phaseName);
         string opName = op?.Name ?? "";
         PublishFlowSnapshot(opIndex, phaseIndex, opName, phaseName, true);
-    }
-
-    private void WriteRunningPhaseNameIfChanged(string newName)
-    {
-        string target = newName ?? "";
-        string current = ReadStringVariableValue(_plcRunningPhaseName);
-        if (string.Equals(current, target, StringComparison.Ordinal))
-            return;
-        TrySetString(_plcRunningPhaseName, target);
     }
 
     private void ExecuteWriteRunStep()
