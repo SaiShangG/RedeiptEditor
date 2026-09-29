@@ -70,6 +70,7 @@ public class BatchInforToPLC : BaseNetLogic
     private int _flowOpCount;
     private int _flowCurrentOpIndex;
     private bool _flowActive;
+    private bool _jumpOperationRequested;
     private string _flowPhaseWriteSummary;
     private readonly List<string> _downloadedTagValues = new List<string>();
 
@@ -140,6 +141,7 @@ public class BatchInforToPLC : BaseNetLogic
         _flowOpCount = 0;
         _flowCurrentOpIndex = 0;
         _flowActive = false;
+        _jumpOperationRequested = false;
     }
 
 
@@ -177,23 +179,31 @@ public class BatchInforToPLC : BaseNetLogic
     {
         if (!_flowActive || _flowReceipt?.Operations == null || _sm?.Current != _stWait)
         {
-            SetStatus("Jump failed: operation flow is not running");
+            ReportJumpFailure("operation flow is not running / Operation 流程未运行");
             return;
         }
 
         if (targetOperationIndex < 0 || targetOperationIndex >= _flowOpCount)
         {
-            SetStatus($"Jump failed: operation index {targetOperationIndex} is out of range");
+            ReportJumpFailure($"operation index out of range / Operation 索引越界: {targetOperationIndex}");
             return;
         }
 
         if (!TryEnsureOperationHandshakeReferences())
         {
-            SetStatus("Jump failed: invalid OperationHandshake reference");
+            ReportJumpFailure("invalid OperationHandshake reference / OperationHandshake 引用无效");
             return;
         }
 
-        TryWriteHandshakeBoolean(_handshakeCmdStart, false, "CmdStart jump reset");
+        if (!TryGetJumpVariables(false, out _, out _))
+            return;
+
+        if (!TryWriteHandshakeBoolean(_handshakeCmdStart, false, "CmdStart jump reset"))
+        {
+            ReportJumpFailure("CmdStart reset failed / CmdStart 复位失败");
+            return;
+        }
+        _jumpOperationRequested = true;
         _flowCurrentOpIndex = targetOperationIndex;
         TrySetInt32(LogicObject.GetVariable("RunningOpIndex"), _flowCurrentOpIndex);
 
@@ -201,6 +211,84 @@ public class BatchInforToPLC : BaseNetLogic
         Log.Info(LogCategory, $"Jump Operation requested: OpIndex={_flowCurrentOpIndex}, Operation='{operationName}'.");
         SetFlowStatus(operationName, "Jump requested");
         TryTransitionTo(_stDownload);
+    }
+
+    [ExportMethod]
+    public void RequestJumpPhase(int targetOperationIndex, int targetPhaseIndex)
+    {
+        if (!_flowActive || _flowReceipt?.Operations == null || _sm?.Current != _stWait)
+        {
+            ReportJumpFailure("operation flow is not running / Operation 流程未运行");
+            return;
+        }
+
+        if (targetOperationIndex != _flowCurrentOpIndex
+            || targetOperationIndex < 0 || targetOperationIndex >= _flowOpCount)
+        {
+            ReportJumpFailure("jump to the target Operation first / 请先跳转至目标 Operation");
+            return;
+        }
+
+        var phases = _flowReceipt.Operations[targetOperationIndex]?.Phases;
+        if (phases == null || targetPhaseIndex < 0 || targetPhaseIndex >= phases.Count)
+        {
+            ReportJumpFailure($"phase index out of range / Phase 索引越界: {targetPhaseIndex}");
+            return;
+        }
+
+        if (TryWriteJumpRequest(true, targetPhaseIndex))
+            SetStatus($"Jump Phase sent / Phase 跳转已发送: OpIndex={targetOperationIndex}, PhaseIndex={targetPhaseIndex}");
+    }
+
+    private bool TryGetJumpVariables(bool jumpPhase, out IUAVariable indexVariable, out IUAVariable commandVariable)
+    {
+        var pointer = LogicObject.GetVariable("Phases");
+        var phasesRoot = _phasesRoot ?? (pointer == null ? null : InformationModel.Get(pointer.Value));
+        var root = phasesRoot?.Owner;
+        string commandName = jumpPhase ? "JumpPhase" : "JumpOperation";
+        indexVariable = root?.GetVariable(commandName + "Index");
+        commandVariable = root?.GetVariable(commandName);
+        if (indexVariable != null && commandVariable != null)
+            return true;
+
+        ReportJumpFailure($"missing PLC tags beside Phases / Phases 同级缺少 PLC 标签: {commandName}Index, {commandName}");
+        return false;
+    }
+
+    private bool TryWriteJumpRequest(bool jumpPhase, int targetIndex)
+    {
+        if (!TryGetJumpVariables(jumpPhase, out var indexVariable, out var commandVariable))
+            return false;
+
+        string commandName = jumpPhase ? "JumpPhase" : "JumpOperation";
+        string tagName = commandName;
+        string tagValue = "false";
+        try
+        {
+            Log.Info(LogCategory, $"JumpToPLC requested / 请求跳转: {commandName}Index={targetIndex} (zero-based / 0 基).");
+            commandVariable.RemoteWrite(false, 5000);
+            Log.Info(LogCategory, $"JumpToPLC write completed / 写入完成: {commandName}=false");
+            tagName = commandName + "Index";
+            tagValue = targetIndex.ToString(CultureInfo.InvariantCulture);
+            indexVariable.RemoteWrite(targetIndex, 5000);
+            Log.Info(LogCategory, $"JumpToPLC write completed / 写入完成: {tagName}={tagValue}");
+            tagName = commandName;
+            tagValue = "true";
+            commandVariable.RemoteWrite(true, 5000);
+            Log.Info(LogCategory, $"JumpToPLC write completed / 写入完成: {commandName}=true; execution not confirmed / 尚未确认 PLC 执行结果.");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            ReportJumpFailure($"PLC write failed / PLC 写入失败: {tagName}={tagValue}; {ex.Message}; PLC state must be checked before retry / 重试前请核对 PLC 状态");
+            return false;
+        }
+    }
+
+    private void ReportJumpFailure(string message)
+    {
+        SetStatus("Jump failed: " + message);
+        Log.Error(LogCategory, "Jump failed: " + message);
     }
 
     /// <summary>
@@ -898,6 +986,26 @@ public class BatchInforToPLC : BaseNetLogic
 
     private void ExecuteWriteRunStep()
     {
+        if (_jumpOperationRequested)
+        {
+            _jumpOperationRequested = false;
+            bool handshakeReset = TryWriteHandshakeBoolean(_handshakeEvtDone, false, "EvtDone jump reset");
+            if (!handshakeReset)
+                ReportJumpFailure("EvtDone reset failed / EvtDone 复位失败");
+            if (!handshakeReset || !TryWriteJumpRequest(false, _flowCurrentOpIndex))
+            {
+                _flowActive = false;
+                string jumpError = _statusText?.Value?.Value?.ToString() ?? "Jump failed:";
+                TryTransitionTo(_stIdle);
+                SetStatus(jumpError);
+                return;
+            }
+
+            SetFlowStatus(GetCurrentFlowOpName(), "Running, jump sent / 跳转已发送");
+            TryTransitionTo(_stWait);
+            return;
+        }
+
         if (!TryEnsureOperationHandshakeReferences())
         {
             SetStatus("WriteRun failed: invalid OperationHandshake reference");
@@ -1563,16 +1671,18 @@ public class BatchInforToPLC : BaseNetLogic
         }
     }
 
-    private static void TryWriteHandshakeBoolean(IUAVariable variable, bool value, string description)
+    private static bool TryWriteHandshakeBoolean(IUAVariable variable, bool value, string description)
     {
         if (variable == null)
         {
             Log.Warning(LogCategory, $"写入 OperationHandshake Model Boolean（{description}）失败：变量为空。");
-            return;
+            return false;
         }
 
-        TrySetBoolean(variable, value);
+        if (!TrySetBoolean(variable, value))
+            return false;
         Log.Info(LogCategory, $"OperationHandshake Model Boolean 写入：{description}, Variable='{variable.BrowseName}', Value={value}.");
+        return true;
     }
 
     private static bool TrySetString(IUAVariable v, string value)
