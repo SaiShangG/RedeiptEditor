@@ -303,7 +303,7 @@ public class GenerateBatchRunFlow : BaseNetLogic
         var receipt = FindReceiptForFlow(recipeName);
         int opCount = receipt?.Operations?.Count ?? 0;
 
-        TryResolveCurrentStep(out int runningOp, out int cmdSeq, out bool running, out bool held, out bool idle);
+        TryResolveCurrentStep(receipt, out int runningOp, out int runningPhase, out bool running, out bool held, out bool idle);
         bool fault = ReadBooleanTag(_plcEvtFault);
 
         bool finished = IsBatchFlowFinished(receipt);
@@ -328,7 +328,7 @@ public class GenerateBatchRunFlow : BaseNetLogic
             else
             {
                 item.Visible = _opExpanded.TryGetValue(opIndex, out bool exp) && exp;
-                var st = ResolvePhaseState(opIndex, phaseIndex, runningOp, cmdSeq, opCount, running, held, idle, fault);
+                var st = ResolvePhaseState(opIndex, phaseIndex, runningOp, runningPhase, opCount, running, held, idle, fault);
                 ApplyItemHighlight(item, st);
             }
         }
@@ -794,47 +794,50 @@ public class GenerateBatchRunFlow : BaseNetLogic
         _plcRunningOpIndex = _batchInforLogic?.GetVariable("RunningOpIndex");
     }
 
-    /// <summary>解析当前高亮步：优先使用完整的 Model 快照，否则使用 PLC 索引。</summary>
+    /// <summary>按 PLC 当前 Operation/Phase 名称解析配方中的 0 基索引。</summary>
     private void TryResolveCurrentStep(
+        RecipeDatabaseTreeLoader.ReceiptNode receipt,
         out int runningOp,
-        out int cmdSeq,
+        out int runningPhase,
         out bool running,
         out bool held,
         out bool idle)
     {
-        runningOp = 0;
-        cmdSeq = 0;
-        running = false;
+        runningOp = -1;
+        runningPhase = -1;
         held = ReadBooleanTag(_plcHeld);
         idle = ReadBooleanTag(_plcIdle);
 
-        int snapOp = ReadSnapshotInt("RunningOpIndex", -1);
-        int snapPhase = ReadSnapshotInt("RunningPhaseIndex", -1);
-        if (snapOp >= 0 && snapPhase >= 0)
+        string operationName = ReadStringTag(LogicObject.GetVariable("RunningOperationName"));
+        string phaseName = ReadStringTag(LogicObject.GetVariable("RunningPhaseName"));
+        if (!IsCurrentStepName(operationName) || receipt?.Operations == null)
         {
-            runningOp = snapOp;
-            cmdSeq = snapPhase;
-        }
-        else
-        {
-            runningOp = ReadRunningOpIndex();
-            cmdSeq = ReadCmdSeq();
+            running = false;
+            return;
         }
 
-        string opName = ReadStringTag(_plcOpName);
-        if (string.IsNullOrWhiteSpace(opName))
-            opName = ReadStringVariable(GetBatchDownloadToPlcDataNode(), "OperationName");
-        string phaseName = ReadStringTag(_plcRunningPhaseName);
-        if (string.IsNullOrWhiteSpace(phaseName))
-            phaseName = ReadStringVariable(GetBatchDownloadToPlcDataNode(), "PhaseName");
+        runningOp = receipt.Operations.FindIndex(operation =>
+            NameEquals(operation?.Name, operationName));
+        if (runningOp < 0)
+        {
+            running = false;
+            return;
+        }
 
-        running = ReadSnapshotBool("FlowIsRunning")
-                  || ReadBooleanTag(_plcBatchRunning)
-                  || ReadBooleanTag(_plcOpRunning)
-                  || ReadBooleanTag(_plcRunning)
-                  || IsBatchInforStatusRunning()
-                  || !string.IsNullOrWhiteSpace(phaseName);
+        var phases = receipt.Operations[runningOp]?.Phases;
+        if (IsCurrentStepName(phaseName) && phases != null)
+        {
+            runningPhase = phases.FindIndex(phase =>
+                NameEquals(phase?.Name, phaseName));
+        }
+
+        running = true;
     }
+
+    private static bool IsCurrentStepName(string value)
+        => !string.IsNullOrWhiteSpace(value)
+           && !string.Equals(value.Trim(), "0", StringComparison.OrdinalIgnoreCase)
+           && !string.Equals(value.Trim(), "None", StringComparison.OrdinalIgnoreCase);
 
     private bool IsBatchInforStatusRunning()
     {

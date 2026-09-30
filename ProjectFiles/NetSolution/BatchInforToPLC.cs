@@ -62,8 +62,10 @@ public class BatchInforToPLC : BaseNetLogic
     private IUAVariable _handshakeCmdSeq;
     private PeriodicTask _evtDoneTimer;
     private DelayedTask _cmdStartTask;
+    private DelayedTask _nextOperationTask;
     private object _lastEvtDoneValue;
     private bool _hasLastEvtDoneValue;
+    private bool _evtDoneHighConsumed;
     private bool _batchCleanupPending;
     private bool _batchDoneHandled;
 
@@ -102,6 +104,9 @@ public class BatchInforToPLC : BaseNetLogic
         _evtDoneTimer = null;
         _cmdStartTask?.Dispose();
         _cmdStartTask = null;
+        _nextOperationTask?.Dispose();
+        _nextOperationTask = null;
+        _evtDoneHighConsumed = false;
         _batchCleanupPending = false;
         _batchDoneHandled = false;
         SetStatus("Stopped");
@@ -138,6 +143,7 @@ public class BatchInforToPLC : BaseNetLogic
         _evtDoneTimer = null;
         _lastEvtDoneValue = null;
         _hasLastEvtDoneValue = false;
+        _evtDoneHighConsumed = false;
         _handshakeEvtDone = null;
         _handshakeCmdStart = null;
         _handshakeCmdSeq = null;
@@ -855,6 +861,7 @@ public class BatchInforToPLC : BaseNetLogic
         _evtDoneTimer = null;
         _lastEvtDoneValue = null;
         _hasLastEvtDoneValue = false;
+        _evtDoneHighConsumed = false;
 
         TryEnsureOperationHandshakeReferences();
         _evtDoneTimer = new PeriodicTask(PollEvtDoneValue, 200, LogicObject);
@@ -909,7 +916,36 @@ public class BatchInforToPLC : BaseNetLogic
         catch { isDone = false; }
 
         if (!isDone)
+        {
+            _evtDoneHighConsumed = false;
             return;
+        }
+
+        if (_evtDoneHighConsumed)
+            return;
+
+        if (!TryWriteHandshakeBoolean(_handshakeCmdStart, false, "CmdStart acknowledge completion")
+            || !TryWriteHandshakeBoolean(_handshakeEvtDone, false, "EvtDone acknowledge completion"))
+        {
+            SetStatus("Next operation waiting: handshake acknowledge failed / 下一 Operation 等待中：握手确认失败");
+            Log.Error(LogCategory, "EvtDone=1 received, but the handshake could not be reset before the next Operation download / 已收到 EvtDone=1，但下载下一 Operation 前无法复位握手。");
+            return;
+        }
+
+        _evtDoneHighConsumed = true;
+        _nextOperationTask?.Dispose();
+        _nextOperationTask = new DelayedTask(AdvanceToNextOperation, 300, LogicObject);
+        _nextOperationTask.Start();
+    }
+
+    private void AdvanceToNextOperation()
+    {
+        _nextOperationTask = null;
+        if (!_flowActive || _sm?.Current != _stWait)
+        {
+            Log.Warning(LogCategory, $"Next Operation download skipped / 已跳过下一 Operation 下载: FlowActive={_flowActive}, State='{_sm?.Current?.Name ?? "None"}'.");
+            return;
+        }
 
         _flowCurrentOpIndex++;
         TrySetInt32(LogicObject.GetVariable("RunningOpIndex"), _flowCurrentOpIndex);
@@ -946,6 +982,10 @@ public class BatchInforToPLC : BaseNetLogic
 
                 _batchCleanupPending = true;
                 _flowActive = false;
+                _cmdStartTask?.Dispose();
+                _cmdStartTask = null;
+                _nextOperationTask?.Dispose();
+                _nextOperationTask = null;
                 TryTransitionTo(_stFinish);
             }
 
