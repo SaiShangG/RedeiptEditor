@@ -8895,6 +8895,36 @@ Children:
                     Children:
                     - Class: Method
                       Name: Regenerate
+                    - Name: RunningOperationName
+                      Type: BaseDataVariableType
+                      DataType: String
+                      Value: "0"
+                      Children:
+                      - Name: DynamicLink
+                        Type: DynamicLink
+                        DataType: NodePath
+                        Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/CurrentBatchData/Operation/OperationName"
+                        Children:
+                        - Name: Mode
+                          Type: BaseVariableType
+                          DataType: DynamicLinkMode
+                          ModellingRule: Optional
+                          Value: 2
+                    - Name: RunningPhaseName
+                      Type: BaseDataVariableType
+                      DataType: String
+                      Value: "0"
+                      Children:
+                      - Name: DynamicLink
+                        Type: DynamicLink
+                        DataType: NodePath
+                        Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/CurrentBatchData/Batch/RunningPhaseName"
+                        Children:
+                        - Name: Mode
+                          Type: BaseVariableType
+                          DataType: DynamicLinkMode
+                          ModellingRule: Optional
+                          Value: 2
         - Name: HorizontalGap
           Type: BaseDataVariableType
           DataType: Size

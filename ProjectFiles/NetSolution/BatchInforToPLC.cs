@@ -62,9 +62,10 @@ public class BatchInforToPLC : BaseNetLogic
     private IUAVariable _handshakeCmdSeq;
     private PeriodicTask _evtDoneTimer;
     private DelayedTask _cmdStartTask;
+    private DelayedTask _nextOperationTask;
     private object _lastEvtDoneValue;
-    private object _lastProcessedEvtDoneValue;
     private bool _hasLastEvtDoneValue;
+    private bool _evtDoneHighConsumed;
     private bool _batchCleanupPending;
     private bool _batchDoneHandled;
 
@@ -103,6 +104,9 @@ public class BatchInforToPLC : BaseNetLogic
         _evtDoneTimer = null;
         _cmdStartTask?.Dispose();
         _cmdStartTask = null;
+        _nextOperationTask?.Dispose();
+        _nextOperationTask = null;
+        _evtDoneHighConsumed = false;
         _batchCleanupPending = false;
         _batchDoneHandled = false;
         SetStatus("Stopped");
@@ -135,11 +139,11 @@ public class BatchInforToPLC : BaseNetLogic
 
         _phasesRoot = null;
 
-         _evtDoneTimer?.Dispose();
+        _evtDoneTimer?.Dispose();
         _evtDoneTimer = null;
         _lastEvtDoneValue = null;
-        _lastProcessedEvtDoneValue = null;
         _hasLastEvtDoneValue = false;
+        _evtDoneHighConsumed = false;
         _handshakeEvtDone = null;
         _handshakeCmdStart = null;
         _handshakeCmdSeq = null;
@@ -499,7 +503,6 @@ public class BatchInforToPLC : BaseNetLogic
         _flowCurrentOpIndex = runningIndex;
         _flowActive = true;
         _flowPhaseWriteSummary = "";
-        _lastProcessedEvtDoneValue = null;
         TrySetInt32(LogicObject.GetVariable("RunningOpIndex"), _flowCurrentOpIndex);
         return true;
     }
@@ -593,8 +596,6 @@ public class BatchInforToPLC : BaseNetLogic
             "Download",
             onEnter: _ =>
             {
-                // Reset the processed EvtDone value to prepare for detecting the next edge
-                _lastProcessedEvtDoneValue = null;
                 if (_flowActive)
                     ExecuteDownloadCurrentOperation();
                 else
@@ -860,6 +861,7 @@ public class BatchInforToPLC : BaseNetLogic
         _evtDoneTimer = null;
         _lastEvtDoneValue = null;
         _hasLastEvtDoneValue = false;
+        _evtDoneHighConsumed = false;
 
         TryEnsureOperationHandshakeReferences();
         _evtDoneTimer = new PeriodicTask(PollEvtDoneValue, 200, LogicObject);
@@ -877,7 +879,6 @@ public class BatchInforToPLC : BaseNetLogic
         if (!_hasLastEvtDoneValue)
         {
             _lastEvtDoneValue = current;
-            _lastProcessedEvtDoneValue = current;
             _hasLastEvtDoneValue = true;
         }
 
@@ -897,16 +898,54 @@ public class BatchInforToPLC : BaseNetLogic
         if (_sm?.Current != _stWait)
             return;
 
-        bool currentIsDone = ConvertValueToBoolean(current);
-        bool lastProcessedIsDone = ConvertValueToBoolean(_lastProcessedEvtDoneValue);
+        bool isDone = false;
+        try
+        {
+            if (current is bool b) isDone = b;
+            else if (current is sbyte sb) isDone = sb != 0;
+            else if (current is byte by) isDone = by != 0;
+            else if (current is short s) isDone = s != 0;
+            else if (current is ushort us) isDone = us != 0;
+            else if (current is int i) isDone = i != 0;
+            else if (current is uint ui) isDone = ui != 0;
+            else if (current is long l) isDone = l != 0;
+            else if (current is ulong ul) isDone = ul != 0;
+            else if (current != null) isDone = string.Equals(current.ToString(), "1", StringComparison.OrdinalIgnoreCase)
+                                              || string.Equals(current.ToString(), "true", StringComparison.OrdinalIgnoreCase);
+        }
+        catch { isDone = false; }
 
-        // Only process rising edge (false→true or 0→1 transition)
-        if (!currentIsDone || lastProcessedIsDone)
+        if (!isDone)
+        {
+            _evtDoneHighConsumed = false;
+            return;
+        }
+
+        if (_evtDoneHighConsumed)
             return;
 
-        // Rising edge detected: transition from false/0 to true/1
-        Log.Info(LogCategory, "EvtDone rising edge detected, advancing to next operation");
-        _lastProcessedEvtDoneValue = current;
+        if (!TryWriteHandshakeBoolean(_handshakeCmdStart, false, "CmdStart acknowledge completion")
+            || !TryWriteHandshakeBoolean(_handshakeEvtDone, false, "EvtDone acknowledge completion"))
+        {
+            SetStatus("Next operation waiting: handshake acknowledge failed / 下一 Operation 等待中：握手确认失败");
+            Log.Error(LogCategory, "EvtDone=1 received, but the handshake could not be reset before the next Operation download / 已收到 EvtDone=1，但下载下一 Operation 前无法复位握手。");
+            return;
+        }
+
+        _evtDoneHighConsumed = true;
+        _nextOperationTask?.Dispose();
+        _nextOperationTask = new DelayedTask(AdvanceToNextOperation, 300, LogicObject);
+        _nextOperationTask.Start();
+    }
+
+    private void AdvanceToNextOperation()
+    {
+        _nextOperationTask = null;
+        if (!_flowActive || _sm?.Current != _stWait)
+        {
+            Log.Warning(LogCategory, $"Next Operation download skipped / 已跳过下一 Operation 下载: FlowActive={_flowActive}, State='{_sm?.Current?.Name ?? "None"}'.");
+            return;
+        }
 
         _flowCurrentOpIndex++;
         TrySetInt32(LogicObject.GetVariable("RunningOpIndex"), _flowCurrentOpIndex);
@@ -918,31 +957,6 @@ public class BatchInforToPLC : BaseNetLogic
         }
 
         TryTransitionTo(_stFinish);
-    }
-
-    private bool ConvertValueToBoolean(object value)
-    {
-        if (value == null)
-            return false;
-
-        try
-        {
-            if (value is bool b) return b;
-            else if (value is sbyte sb) return sb != 0;
-            else if (value is byte by) return by != 0;
-            else if (value is short s) return s != 0;
-            else if (value is ushort us) return us != 0;
-            else if (value is int i) return i != 0;
-            else if (value is uint ui) return ui != 0;
-            else if (value is long l) return l != 0;
-            else if (value is ulong ul) return ul != 0;
-            else return string.Equals(value.ToString(), "1", StringComparison.OrdinalIgnoreCase)
-                       || string.Equals(value.ToString(), "true", StringComparison.OrdinalIgnoreCase);
-        }
-        catch
-        {
-            return false;
-        }
     }
 
     private bool HandleBatchDone()
@@ -968,6 +982,10 @@ public class BatchInforToPLC : BaseNetLogic
 
                 _batchCleanupPending = true;
                 _flowActive = false;
+                _cmdStartTask?.Dispose();
+                _cmdStartTask = null;
+                _nextOperationTask?.Dispose();
+                _nextOperationTask = null;
                 TryTransitionTo(_stFinish);
             }
 
