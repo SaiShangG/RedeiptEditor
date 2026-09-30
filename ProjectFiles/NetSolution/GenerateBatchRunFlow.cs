@@ -303,7 +303,7 @@ public class GenerateBatchRunFlow : BaseNetLogic
         var receipt = FindReceiptForFlow(recipeName);
         int opCount = receipt?.Operations?.Count ?? 0;
 
-        TryResolveCurrentStep(receipt, out int runningOp, out int cmdSeq, out bool running, out bool held, out bool idle);
+        TryResolveCurrentStep(out int runningOp, out int cmdSeq, out bool running, out bool held, out bool idle);
         bool fault = ReadBooleanTag(_plcEvtFault);
 
         bool finished = IsBatchFlowFinished(receipt);
@@ -794,9 +794,8 @@ public class GenerateBatchRunFlow : BaseNetLogic
         _plcRunningOpIndex = _batchInforLogic?.GetVariable("RunningOpIndex");
     }
 
-    /// <summary>解析当前高亮步：Model 快照 &gt; 名称匹配 &gt; PLC 索引。</summary>
+    /// <summary>解析当前高亮步：优先使用完整的 Model 快照，否则使用 PLC 索引。</summary>
     private void TryResolveCurrentStep(
-        RecipeDatabaseTreeLoader.ReceiptNode receipt,
         out int runningOp,
         out int cmdSeq,
         out bool running,
@@ -811,10 +810,10 @@ public class GenerateBatchRunFlow : BaseNetLogic
 
         int snapOp = ReadSnapshotInt("RunningOpIndex", -1);
         int snapPhase = ReadSnapshotInt("RunningPhaseIndex", -1);
-        if (snapOp >= 0)
+        if (snapOp >= 0 && snapPhase >= 0)
         {
             runningOp = snapOp;
-            cmdSeq = Math.Max(0, snapPhase);
+            cmdSeq = snapPhase;
         }
         else
         {
@@ -828,12 +827,6 @@ public class GenerateBatchRunFlow : BaseNetLogic
         string phaseName = ReadStringTag(_plcRunningPhaseName);
         if (string.IsNullOrWhiteSpace(phaseName))
             phaseName = ReadStringVariable(GetBatchDownloadToPlcDataNode(), "PhaseName");
-
-        if (TryResolveIndicesByName(receipt, opName, phaseName, out int byOp, out int byPh))
-        {
-            runningOp = byOp;
-            cmdSeq = byPh;
-        }
 
         running = ReadSnapshotBool("FlowIsRunning")
                   || ReadBooleanTag(_plcBatchRunning)

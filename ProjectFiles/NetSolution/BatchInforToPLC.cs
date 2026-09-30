@@ -61,6 +61,7 @@ public class BatchInforToPLC : BaseNetLogic
     private IUAVariable _handshakeCmdStart;
     private IUAVariable _handshakeCmdSeq;
     private PeriodicTask _evtDoneTimer;
+    private DelayedTask _cmdStartTask;
     private object _lastEvtDoneValue;
     private bool _hasLastEvtDoneValue;
     private bool _batchCleanupPending;
@@ -99,6 +100,8 @@ public class BatchInforToPLC : BaseNetLogic
     {
         _evtDoneTimer?.Dispose();
         _evtDoneTimer = null;
+        _cmdStartTask?.Dispose();
+        _cmdStartTask = null;
         _batchCleanupPending = false;
         _batchDoneHandled = false;
         SetStatus("Stopped");
@@ -1118,14 +1121,38 @@ public class BatchInforToPLC : BaseNetLogic
             return;
         }
 
-        TryWriteHandshakeBoolean(_handshakeCmdStart, false, "CmdStart reset");
-        TryWriteHandshakeBoolean(_handshakeEvtDone, false, "EvtDone reset");
-        TryWriteHandshakeBoolean(_handshakeCmdStart, true, "CmdStart start");
-        if (_flowActive)
+        _cmdStartTask?.Dispose();
+        _cmdStartTask = null;
+
+        bool resetOk = TryWriteHandshakeBoolean(_handshakeCmdStart, false, "CmdStart reset");
+        resetOk &= TryWriteHandshakeBoolean(_handshakeEvtDone, false, "EvtDone reset");
+        if (!resetOk)
+        {
+            SetStatus("WriteRun failed: handshake reset failed");
+            _flowActive = false;
+            TryTransitionTo(_stIdle);
+            return;
+        }
+
+        SetFlowStatus(GetCurrentFlowOpName(), "Handshake reset, waiting to start");
+        _cmdStartTask = new DelayedTask(() =>
+        {
+            _cmdStartTask = null;
+            if (!_flowActive || _sm?.Current != _stWriteRun)
+                return;
+
+            if (!TryWriteHandshakeBoolean(_handshakeCmdStart, true, "CmdStart start"))
+            {
+                SetStatus("WriteRun failed: CmdStart write failed");
+                _flowActive = false;
+                TryTransitionTo(_stIdle);
+                return;
+            }
+
             SetFlowStatus(GetCurrentFlowOpName(), "Running, waiting for completion");
-        else
-            SetStatus("Download successful");
-        TryTransitionTo(_stWait);
+            TryTransitionTo(_stWait);
+        }, 300, LogicObject);
+        _cmdStartTask.Start();
     }
 
     private string GetCurrentFlowOpName()
