@@ -32,6 +32,7 @@ Children:
       DataType: String
       Value: "NoOfOperations"
   - Name: RunningOperation
+    Id: g=a49cc71a9ba05af412b3d63ab8b06403
     Type: UDT_Operation
     DataType: UDT_Operation
     Children:
@@ -60,10 +61,12 @@ Children:
         DataType: String
         Value: "NoOfPhases"
     - Name: RunningPhase
+      Id: g=a7e444c87ec8923b4187f36675e2162c
       Type: UDT_Phase
       DataType: UDT_Phase
       Children:
       - Name: PP
+        Id: g=9fb01cfef3b13f48d29fa81de5f2baba
         Type: UDT_PhaseParameters
         DataType: UDT_PhaseParameters
         Children:
@@ -128,6 +131,7 @@ Children:
             DataType: String
             Value: "ControllerSetPointValue"
       - Name: EC
+        Id: g=cdcc89e0d043ed841c3f19c64bff065f
         Type: UDT_EndConditions
         DataType: UDT_EndConditions
         Children:
@@ -378,10 +382,12 @@ Children:
       DataType: String
       Value: "NoOfPhases"
   - Name: RunningPhase
+    Id: g=1dd32488458ea1e762b11afce749f38e
     Type: UDT_Phase
     DataType: UDT_Phase
     Children:
     - Name: PP
+      Id: g=9579c424acc51ba6d39c7b6847b93204
       Type: UDT_PhaseParameters
       DataType: UDT_PhaseParameters
       Children:
@@ -446,6 +452,7 @@ Children:
           DataType: String
           Value: "ControllerSetPointValue"
     - Name: EC
+      Id: g=cda691a6a4e77d112578a54715c6e2d3
       Type: UDT_EndConditions
       DataType: UDT_EndConditions
       Children:
@@ -918,6 +925,7 @@ Children:
       DataType: String
       Value: "StepNLastScan"
   - Name: StepTimer
+    Id: g=a4ad449f0f52f5a270d0388d2e3d1e78
     Type: TIMER
     DataType: TIMER
     Children:
@@ -968,6 +976,7 @@ Children:
   ValueRank: Any
   Children:
   - Name: Decode
+    Id: g=118277945398ea337728d3f4d79e9d59
     Type: StepDecode
     DataType: StepDecode
     Children:
@@ -1132,6 +1141,7 @@ Children:
         DataType: String
         Value: "StepNLastScan"
     - Name: StepTimer
+      Id: g=d70f6983b9cf00ffba080a260d9332f6
       Type: TIMER
       DataType: TIMER
       Children:
@@ -1176,6 +1186,7 @@ Children:
           DataType: String
           Value: "DN"
   - Name: Steps
+    Id: g=bc31099a34cd2121bdc4c923f0317351
     Type: UDT_SeqSteps
     DataType: UDT_SeqSteps
     Children:
@@ -1410,6 +1421,7 @@ Children:
   ValueRank: Any
   Children:
   - Name: PP
+    Id: g=cbd6547b3f1592deb67cb8cf90043712
     Type: UDT_PhaseParameters
     DataType: UDT_PhaseParameters
     Children:
@@ -1474,6 +1486,7 @@ Children:
         DataType: String
         Value: "ControllerSetPointValue"
   - Name: EC
+    Id: g=6c95b23913fd346dba2c0d58e143f148
     Type: UDT_EndConditions
     DataType: UDT_EndConditions
     Children:

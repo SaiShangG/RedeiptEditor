@@ -864,7 +864,7 @@ public class BatchInforToPLC : BaseNetLogic
         _evtDoneHighConsumed = false;
 
         TryEnsureOperationHandshakeReferences();
-        _evtDoneTimer = new PeriodicTask(PollEvtDoneValue, 200, LogicObject);
+        _evtDoneTimer = new PeriodicTask(PollEvtDoneValue, 1000, LogicObject);
         _evtDoneTimer.Start();
     }
 

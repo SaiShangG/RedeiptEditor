@@ -69,6 +69,57 @@ Children:
       Type: BaseDataVariableType
       DataType: String
       Value: "Program:MainProgram.PhaseTimerEnable.@Description"
+- Name: PP1
+  Type: RAEtherNetIPTag
+  DataType: Float
+  Children:
+  - Name: SymbolName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Program:MainProgram.PP1"
+  - Name: Description
+    Type: RAEtherNetIPMetaTag
+    DataType: String
+    Value: "Process Parameter 1\r\nScaled Value"
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Program:MainProgram.PP1.@Description"
+- Name: PP2
+  Type: RAEtherNetIPTag
+  DataType: Float
+  Children:
+  - Name: SymbolName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Program:MainProgram.PP2"
+  - Name: Description
+    Type: RAEtherNetIPMetaTag
+    DataType: String
+    Value: "Process Parameter 2\r\nScaled Value"
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Program:MainProgram.PP2.@Description"
+- Name: PP3
+  Type: RAEtherNetIPTag
+  DataType: Float
+  Children:
+  - Name: SymbolName
+    Type: BaseDataVariableType
+    DataType: String
+    Value: "Program:MainProgram.PP3"
+  - Name: Description
+    Type: RAEtherNetIPMetaTag
+    DataType: String
+    Value: "Process Parameter 3\r\nScaled Value"
+    Children:
+    - Name: SymbolName
+      Type: BaseDataVariableType
+      DataType: String
+      Value: "Program:MainProgram.PP3.@Description"
 - Name: UserAckConfirm
   Id: g=38deefcbb910ddf88ea5b3b65fb4a1b6
   Type: RAEtherNetIPTag
