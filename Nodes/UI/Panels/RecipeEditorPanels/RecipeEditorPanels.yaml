@@ -10639,6 +10639,36 @@ Children:
                                       Type: BaseDataVariableType
                                       DataType: UInt32
                                       ValueRank: ScalarOrOneDimension
+                                - Name: MethodContainer3
+                                  Type: BaseObjectType
+                                  Children:
+                                  - Name: ObjectPointer
+                                    Type: NodePointer
+                                    DataType: NodeId
+                                    Value: "/Objects/Commands/VariableCommands"
+                                    Children:
+                                    - Name: Kind
+                                      Type: PropertyType
+                                      DataType: NodeId
+                                      Value: "/Types/ObjectTypes/BaseObjectType"
+                                  - Name: Method
+                                    Type: BaseDataVariableType
+                                    DataType: String
+                                    Value: "Set"
+                                  - Name: InputArguments
+                                    Type: BaseObjectType
+                                    Children:
+                                    - Name: VariableToModify
+                                      Type: BaseDataVariableType
+                                      DataType: VariablePointer
+                                      Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/CurrentBatchData/Batch/BatchAbort"
+                                    - Name: Value
+                                      Type: BaseDataVariableType
+                                      DataType: Boolean
+                                    - Name: ArrayIndex
+                                      Type: BaseDataVariableType
+                                      DataType: UInt32
+                                      ValueRank: ScalarOrOneDimension
                               - Name: EventArguments
                                 Type: MouseClickEvent
                                 Children:
@@ -11675,6 +11705,11 @@ Children:
                       - Name: ButtonWithIcon1
                         Type: ButtonWithIcon
                         Children:
+                        - Name: Rectangle2
+                          Type: Rectangle
+                          Children:
+                          - Name: Button1
+                            Type: Button
                         - Name: Rectangle1
                           Type: Rectangle
                           Children:
@@ -11906,11 +11941,6 @@ Children:
                             - Name: Severity
                               Type: PropertyType
                               DataType: UInt16
-                        - Name: Rectangle2
-                          Type: Rectangle
-                          Children:
-                          - Name: Button1
-                            Type: Button
                     - Name: Label1
                       Type: Label
                       Children:
@@ -12050,6 +12080,17 @@ Children:
                         DataType: Size
                         ModellingRule: Optional
                         Value: 280.0
+                    - Name: Label2
+                      Type: Label
+                      Children:
+                      - Name: Text
+                        Type: BaseDataVariableType
+                        DataType: LocalizedText
+                        Children:
+                        - Name: DynamicLink
+                          Type: DynamicLink
+                          DataType: NodePath
+                          Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/CurrentBatchData/OperationHandshake/OperationHandShakeEvtDone"
                   - Name: Rectangle5
                     Type: Rectangle
                     Children:
