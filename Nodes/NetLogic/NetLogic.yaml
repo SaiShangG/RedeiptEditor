@@ -108,6 +108,16 @@ Children:
     Name: NotifyPhaseParameterBufferEdited
   - Class: Method
     Name: ClearRenameDuplicateHint
+  - Class: Method
+    Name: ConfirmRenameSelectedTreeItem
+    Children:
+    - Name: ns=0;InputArguments
+      Type: BaseVariableType
+      DataType: Argument
+      ReferenceType: HasProperty
+      ValueRank: OneDimension
+      ArrayDimensions: [0]
+      Value: [{"TypeId":{"Id":296},"Body":{"Name":"newName","DataType":{"Id":12},"ValueRank":-1,"ArrayDimensions":[],"Description":{"NamespaceIndex":-1,"LocaleId":"","Text":""}}},{"TypeId":{"Id":296},"Body":{"Name":"dialogNodeId","DataType":{"Id":17},"ValueRank":-1,"ArrayDimensions":[],"Description":{"NamespaceIndex":-1,"LocaleId":"","Text":""}}}]
 - Name: RecipeDatabaseTreeLoader
   Type: NetLogic
   Children:

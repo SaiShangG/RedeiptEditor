@@ -5344,7 +5344,7 @@ Children:
                       - Name: DynamicLink
                         Type: DynamicLink
                         DataType: NodePath
-                        Value: "../../../../../../../Name/Label1/Text"
+                        Value: "../../../../../../../Name/TextBox1/Text"
                 - Name: MethodContainer2
                   Type: BaseObjectType
                   Children:

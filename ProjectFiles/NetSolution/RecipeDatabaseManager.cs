@@ -551,17 +551,13 @@ public class RecipeDatabaseManager : BaseNetLogic
 
     private void SetRenameDuplicateHint(string message)
     {
-        try
+        var v = LogicObject.GetVariable("RenameDuplicateHint");
+        if (v == null)
         {
-            var v = LogicObject.GetVariable("RenameDuplicateHint");
-            if (v == null)
-            {
-                v = InformationModel.MakeVariable("RenameDuplicateHint", OpcUa.DataTypes.String);
-                LogicObject.Add(v);
-            }
-            v.Value = message ?? "";
+            v = InformationModel.MakeVariable("RenameDuplicateHint", OpcUa.DataTypes.String);
+            LogicObject.Add(v);
         }
-        catch { }
+        v.Value = message ?? "";
     }
 
     private static bool PhaseFullNameTakenElsewhere(RecipeDatabaseTreeLoader loader, int exceptPhaseId, string fullName)
@@ -681,10 +677,39 @@ public class RecipeDatabaseManager : BaseNetLogic
     [ExportMethod]
     public void RenameSelectedTreeItem(string newName)
     {
-        if (Loader == null) { if (EnableLog) Log.Error(LogCategory, "TreeLoader 未就绪"); return; }
-        if (GenerateTreeList.Instance == null) return;
+        TryRenameSelectedTreeItem(newName);
+    }
+
+    [ExportMethod]
+    public void ConfirmRenameSelectedTreeItem(string newName, NodeId dialogNodeId)
+    {
+        var dialog = InformationModel.Get(dialogNodeId) as Dialog;
+        if (dialog == null)
+        {
+            Log.Error(LogCategory, "ConfirmRenameSelectedTreeItem: Rename dialog not found");
+            SetRenameDuplicateHint("重命名弹窗未就绪，请重新打开。");
+            return;
+        }
+        if (TryRenameSelectedTreeItem(newName))
+            dialog.Close();
+    }
+
+    private bool TryRenameSelectedTreeItem(string newName)
+    {
+        if (Loader == null)
+        {
+            Log.Error(LogCategory, "TreeLoader 未就绪");
+            SetRenameDuplicateHint("配方数据未就绪，请稍后重试。");
+            return false;
+        }
+        if (GenerateTreeList.Instance == null)
+        {
+            Log.Warning(LogCategory, "RenameSelectedTreeItem: TreeList 未就绪");
+            SetRenameDuplicateHint("配方树未就绪，请稍后重试。");
+            return false;
+        }
         newName = (newName ?? "").Trim();
-        if (string.IsNullOrEmpty(newName)) { if (EnableLog) Log.Warning(LogCategory, "RenameSelectedTreeItem: 名称为空"); SetRenameDuplicateHint("名称为空"); return; }
+        if (string.IsNullOrEmpty(newName)) { if (EnableLog) Log.Warning(LogCategory, "RenameSelectedTreeItem: 名称为空"); SetRenameDuplicateHint("名称为空"); return false; }
         SetRenameDuplicateHint("");
 
         int rId = GenerateTreeList.Instance.SelectedReceiptId;
@@ -693,14 +718,15 @@ public class RecipeDatabaseManager : BaseNetLogic
 
         if (pId > 0)
         {
-            if (!Loader.PhaseById.TryGetValue(pId, out var ph)) return;
+            if (!Loader.PhaseById.TryGetValue(pId, out var ph))
+                return ReportRenameSelectionMissing();
             string oldName = ph.Name ?? "";
             if (!TryResolvePhaseRenameName(Loader, pId, newName, out string resolved, out string err))
             {
                 SetRenameDuplicateHint(err);
-                return;
+                return false;
             }
-            if (string.Equals(oldName, resolved, StringComparison.Ordinal)) return;
+            if (string.Equals(oldName, resolved, StringComparison.Ordinal)) return true;
             Loader.UpdatePhase(pId, resolved);
             if (GetAutosave())
             {
@@ -713,18 +739,19 @@ public class RecipeDatabaseManager : BaseNetLogic
             Audit("Act_Rename", new Dictionary<string, string> { ["name"] = oldName, ["newName"] = resolved, ["type"] = "Phase" });
             if (EnableLog) Log.Info(LogCategory, $"Rename Phase: '{oldName}' -> '{resolved}'");
             SetRenameDuplicateHint("");
-            return;
+            return true;
         }
         if (oId > 0)
         {
-            if (!Loader.OperationById.TryGetValue(oId, out var op)) return;
+            if (!Loader.OperationById.TryGetValue(oId, out var op))
+                return ReportRenameSelectionMissing();
             string oldName = op.Name ?? "";
             if (!TryResolveOperationRenameName(Loader, oId, newName, out string resolvedOp, out string errOp))
             {
                 SetRenameDuplicateHint(errOp);
-                return;
+                return false;
             }
-            if (string.Equals(oldName, resolvedOp, StringComparison.Ordinal)) return;
+            if (string.Equals(oldName, resolvedOp, StringComparison.Ordinal)) return true;
             Loader.UpdateOperation(oId, resolvedOp);
             if (GetAutosave())
             {
@@ -737,18 +764,19 @@ public class RecipeDatabaseManager : BaseNetLogic
             Audit("Act_Rename", new Dictionary<string, string> { ["name"] = oldName, ["newName"] = resolvedOp, ["type"] = "Operation" });
             if (EnableLog) Log.Info(LogCategory, $"Rename Operation: '{oldName}' -> '{resolvedOp}'");
             SetRenameDuplicateHint("");
-            return;
+            return true;
         }
         if (rId > 0)
         {
-            if (!Loader.ReceiptById.TryGetValue(rId, out var r)) return;
+            if (!Loader.ReceiptById.TryGetValue(rId, out var r))
+                return ReportRenameSelectionMissing();
             string oldName = r.Name ?? "";
             if (!TryResolveReceiptRenameName(Loader, rId, newName, out string resolvedR, out string errR))
             {
                 SetRenameDuplicateHint(errR);
-                return;
+                return false;
             }
-            if (string.Equals(oldName, resolvedR, StringComparison.Ordinal)) return;
+            if (string.Equals(oldName, resolvedR, StringComparison.Ordinal)) return true;
             Loader.UpdateReceipt(rId, resolvedR, null);
             if (GetAutosave())
             {
@@ -761,9 +789,16 @@ public class RecipeDatabaseManager : BaseNetLogic
             Audit("Act_Rename", new Dictionary<string, string> { ["name"] = oldName, ["newName"] = resolvedR, ["type"] = "Receipt" });
             if (EnableLog) Log.Info(LogCategory, $"Rename Receipt: '{oldName}' -> '{resolvedR}'");
             SetRenameDuplicateHint("");
-            return;
+            return true;
         }
-        if (EnableLog) Log.Warning(LogCategory, "RenameSelectedTreeItem: 未选中树项");
+        return ReportRenameSelectionMissing();
+    }
+
+    private bool ReportRenameSelectionMissing()
+    {
+        Log.Warning(LogCategory, "RenameSelectedTreeItem: 未选中树项或选中项已不存在");
+        SetRenameDuplicateHint("请重新选择要重命名的项目。");
+        return false;
     }
 
     /// <summary>将当前内存中所有修改写入数据库，供“保存”按钮调用。Insert 仅缓存，需点保存才落库。</summary>
