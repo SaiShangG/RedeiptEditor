@@ -68,6 +68,8 @@ public class BatchInforToPLC : BaseNetLogic
     private bool _evtDoneHighConsumed;
     private bool _batchCleanupPending;
     private bool _batchDoneHandled;
+    private bool _abortCleanupPending;
+    private bool _abortCommandSent;
 
     private RecipeDatabaseTreeLoader.ReceiptNode _flowReceipt;
     private string _flowRecipeName;
@@ -109,6 +111,8 @@ public class BatchInforToPLC : BaseNetLogic
         _evtDoneHighConsumed = false;
         _batchCleanupPending = false;
         _batchDoneHandled = false;
+        _abortCleanupPending = false;
+        _abortCommandSent = false;
         SetStatus("Stopped");
         _statusText = null;
 
@@ -188,6 +192,17 @@ public class BatchInforToPLC : BaseNetLogic
         }
 
         TryTransitionTo(_stDownload);
+    }
+
+    [ExportMethod]
+    public void AbortBatchAndClearData()
+    {
+        if (!_abortCleanupPending)
+        {
+            BeginBatchCleanup(true);
+            Log.Warning(LogCategory, "Abort requested: stopping automatic sequencing and immediately clearing downloaded PLC data / 请求中止：停止自动推进并立即清除已下发的 PLC 数据。");
+        }
+        HandleBatchDone();
     }
 
     [ExportMethod]
@@ -980,23 +995,38 @@ public class BatchInforToPLC : BaseNetLogic
                 if (_batchDoneHandled)
                     return true;
 
-                _batchCleanupPending = true;
-                _flowActive = false;
-                _cmdStartTask?.Dispose();
-                _cmdStartTask = null;
-                _nextOperationTask?.Dispose();
-                _nextOperationTask = null;
-                TryTransitionTo(_stFinish);
+                BeginBatchCleanup(false);
             }
 
-            if (!TryClearCompletedBatchData())
+            if (_abortCleanupPending && !_abortCommandSent)
             {
-                SetStatus("Batch cleanup failed, retrying / 批次数据清理失败，正在重试");
+                if (!TryEnsureBatchTagReferences()
+                    || !WriteCleanupValue(_batchRoot.GetVariable("BatchAbort"), true, true))
+                {
+                    ReportBatchCleanupFailure("BatchAbort write failed");
+                    return true;
+                }
+                _abortCommandSent = true;
+            }
+
+            if (!TryClearCompletedBatchData(_abortCleanupPending))
+            {
+                ReportBatchCleanupFailure("Downloaded data could not be cleared");
                 return true;
             }
 
+            if (_abortCleanupPending
+                && !WriteCleanupValue(_batchRoot.GetVariable("BatchIdle"), true, true))
+            {
+                ReportBatchCleanupFailure("BatchIdle write failed");
+                return true;
+            }
+
+            bool aborted = _abortCleanupPending;
             _batchCleanupPending = false;
             _batchDoneHandled = true;
+            _abortCleanupPending = false;
+            _abortCommandSent = false;
             _flowReceipt = null;
             _flowRecipeName = null;
             _flowOpCount = 0;
@@ -1005,38 +1035,64 @@ public class BatchInforToPLC : BaseNetLogic
             TrySetInt32(LogicObject.GetVariable("RunningOpIndex"), 0);
             PublishFlowSnapshot(-1, -1, "", "", false);
             TryTransitionTo(_stIdle);
-            SetStatus("Batch finished, PLC data cleared / 批次执行完成，PLC 数据已清空");
+            string status = aborted
+                ? "Batch aborted, PLC data cleared / 批次已中止，PLC 数据已清空"
+                : "Batch finished, PLC data cleared / 批次执行完成，PLC 数据已清空";
+            SetStatus(status);
+            Log.Info(LogCategory, status);
             return true;
         }
         catch (Exception ex)
         {
-            Log.Warning(LogCategory, $"Batch cleanup failed / 批次数据清理失败: {ex.Message}");
+            ReportBatchCleanupFailure(ex.Message);
             return true;
         }
     }
 
-    private bool TryClearCompletedBatchData()
+    private void BeginBatchCleanup(bool aborted)
+    {
+        _batchCleanupPending = true;
+        _abortCleanupPending = aborted;
+        _abortCommandSent = false;
+        _flowActive = false;
+        _cmdStartTask?.Dispose();
+        _cmdStartTask = null;
+        _nextOperationTask?.Dispose();
+        _nextOperationTask = null;
+        TryTransitionTo(_stFinish);
+    }
+
+    private void ReportBatchCleanupFailure(string detail)
+    {
+        string status = _abortCleanupPending
+            ? "Abort cleanup failed, retrying / 中止数据清理失败，正在重试"
+            : "Batch cleanup failed, retrying / 批次数据清理失败，正在重试";
+        SetStatus(status);
+        Log.Error(LogCategory, status + ": " + detail);
+    }
+
+    private bool TryClearCompletedBatchData(bool remoteWrite = false)
     {
         if (!TryEnsureBatchTagReferences() || !TryEnsureRecipeTagReferences()
             || !TryEnsureOp1TagReferences() || !TryEnsurePhasesTagReferences()
             || !TryEnsureOperationHandshakeReferences())
             return false;
 
-        bool cleared = TrySetBoolean(_plcBatchStart, false);
-        cleared &= TrySetBoolean(_handshakeCmdStart, false);
+        bool cleared = WriteCleanupValue(_plcBatchStart, false, remoteWrite);
+        cleared &= WriteCleanupValue(_handshakeCmdStart, false, remoteWrite);
         if (!cleared)
             return false;
 
-        cleared &= TrySetInt32(_plcBatchId, 0);
-        cleared &= TrySetInt32(_plcBatchStatus, 0);
-        cleared &= TrySetString(_plcBatchName, "");
-        cleared &= TrySetString(_plcBatchRecipeName, "");
-        cleared &= TrySetString(_plcRecipeName, "");
-        cleared &= TrySetInt32(_plcRecipeId, 0);
-        cleared &= TrySetInt32(_plcRecipeNoOfOperations, 0);
-        cleared &= TrySetInt32(_plcOp1Id, 0);
-        cleared &= TrySetString(_plcOp1Name, "");
-        cleared &= TrySetInt32(_plcOp1NoOfPhases, 0);
+        cleared &= WriteCleanupValue(_plcBatchId, 0, remoteWrite);
+        cleared &= WriteCleanupValue(_plcBatchStatus, 0, remoteWrite);
+        cleared &= WriteCleanupValue(_plcBatchName, "", remoteWrite);
+        cleared &= WriteCleanupValue(_plcBatchRecipeName, "", remoteWrite);
+        cleared &= WriteCleanupValue(_plcRecipeName, "", remoteWrite);
+        cleared &= WriteCleanupValue(_plcRecipeId, 0, remoteWrite);
+        cleared &= WriteCleanupValue(_plcRecipeNoOfOperations, 0, remoteWrite);
+        cleared &= WriteCleanupValue(_plcOp1Id, 0, remoteWrite);
+        cleared &= WriteCleanupValue(_plcOp1Name, "", remoteWrite);
+        cleared &= WriteCleanupValue(_plcOp1NoOfPhases, 0, remoteWrite);
         if (_phasesRoot is not IUAVariable phasesVariable
             || phasesVariable.ArrayDimensions == null
             || phasesVariable.ArrayDimensions.Length != 1
@@ -1044,15 +1100,32 @@ public class BatchInforToPLC : BaseNetLogic
             return false;
 
         for (int phaseIndex = 0; phaseIndex < phasesVariable.ArrayDimensions[0]; phaseIndex++)
-            cleared &= TryClearPhaseData(GetPlcPhaseNodeByIndex(phaseIndex));
-        cleared &= TrySetBoolean(_handshakeEvtDone, false);
+            cleared &= TryClearPhaseData(GetPlcPhaseNodeByIndex(phaseIndex), remoteWrite);
+        cleared &= WriteCleanupValue(_handshakeEvtDone, false, remoteWrite);
         if (_handshakeCmdSeq != null)
-            cleared &= TrySetInt32(_handshakeCmdSeq, 0);
+            cleared &= WriteCleanupValue(_handshakeCmdSeq, 0, remoteWrite);
 
-        return cleared && TrySetBoolean(_plcEvtBatchDone, false);
+        return cleared && WriteCleanupValue(_plcEvtBatchDone, false, remoteWrite);
     }
 
-    private static bool TryClearPhaseData(IUANode node)
+    private static bool WriteCleanupValue(IUAVariable variable, object value, bool remoteWrite)
+    {
+        if (!remoteWrite)
+            return TrySetVariable(variable, value);
+        if (variable == null)
+            throw new InvalidOperationException("Required PLC cleanup variable is missing / 缺少必需的 PLC 清理变量。");
+        try
+        {
+            variable.RemoteWrite(new UAValue(value), 5000);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"PLC cleanup write failed / PLC 清理写入失败: {variable.BrowseName}: {ex.Message}", ex);
+        }
+    }
+
+    private static bool TryClearPhaseData(IUANode node, bool remoteWrite = false)
     {
         if (node == null)
             return false;
@@ -1082,15 +1155,15 @@ public class BatchInforToPLC : BaseNetLogic
                         for (int index = 0; index < values.Length; index++)
                             values.SetValue("", index);
                     }
-                    return TrySetVariable(variable, values);
+                    return WriteCleanupValue(variable, values, remoteWrite);
                 }
-                return TrySetVariable(variable, emptyValue);
+                return WriteCleanupValue(variable, emptyValue, remoteWrite);
             }
         }
 
         bool cleared = true;
         foreach (var child in node.Children)
-            cleared &= TryClearPhaseData(child);
+            cleared &= TryClearPhaseData(child, remoteWrite);
         return cleared;
     }
 
