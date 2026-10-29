@@ -10576,6 +10576,11 @@ Children:
                       - Name: ButtonWithIcon4
                         Type: ButtonWithIcon
                         Children:
+                        - Name: Rectangle2
+                          Type: Rectangle
+                          Children:
+                          - Name: Button1
+                            Type: Button
                         - Name: Rectangle1
                           Type: Rectangle
                           Children:
@@ -10725,12 +10730,7 @@ Children:
                                 - Name: DynamicLink
                                   Type: DynamicLink
                                   DataType: NodePath
-                                  Value: "/Objects/RedeiptEditor/CommDrivers/RAEtherNet_IPDriver1/RAEtherNet_IPStation1/Tags/Controller Tags/Batch/BatchStart"
-                        - Name: Rectangle2
-                          Type: Rectangle
-                          Children:
-                          - Name: Button1
-                            Type: Button
+                                  Value: "/Objects/RedeiptEditor/Model/UIData/BatchesEditorData/CurrentBatchData/Batch/BatchStart"
                         - Name: VerticalAlignment
                           Type: BaseVariableType
                           DataType: VerticalAlignment

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using UAManagedCore;
 using OpcUa = UAManagedCore.OpcUa;
 using FTOptix.UI;
@@ -30,6 +31,8 @@ public class GenerateRunningTreeList : BaseNetLogic
     private const string OperationOptionsObjectName = "JumpOperationOptions";
     private const string PhaseOptionsObjectName = "JumpPhaseOptions";
     private const int DisabledOptionIndex = 0;
+    private const int RefreshRequested = 1;
+    private const int RebuildRequested = 2;
 
     private const float RowHeight = 26f;
     private const float FontSize = 14f;
@@ -55,6 +58,9 @@ public class GenerateRunningTreeList : BaseNetLogic
     private readonly List<IEventRegistration> _snapshotRegs = new List<IEventRegistration>();
     private string _lastBuiltRecipeKey = "";
     private int _lastFlowRefreshTick = -1;
+    private int _pendingRefresh;
+    private int _refreshInProgress;
+    private int _stopped = 1;
 
     private NodeId _receiptItemTypeId = NodeId.Empty;
     private NodeId _operationItemTypeId = NodeId.Empty;
@@ -68,18 +74,31 @@ public class GenerateRunningTreeList : BaseNetLogic
     {
         ReadSettings();
         ResolveTypeIds();
+        _lastBuiltRecipeKey = "";
+        _lastFlowRefreshTick = -1;
+        Interlocked.Exchange(ref _pendingRefresh, 0);
+        Volatile.Write(ref _stopped, 0);
         try { _observerAffinityId = LogicObject.Context.AssignAffinityId(); }
         catch { _observerAffinityId = 0; }
         RegisterSnapshotObservers();
-        Generate();
+        RequestRefresh(true);
+        ProcessRefresh();
 
         _refreshTask?.Dispose();
-        _refreshTask = new PeriodicTask(RefreshRunningStatus, _refreshPeriodMs, LogicObject);
+        _refreshTask = new PeriodicTask(() =>
+        {
+            RequestRefresh();
+            ProcessRefresh();
+        }, _refreshPeriodMs, LogicObject);
         _refreshTask.Start();
     }
 
     public override void Stop()
     {
+        Volatile.Write(ref _stopped, 1);
+        _refreshTask?.Dispose();
+        _refreshTask = null;
+        Interlocked.Exchange(ref _pendingRefresh, 0);
         var operationComboBox = GetJumpOperationComboBox();
         if (operationComboBox != null)
             operationComboBox.UAEvent -= OnOperationComboUserSelectionChanged;
@@ -93,8 +112,6 @@ public class GenerateRunningTreeList : BaseNetLogic
         if (phaseButton != null)
             phaseButton.UAEvent -= OnJumpPhaseClicked;
         UnregisterSnapshotObservers();
-        _refreshTask?.Dispose();
-        _refreshTask = null;
     }
 
     private void RegisterSnapshotObservers()
@@ -103,7 +120,7 @@ public class GenerateRunningTreeList : BaseNetLogic
         var snapshot = GetBatchDownloadToPlcDataNode();
         if (snapshot == null) return;
 
-        var treeObserver = new CallbackVariableChangeObserver((variable, newValue, oldValue, eventType, senderId) => Generate());
+        var treeObserver = new CallbackVariableChangeObserver((variable, newValue, oldValue, eventType, senderId) => RequestRefresh(true));
         foreach (string name in new[] { "Recipe", "Name", "RecipeID", "DownloadDateTime" })
         {
             var variable = snapshot.GetVariable(name);
@@ -112,7 +129,7 @@ public class GenerateRunningTreeList : BaseNetLogic
             catch { }
         }
 
-        var statusObserver = new CallbackVariableChangeObserver((variable, newValue, oldValue, eventType, senderId) => RefreshRunningStatus());
+        var statusObserver = new CallbackVariableChangeObserver((variable, newValue, oldValue, eventType, senderId) => RequestRefresh());
         foreach (string name in new[] { "OperationName", "PhaseName", "RecipeIsRunning", "RecipeFinished", "RecipeRefreshTick", "FlowIsRunning", "FlowBatchFinished", "FlowRefreshTick" })
         {
             var variable = snapshot.GetVariable(name);
@@ -143,7 +160,65 @@ public class GenerateRunningTreeList : BaseNetLogic
     }
 
     [ExportMethod]
-    public void Regenerate() => Generate();
+    public void Regenerate() => RequestRefresh(true);
+
+    private void RequestRefresh(bool rebuild = false)
+    {
+        if (Volatile.Read(ref _stopped) != 0)
+            return;
+
+        Interlocked.Or(ref _pendingRefresh, RefreshRequested | (rebuild ? RebuildRequested : 0));
+    }
+
+    private void ProcessRefresh()
+    {
+        if (Volatile.Read(ref _stopped) != 0
+            || Interlocked.CompareExchange(ref _refreshInProgress, 1, 0) != 0)
+            return;
+
+        try
+        {
+            if (Volatile.Read(ref _stopped) != 0)
+                return;
+
+            // Consume before building so requests received during a build survive for the next tick.
+            int requests = Interlocked.Exchange(ref _pendingRefresh, 0);
+            if (requests == 0)
+                return;
+
+            var treeContainer = GetTreeContainer();
+            if (treeContainer == null)
+                throw new InvalidOperationException("TreeContainer not found beside GenerateRunningTreeList.");
+
+            string recipeName = ResolveActiveRecipeName();
+            string key = FormatRecipeKey(recipeName, ReadSnapshotBatchName(), ReadSnapshotDownloadStamp());
+            int tick = ReadSnapshotFlowRefreshTick();
+            if ((requests & RebuildRequested) != 0
+                || !string.Equals(key, _lastBuiltRecipeKey, StringComparison.Ordinal)
+                || CountGeneratedRows(treeContainer) == 0)
+            {
+                if (!Generate(treeContainer, recipeName))
+                {
+                    RequestRefresh(true);
+                    return;
+                }
+
+                _lastBuiltRecipeKey = key;
+            }
+
+            RefreshRunningStatus(treeContainer);
+            _lastFlowRefreshTick = tick;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(LogCategory, $"Running tree refresh failed: {ex}");
+            RequestRefresh(true);
+        }
+        finally
+        {
+            Volatile.Write(ref _refreshInProgress, 0);
+        }
+    }
 
     private void ReadSettings()
     {
@@ -164,34 +239,17 @@ public class GenerateRunningTreeList : BaseNetLogic
         catch { }
     }
 
-    private void Generate()
+    private bool Generate(Container treeContainer, string recipeName)
     {
-        Container treeContainer = null;
         try
         {
-            treeContainer = GetTreeContainer();
-            if (treeContainer == null)
-            {
-                if (_enableLog) Log.Error(LogCategory, "未找到 TreeContainer。请确认 GenerateRunningTreeList 与 TreeContainer 同在 ScrollView1 下。");
-                return;
-            }
-
             ResolveTypeIds();
-            ClearGeneratedRows(treeContainer);
 
             if (_receiptItemTypeId == NodeId.Empty || _operationItemTypeId == NodeId.Empty || _phaseItemTypeId == NodeId.Empty)
-            {
-                if (_enableLog) Log.Error(LogCategory, "未找到 ReceiptListItem / OperationListItem / PhaseListItem 类型。");
-                return;
-            }
+                throw new InvalidOperationException("ReceiptListItem / OperationListItem / PhaseListItem type not found.");
 
             EnsureRecipeTreeLoaded();
-
-            string recipeName = ResolveActiveRecipeName();
-            string batchName = ReadSnapshotBatchName();
-            string downloadStamp = ReadSnapshotDownloadStamp();
-            _lastBuiltRecipeKey = FormatRecipeKey(recipeName, batchName, downloadStamp);
-            _lastFlowRefreshTick = ReadSnapshotFlowRefreshTick();
+            ClearGeneratedRows(treeContainer);
 
             ApplyHostLayout(treeContainer);
             float rowWidth = GetRowWidth(treeContainer);
@@ -201,7 +259,7 @@ public class GenerateRunningTreeList : BaseNetLogic
                 ClearJumpComboBoxes();
                 AddMessageRow(treeContainer, rowWidth, "No downloaded running recipe");
                 ResizeTreeContainer(treeContainer);
-                return;
+                return true;
             }
 
             var receipt = FindReceiptForTree(recipeName);
@@ -210,38 +268,34 @@ public class GenerateRunningTreeList : BaseNetLogic
                 ClearJumpComboBoxes();
                 AddMessageRow(treeContainer, rowWidth, $"Recipe not found: {recipeName}");
                 ResizeTreeContainer(treeContainer);
-                return;
+                return true;
             }
 
             PopulateJumpComboBoxes(receipt);
 
             int rows = 0;
-            var receiptItem = InformationModel.MakeObject(SafeName(receipt.Name) + "_Receipt", _receiptItemTypeId) as Container;
-            if (receiptItem != null)
-            {
-                ConfigureRow(receiptItem, rowWidth, receipt.Name ?? recipeName, "", "", -1, -1, receipt.ReceiptID, 0, 0, TreeRowKind.Receipt);
-                treeContainer.Add(receiptItem);
-                rows++;
-            }
+            var receiptItem = InformationModel.MakeObject(SafeName(receipt.Name) + "_Receipt", _receiptItemTypeId) as Container
+                ?? throw new InvalidOperationException("Could not create running recipe row.");
+            ConfigureRow(receiptItem, rowWidth, receipt.Name ?? recipeName, "", "", -1, -1, receipt.ReceiptID, 0, 0, TreeRowKind.Receipt);
+            treeContainer.Add(receiptItem);
+            rows++;
 
             for (int opIndex = 0; opIndex < (receipt.Operations?.Count ?? 0); opIndex++)
             {
                 var op = receipt.Operations[opIndex];
                 string opName = op?.Name ?? $"Operation_{opIndex + 1}";
-                var opItem = InformationModel.MakeObject(SafeName(opName) + "_Operation", _operationItemTypeId) as Container;
-                if (opItem != null)
-                {
-                    ConfigureRow(opItem, rowWidth, opName, opName, "", opIndex, -1, receipt.ReceiptID, op?.OperationID ?? 0, 0, TreeRowKind.Operation);
-                    treeContainer.Add(opItem);
-                    rows++;
-                }
+                var opItem = InformationModel.MakeObject(SafeName(opName) + "_Operation", _operationItemTypeId) as Container
+                    ?? throw new InvalidOperationException($"Could not create running operation row: {opIndex}.");
+                ConfigureRow(opItem, rowWidth, opName, opName, "", opIndex, -1, receipt.ReceiptID, op?.OperationID ?? 0, 0, TreeRowKind.Operation);
+                treeContainer.Add(opItem);
+                rows++;
 
                 for (int phaseIndex = 0; phaseIndex < (op?.Phases?.Count ?? 0); phaseIndex++)
                 {
                     var phase = op.Phases[phaseIndex];
                     string phaseName = phase?.Name ?? $"Phase_{phaseIndex + 1}";
-                    var phaseItem = InformationModel.MakeObject(SafeName(phaseName) + "_Phase", _phaseItemTypeId) as Container;
-                    if (phaseItem == null) continue;
+                    var phaseItem = InformationModel.MakeObject(SafeName(phaseName) + "_Phase", _phaseItemTypeId) as Container
+                        ?? throw new InvalidOperationException($"Could not create running phase row: {opIndex}/{phaseIndex}.");
                     ConfigureRow(phaseItem, rowWidth, phaseName, opName, phaseName, opIndex, phaseIndex, receipt.ReceiptID, op?.OperationID ?? 0, phase?.PhaseID ?? 0, TreeRowKind.Phase);
                     treeContainer.Add(phaseItem);
                     rows++;
@@ -252,14 +306,17 @@ public class GenerateRunningTreeList : BaseNetLogic
                 AddMessageRow(treeContainer, rowWidth, $"Recipe [{receipt.Name}] has no running tree rows");
 
             ResizeTreeContainer(treeContainer);
-            RefreshRunningStatus();
+            int actualRows = CountGeneratedRows(treeContainer);
+            if (actualRows != rows)
+                throw new InvalidOperationException($"Running tree row count mismatch: Expected={rows}, Actual={actualRows}.");
 
             if (_enableLog)
-                Log.Info(LogCategory, $"Running tree generated: Recipe='{recipeName}', Rows={CountGeneratedRows(treeContainer)}, TreeWidth={treeContainer.Width}, TreeHeight={treeContainer.Height}");
+                Log.Info(LogCategory, $"Running tree generated: Recipe='{recipeName}', ExpectedRows={rows}, Rows={actualRows}, Instance={LogicObject.NodeId}, TreeWidth={treeContainer.Width}, TreeHeight={treeContainer.Height}");
+            return true;
         }
         catch (Exception ex)
         {
-            if (_enableLog) Log.Error(LogCategory, $"Generate failed: {ex.Message}");
+            Log.Error(LogCategory, $"Generate failed: {ex}");
             if (treeContainer != null)
             {
                 try
@@ -268,29 +325,17 @@ public class GenerateRunningTreeList : BaseNetLogic
                     AddMessageRow(treeContainer, GetRowWidth(treeContainer), "Running tree generate failed");
                     ResizeTreeContainer(treeContainer);
                 }
-                catch { }
+                catch (Exception cleanupEx)
+                {
+                    Log.Error(LogCategory, $"Running tree error display failed: {cleanupEx}");
+                }
             }
+            return false;
         }
     }
 
-    private void RefreshRunningStatus()
+    private void RefreshRunningStatus(Container treeContainer)
     {
-        var treeContainer = GetTreeContainer();
-        if (treeContainer == null) return;
-
-        string recipeName = ResolveActiveRecipeName();
-        string batchName = ReadSnapshotBatchName();
-        string downloadStamp = ReadSnapshotDownloadStamp();
-        string key = FormatRecipeKey(recipeName, batchName, downloadStamp);
-        int tick = ReadSnapshotFlowRefreshTick();
-        if (!string.Equals(key, _lastBuiltRecipeKey, StringComparison.Ordinal)
-            || CountGeneratedRows(treeContainer) == 0)
-        {
-            Generate();
-            return;
-        }
-        _lastFlowRefreshTick = tick;
-
         ResolveCurrentStep(out string runningOperationName, out string runningPhaseName, out bool isRunning);
         foreach (var row in treeContainer.Children.OfType<Container>())
         {
@@ -383,7 +428,7 @@ public class GenerateRunningTreeList : BaseNetLogic
         if (opIndex < 0)
         {
             ClearJumpTarget();
-            RefreshRunningStatus();
+            RequestRefresh();
             return;
         }
 
@@ -418,7 +463,7 @@ public class GenerateRunningTreeList : BaseNetLogic
         _jumpTargetPhaseIndex = -1;
         if (_enableLog)
             Log.Info(LogCategory, $"Jump Operation requested: OpIndex={_jumpTargetOpIndex}");
-        RefreshRunningStatus();
+        RequestRefresh();
     }
 
     private void OnJumpPhaseClicked(object sender, UAEventArgs args)
@@ -429,7 +474,7 @@ public class GenerateRunningTreeList : BaseNetLogic
         if (opIndex < 0 || phaseIndex < 0)
         {
             ClearJumpTarget();
-            RefreshRunningStatus();
+            RequestRefresh();
             return;
         }
 
@@ -461,7 +506,7 @@ public class GenerateRunningTreeList : BaseNetLogic
         _jumpTargetPhaseIndex = phaseIndex;
         if (_enableLog)
             Log.Info(LogCategory, $"Jump Phase sent / Phase 跳转已发送: OpIndex={_jumpTargetOpIndex}, PhaseIndex={_jumpTargetPhaseIndex}");
-        RefreshRunningStatus();
+        RequestRefresh();
 
     }
 
@@ -1004,8 +1049,8 @@ public class GenerateRunningTreeList : BaseNetLogic
 
     private void AddMessageRow(IUAObject host, float rowWidth, string message)
     {
-        var row = InformationModel.MakeObject("RunningTreeMessage", _phaseItemTypeId) as Container;
-        if (row == null) return;
+        var row = InformationModel.MakeObject("RunningTreeMessage", _phaseItemTypeId) as Container
+            ?? throw new InvalidOperationException("Could not create running tree message row.");
         ConfigureRow(row, rowWidth, message, "", "", -1, -1, 0, 0, 0, TreeRowKind.Message);
         ApplyRowColors(row, MessageTextColor, TransparentBg);
         host.Add(row);
