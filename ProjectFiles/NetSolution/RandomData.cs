@@ -3,6 +3,7 @@ using System;
 using UAManagedCore;
 using FTOptix.HMIProject;
 using FTOptix.NetLogic;
+using FTOptix.Report;
 #endregion
 
 public class RandomData : BaseNetLogic

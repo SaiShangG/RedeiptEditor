@@ -19,6 +19,7 @@ using FTOptix.Store;
 using FTOptix.SQLiteStore;
 using FTOptix.WebUI;
 using FTOptix.ODBCStore;
+using FTOptix.Report;
 #endregion
 
 public class HttpServer : BaseNetLogic

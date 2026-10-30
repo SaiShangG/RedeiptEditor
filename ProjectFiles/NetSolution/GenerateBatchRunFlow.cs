@@ -10,6 +10,7 @@ using FTOptix.HMIProject;
 using FTOptix.NetLogic;
 using FTOptix.Core;
 using FTOptix.EventLogger;
+using FTOptix.Report;
 #endregion
 
 /// <summary>

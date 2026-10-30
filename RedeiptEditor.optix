@@ -98,15 +98,23 @@ Project:
    Uri: 'urn:FTOptix:DataLogger:Net'
    Module: FTOptix.DataLogger.Net
    Version: 1.0
+  27:
+   Uri: 'urn:FTOptix:Report'
+   Module: FTOptix.Report
+   Version: 4.1
+  28:
+   Uri: 'urn:FTOptix:Report:Net'
+   Module: FTOptix.Report.Net
+   Version: 2.5
  Statistics:
-  TotalNodeCount: 18151
-  Objects: 3316
-  ObjectTypes: 84
-  Variables: 14631
+  TotalNodeCount: 20485
+  Objects: 3529
+  ObjectTypes: 88
+  Variables: 16748
   VariableTypes: 11
   DataTypes: 22
   Methods: 87
-  References: 249
+  References: 253
   ReferenceTypes: 0
   Files: 65
  Nodes:

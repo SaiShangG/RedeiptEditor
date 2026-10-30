@@ -5,6 +5,7 @@ using UAManagedCore;
 using FTOptix.UI;
 using FTOptix.HMIProject;
 using FTOptix.Core;
+using FTOptix.Report;
 #endregion
 
 /// <summary>批次运行列表高亮（GenerateBatchRunFlow 未启动时也可扫描 UI 树着色）。</summary>

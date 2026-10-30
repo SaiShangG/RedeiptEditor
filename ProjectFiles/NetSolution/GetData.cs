@@ -17,6 +17,7 @@ using FTOptix.NetLogic;
 using FTOptix.SQLiteStore;
 
 using FTOptix.Store;
+using FTOptix.Report;
 
 #endregion
 

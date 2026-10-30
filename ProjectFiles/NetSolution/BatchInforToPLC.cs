@@ -10,6 +10,7 @@ using FTOptix.Core;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.Json;
+using FTOptix.Report;
 #endregion
 
 /// <summary>

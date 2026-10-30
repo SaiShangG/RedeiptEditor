@@ -16,6 +16,7 @@ using FTOptix.CommunicationDriver;
 using FTOptix.WebUI;
 using FTOptix.DataLogger;
 using FTOptix.ODBCStore;
+using FTOptix.Report;
 #endregion
 
 public class GenerateOperationPhaseListPanel : BaseNetLogic

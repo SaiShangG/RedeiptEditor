@@ -18,6 +18,7 @@ using FTOptix.Core;
 using FTOptix.WebUI;
 using FTOptix.DataLogger;
 using FTOptix.ODBCStore;
+using FTOptix.Report;
 #endregion
 
 public class GeneratePhaseColumns : BaseNetLogic

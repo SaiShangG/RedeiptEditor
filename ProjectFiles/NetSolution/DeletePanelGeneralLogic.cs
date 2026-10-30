@@ -10,6 +10,7 @@ using FTOptix.WebUI;
 using FTOptix.EventLogger;
 using FTOptix.DataLogger;
 using FTOptix.ODBCStore;
+using FTOptix.Report;
 #endregion
 
 /// <summary>

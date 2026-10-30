@@ -8,6 +8,7 @@ using FTOptix.WebUI;
 using FTOptix.EventLogger;
 using FTOptix.DataLogger;
 using FTOptix.ODBCStore;
+using FTOptix.Report;
 #endregion
 
 #region JSON 配置（与 phase_ui_layout.sample.json 一致）

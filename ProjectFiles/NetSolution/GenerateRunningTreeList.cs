@@ -19,6 +19,7 @@ using FTOptix.CoreBase;
 using FTOptix.CommunicationDriver;
 using FTOptix.Core;
 using FTOptix.EventLogger;
+using FTOptix.Report;
 #endregion
 
 public class GenerateRunningTreeList : BaseNetLogic
